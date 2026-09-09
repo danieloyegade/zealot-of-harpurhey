@@ -1,0 +1,38 @@
+# Dependencies and generated output
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Blender backups, recovery files, and caches
+*.blend1
+*.blend2
+*.blend@
+*.blend~
+*.blend.lock
+quit.blend
+autosave/
+__pycache__/
+*.py[cod]
+
+# Large development-only source media
+references/raw/
+renders/source/
