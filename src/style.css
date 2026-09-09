@@ -19,4 +19,25 @@ body,
 
 canvas {
   display: block;
+  cursor: grab;
+  touch-action: none;
+}
+
+canvas.is-dragging {
+  cursor: grabbing;
+}
+
+.debug-overlay {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  margin: 0;
+  padding: 9px 11px;
+  color: #d8c15a;
+  background: rgb(3 4 8 / 72%);
+  border: 1px solid rgb(216 193 90 / 28%);
+  font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  pointer-events: none;
+  user-select: none;
 }
