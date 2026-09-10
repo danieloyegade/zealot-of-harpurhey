@@ -67,3 +67,39 @@ The player is represented on the ground plane by a circle with a temporary radiu
 - Include resolution only when multiple runtime resolutions exist, for example `shop-sign-albedo-1k.jpg`.
 - Keep names stable after an asset is referenced by code.
 - Mirror a runtime asset's base name in its Blender master where practical.
+
+## Blender asset pipeline
+
+The production asset path is **Blender → GLB → Three.js**. Assets that can be generated procedurally should have a repeatable Python script under `blender/scripts/` so their editable master and runtime export can be rebuilt without a manual GUI process.
+
+### Installed Blender
+
+- Detected version: **Blender 3.0.0**
+- Executable: `/Applications/Blender.app/Contents/MacOS/Blender`
+
+From the project root, generate the bus shelter with:
+
+```sh
+/Applications/Blender.app/Contents/MacOS/Blender \
+  --background \
+  --python blender/scripts/createBusShelter.py
+```
+
+The script derives the project root from its own location and creates parent directories when necessary. It produces:
+
+- Editable master: `blender/source/harperhay-bus-shelter.blend`
+- Runtime model: `public/assets/models/harperhay-bus-shelter.glb`
+- Development preview: `renders/harperhay-bus-shelter-preview.png`
+
+### Scale, coordinates, and export
+
+- One Blender unit represents one metre, with Blender's metric unit scale set to `1.0`.
+- Models are built around the world origin, stand on the ground at `Z = 0`, and have transforms applied before export.
+- Blender source scenes use Blender's native Z-up coordinates. The glTF exporter converts them to the Y-up convention used by Three.js.
+- Environment models should have a clearly documented forward/open direction. The bus shelter's open front faces positive local X.
+- Object names are descriptive lowercase kebab-case. Asset filenames use the project-wide lowercase kebab-case convention.
+- Runtime exports use binary glTF (`.glb`) with selected asset objects only and Y-up conversion enabled.
+
+Three.js loads runtime models with `GLTFLoader`. Model URLs are built from `import.meta.env.BASE_URL`, followed by the path beneath `public/`; this preserves both Vite development and deployment beneath `/zealot-of-harperhay/`.
+
+`.blend` source files belong under `blender/source/` and are not copied into production builds. Runtime-ready GLBs belong under `public/assets/models/` and are copied into the static build. Preview renders remain under `renders/` and are development-only.

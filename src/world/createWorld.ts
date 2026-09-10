@@ -15,6 +15,7 @@ import {
   SRGBColorSpace,
 } from 'three';
 import type { CollisionObstacle, CollisionWorld } from './collision';
+import { loadModel } from './loadModel';
 
 export interface World {
   readonly root: Group;
@@ -96,9 +97,9 @@ function addBuilding(
   }
 }
 
-function addBusShelter(root: Group, obstacles: CollisionObstacle[]): void {
+function createBusShelterFallback(): Group {
   const shelter = new Group();
-  shelter.name = 'Bus shelter';
+  shelter.name = 'Bus shelter loading placeholder';
   shelter.position.set(-5.7, 0, 5);
 
   const shelterMaterial = new MeshStandardMaterial({
@@ -117,9 +118,47 @@ function addBusShelter(root: Group, obstacles: CollisionObstacle[]): void {
   bench.position.set(-0.35, 0.55, 0);
   shelter.add(bench);
 
-  root.add(shelter);
+  return shelter;
+}
+
+function markShelterLoadFailure(fallback: Group): void {
+  fallback.name = 'Bus shelter load error';
+  fallback.traverse((child) => {
+    if (child instanceof Mesh && child.material instanceof MeshStandardMaterial) {
+      child.material.color.set(0xff00c8);
+      child.material.emissive.set(0x550033);
+    }
+  });
+}
+
+async function replaceBusShelterFallback(
+  root: Group,
+  fallback: Group,
+): Promise<void> {
+  try {
+    const shelter = await loadModel(
+      'assets/models/harperhay-bus-shelter.glb',
+    );
+    shelter.name = 'Harperhay bus shelter';
+    shelter.position.copy(fallback.position);
+    root.add(shelter);
+    root.remove(fallback);
+  } catch (error) {
+    markShelterLoadFailure(fallback);
+    console.error(
+      '[Street A] Failed to load harperhay-bus-shelter.glb. Showing the magenta fallback.',
+      error,
+    );
+  }
+}
+
+function addBusShelter(root: Group, obstacles: CollisionObstacle[]): void {
+  const fallback = createBusShelterFallback();
+  root.add(fallback);
+  void replaceBusShelterFallback(root, fallback);
+
   obstacles.push({
-    name: shelter.name,
+    name: 'Bus shelter',
     minX: -6.6,
     maxX: -4.8,
     minZ: 3,
