@@ -7,11 +7,13 @@ import {
   WebGLRenderer,
 } from 'three';
 import { ThirdPersonCamera } from './camera/ThirdPersonCamera';
+import { FixedStepClock } from './core/FixedStepClock';
 import { InputController } from './input/InputController';
 import { PlayerController } from './player/PlayerController';
 import { createPostProcessing } from './rendering/createPostProcessing';
 import {
   applyInternalResolution,
+  resolveQualityProfile,
   VISUAL_STYLE,
 } from './rendering/visualStyle';
 import { DebugOverlay } from './ui/DebugOverlay';
@@ -26,9 +28,11 @@ if (!app) {
 
 const scene = new Scene();
 const renderer = new WebGLRenderer({ antialias: true });
-applyInternalResolution(renderer, window.innerWidth, window.innerHeight);
+const quality = resolveQualityProfile(window.location.search);
+applyInternalResolution(renderer, window.innerWidth, window.innerHeight, quality);
 renderer.outputColorSpace = SRGBColorSpace;
 renderer.toneMappingExposure = VISUAL_STYLE.render.exposure;
+renderer.info.autoReset = false;
 app.appendChild(renderer.domElement);
 
 const camera = new PerspectiveCamera(
@@ -38,7 +42,7 @@ const camera = new PerspectiveCamera(
   120,
 );
 
-const world = createWorld(scene);
+const world = createWorld(scene, quality.maximumActiveLocalLights);
 const input = new InputController(renderer.domElement);
 const player = new PlayerController(world.collision);
 scene.add(player.object);
@@ -72,11 +76,12 @@ const thirdPersonCamera = new ThirdPersonCamera(
   requestedView === 'dreams-target' ? 3.15 : 1.05,
 );
 thirdPersonCamera.snapTo(player.position);
-const postProcessing = createPostProcessing(renderer, scene, camera);
+const postProcessing = createPostProcessing(renderer, scene, camera, quality);
 
 const debugOverlay = import.meta.env.DEV ? new DebugOverlay() : null;
 const timer = new Timer();
 timer.connect(document);
+const simulationClock = new FixedStepClock();
 const cameraForward = new Vector3();
 let developmentOverlaysVisible = true;
 let elapsedSeconds = 0;
@@ -84,18 +89,20 @@ let elapsedSeconds = 0;
 function resize(): void {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  applyInternalResolution(renderer, window.innerWidth, window.innerHeight);
+  applyInternalResolution(renderer, window.innerWidth, window.innerHeight, quality);
   postProcessing.resize(window.innerWidth, window.innerHeight);
 }
 
 window.addEventListener('resize', resize);
+document.addEventListener('visibilitychange', () => {
+  simulationClock.reset();
+});
 
 function frame(timestamp: number): void {
   requestAnimationFrame(frame);
 
   timer.update(timestamp);
-  const deltaTime = Math.min(timer.getDelta(), 0.05);
-  elapsedSeconds += deltaTime;
+  const rawDelta = timer.getDelta();
 
   input.update();
   if (input.consumeOverlayToggle()) {
@@ -104,11 +111,31 @@ function frame(timestamp: number): void {
     debugOverlay?.setVisible(developmentOverlaysVisible);
   }
   thirdPersonCamera.getPlanarForward(cameraForward);
-  player.update(deltaTime, input, cameraForward);
-  world.update(deltaTime);
-  thirdPersonCamera.update(deltaTime, input, player.position);
-  debugOverlay?.update(deltaTime, player.position, player.movementState);
+  const simulationResult = simulationClock.advance(rawDelta, (fixedDelta) => {
+    player.update(fixedDelta, input, cameraForward);
+    world.update(fixedDelta, player.position);
+    elapsedSeconds += fixedDelta;
+  });
+  const cameraDelta = simulationResult.resetAfterExtremeGap ? 0 : rawDelta;
+  thirdPersonCamera.update(cameraDelta, input, player.position);
+
+  renderer.info.reset();
   postProcessing.render(elapsedSeconds);
+  const lighting = world.getLightingStats();
+  debugOverlay?.update(rawDelta, player.position, player.movementState, {
+    drawCalls: renderer.info.render.calls,
+    triangles: renderer.info.render.triangles,
+    activePointLights: lighting.activePointLights,
+    activeSpotLights: lighting.activeSpotLights,
+    drawingBufferWidth: renderer.domElement.width,
+    drawingBufferHeight: renderer.domElement.height,
+    pixelRatio: renderer.getPixelRatio(),
+    renderScale: quality.renderScale,
+    textures: renderer.info.memory.textures,
+    geometries: renderer.info.memory.geometries,
+    programs: renderer.info.programs?.length ?? 0,
+    qualityLevel: quality.level,
+  });
 }
 
 requestAnimationFrame(frame);

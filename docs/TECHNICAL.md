@@ -20,13 +20,14 @@ Development-only references, source photography, `.blend` masters, and renders l
 
 ## Playable prototype architecture
 
-- `main.ts` owns renderer and scene initialisation plus the delta-time game loop.
+- `main.ts` owns renderer and scene initialisation, raw render timing, and the fixed-step game loop.
+- `FixedStepClock` advances gameplay at 60 Hz with bounded catch-up and explicit extreme-gap resets.
 - `InputController` tracks keyboard movement, running, and click-drag camera input.
 - `PlayerController` owns the primitive player representation, velocity, facing direction, movement state, and collision movement.
 - `ThirdPersonCamera` owns orbit angles, camera-relative movement direction, and smoothed following.
 - `createWorld` builds the canonical city layout, visual blockouts and its collision description.
 - `collision.ts` isolates the lightweight collision routines from player and world rendering code.
-- `visualStyle.ts` centralises render scale, texture policy, palette, fog, lighting and post-processing values.
+- `visualStyle.ts` centralises LOW/MEDIUM/HIGH quality profiles, render scale, DPR policy, texture policy, palette, lighting and post-processing values.
 - `worldMaterials.ts` loads the small world texture pack and applies the photographic or graphic filtering profile.
 - `worldGraphics.ts` creates low-resolution weathered sign and graffiti materials at runtime.
 - `createPostProcessing.ts` owns restrained bloom, display conversion, colour adjustment, quantisation, dithering, film grain and vignette.
@@ -44,6 +45,20 @@ Development-only references, source photography, `.blend` masters, and renders l
 - Temporary running speed: **4.5 metres per second**
 
 Movement is calculated relative to the camera's horizontal facing direction. Velocity accelerates and decelerates smoothly to give the placeholder movement some weight. There is no jumping.
+
+## Performance and simulation policy
+
+Rendering performance must never change simulation speed.
+
+Gameplay advances through `FixedStepClock` at **1/60 second** per step. Real animation-frame time is accumulated rather than truncated, with at most 16 catch-up steps per rendered frame. A gap above 250 ms is treated as an extreme pause rather than an ordinary slow frame. The accumulator is also reset on document visibility changes, so returning from a background tab never attempts to simulate the entire hidden period.
+
+The camera remains a render-time concern and uses the uncapped real frame delta during ordinary visible frames. This preserves its exponential smoothing without applying pointer orbit input once per gameplay substep.
+
+Development FPS is derived from raw frame time. The development overlay also reports frame milliseconds, draw calls, triangles, active point and spot lights, drawing-buffer size, effective pixel ratio, render scale, resident textures and geometries, shader programs, and the selected quality profile.
+
+The default desktop quality is **MEDIUM**. Use `?quality=low`, `?quality=medium`, or `?quality=high` during development and profiling. Full policy and measured Phase 1 results are documented in `PERFORMANCE.md` and `ENGINE_STABILISATION_REPORT.md`.
+
+Most environmental illumination in Zealot of Harpurhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights. The normal local-light budget is four on MEDIUM, with five available on HIGH and two on LOW. Streetlights do not use real-time spotlights.
 
 ### Camera
 

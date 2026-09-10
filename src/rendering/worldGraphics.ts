@@ -174,7 +174,7 @@ export function createDreamsSignMaterial(): MeshStandardMaterial {
     map: texture,
     emissiveMap: texture,
     emissive: 0xbcd6e1,
-    emissiveIntensity: 0.08 * VISUAL_STYLE.lighting.emissiveMultiplier,
+    emissiveIntensity: 0.16 * VISUAL_STYLE.lighting.emissiveMultiplier,
     roughness: 0.88,
     metalness: 0,
   });

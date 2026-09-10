@@ -10,7 +10,7 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { VISUAL_STYLE } from './visualStyle';
+import { VISUAL_STYLE, type QualityProfile } from './visualStyle';
 
 export interface PostProcessingPipeline {
   readonly render: (elapsedSeconds?: number) => void;
@@ -21,15 +21,16 @@ export function createPostProcessing(
   renderer: WebGLRenderer,
   scene: Scene,
   camera: PerspectiveCamera,
+  quality: QualityProfile,
 ): PostProcessingPipeline {
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
 
-  if (VISUAL_STYLE.bloom.enabled) {
+  if (quality.bloomEnabled) {
     composer.addPass(
       new UnrealBloomPass(
         new Vector2(window.innerWidth, window.innerHeight),
-        VISUAL_STYLE.bloom.strength,
+        quality.bloomStrength,
         VISUAL_STYLE.bloom.radius,
         VISUAL_STYLE.bloom.threshold,
       ),

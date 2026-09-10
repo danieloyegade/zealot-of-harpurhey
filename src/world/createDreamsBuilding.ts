@@ -7,12 +7,10 @@ import {
   Mesh,
   MeshBasicMaterial,
   MeshStandardMaterial,
-  PointLight,
   Quaternion,
   Vector3,
   type Material,
 } from 'three';
-import { VISUAL_STYLE } from '../rendering/visualStyle';
 import {
   createDreamsSignMaterial,
   createGraffitiMaterial,
@@ -23,6 +21,28 @@ import type { WorldLocation } from './worldLayout';
 const FRONT_Z = 4.32;
 const RAIL_RADIUS = 0.035;
 const UP = new Vector3(0, 1, 0);
+const boxGeometryCache = new Map<string, BoxGeometry>();
+const railGeometryCache = new Map<string, CylinderGeometry>();
+
+function getBoxGeometry(width: number, height: number, depth: number): BoxGeometry {
+  const key = `${width}:${height}:${depth}`;
+  let geometry = boxGeometryCache.get(key);
+  if (!geometry) {
+    geometry = new BoxGeometry(width, height, depth);
+    boxGeometryCache.set(key, geometry);
+  }
+  return geometry;
+}
+
+function getRailGeometry(length: number): CylinderGeometry {
+  const key = length.toFixed(4);
+  let geometry = railGeometryCache.get(key);
+  if (!geometry) {
+    geometry = new CylinderGeometry(RAIL_RADIUS, RAIL_RADIUS, length, 6);
+    railGeometryCache.set(key, geometry);
+  }
+  return geometry;
+}
 
 function box(
   width: number,
@@ -30,7 +50,7 @@ function box(
   depth: number,
   material: Material | Material[],
 ): Mesh {
-  return new Mesh(new BoxGeometry(width, height, depth), material);
+  return new Mesh(getBoxGeometry(width, height, depth), material);
 }
 
 function addPart(
@@ -91,7 +111,7 @@ function addRailBetween(
 ): void {
   const direction = new Vector3().subVectors(end, start);
   const beam = new Mesh(
-    new CylinderGeometry(RAIL_RADIUS, RAIL_RADIUS, direction.length(), 6),
+    getRailGeometry(direction.length()),
     material,
   );
   beam.name = `Dreams ${name}`;
@@ -214,22 +234,9 @@ function addSignLights(root: Group): void {
     }
   }
 
-  for (const x of [-4.4, 0, 4.4]) {
-    const light = new PointLight(VISUAL_STYLE.lighting.coldWhite, 4.5, 8.5, 1.7);
-    light.name = 'Dreams cool photographic frontage light';
-    light.position.set(x, 5.65, FRONT_Z + 1.0);
-    root.add(light);
-  }
-
   const lowerTube = new MeshBasicMaterial({ color: 0xbde9ef });
   for (const x of [-4.3, -1.35, 1.6, 4.55]) {
     addPart(root, 'cool shutter wash tube', box(2.65, 0.055, 0.06, lowerTube), x, 3.31, FRONT_Z + 0.5);
-  }
-  for (const x of [-3.6, 1.2, 5.2]) {
-    const light = new PointLight(0xaedce8, 4.2, 6.2, 1.85);
-    light.name = 'Dreams shutter wash';
-    light.position.set(x, 3.25, FRONT_Z + 0.86);
-    root.add(light);
   }
 }
 
@@ -249,7 +256,7 @@ export function createDreamsBuilding(location: WorldLocation): Group {
     repeatY: 2,
     tint: 0xd4d2c4,
     emissive: 0xa9bdbe,
-    emissiveIntensity: 0.32,
+    emissiveIntensity: 0.42,
     roughness: 0.93,
   });
   const darkRoof = createWorldMaterial('metal-oxidised-overhaul', {
@@ -312,11 +319,6 @@ export function createDreamsBuilding(location: WorldLocation): Group {
 
   addRampAndRailings(root, brick, createRailMaterial());
   addSignLights(root);
-
-  const panelLight = new PointLight(0xffc878, 1.5, 3.5, 2);
-  panelLight.name = 'Dreams right panel practical light';
-  panelLight.position.set(7.15, 2.95, FRONT_Z + 0.72);
-  root.add(panelLight);
 
   return root;
 }

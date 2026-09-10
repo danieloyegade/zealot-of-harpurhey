@@ -24,8 +24,8 @@ import {
   Sprite,
   SpriteMaterial,
   SRGBColorSpace,
-  SpotLight,
   TorusGeometry,
+  Vector3,
 } from 'three';
 import { BufferAttribute, BufferGeometry, Fog } from 'three';
 import { applyTextureProfile, VISUAL_STYLE } from '../rendering/visualStyle';
@@ -58,8 +58,121 @@ import {
 export interface World {
   readonly root: Group;
   readonly collision: CollisionWorld;
-  readonly update: (deltaTime: number) => void;
+  readonly update: (deltaTime: number, playerPosition: Vector3) => void;
+  readonly getLightingStats: () => LightingStats;
   readonly setDevelopmentOverlaysVisible: (visible: boolean) => void;
+}
+
+export interface LightingStats {
+  readonly activePointLights: number;
+  readonly activeSpotLights: number;
+  readonly maximumActiveLocalLights: number;
+}
+
+const boxGeometryCache = new Map<string, BoxGeometry>();
+const cylinderGeometryCache = new Map<string, CylinderGeometry>();
+const circleGeometryCache = new Map<string, CircleGeometry>();
+const coneGeometryCache = new Map<string, ConeGeometry>();
+const dodecahedronGeometryCache = new Map<string, DodecahedronGeometry>();
+const standardColorMaterialCache = new Map<number, MeshStandardMaterial>();
+const basicColorMaterialCache = new Map<number, MeshBasicMaterial>();
+
+function getBoxGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  widthSegments = 1,
+  heightSegments = 1,
+  depthSegments = 1,
+): BoxGeometry {
+  const key = [width, height, depth, widthSegments, heightSegments, depthSegments].join(':');
+  let geometry = boxGeometryCache.get(key);
+  if (!geometry) {
+    geometry = new BoxGeometry(
+      width,
+      height,
+      depth,
+      widthSegments,
+      heightSegments,
+      depthSegments,
+    );
+    boxGeometryCache.set(key, geometry);
+  }
+  return geometry;
+}
+
+function getCylinderGeometry(
+  radiusTop: number,
+  radiusBottom: number,
+  height: number,
+  radialSegments: number,
+): CylinderGeometry {
+  const key = [radiusTop, radiusBottom, height, radialSegments].join(':');
+  let geometry = cylinderGeometryCache.get(key);
+  if (!geometry) {
+    geometry = new CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
+    cylinderGeometryCache.set(key, geometry);
+  }
+  return geometry;
+}
+
+function getCircleGeometry(radius: number, segments: number): CircleGeometry {
+  const key = `${radius}:${segments}`;
+  let geometry = circleGeometryCache.get(key);
+  if (!geometry) {
+    geometry = new CircleGeometry(radius, segments);
+    circleGeometryCache.set(key, geometry);
+  }
+  return geometry;
+}
+
+function getConeGeometry(
+  radius: number,
+  height: number,
+  radialSegments: number,
+  heightSegments = 1,
+  openEnded = false,
+): ConeGeometry {
+  const key = [radius, height, radialSegments, heightSegments, openEnded].join(':');
+  let geometry = coneGeometryCache.get(key);
+  if (!geometry) {
+    geometry = new ConeGeometry(
+      radius,
+      height,
+      radialSegments,
+      heightSegments,
+      openEnded,
+    );
+    coneGeometryCache.set(key, geometry);
+  }
+  return geometry;
+}
+
+function getDodecahedronGeometry(radius: number): DodecahedronGeometry {
+  let geometry = dodecahedronGeometryCache.get(`${radius}`);
+  if (!geometry) {
+    geometry = new DodecahedronGeometry(radius, 0);
+    dodecahedronGeometryCache.set(`${radius}`, geometry);
+  }
+  return geometry;
+}
+
+function getStandardColorMaterial(color: number): MeshStandardMaterial {
+  let material = standardColorMaterialCache.get(color);
+  if (!material) {
+    material = new MeshStandardMaterial({ color, roughness: 1 });
+    standardColorMaterialCache.set(color, material);
+  }
+  return material;
+}
+
+function getBasicColorMaterial(color: number): MeshBasicMaterial {
+  let material = basicColorMaterialCache.get(color);
+  if (!material) {
+    material = new MeshBasicMaterial({ color });
+    basicColorMaterialCache.set(color, material);
+  }
+  return material;
 }
 
 function createBox(
@@ -69,9 +182,9 @@ function createBox(
   colorOrMaterial: number | Material,
 ): Mesh {
   return new Mesh(
-    new BoxGeometry(width, height, depth),
+    getBoxGeometry(width, height, depth),
     typeof colorOrMaterial === 'number'
-      ? new MeshStandardMaterial({ color: colorOrMaterial, roughness: 1 })
+      ? getStandardColorMaterial(colorOrMaterial)
       : colorOrMaterial,
   );
 }
@@ -346,12 +459,21 @@ function createBlockoutBuildingMass(location: WorldLocation): Mesh {
     : location.id === 'renae'
       ? 0x7c2847
       : 0xffffff;
+  const frontEmissive = ['renae', 'terrace'].includes(location.id)
+    ? VISUAL_STYLE.lighting.magenta
+    : location.id === 'come-through-lab'
+      ? VISUAL_STYLE.lighting.fluorescent
+      : ['coral', 'advanced-photo', 'arts-council'].includes(location.id)
+        ? VISUAL_STYLE.lighting.coldWhite
+        : VISUAL_STYLE.lighting.sodium;
   const frontMaterial = createWorldMaterial(frontTexture, {
     repeatX: Math.max(2, Math.round(location.width / 4)),
     repeatY: Math.max(2, Math.round(location.height / 2)),
     tint: frontTint,
-    emissive: 0x281318,
-    emissiveIntensity: 0.1,
+    emissive: frontEmissive,
+    emissiveIntensity: ['renae', 'coral', 'come-through-lab'].includes(location.id)
+      ? 0.16
+      : 0.1,
     roughness: 0.94,
   });
   const sideMaterial = createWorldMaterial('brick-soot-overhaul', {
@@ -385,7 +507,7 @@ function createBlockoutBuildingMass(location: WorldLocation): Mesh {
   materials[frontIndex] = frontMaterial;
 
   return new Mesh(
-    new BoxGeometry(location.width, location.height, location.depth),
+    getBoxGeometry(location.width, location.height, location.depth),
     materials,
   );
 }
@@ -577,24 +699,6 @@ function addBlockoutFacade(root: Group, location: WorldLocation): void {
     );
   }
 
-  const isHeroStorefront = [
-    'dreams', 'renae', 'm1', 'coral', 'terrace', 'arts-council', 'off-licence',
-  ].includes(location.id);
-  const storefrontGlow = new PointLight(
-    signColor,
-    isHeroStorefront ? 6.2 : 3.5,
-    isHeroStorefront ? 8 : 6,
-    2,
-  );
-  storefrontGlow.name = `${location.name} baked-light accent`;
-  storefrontGlow.position.set(location.x, 2.2, location.z);
-  const front = location.front ?? 'south';
-  if (front === 'south') storefrontGlow.position.z += location.depth / 2 + 1.2;
-  if (front === 'north') storefrontGlow.position.z -= location.depth / 2 + 1.2;
-  if (front === 'east') storefrontGlow.position.x += location.width / 2 + 1.2;
-  if (front === 'west') storefrontGlow.position.x -= location.width / 2 + 1.2;
-  root.add(storefrontGlow);
-
   const roofHeight = 0.55 + variant * 0.12;
   const roofFeature = createBox(
     location.width * 0.34,
@@ -644,19 +748,6 @@ function addBuildingLocation(
 
   if (location.id === 'florist') {
     void replaceFloristFallback(root, building, location);
-    const floristWarmth = new PointLight(
-      VISUAL_STYLE.lighting.sodium,
-      7.5,
-      8.5,
-      1.8,
-    );
-    floristWarmth.name = 'Florist photographed window glow';
-    floristWarmth.position.set(
-      location.x,
-      2.6,
-      location.z + location.depth / 2 + 1.4,
-    );
-    root.add(floristWarmth);
   } else {
     addBlockoutFacade(root, location);
   }
@@ -678,13 +769,13 @@ function createBusShelterFallback(): Group {
     roughness: 0.85,
   });
 
-  const back = new Mesh(new BoxGeometry(0.12, 2.1, 3.6), material);
+  const back = new Mesh(getBoxGeometry(0.12, 2.1, 3.6), material);
   back.position.set(-0.75, 1.05, 0);
   shelter.add(back);
-  const roof = new Mesh(new BoxGeometry(1.65, 0.14, 3.8), material);
+  const roof = new Mesh(getBoxGeometry(1.65, 0.14, 3.8), material);
   roof.position.set(0, 2.2, 0);
   shelter.add(roof);
-  const bench = new Mesh(new BoxGeometry(0.55, 0.12, 2.4), material);
+  const bench = new Mesh(getBoxGeometry(0.55, 0.12, 2.4), material);
   bench.position.set(-0.35, 0.55, 0);
   shelter.add(bench);
   return shelter;
@@ -735,22 +826,6 @@ function addBusShelter(
   fallback.rotation.y = rotation;
   root.add(fallback);
   void replaceBusShelterFallback(root, fallback);
-
-  const lights = new Group();
-  lights.name = `${marker.name} local lights`;
-  lights.position.set(marker.x, 0, marker.z);
-  lights.rotation.y = rotation;
-
-  const warm = new PointLight(0xffc878, 8, 7, 2);
-  warm.position.set(0.1, 2.55, 0);
-  lights.add(warm);
-  const green = new PointLight(0x55c58a, 5, 5.5, 2);
-  green.position.set(0.2, 1.25, 0.2);
-  lights.add(green);
-  const pink = new PointLight(0xff3d91, 6, 4.5, 2);
-  pink.position.set(0.2, 1.35, 2.1);
-  lights.add(pink);
-  root.add(lights);
 
   obstacles.push({
     name: marker.name,
@@ -809,7 +884,7 @@ function addCentralPark(root: Group): void {
   addPathBetween(root, 'Park diagonal NE-SW', 20, -15, -20, 15, 1.8);
 
   const centre = new Mesh(
-    new CylinderGeometry(2.4, 2.4, 0.18, 16),
+    getCylinderGeometry(2.4, 2.4, 0.18, 16),
     new MeshStandardMaterial({ color: 0x555d5b, roughness: 1 }),
   );
   centre.name = 'Provisional central park feature';
@@ -817,7 +892,7 @@ function addCentralPark(root: Group): void {
   root.add(centre);
 
   const fountainBasin = new Mesh(
-    new CylinderGeometry(1.75, 1.9, 0.34, 12),
+    getCylinderGeometry(1.75, 1.9, 0.34, 12),
     createWorldMaterial('concrete-cracked-overhaul', {
       repeatX: 2,
       repeatY: 1,
@@ -829,7 +904,7 @@ function addCentralPark(root: Group): void {
   fountainBasin.position.y = 0.31;
   root.add(fountainBasin);
   const fountainWater = new Mesh(
-    new CircleGeometry(1.48, 12),
+    getCircleGeometry(1.48, 12),
     new MeshStandardMaterial({
       color: 0x102447,
       roughness: 0.3,
@@ -841,7 +916,7 @@ function addCentralPark(root: Group): void {
   fountainWater.position.y = 0.49;
   root.add(fountainWater);
   const fountainColumn = new Mesh(
-    new CylinderGeometry(0.22, 0.38, 1.25, 8),
+    getCylinderGeometry(0.22, 0.38, 1.25, 8),
     createWorldMaterial('concrete-cracked-overhaul', { tint: 0x606765 }),
   );
   fountainColumn.name = 'Fountain centre column';
@@ -874,21 +949,21 @@ function addCentralPark(root: Group): void {
     const tree = new Group();
     tree.name = 'Retro park tree';
     tree.position.set(x, 0, z);
-    const trunk = new Mesh(new CylinderGeometry(0.14, 0.18, 1.6, 5), trunkMaterial);
+    const trunk = new Mesh(getCylinderGeometry(0.14, 0.18, 1.6, 5), trunkMaterial);
     trunk.position.y = 0.8;
     tree.add(trunk);
     const crownMaterial = index % 4 === 0 ? treeAmberMaterial : treeMaterial;
-    const crown = new Mesh(new DodecahedronGeometry(1.15, 0), crownMaterial);
+    const crown = new Mesh(getDodecahedronGeometry(1.15), crownMaterial);
     crown.position.set(index % 2 === 0 ? -0.18 : 0.16, 2.05, 0);
     crown.scale.set(1.05, 1.25 + (index % 3) * 0.08, 0.92);
     crown.rotation.y = index * 0.73;
     tree.add(crown);
-    const upperCrown = new Mesh(new DodecahedronGeometry(0.78, 0), crownMaterial);
+    const upperCrown = new Mesh(getDodecahedronGeometry(0.78), crownMaterial);
     upperCrown.position.set(index % 2 === 0 ? 0.28 : -0.25, 2.75, 0.08);
     upperCrown.scale.set(1.1, 0.85, 0.9);
     upperCrown.rotation.y = index * 0.41;
     tree.add(upperCrown);
-    const sideCrown = new Mesh(new DodecahedronGeometry(0.68, 0), crownMaterial);
+    const sideCrown = new Mesh(getDodecahedronGeometry(0.68), crownMaterial);
     sideCrown.position.set(index % 3 === 0 ? 0.78 : -0.68, 1.92, 0.16);
     sideCrown.scale.set(1.18, 0.82, 1.02);
     sideCrown.rotation.set(index * 0.13, index * 0.59, index * 0.07);
@@ -1151,7 +1226,7 @@ function addStreetBin(root: Group, x: number, z: number, rotation = 0): void {
 
 function addBollard(root: Group, x: number, z: number, tint = 0x23282b): void {
   const bollard = new Mesh(
-    new CylinderGeometry(0.12, 0.15, 0.82, 7),
+    getCylinderGeometry(0.12, 0.15, 0.82, 7),
     createWorldMaterial('metal-oxidised-overhaul', {
       tint,
       roughness: 0.86,
@@ -1165,7 +1240,7 @@ function addBollard(root: Group, x: number, z: number, tint = 0x23282b): void {
 
 function addRubbishBag(root: Group, x: number, z: number, scale = 1): void {
   const bag = new Mesh(
-    new DodecahedronGeometry(0.38 * scale, 0),
+    getDodecahedronGeometry(0.38 * scale),
     new MeshStandardMaterial({
       color: 0x0b0c11,
       roughness: 0.44,
@@ -1253,7 +1328,7 @@ function addShoppingTrolley(root: Group, x: number, z: number, rotation = 0): vo
     metalness: 0.62,
     wireframe: true,
   });
-  const basket = new Mesh(new BoxGeometry(1.15, 0.62, 0.72, 4, 3, 3), wire);
+  const basket = new Mesh(getBoxGeometry(1.15, 0.62, 0.72, 4, 3, 3), wire);
   basket.name = 'Trolley wire basket';
   basket.position.set(0, 0.83, 0);
   basket.rotation.z = -0.08;
@@ -1266,7 +1341,10 @@ function addShoppingTrolley(root: Group, x: number, z: number, rotation = 0): vo
   handle.position.set(-0.61, 1.24, 0);
   trolley.add(handle);
   for (const [wheelX, wheelZ] of [[-0.42, -0.34], [-0.42, 0.34], [0.4, -0.34], [0.4, 0.34]] as const) {
-    const wheel = new Mesh(new CylinderGeometry(0.1, 0.1, 0.08, 7), new MeshStandardMaterial({ color: 0x111214 }));
+    const wheel = new Mesh(
+      getCylinderGeometry(0.1, 0.1, 0.08, 7),
+      getStandardColorMaterial(0x111214),
+    );
     wheel.position.set(wheelX, 0.12, wheelZ);
     wheel.rotation.x = Math.PI / 2;
     trolley.add(wheel);
@@ -1336,7 +1414,7 @@ function addStreetlight(
   lamp.name = 'Public illumination streetlight';
   lamp.position.set(x, 0, z);
   const pole = new Mesh(
-    new CylinderGeometry(0.075, 0.105, 4.2, 6),
+    getCylinderGeometry(0.075, 0.105, 4.2, 6),
     createWorldMaterial('metal-oxidised-overhaul', {
       repeatX: 1,
       repeatY: 3,
@@ -1349,14 +1427,14 @@ function addStreetlight(
     0.52,
     0.16,
     0.38,
-    new MeshBasicMaterial({ color }),
+    getBasicColorMaterial(color),
   );
   head.position.y = 4.18;
   lamp.add(head);
 
   const pool = new Mesh(
-    new CircleGeometry(2.45, 12),
-    createAdditiveWorldMaterial('reflection-broken-overhaul', color, 0.18),
+    getCircleGeometry(2.45, 12),
+    createAdditiveWorldMaterial('reflection-broken-overhaul', color, 0.23),
   );
   pool.name = 'Streetlight painted pool';
   pool.rotation.x = -Math.PI / 2;
@@ -1364,7 +1442,7 @@ function addStreetlight(
   lamp.add(pool);
 
   const cone = new Mesh(
-    new ConeGeometry(2.4, 4.05, 8, 1, true),
+    getConeGeometry(2.4, 4.05, 8, 1, true),
     createAdditiveWorldMaterial('light-cone-noise-overhaul', color, 0.095),
   );
   cone.name = 'Visible sodium light cone';
@@ -1392,17 +1470,6 @@ function addStreetlight(
   sideReflection.rotation.y = -0.2;
   lamp.add(sideReflection);
 
-  const light = new SpotLight(
-    color,
-    VISUAL_STYLE.lighting.streetLightIntensity,
-    VISUAL_STYLE.lighting.streetLightDistance,
-    0.58,
-    0.38,
-    1.45,
-  );
-  light.position.y = 4.05;
-  light.target.position.y = 0;
-  lamp.add(light, light.target);
   root.add(lamp);
 }
 
@@ -1565,18 +1632,10 @@ function addDevelopmentPickup(root: Group): (deltaTime: number) => void {
   ring.rotation.x = Math.PI / 2;
   pickup.add(ring);
 
-  const pickupLight = new PointLight(
-    VISUAL_STYLE.lighting.magenta,
-    9,
-    6.5,
-    2,
-  );
-  pickupLight.position.y = 0.25;
-  pickup.add(pickupLight);
   root.add(pickup);
 
   const pool = new Mesh(
-    new CircleGeometry(1.6, 12),
+    getCircleGeometry(1.6, 12),
     createHaloMaterial(VISUAL_STYLE.lighting.magenta, 0.24),
   );
   pool.name = 'Pickup fake coloured pool';
@@ -1593,7 +1652,26 @@ function addDevelopmentPickup(root: Group): (deltaTime: number) => void {
   };
 }
 
-export function createWorld(scene: Scene): World {
+function addHeroLocalLights(root: Group): PointLight[] {
+  const definitions = [
+    ['Bus Stop A hero light', -9, 2.35, 20.4, 0xb9ffe7, 8, 8],
+    ['Dreams hero light', 0, 4.5, -30.8, VISUAL_STYLE.lighting.coldWhite, 3, 10],
+    ['Renae hero light', 17, 2.5, -30.8, VISUAL_STYLE.lighting.magenta, 7, 9],
+    ['Florist hero light', -16, 2.7, -31, VISUAL_STYLE.lighting.sodium, 7.5, 9],
+    ['Bus Stop B hero light', 0, 2.35, -49, 0xb9ffe7, 8, 8],
+  ] as const;
+
+  return definitions.map(([name, x, y, z, color, intensity, distance]) => {
+    const light = new PointLight(color, intensity, distance, 2);
+    light.name = name;
+    light.position.set(x, y, z);
+    light.visible = false;
+    root.add(light);
+    return light;
+  });
+}
+
+export function createWorld(scene: Scene, maximumActiveLocalLights: number): World {
   scene.background = new Color(VISUAL_STYLE.sky.color);
   scene.fog = new Fog(
     VISUAL_STYLE.fog.color,
@@ -1661,6 +1739,22 @@ export function createWorld(scene: Scene): World {
     addStreetlight(root, x, z, color);
   }
 
+  const heroLocalLights = addHeroLocalLights(root);
+  const nearestLightDistances = heroLocalLights.map((light) => ({
+    light,
+    distanceSquared: 0,
+  }));
+
+  const updateHeroLocalLights = (playerPosition: Vector3): void => {
+    for (const candidate of nearestLightDistances) {
+      candidate.distanceSquared = candidate.light.position.distanceToSquared(playerPosition);
+    }
+    nearestLightDistances.sort((a, b) => a.distanceSquared - b.distanceSquared);
+    for (let index = 0; index < nearestLightDistances.length; index += 1) {
+      nearestLightDistances[index].light.visible = index < maximumActiveLocalLights;
+    }
+  };
+
   scene.add(
     new HemisphereLight(
       VISUAL_STYLE.lighting.ambientSky,
@@ -1681,7 +1775,15 @@ export function createWorld(scene: Scene): World {
       bounds: WORLD_BOUNDS,
       obstacles,
     },
-    update: updatePickup,
+    update: (deltaTime, playerPosition) => {
+      updatePickup(deltaTime);
+      updateHeroLocalLights(playerPosition);
+    },
+    getLightingStats: () => ({
+      activePointLights: heroLocalLights.filter((light) => light.visible).length,
+      activeSpotLights: 0,
+      maximumActiveLocalLights,
+    }),
     setDevelopmentOverlaysVisible: (visible: boolean) => {
       root.traverse((child) => {
         if (child.userData.developmentOverlay === true) {

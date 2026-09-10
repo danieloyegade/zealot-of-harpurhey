@@ -8,11 +8,48 @@ import {
 } from 'three';
 
 export type TextureProfile = 'PHOTO_ENVIRONMENT' | 'RETRO_GRAPHIC';
+export type QualityLevel = 'low' | 'medium' | 'high';
+
+export interface QualityProfile {
+  readonly level: QualityLevel;
+  readonly renderScale: number;
+  readonly maximumDevicePixelRatio: number;
+  readonly bloomEnabled: boolean;
+  readonly bloomStrength: number;
+  readonly maximumActiveLocalLights: number;
+}
+
+export const QUALITY_PROFILES: Record<QualityLevel, QualityProfile> = {
+  low: {
+    level: 'low',
+    renderScale: 0.65,
+    maximumDevicePixelRatio: 1,
+    bloomEnabled: false,
+    bloomStrength: 0,
+    maximumActiveLocalLights: 2,
+  },
+  medium: {
+    level: 'medium',
+    renderScale: 0.72,
+    maximumDevicePixelRatio: 1.25,
+    bloomEnabled: true,
+    bloomStrength: 0.3,
+    maximumActiveLocalLights: 4,
+  },
+  high: {
+    level: 'high',
+    renderScale: 0.8,
+    maximumDevicePixelRatio: 1.5,
+    bloomEnabled: true,
+    bloomStrength: 0.34,
+    maximumActiveLocalLights: 5,
+  },
+};
+
+export const DEFAULT_QUALITY_LEVEL: QualityLevel = 'medium';
 
 export const VISUAL_STYLE = {
   render: {
-    internalScale: 0.72,
-    maximumDevicePixelRatio: 2,
     exposure: 1.34,
     saturation: 1.12,
     contrast: 1.05,
@@ -57,8 +94,6 @@ export const VISUAL_STYLE = {
     shadowMapSize: 512,
   },
   bloom: {
-    enabled: true,
-    strength: 0.34,
     radius: 0.32,
     threshold: 0.88,
   },
@@ -68,13 +103,22 @@ export function applyInternalResolution(
   renderer: WebGLRenderer,
   width: number,
   height: number,
+  quality: QualityProfile,
 ): void {
   const displayPixelRatio = Math.min(
     window.devicePixelRatio,
-    VISUAL_STYLE.render.maximumDevicePixelRatio,
+    quality.maximumDevicePixelRatio,
   );
-  renderer.setPixelRatio(displayPixelRatio * VISUAL_STYLE.render.internalScale);
+  renderer.setPixelRatio(displayPixelRatio * quality.renderScale);
   renderer.setSize(width, height);
+}
+
+export function resolveQualityProfile(search: string): QualityProfile {
+  const requested = new URLSearchParams(search).get('quality')?.toLowerCase();
+  if (requested === 'low' || requested === 'medium' || requested === 'high') {
+    return QUALITY_PROFILES[requested];
+  }
+  return QUALITY_PROFILES[DEFAULT_QUALITY_LEVEL];
 }
 
 export function applyTextureProfile(
