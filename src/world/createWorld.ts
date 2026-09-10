@@ -157,12 +157,29 @@ function addBusShelter(root: Group, obstacles: CollisionObstacle[]): void {
   root.add(fallback);
   void replaceBusShelterFallback(root, fallback);
 
+  const shelterLights = new Group();
+  shelterLights.name = 'Bus shelter local lights';
+
+  const warmOverhead = new PointLight(0xffc878, 11, 8, 2);
+  warmOverhead.position.set(-5.45, 2.55, 5);
+  shelterLights.add(warmOverhead);
+
+  const greenGlassLight = new PointLight(0x55c58a, 7, 6.5, 2);
+  greenGlassLight.position.set(-5.35, 1.25, 5.15);
+  shelterLights.add(greenGlassLight);
+
+  const advertSpill = new PointLight(0xff3d91, 8, 5.5, 2);
+  advertSpill.position.set(-5.25, 1.35, 2.8);
+  shelterLights.add(advertSpill);
+
+  root.add(shelterLights);
+
   obstacles.push({
     name: 'Bus shelter',
     minX: -6.6,
     maxX: -4.8,
-    minZ: 3,
-    maxZ: 7,
+    minZ: 2.5,
+    maxZ: 7.5,
   });
 }
 
