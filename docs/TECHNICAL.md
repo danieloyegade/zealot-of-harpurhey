@@ -24,8 +24,12 @@ Development-only references, source photography, `.blend` masters, and renders l
 - `InputController` tracks keyboard movement, running, and click-drag camera input.
 - `PlayerController` owns the primitive player representation, velocity, facing direction, movement state, and collision movement.
 - `ThirdPersonCamera` owns orbit angles, camera-relative movement direction, and smoothed following.
-- `createWorld` builds the primitive Street A blockout and supplies its collision description.
+- `createWorld` builds the canonical city layout, visual blockouts and its collision description.
 - `collision.ts` isolates the lightweight collision routines from player and world rendering code.
+- `visualStyle.ts` centralises render scale, texture policy, palette, fog, lighting and post-processing values.
+- `worldMaterials.ts` loads the small world texture pack and applies the photographic or graphic filtering profile.
+- `worldGraphics.ts` creates low-resolution weathered sign and graffiti materials at runtime.
+- `createPostProcessing.ts` owns restrained bloom, display conversion, colour adjustment, quantisation, dithering, film grain and vignette.
 
 ### Controls and temporary movement values
 
@@ -33,8 +37,9 @@ Development-only references, source photography, `.blend` masters, and renders l
 - Move backward: `S` or `Arrow Down`
 - Move left: `A` or `Arrow Left`
 - Move right: `D` or `Arrow Right`
-- Run: hold `Shift` while moving
+- Run: hold `Shift` or `Space` while moving
 - Orbit camera: click and drag with the primary mouse button
+- Hide/show development labels and debug panel: `H`
 - Temporary walking speed: **2.4 metres per second**
 - Temporary running speed: **4.5 metres per second**
 
@@ -103,3 +108,15 @@ The script derives the project root from its own location and creates parent dir
 Three.js loads runtime models with `GLTFLoader`. Model URLs are built from `import.meta.env.BASE_URL`, followed by the path beneath `public/`; this preserves both Vite development and deployment beneath `/zealot-of-harperhay/`.
 
 `.blend` source files belong under `blender/source/` and are not copied into production builds. Runtime-ready GLBs belong under `public/assets/models/` and are copied into the static build. Preview renders remain under `renders/` and are development-only.
+
+## Prototype world textures
+
+Regenerate the temporary low-resolution world texture pack with:
+
+```sh
+node scripts/generateWorldTextures.mjs
+```
+
+The script produces 128–512 pixel PNG runtime textures under `public/assets/textures/world-prototype/`. Most are procedural; the Dreams and Coral façade derivatives are reproducibly cropped and graded from the corresponding repository reference photographs. The originals are read-only inputs outside `public/` and are never modified. The filtering and resolution policies are documented in `VISUAL_LANGUAGE.md`.
+
+Generation currently expects macOS `sips` for procedural PPM-to-PNG conversion and `ffmpeg` on `PATH` for the two photographic crops. No npm package is required for either step.

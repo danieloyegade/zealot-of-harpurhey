@@ -1,10 +1,12 @@
 import {
   BoxGeometry,
+  CircleGeometry,
   ConeGeometry,
   CylinderGeometry,
   Group,
   Mesh,
   MeshStandardMaterial,
+  MeshBasicMaterial,
   Quaternion,
   SphereGeometry,
   Vector2,
@@ -15,6 +17,7 @@ import {
   moveCircleWithCollisions,
   type CollisionWorld,
 } from '../world/collision';
+import { PLAYER_START } from '../world/worldLayout';
 
 export type MovementState = 'Idle' | 'Walking' | 'Running';
 
@@ -40,7 +43,7 @@ export class PlayerController {
 
   constructor(private readonly collisionWorld: CollisionWorld) {
     this.object.name = 'Player';
-    this.object.position.set(0, 0, 18);
+    this.object.position.set(PLAYER_START.x, 0, PLAYER_START.z);
     this.createPlaceholderFigure();
   }
 
@@ -110,15 +113,15 @@ export class PlayerController {
 
   private createPlaceholderFigure(): void {
     const bodyMaterial = new MeshStandardMaterial({
-      color: 0xd69b35,
+      color: 0x303644,
       roughness: 1,
     });
     const headMaterial = new MeshStandardMaterial({
-      color: 0xe2b06a,
+      color: 0x686a70,
       roughness: 1,
     });
     const facingMaterial = new MeshStandardMaterial({
-      color: 0x371d16,
+      color: 0x192038,
       roughness: 1,
     });
 
@@ -147,5 +150,19 @@ export class PlayerController {
     facingMarker.position.set(0, 1.08, -0.34);
     facingMarker.rotation.x = -Math.PI / 2;
     this.object.add(facingMarker);
+
+    const contactShadow = new Mesh(
+      new CircleGeometry(0.48, 12),
+      new MeshBasicMaterial({
+        color: 0x030407,
+        transparent: true,
+        opacity: 0.5,
+        depthWrite: false,
+      }),
+    );
+    contactShadow.name = 'Player grounding shadow';
+    contactShadow.rotation.x = -Math.PI / 2;
+    contactShadow.position.y = 0.025;
+    this.object.add(contactShadow);
   }
 }

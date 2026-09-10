@@ -9,6 +9,7 @@ const MOVEMENT_KEYS = new Set([
   'ArrowDown',
   'ArrowLeft',
   'ArrowRight',
+  'Space',
 ]);
 
 export class InputController {
@@ -19,6 +20,7 @@ export class InputController {
   private readonly lastPointerPosition = new Vector2();
   private isDragging = false;
   private activePointerId: number | null = null;
+  private overlayToggleQueued = false;
 
   constructor(private readonly element: HTMLCanvasElement) {
     window.addEventListener('keydown', this.handleKeyDown);
@@ -47,8 +49,15 @@ export class InputController {
   get isRunning(): boolean {
     return (
       this.pressedKeys.has('ShiftLeft') ||
-      this.pressedKeys.has('ShiftRight')
+      this.pressedKeys.has('ShiftRight') ||
+      this.pressedKeys.has('Space')
     );
+  }
+
+  consumeOverlayToggle(): boolean {
+    const queued = this.overlayToggleQueued;
+    this.overlayToggleQueued = false;
+    return queued;
   }
 
   private isPressed(primary: string, alternate: string): boolean {
@@ -58,6 +67,10 @@ export class InputController {
   private readonly handleKeyDown = (event: KeyboardEvent): void => {
     if (MOVEMENT_KEYS.has(event.code)) {
       event.preventDefault();
+    }
+
+    if (event.code === 'KeyH' && !event.repeat) {
+      this.overlayToggleQueued = true;
     }
 
     this.pressedKeys.add(event.code);

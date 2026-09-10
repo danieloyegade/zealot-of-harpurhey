@@ -9,6 +9,11 @@ import {
 import { ThirdPersonCamera } from './camera/ThirdPersonCamera';
 import { InputController } from './input/InputController';
 import { PlayerController } from './player/PlayerController';
+import { createPostProcessing } from './rendering/createPostProcessing';
+import {
+  applyInternalResolution,
+  VISUAL_STYLE,
+} from './rendering/visualStyle';
 import { DebugOverlay } from './ui/DebugOverlay';
 import { createWorld } from './world/createWorld';
 import './style.css';
@@ -21,9 +26,9 @@ if (!app) {
 
 const scene = new Scene();
 const renderer = new WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
+applyInternalResolution(renderer, window.innerWidth, window.innerHeight);
 renderer.outputColorSpace = SRGBColorSpace;
+renderer.toneMappingExposure = VISUAL_STYLE.render.exposure;
 app.appendChild(renderer.domElement);
 
 const camera = new PerspectiveCamera(
@@ -38,19 +43,49 @@ const input = new InputController(renderer.domElement);
 const player = new PlayerController(world.collision);
 scene.add(player.object);
 
-const thirdPersonCamera = new ThirdPersonCamera(camera);
+const requestedView = import.meta.env.DEV
+  ? new URLSearchParams(window.location.search).get('view')
+  : null;
+
+if (import.meta.env.DEV) {
+  const developmentViews: Record<string, readonly [number, number]> = {
+    'park-florist': [-13, -22],
+    'bus-shelter': [-9, 27],
+    'collision-dreams': [0, -31],
+    'dreams-target': [0, -18.8],
+    'west-street': [-29.5, 25],
+    'west-shops': [-29.5, 7],
+    'east-shops': [29.5, 19],
+    'south-shops': [0, 22],
+    pickup: [5, 16.5],
+  };
+  const requestedPosition = requestedView
+    ? developmentViews[requestedView]
+    : undefined;
+  if (requestedPosition) {
+    player.position.set(requestedPosition[0], 0, requestedPosition[1]);
+  }
+}
+
+const thirdPersonCamera = new ThirdPersonCamera(
+  camera,
+  requestedView === 'dreams-target' ? 3.15 : 1.05,
+);
 thirdPersonCamera.snapTo(player.position);
+const postProcessing = createPostProcessing(renderer, scene, camera);
 
 const debugOverlay = import.meta.env.DEV ? new DebugOverlay() : null;
 const timer = new Timer();
 timer.connect(document);
 const cameraForward = new Vector3();
+let developmentOverlaysVisible = true;
+let elapsedSeconds = 0;
 
 function resize(): void {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  applyInternalResolution(renderer, window.innerWidth, window.innerHeight);
+  postProcessing.resize(window.innerWidth, window.innerHeight);
 }
 
 window.addEventListener('resize', resize);
@@ -60,13 +95,20 @@ function frame(timestamp: number): void {
 
   timer.update(timestamp);
   const deltaTime = Math.min(timer.getDelta(), 0.05);
+  elapsedSeconds += deltaTime;
 
   input.update();
+  if (input.consumeOverlayToggle()) {
+    developmentOverlaysVisible = !developmentOverlaysVisible;
+    world.setDevelopmentOverlaysVisible(developmentOverlaysVisible);
+    debugOverlay?.setVisible(developmentOverlaysVisible);
+  }
   thirdPersonCamera.getPlanarForward(cameraForward);
   player.update(deltaTime, input, cameraForward);
+  world.update(deltaTime);
   thirdPersonCamera.update(deltaTime, input, player.position);
   debugOverlay?.update(deltaTime, player.position, player.movementState);
-  renderer.render(scene, camera);
+  postProcessing.render(elapsedSeconds);
 }
 
 requestAnimationFrame(frame);

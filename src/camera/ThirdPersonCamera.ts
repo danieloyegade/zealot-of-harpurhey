@@ -15,7 +15,10 @@ export class ThirdPersonCamera {
   private readonly desiredPosition = new Vector3();
   private readonly lookTarget = new Vector3();
 
-  constructor(private readonly camera: PerspectiveCamera) {
+  constructor(
+    private readonly camera: PerspectiveCamera,
+    private readonly lookTargetHeight = 1.05,
+  ) {
     camera.fov = this.fieldOfView;
     camera.updateProjectionMatrix();
   }
@@ -65,6 +68,6 @@ export class ThirdPersonCamera {
 
   private updateLookTarget(playerPosition: Vector3): void {
     this.lookTarget.copy(playerPosition);
-    this.lookTarget.y += 1.05;
+    this.lookTarget.y += this.lookTargetHeight;
   }
 }

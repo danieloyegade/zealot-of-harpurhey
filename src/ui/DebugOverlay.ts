@@ -12,6 +12,10 @@ export class DebugOverlay {
     document.body.appendChild(this.element);
   }
 
+  setVisible(visible: boolean): void {
+    this.element.hidden = !visible;
+  }
+
   update(
     deltaTime: number,
     position: Vector3,
@@ -33,6 +37,8 @@ export class DebugOverlay {
       `Player X: ${position.x.toFixed(2)}`,
       `Player Z: ${position.z.toFixed(2)}`,
       `Walking / Running: ${movementState}`,
+      '',
+      'H: hide development overlays',
     ].join('\n');
   }
 }
