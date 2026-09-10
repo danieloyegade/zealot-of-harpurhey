@@ -1,6 +1,5 @@
 import {
   BoxGeometry,
-  CanvasTexture,
   Color,
   CylinderGeometry,
   DirectionalLight,
@@ -12,7 +11,6 @@ import {
   PointLight,
   Scene,
   SphereGeometry,
-  SRGBColorSpace,
 } from 'three';
 import type { CollisionObstacle, CollisionWorld } from './collision';
 import { loadModel } from './loadModel';
@@ -37,31 +35,31 @@ function createBox(
   );
 }
 
-function createFloristSign(): Mesh {
-  const canvas = document.createElement('canvas');
-  canvas.width = 512;
-  canvas.height = 128;
-
-  const context = canvas.getContext('2d');
-  if (!context) {
-    throw new Error('Could not create the florist sign canvas.');
+function markFloristLoadFailure(fallback: Mesh): void {
+  fallback.name = 'Florist load error';
+  if (fallback.material instanceof MeshStandardMaterial) {
+    fallback.material.color.set(0xff00c8);
+    fallback.material.emissive.set(0x550033);
   }
+}
 
-  context.fillStyle = '#d8c15a';
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = '#321d23';
-  context.font = 'bold 64px Georgia, serif';
-  context.textAlign = 'center';
-  context.textBaseline = 'middle';
-  context.fillText('FLORIST', canvas.width / 2, canvas.height / 2);
-
-  const texture = new CanvasTexture(canvas);
-  texture.colorSpace = SRGBColorSpace;
-
-  return new Mesh(
-    new BoxGeometry(0.08, 0.8, 3.6),
-    new MeshBasicMaterial({ map: texture }),
-  );
+async function replaceFloristFallback(
+  root: Group,
+  fallback: Mesh,
+): Promise<void> {
+  try {
+    const florist = await loadModel('assets/models/harperhay-florist.glb');
+    florist.name = 'Harperhay florist';
+    florist.position.set(fallback.position.x, 0, fallback.position.z);
+    root.add(florist);
+    root.remove(fallback);
+  } catch (error) {
+    markFloristLoadFailure(fallback);
+    console.error(
+      '[Street A] Failed to load harperhay-florist.glb. Showing the magenta fallback.',
+      error,
+    );
+  }
 }
 
 function addBuilding(
@@ -72,28 +70,28 @@ function addBuilding(
   height: number,
   isFlorist: boolean,
 ): void {
+  const buildingDepth = isFlorist ? 6 : BUILDING_DEPTH;
+  const buildingHeight = isFlorist ? 10.4 : height;
   const building = createBox(
     BUILDING_WIDTH,
-    height,
-    BUILDING_DEPTH,
+    buildingHeight,
+    buildingDepth,
     isFlorist ? 0x6f3941 : 0x454851,
   );
-  building.position.set(x, height / 2, z);
-  building.name = isFlorist ? 'Florist' : 'Building';
+  building.position.set(x, buildingHeight / 2, z);
+  building.name = isFlorist ? 'Florist loading placeholder' : 'Building';
   root.add(building);
 
   obstacles.push({
-    name: building.name,
+    name: isFlorist ? 'Florist' : building.name,
     minX: x - BUILDING_WIDTH / 2,
     maxX: x + BUILDING_WIDTH / 2,
-    minZ: z - BUILDING_DEPTH / 2,
-    maxZ: z + BUILDING_DEPTH / 2,
+    minZ: z - buildingDepth / 2,
+    maxZ: z + buildingDepth / 2,
   });
 
   if (isFlorist) {
-    const sign = createFloristSign();
-    sign.position.set(x - BUILDING_WIDTH / 2 - 0.05, 2.7, z);
-    root.add(sign);
+    void replaceFloristFallback(root, building);
   }
 }
 

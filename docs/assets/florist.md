@@ -41,3 +41,24 @@ The intended pipeline is photograph → texture extraction → shallow low-poly 
 ## Missing photographic coverage
 
 The current references do not establish the building's right or left elevations, rear, roof surface, exact depth, measured scale, doorway interior, or shopfront at a clean straight-on angle. The right side is substantially obscured by neighbouring mural imagery. Fine signage text is also difficult to resolve. Those areas would require restrained approximation unless better source photographs are supplied and approved.
+
+## Estimated production scale
+
+The first exterior benchmark uses an estimated **7.5 m depth × 6.0 m frontage × 10.4 m height**. These are not surveyed dimensions. They are inferred from a typical roughly 2.0 m shop door, the three visible storeys, common UK shopfront proportions, and comparison with the 1.78 m player.
+
+Generated working derivatives remain outside the runtime build:
+
+- `blender/source/textures/florist/harperhay-florist-facade.jpg` — 512 × 768
+- `blender/source/textures/florist/harperhay-florist-shopfront.jpg` — 512 × 384
+
+Both are embedded in `public/assets/models/harperhay-florist.glb` during export. The primary crop isolates the central façade; the secondary crop preserves more shopfront signage and window content at pedestrian distance.
+
+Regenerate the complete asset from the project root with:
+
+```sh
+/Applications/Blender.app/Contents/MacOS/Blender \
+  --background \
+  --python blender/scripts/createFlorist.py
+```
+
+This produces the editable `.blend`, self-contained runtime GLB, primary comparison preview and oblique diagnostic preview without modifying either approved reference image.
