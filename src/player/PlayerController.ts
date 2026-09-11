@@ -22,12 +22,20 @@ import { PLAYER_START } from '../world/worldLayout';
 export type MovementState = 'Idle' | 'Walking' | 'Running';
 
 const UP = new Vector3(0, 1, 0);
+const WALKING_SPEED = 2.4;
+const RUNNING_SPEED = 4.5;
+const DEVELOPMENT_WALKING_SPEED_MULTIPLIER = 1.3;
+const DEVELOPMENT_RUNNING_SPEED_MULTIPLIER = 1.7;
 
 export class PlayerController {
   readonly object = new Group();
   readonly facingDirection = new Vector3(0, 0, -1);
-  readonly walkingSpeed = 2.4;
-  readonly runningSpeed = 4.5;
+  readonly walkingSpeed = WALKING_SPEED * (
+    import.meta.env.DEV ? DEVELOPMENT_WALKING_SPEED_MULTIPLIER : 1
+  );
+  readonly runningSpeed = RUNNING_SPEED * (
+    import.meta.env.DEV ? DEVELOPMENT_RUNNING_SPEED_MULTIPLIER : 1
+  );
   readonly collisionRadius = 0.38;
 
   movementState: MovementState = 'Idle';

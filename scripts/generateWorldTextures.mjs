@@ -317,10 +317,48 @@ writeTexture('window-row-overhaul', 512, 256, (x, y, n) => {
     : [grain(11, n, 7), grain(21, n, 10), grain(32, n, 12)];
 });
 
+writeTexture('street-detail-atlas', 256, 256, (x, y, n) => {
+  const border = x < 8 || y < 8 || x > 247 || y > 247;
+  const slot = x % 32 < 4 || y % 28 < 3;
+  const rust = noise(Math.floor(x / 11), Math.floor(y / 13), 191) > 0.79;
+  const tar = Math.abs((x * 0.63 + y + noise(y, 7, 193) * 18) % 91 - 45) < 2;
+  let value = 48 + (n - 0.5) * 32;
+  if (border) value -= 20;
+  if (slot) value -= 13;
+  if (tar) value += 14;
+  return [value + (rust ? 36 : 0), value + (rust ? 7 : 0), value - (rust ? 8 : 0)];
+});
+
+writeTexture('soil-litter-hero', 256, 256, (x, y, n) => {
+  const clod = noise(Math.floor(x / 14), Math.floor(y / 12), 197);
+  const foil = noise(Math.floor(x / 5), Math.floor(y / 4), 199) > 0.975;
+  const paper = x > 74 && x < 154 && y > 132 && y < 202;
+  const leaf = Math.abs((x * 0.7 - y + noise(x, 8, 201) * 20) % 67 - 33) < 2;
+  if (foil) return [132, 139, 142];
+  if (paper) return [grain(112, n, 24), grain(96, n, 22), grain(69, n, 18)];
+  const value = 39 + clod * 24 + (leaf ? 22 : 0);
+  return [grain(value, n, 18), grain(value * 0.82, n, 15), grain(value * 0.58, n, 12)];
+});
+
 derivePhotoTexture(
   'dreams-photo-overhaul',
   '../references/architecture/dreams/Dreams.jpg',
   'crop=2900:1450:60:450,scale=512:256:flags=lanczos,eq=contrast=1.12:saturation=0.8:brightness=-0.08',
+);
+derivePhotoTexture(
+  'dreams-cladding-hero',
+  '../references/architecture/dreams/Dreams.jpg',
+  'crop=1700:350:165:500,scale=512:128:flags=lanczos,eq=contrast=1.08:saturation=0.72:brightness=-0.05',
+);
+derivePhotoTexture(
+  'dreams-shutter-hero',
+  '../references/architecture/dreams/Dreams.jpg',
+  'crop=1950:600:280:1200,scale=512:256:flags=lanczos,eq=contrast=1.12:saturation=0.68:brightness=-0.1',
+);
+derivePhotoTexture(
+  'dreams-brick-hero',
+  '../references/architecture/dreams/Dreams.jpg',
+  'crop=500:700:2100:1050,scale=256:256:flags=lanczos,eq=contrast=1.1:saturation=0.9:brightness=-0.08',
 );
 derivePhotoTexture(
   'coral-photo-overhaul',

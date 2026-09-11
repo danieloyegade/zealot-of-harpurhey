@@ -1,0 +1,1178 @@
+EASTERN BLOC + FLOCK / FLŌK, STEVENSON SQUARE, MANCHESTER
+
+Combined untextured Blender reconstruction for Zealot of Harpurhey
+
+Create an accurate, game-ready Blender reconstruction of Eastern Bloc
+and Flock/Flōk as one connected architectural asset, using ALL supplied
+reference photographs.
+
+These venues are physically connected in real life and should be
+modelled together as one coherent corner-building asset.
+
+This asset is for Zealot of Harpurhey, a Three.js game.
+
+This task is GEOMETRY ONLY.
+
+Do not create final textures, decals, logos, graffiti, awning graphics,
+chalkboard writing, branding, emissive signage, people, food/drinks or
+final lighting yet.
+
+The goal is for the untextured clay model to already be recognisable
+from:
+
+the corner massing;
+
+Eastern Bloc frontage;
+
+Eastern Bloc awning;
+
+large Eastern Bloc lettering;
+
+Flock’s arched entrance;
+
+distinctive yellow Flock canopy and door surround;
+
+windows;
+
+facade mouldings;
+
+upper brick floors;
+
+street-facing terrace relationship.
+
+⸻
+
+1.  ONE ASSET, TWO VENUES
+
+Treat the building as a single architectural system:
+
+EASTERN_BLOC_FLOCK_MASTER
+
+Within it, keep Eastern Bloc and Flock logically separated into
+collections/objects so they can receive different materials, interaction
+logic and signage later.
+
+Suggested top-level organisation:
+
+EBF_BuildingShell
+
+EB_EasternBloc
+
+FL_Flock
+
+EBF_UpperBuilding
+
+EBF_ExteriorProps
+
+EBF_InteractionAnchors
+
+Do NOT create two unrelated buildings positioned next to one another.
+
+Their shared facade, corner geometry, floor levels and architectural
+transitions must line up exactly.
+
+⸻
+
+2.  STUDY ALL REFERENCES BEFORE MODELLING
+
+Cross-reference all supplied photographs.
+
+They show:
+
+Eastern Bloc straight-on;
+
+Eastern Bloc with multiple historical awning configurations;
+
+the full corner showing Flock and Eastern Bloc together;
+
+Flock close-up;
+
+Flock’s yellow entrance;
+
+Eastern Bloc’s projecting terrace awning;
+
+facade mouldings;
+
+the blue upper fascia;
+
+upper red-brick floors;
+
+windows;
+
+outdoor tables;
+
+red/orange barrel in front of Flock;
+
+neighbouring pavement and corner context.
+
+Do not use any single photograph as an orthographic blueprint.
+
+Correct for perspective distortion and infer a consistent
+three-dimensional structure.
+
+⸻
+
+3.  IMPORTANT TEMPORAL / REFERENCE RULE
+
+Some photographs show the venues at slightly different times and with
+different temporary awnings or graphics.
+
+The objective is to reconstruct the core architecture accurately first.
+
+Where awnings differ between references:
+
+preserve the correct architectural mounting points;
+
+choose the awning configuration that best matches the user’s intended
+version;
+
+do not merge contradictory graphics into one design.
+
+For this asset, preserve the large projecting awning/canopy associated
+with Eastern Bloc because it is an important part of the street
+silhouette.
+
+The final graphic treatment can be decided later.
+
+⸻
+
+4.  OVERALL BUILDING MASSING
+
+Model the full connected corner section containing both venues.
+
+Establish first:
+
+overall frontage width;
+
+corner depth;
+
+ground-floor height;
+
+upper-storey height;
+
+red-brick upper volume;
+
+long blue/grey fascia band wrapping the corner;
+
+lower white/grey facade;
+
+Eastern Bloc entrance and window positions;
+
+Flock corner entrance;
+
+side windows around Flock.
+
+The corner must read correctly from multiple street viewpoints.
+
+Avoid creating a flat facade with Flock pasted onto one end.
+
+⸻
+
+5.  UPPER BUILDING
+
+Reconstruct the red-brick upper storeys visible above both bars.
+
+Include:
+
+red-brick wall planes;
+
+window openings;
+
+projecting/recessed sills;
+
+dark window frames;
+
+corner window arrangement;
+
+horizontal band separating ground floor and upper floors;
+
+parapet/roof massing where visible.
+
+Do not model individual bricks.
+
+Brick detail will be added later through PBR materials.
+
+⸻
+
+6.  BLUE / DARK UPPER FASCIA BAND
+
+A strong horizontal fascia runs above the lower bar facades and around
+the corner.
+
+This is important to the building’s identity.
+
+Model:
+
+fascia depth;
+
+corner wrap;
+
+transitions between Eastern Bloc and Flock;
+
+moulding/cornice beneath and above it where visible.
+
+Keep clean decal/signage areas for later branding.
+
+⸻
+
+7.  EASTERN BLOC FRONTAGE
+
+The Eastern Bloc frontage should be reconstructed carefully.
+
+Model:
+
+large dark facade/sign band;
+
+main entrance;
+
+arched entrance/window opening where visible;
+
+large street-facing window;
+
+projecting awning;
+
+wall vents;
+
+window surrounds;
+
+lower wall/plinth;
+
+facade mouldings.
+
+Do not reduce it to a flat wall with a rectangular doorway.
+
+⸻
+
+8.  EASTERN BLOC SIGNAGE
+
+The large EASTERN BLOC sign should later read as substantial
+raised/embossed lettering rather than a simple printed decal.
+
+At this geometry stage:
+
+either:
+
+create simplified low-depth lettering geometry;
+
+OR
+
+create dedicated sign mounting/surface objects if the final lettering
+will be generated separately.
+
+Suggested:
+
+EB_Sign_Backplate
+
+EB_Sign_LetteringAnchor
+
+Preserve the correct spacing and scale.
+
+The sign should feel physically mounted to the facade.
+
+⸻
+
+9.  EASTERN BLOC AWNING / CANOPY
+
+THIS IS A HERO FEATURE.
+
+Model the projecting awning above Eastern Bloc as actual geometry.
+
+Include:
+
+wall-mounted upper support;
+
+sloping canopy plane;
+
+front valance;
+
+side depth;
+
+mounting relationship to facade.
+
+The awning must project significantly into the pavement space.
+
+It should not be represented as a flat texture.
+
+Keep the fabric surface separate from structural supports.
+
+Suggested objects:
+
+EB_Awning_Frame
+
+EB_Awning_Fabric
+
+EB_Awning_Valance
+
+Later graphics such as venue branding, logos or coloured stripes should
+be textures/decals, not geometry.
+
+⸻
+
+10. EASTERN BLOC ENTRANCE
+
+Model the entrance as a player-accessible opening.
+
+Include:
+
+doorway;
+
+frame;
+
+threshold;
+
+recess;
+
+door if visible;
+
+surrounding architectural blocks.
+
+Keep interaction-ready components separate.
+
+Suggested:
+
+EB_Entrance
+
+EB_Door
+
+EB_EntranceTriggerAnchor
+
+Add an Empty:
+
+EB_EntranceTriggerAnchor
+
+⸻
+
+11. EASTERN BLOC WINDOWS
+
+Reconstruct the large window openings and their surrounds.
+
+Include:
+
+wall recess;
+
+outer frame;
+
+mullions where visible;
+
+glass plane;
+
+sill;
+
+lower plinth.
+
+Keep glass separate for later reflective/transmissive materials.
+
+⸻
+
+12. EASTERN BLOC VENTS / WALL DETAILS
+
+The references show ventilation grilles and small facade elements.
+
+Model the major visible vents that materially contribute to the facade.
+
+Keep them low-poly.
+
+Do not model tiny screws or grime.
+
+⸻
+
+13. FLOCK / FLŌK CORNER ENTRANCE
+
+THIS IS THE SECOND HERO FEATURE.
+
+The Flock entrance is highly distinctive.
+
+Reconstruct it carefully from the close-up and wider corner references.
+
+Model:
+
+arched doorway opening;
+
+substantial white/grey voussoir-like arch surround;
+
+curved fanlight/transom above door;
+
+radial metal/glazing pattern in the fanlight;
+
+yellow projecting canopy/sign box;
+
+yellow painted door surround;
+
+double doors;
+
+glass door panels;
+
+large circular metal handles;
+
+threshold;
+
+surrounding mouldings.
+
+This entrance should be recognisable even with neutral clay materials.
+
+⸻
+
+14. FLOCK YELLOW CANOPY
+
+The small rectangular yellow canopy directly above the Flock doors is an
+important physical element.
+
+Model it as geometry.
+
+Include:
+
+rectangular projecting box;
+
+underside;
+
+front face;
+
+shallow side panels;
+
+mounting to the arch/facade.
+
+Suggested:
+
+FL_YellowCanopy
+
+FL_CanopySignSurface
+
+The FLŌK / FLOCK lettering will be added later.
+
+⸻
+
+15. FLOCK ARCH / FANLIGHT
+
+The fanlight above the entrance has a decorative radial form.
+
+Model the main radial pattern as geometry because it strongly
+contributes to the silhouette.
+
+Use an efficient number of members.
+
+Include:
+
+outer arch;
+
+central radiating spokes;
+
+curved divisions where visible;
+
+recessed glass plane.
+
+Avoid excessive subdivision.
+
+⸻
+
+16. FLOCK YELLOW DOORS
+
+Model the paired yellow entrance doors as separate objects.
+
+Include:
+
+frame;
+
+glass panels;
+
+lower door panels;
+
+substantial round handles;
+
+central seam.
+
+Suggested:
+
+FL_Door_Left
+
+FL_Door_Right
+
+FL_DoorHandles
+
+FL_EntranceTriggerAnchor
+
+⸻
+
+17. FLOCK SIDE FACADE
+
+Because Flock occupies the corner, model the facade continuing around
+the side.
+
+Include:
+
+side window openings;
+
+facade mouldings;
+
+lower grey plinth;
+
+blue upper band;
+
+small wall-mounted letters/sign zones;
+
+corner transitions.
+
+Do not leave the side elevation blank.
+
+⸻
+
+18. FLOCK LETTERING / WALL SYMBOLS
+
+The exterior references show spaced lettering/symbols around the facade.
+
+For this geometry pass:
+
+create clean decal/signage surfaces;
+
+create mounting points if letters are physically raised;
+
+do not finalise typography yet.
+
+Keep these elements separate from the base wall.
+
+⸻
+
+19. RED / ORANGE BARREL
+
+The large red/orange barrel in front of Flock is visually memorable and
+should be preserved as a separate prop.
+
+Create:
+
+FL_RedBarrel
+
+It must NOT be fused to the building.
+
+Model:
+
+cylindrical barrel;
+
+top;
+
+major horizontal ribs;
+
+simple base.
+
+Keep it independently movable.
+
+No final colour/material yet.
+
+⸻
+
+20. CHALKBOARDS / A-FRAMES
+
+The references show chalkboard menu signs around the entrances.
+
+These should be optional separate props rather than part of the
+architecture.
+
+Create one reusable:
+
+EBF_Chalkboard_AFrame
+
+with:
+
+two board faces;
+
+hinge/top connection;
+
+simple support.
+
+Do not model handwritten text.
+
+That will be a texture/decal later.
+
+⸻
+
+21. OUTDOOR TERRACE
+
+Eastern Bloc uses a substantial section of pavement as outdoor seating.
+
+Do not fuse the seating into the building.
+
+Create modular props if useful:
+
+EBF_OutdoorTable
+
+EBF_OutdoorBench
+
+EBF_OutdoorChair
+
+EBF_TerraceBarrier
+
+Position a small number in the reference scene for scale/composition,
+but keep all independently movable.
+
+⸻
+
+22. ORANGE TABLES / BENCHES
+
+Some references show bright orange outdoor tables.
+
+Do not bake their colour into the geometry.
+
+Create reusable simple outdoor table/bench modules.
+
+The later material pass can reproduce the orange finish.
+
+⸻
+
+23. INTERIOR SCOPE
+
+For this pass, create only a simplified interior shell for each venue.
+
+The user has primarily supplied exterior references.
+
+Do not invent detailed interiors without evidence.
+
+For both Eastern Bloc and Flock, create:
+
+floor;
+
+ceiling;
+
+entry volume;
+
+dark internal space;
+
+enough depth behind windows and doors to avoid a hollow facade.
+
+If better interior references are supplied later, build those as a
+second pass.
+
+⸻
+
+24. GLASS
+
+Keep all major glazing separate:
+
+EB_Glass_Main
+
+EB_Glass_Entrance
+
+FL_Glass_Doors
+
+FL_Glass_Fanlight
+
+FL_Glass_SideWindows
+
+Do not merge glass with frames.
+
+This is important for later transparency, reflections and night
+lighting.
+
+⸻
+
+25. FACADE MOULDINGS
+
+The lower building facade has substantial horizontal and vertical
+mouldings.
+
+Model:
+
+horizontal bands;
+
+recessed wall panels;
+
+projecting cornice profiles;
+
+arch blocks;
+
+corner blocks;
+
+lower base course.
+
+Keep these proportions accurate.
+
+Avoid overly deep or cartoonish extrusion.
+
+⸻
+
+26. STREET CORNER GEOMETRY
+
+Pay particular attention to the relationship between:
+
+Eastern Bloc frontage;
+
+Flock entrance;
+
+corner turn;
+
+side elevation.
+
+The corner should feel like one real building.
+
+Avoid:
+
+overlapping walls;
+
+gaps;
+
+two facades merely intersecting;
+
+inconsistent floor heights.
+
+⸻
+
+27. EXCLUDE FROM ARCHITECTURE
+
+Do not permanently include:
+
+pedestrians;
+
+parked cars;
+
+traffic lights;
+
+road signs;
+
+bins;
+
+planters;
+
+temporary crowd barriers;
+
+trees;
+
+street poles;
+
+neighbouring businesses.
+
+Those belong to the larger game environment.
+
+The red barrel and optional venue terrace props are exceptions because
+they are specifically requested.
+
+⸻
+
+28. SIGNAGE / GRAPHICS RESERVED FOR LATER
+
+Do NOT finalise:
+
+Eastern Bloc lettering material;
+
+Flock lettering;
+
+awning graphics;
+
+Jägermeister marks;
+
+terrace barrier branding;
+
+chalkboard writing;
+
+stickers;
+
+graffiti;
+
+menu graphics;
+
+wall tags.
+
+Create clean surfaces / separate sign objects so these can be added
+later.
+
+⸻
+
+29. PLACEHOLDER MATERIAL REGIONS
+
+Use simple placeholder materials only:
+
+MAT_EBF_UpperBrick_PLACEHOLDER
+
+MAT_EBF_LowerFacade_PLACEHOLDER
+
+MAT_EBF_BlueFascia_PLACEHOLDER
+
+MAT_EB_DarkSignBand_PLACEHOLDER
+
+MAT_EB_Awning_PLACEHOLDER
+
+MAT_FL_Yellow_PLACEHOLDER
+
+MAT_EBF_Glass_PLACEHOLDER
+
+MAT_EBF_Metal_PLACEHOLDER
+
+No final textures.
+
+No graffiti.
+
+No weathering.
+
+⸻
+
+30. REAL-WORLD SCALE
+
+Work at real-world scale.
+
+1 Blender unit = 1 metre
+
+Z = vertical
+
+Ground = Z 0
+
+Use:
+
+doorway dimensions;
+
+people in references;
+
+window dimensions;
+
+barrel size;
+
+tables;
+
+as scale references.
+
+Apply transforms before export.
+
+⸻
+
+31. OBJECT ORGANISATION
+
+Suggested hierarchy:
+
+EASTERN_BLOC_FLOCK_MASTER
+
+EBF_BuildingShell
+
+EBF_UpperBrick
+
+EBF_Fascia
+
+EBF_Mouldings
+
+EB_EasternBlocFacade
+
+EB_EasternBlocSign
+
+EB_Awning
+
+EB_Entrance
+
+EB_Windows
+
+FL_FlockFacade
+
+FL_ArchEntrance
+
+FL_Canopy
+
+FL_Doors
+
+FL_Fanlight
+
+FL_SideWindows
+
+EBF_Glass
+
+EBF_InteriorShells
+
+EBF_ExteriorProps
+
+EBF_InteractionAnchors
+
+Avoid default names such as Cube.042.
+
+⸻
+
+32. INTERACTION ANCHORS
+
+Create:
+
+EB_EntranceTriggerAnchor
+
+FL_EntranceTriggerAnchor
+
+These should be separate so the game can treat Eastern Bloc and Flock as
+distinct destinations despite sharing one architectural GLB.
+
+Do not implement interaction logic in Blender.
+
+⸻
+
+33. THREE.JS OPTIMISATION
+
+This is a prominent street-corner asset.
+
+Use geometry for:
+
+silhouette;
+
+arches;
+
+doorways;
+
+cornices;
+
+mouldings;
+
+windows;
+
+awning;
+
+canopy;
+
+fanlight;
+
+sign depth;
+
+red barrel.
+
+Leave for textures/decals:
+
+brick detail;
+
+painted surfaces;
+
+graffiti;
+
+menus;
+
+branding;
+
+awning artwork;
+
+small signage;
+
+dirt and weathering.
+
+Reuse modular window components where possible.
+
+Avoid unnecessary subdivisions and high-density bevels.
+
+⸻
+
+34. BLOCKOUT FIRST
+
+First create:
+
+eastern_bloc_flock_blockout.blend
+
+The blockout should contain only:
+
+full building envelope;
+
+ground-floor facade;
+
+corner;
+
+Eastern Bloc doorway;
+
+Eastern Bloc window;
+
+Eastern Bloc awning volume;
+
+Flock arched entrance;
+
+Flock canopy;
+
+side windows;
+
+upper brick floors.
+
+Do not add furniture or fine moulding yet.
+
+Produce clay renders:
+
+VIEW A
+
+Wide three-quarter view showing Eastern Bloc and Flock together.
+
+VIEW B
+
+Straight-on Eastern Bloc frontage.
+
+VIEW C
+
+Close frontal Flock entrance view.
+
+VIEW D
+
+Three-quarter corner view from the Flock side.
+
+VIEW E
+
+Elevated view showing upper brick floors and how the ground-floor facade
+wraps the corner.
+
+Then STOP for review.
+
+⸻
+
+35. SECOND GEOMETRY PASS
+
+After blockout approval, add:
+
+detailed mouldings;
+
+facade panel divisions;
+
+arched surround;
+
+fanlight radial geometry;
+
+door handles;
+
+Eastern Bloc sign depth;
+
+awning frame and fabric;
+
+vents;
+
+window frames;
+
+red barrel;
+
+optional A-frame sign;
+
+interaction anchors.
+
+Still do not texture.
+
+⸻
+
+36. FINAL VALIDATION
+
+Compare clay renders against all supplied references.
+
+Check:
+
+Overall corner dimensions.
+
+Eastern Bloc frontage width.
+
+Flock entrance position.
+
+Ground-floor height.
+
+Blue fascia height.
+
+Upper brick storey proportions.
+
+Eastern Bloc sign placement.
+
+Eastern Bloc awning projection.
+
+Flock arch width and height.
+
+Flock yellow canopy dimensions.
+
+Flock door proportions.
+
+Fanlight geometry.
+
+Side-window spacing.
+
+Red barrel scale.
+
+Corner transition.
+
+Look for:
+
+generic pub architecture;
+
+flat facade treatment;
+
+incorrect arch proportions;
+
+awning that is too shallow;
+
+yellow entrance that is too bulky;
+
+excessively thick mouldings;
+
+toy-like door handles;
+
+misaligned shared building geometry.
+
+⸻
+
+37. DELIVERABLES
+
+Deliver:
+
+eastern_bloc_flock_blockout.blend
+
+eastern_bloc_flock.blend
+
+eastern_bloc_flock.glb
+
+optionally:
+
+eastern_bloc_flock_props.glb
+
+containing:
+
+red barrel;
+
+chalkboard;
+
+outdoor tables;
+
+terrace barriers.
+
+Before export:
+
+apply transforms;
+
+verify normals;
+
+verify scale;
+
+remove temporary objects;
+
+remove unused materials;
+
+preserve interaction anchors;
+
+test the final GLB import.
+
+⸻
+
+SUCCESS CRITERION
+
+The untextured clay model should already be immediately recognisable as
+the connected Eastern Bloc + Flock corner.
+
+Eastern Bloc should read through:
+
+its large raised sign;
+
+projecting awning;
+
+frontage and window proportions.
+
+Flock should read through:
+
+its distinctive arched entrance;
+
+radial fanlight;
+
+projecting yellow canopy;
+
+paired doors;
+
+corner position.
+
+Neither venue should look like a generic pub pasted onto the same
+building.
+
+I’d also keep the red barrel as a separate prop, even though I’d
+definitely place it in the default reference scene exactly where it
+appears near Flock. It is one of those small things that makes the
+reconstruction feel observed rather than generic.
+
+The awning is probably the biggest thing I’d check in the first render.
+It has a surprising amount of visual mass in the references. Codex could
+easily make it too shallow and turn Eastern Bloc into just another
+shopfront. It needs to project far enough into the pavement that you
+feel the sheltered outdoor zone underneath it.
+
+And combining them is the right call. From the wider Stevenson Square
+views, the stronger game asset is not really “Eastern Bloc” or “Flock”
+individually. It’s that whole corner composition: dark Eastern Bloc sign
+and awning on one side, the white facade wrapping around, then that
+strange bright yellow little portal of Flock on the corner. It gives the
+environment much more specificity.

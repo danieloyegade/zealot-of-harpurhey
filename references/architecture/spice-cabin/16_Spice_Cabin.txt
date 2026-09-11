@@ -1,0 +1,400 @@
+SPICE CABIN — HARpurhey / Manchester Takeaway Shopfront Codex / Blender
+Asset Build Prompt Reference-led, reusable GLB asset for Zealot of
+Harperhay
+
+1.  ROLE AND GOAL
+
+You are building a production-ready Blender asset of the Spice Cabin
+takeaway shopfront from the supplied reference photographs.
+
+The goal is not to make a generic British takeaway inspired by Spice
+Cabin. Reconstruct the actual architectural character visible in the
+references as closely as practical, while keeping the asset efficient
+enough for use in a Three.js game.
+
+The finished asset should occupy the uncanny space between photographic
+reality and a game environment: recognisably real, materially
+convincing, slightly heightened, but not glossy, toy-like, Lego-like, or
+over-clean.
+
+Treat the supplied photographs as the primary visual authority.
+
+Pay particular attention to: - the brown/tan brickwork and its coarse,
+aged surface; - the horizontal half-log / rounded timber cladding across
+the lower shopfront; - the large faux-wood Spice Cabin fascia sign; -
+the deep blue structural fascia/border; - the blue-framed glazing and
+doorway; - the cream/white structural pier at the left; - the black
+bollards; - the security/barbed-wire silhouette along the roof edge; -
+the utilitarian pipes, alarm boxes, brackets and small exterior
+fixtures; - the slightly neglected pavement-level condition of the real
+location.
+
+Do not beautify the building.
+
+2.  REFERENCE INTERPRETATION
+
+Use all supplied reference images together rather than copying the
+perspective of one photograph.
+
+The references show a small end-unit takeaway beneath a shallow
+commercial parade. The Spice Cabin frontage is bounded by a substantial
+cream-painted vertical pier on the left and the neighbouring unit on the
+right.
+
+The upper wall is exposed tan/brown brick. A long timber-effect sign
+panel sits across the upper shopfront. Beneath it is a saturated
+dark/royal-blue fascia band. The shop glazing and door are also framed
+in blue.
+
+The lower frontage is unusually distinctive: instead of a conventional
+flat panel, much of it is faced in horizontally stacked rounded timber
+boards resembling half logs or log-cabin siding. This is a defining
+visual feature and must be modelled and textured carefully.
+
+The sign reads approximately: SPICE CABIN Pizza • Kebabs • Fried Chicken
+• Burgers
+
+The references show variations in the exact sign artwork over time.
+Reproduce the recognisable Spice Cabin identity from the clearest
+references rather than attempting to merge every historical variation
+literally.
+
+The shop should feel like a specific North Manchester neighbourhood
+takeaway, not a polished chain restaurant.
+
+3.  ARCHITECTURAL PROPORTIONS AND MASSING
+
+Build the shopfront at plausible real-world scale.
+
+Prioritise proportion matching: - relatively low, wide commercial
+frontage; - upper exposed brick zone; - long rectangular signboard; -
+thick blue horizontal fascia below the sign; - broad left display
+window; - narrow central/right entrance; - lower timber cladding
+occupying approximately the lower half of the glazed frontage; - cream
+structural pier wrapping the left end of the unit; - neighbouring shop
+boundary visible only where useful to establish the Spice Cabin edge.
+
+Do not model an entire street unless necessary. The primary deliverable
+is a modular shopfront/building-edge asset that can be placed into the
+wider street scene.
+
+Use real thickness where silhouette or shadow requires it. Avoid making
+the facade a collection of completely flat planes.
+
+4.  BRICK WALL — CRITICAL MATERIAL REQUIREMENT
+
+The brick wall must receive unusually careful treatment.
+
+Do NOT use: - a clean procedural brick shader; - uniformly coloured
+orange bricks; - smooth plastic-looking brick; - perfectly identical
+mortar joints; - an exaggerated displacement that looks like stone
+blocks.
+
+The reference brick is a muted buff/tan-to-brown commercial brick with
+substantial age variation. Individual bricks have granular, slightly
+pitted faces. Some are darker, some lighter, and the mortar is recessed
+enough to catch narrow shadows.
+
+Create the brick material using a physically plausible PBR approach: -
+high-resolution albedo/base-colour texture; - roughness variation; -
+normal/bump information for pores, chips and mortar depth; - subtle
+displacement/parallax only if performance allows; - non-uniform brick
+colour and weathering.
+
+The brick faces should be predominantly matte with high roughness.
+Introduce subtle staining and accumulated grime, especially: - beneath
+roof-edge fixtures; - around pipework; - near the fascia; - around
+corners; - close to the pavement.
+
+Mortar should be desaturated grey-beige rather than bright white.
+
+Avoid obvious texture repetition. Use sufficiently large texture
+coverage, UV variation, decals, masks, or layered noise so the brick
+does not reveal a repeating tile every few courses.
+
+The brick pattern and scale must remain believable when the player
+approaches the facade.
+
+5.  LOG-CABIN TIMBER FACADE — CRITICAL MATERIAL AND GEOMETRY REQUIREMENT
+
+The lower facade is one of the most important identifiers of the
+building.
+
+Do not represent it as a flat brown wall with horizontal lines.
+
+Model the cladding as horizontal rounded timber/half-log courses with
+genuine shallow cylindrical relief. Each course should project enough to
+create a soft highlight along its upper curvature and a narrow
+occlusion/shadow line between courses.
+
+The timber is medium honey-brown to weathered golden brown, not orange
+plastic.
+
+Each log course should show: - subtle longitudinal wood grain; - small
+colour differences between boards; - darker seams; - slightly worn or
+dirty areas; - modest roughness variation; - occasional imperfections
+rather than perfectly cloned pieces.
+
+The surface should read as commercially installed faux-log/timber
+cladding that has spent years outdoors.
+
+Avoid: - glossy varnished wood; - perfectly smooth cylinders; -
+identical procedural stripes; - cartoon wood knots; - exaggerated rustic
+cabin styling.
+
+The effect should be convincing from both medium distance and close
+street-level inspection.
+
+Where the timber meets the window frame, doorway and blue fascia,
+include realistic trim, recesses and contact shadows. These junctions
+are important for preventing the asset from looking like assembled toy
+blocks.
+
+6.  SPICE CABIN SIGNAGE
+
+Create the large rectangular sign as its own mesh/material zone.
+
+The sign background is a printed faux-horizontal-wood design, distinct
+from the real rounded timber cladding below.
+
+The main lettering should clearly read: SPICE CABIN
+
+Reproduce the visual character: - “SPICE” predominantly red/white; -
+“CABIN” predominantly green/white; - chilli/flame motifs where
+visible; - bold takeaway-sign typography; - white/black edging and
+dimensional-looking printed graphics; - smaller yellow/white
+food-category line below.
+
+Use a texture/decal for the graphic rather than attempting to construct
+all typography as heavy 3D geometry.
+
+The sign should not look freshly printed. Add extremely subtle outdoor
+fading, grime and material roughness, while preserving legibility.
+
+If the phone number is included, use the reference-visible number where
+legible. Do not invent additional advertising copy.
+
+7.  BLUE FASCIA, WINDOW AND DOOR FRAMES
+
+The deep blue elements are visually important.
+
+Use a saturated but slightly weathered commercial blue. It should not
+look like pristine glossy automotive paint.
+
+Include: - horizontal blue band immediately below the main sign; -
+vertical blue framing around glazing; - blue trim around the entrance; -
+neighbouring blue structural continuation only where required.
+
+Material characteristics: - painted metal/timber appearance; - moderate
+roughness; - subtle scratches, faded patches and accumulated dirt; -
+darker grime in corners and under overhangs.
+
+The glazing should remain physically plausible and relatively dark from
+outside. Avoid mirror-like glass.
+
+The interior may be represented efficiently, but the shop should not
+appear as an empty transparent box. Use dark interior geometry/cards and
+restrained warm illumination where appropriate.
+
+8.  WINDOWS, DOOR AND INTERIOR READ
+
+Construct the front window and entrance with actual recess depth.
+
+The entrance is narrow and visually darker than the surrounding facade.
+The timber cladding continues around/below the glazing.
+
+Include the characteristic illuminated takeaway-window detail where
+appropriate, such as a small red “FRIED CHICKEN” style sign visible in
+the references.
+
+Keep interior detail economical: - dark counter/kitchen silhouettes; -
+warm practical light; - a few broad forms behind the glass; - no need to
+fully model the restaurant unless this later becomes an enterable
+interior.
+
+The facade should still work convincingly at night, because the game’s
+visual language relies heavily on nocturnal urban illumination.
+
+9.  STRUCTURAL AND STREET DETAILS
+
+Model the details that make this location specific rather than generic.
+
+Include where visible: - cream/white painted structural pier at the
+left; - weathering, chips and dirt on that pier; - black cylindrical
+bollards in front of the shop; - metal pedestrian railing near the left
+edge if the asset scope includes immediate pavement furniture; -
+black/grey rainwater pipework near the neighbouring-unit boundary; -
+alarm/security boxes; - exterior brackets; - long pale pipe/conduit
+running high across the brick wall; - roof-edge anti-climb/barbed-wire
+assembly.
+
+The roof-edge security wire is visually important to the silhouette but
+should be performance-conscious. Use simplified geometry and/or
+alpha-card techniques rather than unnecessarily dense modelling.
+
+Do not make every accessory pristine or perfectly aligned.
+
+10. PAVEMENT AND GROUND CONTACT
+
+If including a pavement module, match the ordinary worn Manchester
+streetscape rather than producing a clean architectural visualisation.
+
+Use: - dark grey paving/asphalt; - patched and uneven tonal areas; -
+shallow puddle/damp variation where appropriate; - grime around wall
+edges; - small accumulated debris decals used sparingly; - convincing
+contact darkening around bollards and facade edges.
+
+Do not permanently model large piles of litter into the base asset
+unless they are separate toggleable props.
+
+The building must feel physically seated in the pavement. Avoid floating
+geometry or unnaturally clean base edges.
+
+11. WEATHERING AND AGE
+
+The reference location contains years of ordinary urban wear. Preserve
+that.
+
+Weathering should be layered and restrained: - grime under ledges; -
+darker rain streaks; - paint wear; - small chips; - roughness
+variation; - dirt around door thresholds; - discoloration around
+fixtures; - subtle moss/organic staining only where plausible.
+
+Do not use generic “grunge” uniformly across every material. Weathering
+should follow gravity, touch, water flow and material boundaries.
+
+The target is observed realism, not a post-apocalyptic texture pass.
+
+12. GAME AESTHETIC
+
+The asset belongs to Zealot of Harperhay.
+
+The desired visual language is no longer overtly Dreamcast or
+deliberately low-poly. It should sit between hyper-real and game-like.
+
+Aim for: - realistic materials; - strong recognisable geometry; -
+photographic specificity; - controlled simplification; - slightly
+uncanny stillness; - clean enough forms to read as a designed game
+world; - enough material imperfection to resist the “plastic Blender
+asset” appearance.
+
+Do not stylise away the banal details. The ordinary takeaway
+architecture is part of the artistic value.
+
+At night, the sign, glazing, blue trim, bollards, brick texture and
+security-wire silhouette should create a strong planimetric urban
+composition suitable for the broader The Spectres Are All Around Us
+visual language.
+
+13. THREE.JS / GLB PERFORMANCE
+
+Build for practical real-time use.
+
+Requirements: - apply transforms; - sensible origin placement; -
+real-world scale; - clean normals; - no unnecessary hidden geometry; -
+no accidental duplicate faces; - efficient topology; - UVs packed
+logically; - PBR textures suitable for glTF; - minimise material count
+where this does not compromise fidelity; - use texture atlases where
+sensible; - use instancing/repeated geometry for repeated timber courses
+or fixtures when useful; - use LOD strategy if high-detail brick/timber
+geometry becomes expensive.
+
+Do not model individual bricks across the entire wall. The brick depth
+should primarily come from normal/bump/displacement techniques.
+
+The timber cladding may use repeated low-segment rounded geometry
+because its silhouette and grazing-light response are important.
+
+Keep transparent materials to a minimum.
+
+14. MODULARITY
+
+Separate logical components so they can be adjusted or replaced later.
+
+Recommended object groups: SPICE_structure SPICE_brick_wall
+SPICE_cream_pier SPICE_sign SPICE_blue_fascia SPICE_window_frames
+SPICE_glass SPICE_door SPICE_log_cladding SPICE_bollards
+SPICE_security_wire SPICE_pipework SPICE_alarm_fixtures
+SPICE_interior_cards SPICE_pavement_optional
+
+Do not unnecessarily merge everything into one mesh before export.
+
+15. MATERIAL SET
+
+Use a concise but convincing material library, approximately:
+MAT_brick_aged_tan MAT_mortar_integrated MAT_log_cladding_weathered
+MAT_sign_printed_wood MAT_blue_painted_frame MAT_cream_painted_concrete
+MAT_glass_shopfront MAT_black_bollard MAT_dark_pipe MAT_security_metal
+MAT_pavement_worn MAT_interior_dark MAT_emissive_signage
+
+Materials should be glTF-compatible.
+
+16. LIGHTING / VALIDATION RENDERS
+
+Create validation renders before final export.
+
+Render at least: A. neutral overcast daylight; B. oblique
+daylight/grazing light to reveal brick and timber relief; C. night
+version with restrained shop/interior practical illumination; D. close
+crop of brick wall; E. close crop of rounded timber facade; F.
+straight-on facade view.
+
+The close-up tests are mandatory.
+
+If the brick reads as a flat texture, revise it. If the timber reads as
+smooth plastic tubes or Lego, revise it. If the blue framing looks
+pristine and synthetic, revise it. If the whole shop looks like a
+generic takeaway rather than the supplied Spice Cabin, revise it.
+
+17. QUALITY CHECKLIST
+
+Before export verify:
+
+[ ] Overall silhouette matches the references. [ ] Shop width/height
+relationships feel correct. [ ] Cream left pier is present. [ ] Brick
+colour is muted tan/brown rather than bright orange. [ ] Brick has
+granular roughness, mortar depth and non-repeating variation. [ ] Brick
+remains convincing at close player distance. [ ] Rounded horizontal log
+cladding is actual relief, not painted stripes. [ ] Timber grain follows
+the horizontal boards. [ ] Timber has weathering and roughness
+variation. [ ] Timber does not look glossy, plastic, or Lego-like. [ ]
+Faux-wood sign background is distinct from the real timber cladding. [ ]
+SPICE CABIN lettering is recognisable and correctly positioned. [ ] Blue
+fascia and framing proportions match the references. [ ] Door/window
+recesses create convincing depth. [ ] Exterior pipes/security fixtures
+are represented. [ ] Roof-edge anti-climb/barbed-wire silhouette is
+present. [ ] Bollards are correctly scaled. [ ] Materials respond
+naturally under both daylight and night lighting. [ ] No obvious texture
+tiling. [ ] No unnecessary geometry. [ ] GLB imports correctly into a
+Three.js test scene.
+
+18. EXPORT
+
+Export a production GLB suitable for the existing game pipeline.
+
+Use: - glTF 2.0 / .glb; - embedded or correctly packed textures; -
+applied scale/rotation; - +Y / axis handling appropriate to the
+project’s established Blender-to-Three.js pipeline; - sensible object
+names; - no cameras or temporary validation lights unless specifically
+required by the existing pipeline.
+
+Preserve enough object separation for later material tuning and
+interaction.
+
+FINAL PRIORITY ORDER
+
+When compromises are required, prioritise in this order:
+
+1.  Recognisable Spice Cabin proportions and silhouette.
+2.  Convincing brick texture and scale.
+3.  Convincing rounded log-cladding geometry and material.
+4.  Signage and blue shopfront identity.
+5.  Architectural depth around windows/door/fascia.
+6.  Specific exterior fixtures and weathering.
+7.  Interior suggestion.
+8.  Minor street clutter.
+
+The finished asset should look like the actual Spice Cabin has been
+carefully reconstructed for an uncanny, photographically grounded
+Manchester game world, not like a generic takeaway asset with a Spice
+Cabin sign pasted onto it.

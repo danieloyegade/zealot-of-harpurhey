@@ -179,3 +179,75 @@ export function createDreamsSignMaterial(): MeshStandardMaterial {
     metalness: 0,
   });
 }
+
+export function createNoticeMaterial(
+  heading: string,
+  body: string,
+  accent = '#d8c43b',
+): MeshBasicMaterial {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 256;
+  const context = canvas.getContext('2d');
+  if (!context) {
+    throw new Error(`Could not draw the ${heading} notice.`);
+  }
+  const random = seededNoise(textSeed(`${heading}${body}`));
+  context.clearRect(0, 0, 256, 256);
+  context.fillStyle = '#d8d0b7';
+  context.fillRect(18, 12, 220, 232);
+  context.fillStyle = accent;
+  context.fillRect(18, 12, 220, 42);
+  context.fillStyle = '#171616';
+  context.font = '900 23px Arial Narrow, sans-serif';
+  context.textAlign = 'center';
+  context.fillText(heading.toUpperCase(), 128, 41);
+  context.font = '700 15px ui-monospace, monospace';
+  body.toUpperCase().split('\n').forEach((line, index) => {
+    context.fillText(line, 128, 92 + index * 27);
+  });
+  for (let index = 0; index < 90; index += 1) {
+    context.fillStyle = `rgba(25, 20, 16, ${0.03 + random() * 0.13})`;
+    context.fillRect(random() * 256, random() * 256, 1 + random() * 7, 1 + random() * 3);
+  }
+  context.strokeStyle = 'rgba(30, 25, 19, 0.7)';
+  context.lineWidth = 5;
+  context.strokeRect(18, 12, 220, 232);
+  const texture = applyTextureProfile(new CanvasTexture(canvas), 'RETRO_GRAPHIC');
+  texture.colorSpace = SRGBColorSpace;
+  return new MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false });
+}
+
+export function createStickerClusterMaterial(): MeshBasicMaterial {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 256;
+  const context = canvas.getContext('2d');
+  if (!context) {
+    throw new Error('Could not draw the sticker cluster.');
+  }
+  const random = seededNoise(161);
+  context.clearRect(0, 0, 256, 256);
+  const labels = ['MCR', 'N16', 'NO CCTV', 'ALL NIGHT', 'ZOH', '£2'];
+  const colors = ['#d6c537', '#d74850', '#d4d0bc', '#428165', '#85518d'];
+  labels.forEach((label, index) => {
+    const x = 18 + (index % 2) * 108 + (random() - 0.5) * 15;
+    const y = 18 + Math.floor(index / 2) * 72 + (random() - 0.5) * 12;
+    const width = 86 + random() * 28;
+    const height = 43 + random() * 15;
+    context.save();
+    context.translate(x + width / 2, y + height / 2);
+    context.rotate((random() - 0.5) * 0.18);
+    context.fillStyle = colors[index % colors.length];
+    context.fillRect(-width / 2, -height / 2, width, height);
+    context.fillStyle = '#151515';
+    context.font = '900 18px Arial Narrow, sans-serif';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(label, 0, 0);
+    context.restore();
+  });
+  const texture = applyTextureProfile(new CanvasTexture(canvas), 'RETRO_GRAPHIC');
+  texture.colorSpace = SRGBColorSpace;
+  return new MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false });
+}

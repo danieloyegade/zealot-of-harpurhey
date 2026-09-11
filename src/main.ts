@@ -1,4 +1,5 @@
 import {
+  Mesh,
   PerspectiveCamera,
   Scene,
   SRGBColorSpace,
@@ -51,16 +52,23 @@ const requestedView = import.meta.env.DEV
   ? new URLSearchParams(window.location.search).get('view')
   : null;
 
+let requestedYaw = 0;
+let requestedPitch = 0.31;
 if (import.meta.env.DEV) {
-  const developmentViews: Record<string, readonly [number, number]> = {
+  const developmentViews: Record<string, readonly [number, number, number?, number?]> = {
     'park-florist': [-13, -22],
     'bus-shelter': [-9, 27],
-    'collision-dreams': [0, -31],
-    'dreams-target': [0, -18.8],
+    'collision-dreams': [-3, 32.5, Math.PI],
+    'dreams-target': [-3, 29.8, Math.PI],
+    'dreams-angle': [-11, 29, 2.45, 0.18],
+    'north-road': [-17, -25.2, -Math.PI / 2, 0.24],
+    'park-to-dreams': [-3, 18, Math.PI, 0.2],
+    'street-detail': [6.4, -27.2, 0.42, 0.16],
     'west-street': [-29.5, 25],
     'west-shops': [-29.5, 7],
     'east-shops': [29.5, 19],
     'south-shops': [0, 22],
+    'south-road': [0, 53.5, Math.PI, 0.24],
     pickup: [5, 16.5],
   };
   const requestedPosition = requestedView
@@ -68,13 +76,16 @@ if (import.meta.env.DEV) {
     : undefined;
   if (requestedPosition) {
     player.position.set(requestedPosition[0], 0, requestedPosition[1]);
+    requestedYaw = requestedPosition[2] ?? 0;
+    requestedPitch = requestedPosition[3] ?? 0.31;
   }
 }
 
 const thirdPersonCamera = new ThirdPersonCamera(
   camera,
-  requestedView === 'dreams-target' ? 3.15 : 1.05,
+  requestedView === 'dreams-target' ? 2.9 : 1.05,
 );
+thirdPersonCamera.setOrbit(requestedYaw, requestedPitch);
 thirdPersonCamera.snapTo(player.position);
 const postProcessing = createPostProcessing(renderer, scene, camera, quality);
 
@@ -83,8 +94,22 @@ const timer = new Timer();
 timer.connect(document);
 const simulationClock = new FixedStepClock();
 const cameraForward = new Vector3();
-let developmentOverlaysVisible = true;
+let developmentOverlaysVisible = new URLSearchParams(window.location.search).get('overlays') !== 'off';
 let elapsedSeconds = 0;
+let sceneMaterialCount = 0;
+
+world.setDevelopmentOverlaysVisible(developmentOverlaysVisible);
+debugOverlay?.setVisible(developmentOverlaysVisible);
+
+window.setTimeout(() => {
+  const materials = new Set();
+  scene.traverse((child) => {
+    if (!(child instanceof Mesh)) return;
+    const childMaterials = Array.isArray(child.material) ? child.material : [child.material];
+    childMaterials.forEach((material) => materials.add(material));
+  });
+  sceneMaterialCount = materials.size;
+}, 2000);
 
 function resize(): void {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -122,7 +147,7 @@ function frame(timestamp: number): void {
   renderer.info.reset();
   postProcessing.render(elapsedSeconds);
   const lighting = world.getLightingStats();
-  debugOverlay?.update(rawDelta, player.position, player.movementState, {
+  const diagnostics = {
     drawCalls: renderer.info.render.calls,
     triangles: renderer.info.render.triangles,
     activePointLights: lighting.activePointLights,
@@ -133,9 +158,11 @@ function frame(timestamp: number): void {
     renderScale: quality.renderScale,
     textures: renderer.info.memory.textures,
     geometries: renderer.info.memory.geometries,
+    materials: sceneMaterialCount,
     programs: renderer.info.programs?.length ?? 0,
     qualityLevel: quality.level,
-  });
+  };
+  debugOverlay?.update(rawDelta, player.position, player.movementState, diagnostics);
 }
 
 requestAnimationFrame(frame);

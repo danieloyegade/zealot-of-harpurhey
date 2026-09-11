@@ -22,8 +22,8 @@ FACADE_TEXTURE_PATH = TEXTURE_DIR / "harperhay-florist-facade.jpg"
 SHOPFRONT_TEXTURE_PATH = TEXTURE_DIR / "harperhay-florist-shopfront.jpg"
 BLEND_PATH = PROJECT_ROOT / "blender" / "source" / "harperhay-florist.blend"
 GLB_PATH = PROJECT_ROOT / "public" / "assets" / "models" / "harperhay-florist.glb"
-PREVIEW_PATH = PROJECT_ROOT / "renders" / "harperhay-florist-preview.png"
-OBLIQUE_PREVIEW_PATH = PROJECT_ROOT / "renders" / "harperhay-florist-preview-oblique.png"
+PREVIEW_PATH = PROJECT_ROOT / "renders" / "florist" / "harperhay-florist-preview.png"
+OBLIQUE_PREVIEW_PATH = PROJECT_ROOT / "renders" / "florist" / "harperhay-florist-preview-oblique.png"
 
 
 def clear_scene():

@@ -23,6 +23,11 @@ export class ThirdPersonCamera {
     camera.updateProjectionMatrix();
   }
 
+  setOrbit(yaw: number, pitch = 0.31): void {
+    this.yaw = yaw;
+    this.pitch = MathUtils.clamp(pitch, this.minPitch, this.maxPitch);
+  }
+
   getPlanarForward(target: Vector3): Vector3 {
     return target.set(-Math.sin(this.yaw), 0, -Math.cos(this.yaw));
   }

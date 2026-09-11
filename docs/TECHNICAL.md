@@ -41,8 +41,10 @@ Development-only references, source photography, `.blend` masters, and renders l
 - Run: hold `Shift` or `Space` while moving
 - Orbit camera: click and drag with the primary mouse button
 - Hide/show development labels and debug panel: `H`
-- Temporary walking speed: **2.4 metres per second**
-- Temporary running speed: **4.5 metres per second**
+- Production walking speed: **2.4 metres per second**
+- Production running speed: **4.5 metres per second**
+- Development walking speed: **3.12 metres per second** (30% faster)
+- Development running speed: **7.65 metres per second** (70% faster)
 
 Movement is calculated relative to the camera's horizontal facing direction. Velocity accelerates and decelerates smoothly to give the placeholder movement some weight. There is no jumping.
 
@@ -107,9 +109,13 @@ From the project root, generate the bus shelter with:
 
 The script derives the project root from its own location and creates parent directories when necessary. It produces:
 
-- Editable master: `blender/source/harperhay-bus-shelter.blend`
-- Runtime model: `public/assets/models/harperhay-bus-shelter.glb`
-- Development preview: `renders/harperhay-bus-shelter-preview.png`
+- Blockout master: `blender/source/bus-shelter/preston-busstop-blockout.blend`
+- Detailed geometry master: `blender/source/bus-shelter/preston-busstop.blend`
+- Composed review scene: `blender/source/bus-shelter/preston-busstop-reference.blend`
+- Shelter-only runtime model: `public/assets/models/bus-shelter/preston-bus-shelter.glb`
+- Trolley-only runtime model: `public/assets/models/bus-shelter/preston-shopping-trolley.glb`
+- Composed game model: `public/assets/models/bus-shelter/preston-busstop-reference.glb`
+- Development reviews: `renders/bus-shelter/01-...png` through `04-...png`
 
 ### Scale, coordinates, and export
 

@@ -1,0 +1,1080 @@
+SALFORD CELLULOID NIGHT VIGNETTE
+
+Modular untextured asset reconstruction for Zealot of Harpurhey
+
+Use the supplied still from the short film Salford Celluloid as the
+primary visual reference.
+
+This scene must NOT be constructed as one fused Blender model.
+
+Instead, reconstruct it as a collection of independent, reusable game
+assets that can be arranged together to reproduce the original cinematic
+composition.
+
+This is for Zealot of Harpurhey, rendered in Three.js.
+
+This task is primarily GEOMETRY ONLY.
+
+Do not create final photographic textures, skin materials, clothing
+textures, decals, dirt, final lighting, or final shaders yet.
+
+The final scene should be reconstructible from the following independent
+objects:
+
+1.  Car
+
+2.  Woman sitting/leaning on car
+
+3.  Woman inside car
+
+4.  Saxophonist with saxophone
+
+5.  Saxophone case
+
+6.  Litter bin
+
+7.  Telephone booth
+
+8.  Orange roadworks barrier
+
+9.  Brick wall / facade behind telephone booth
+
+10. Streetlight
+
+11. Telephone-booth interior light
+
+DO NOT model the overhead ventilation/ducting visible high in the
+original film still.
+
+⸻
+
+1.  CORE PRINCIPLE: EVERYTHING SEPARATE
+
+Every important scene element must remain independently movable.
+
+Do NOT:
+
+-   join characters to the car;
+
+-   join the saxophonist to the road barrier;
+
+-   join the saxophone case to the pavement;
+
+-   join the telephone booth to the brick wall;
+
+-   join the streetlight to the wall;
+
+-   fuse lighting geometry into other objects.
+
+The scene should be assembled from modular assets.
+
+Suggested top-level collection:
+
+SALFORD_CELLULOID_SCENE
+
+containing:
+
+SC_Car
+
+SC_Woman_OnCar
+
+SC_Woman_InCar
+
+SC_Saxophonist
+
+SC_SaxophoneCase
+
+SC_Bin
+
+SC_PhoneBooth
+
+SC_RoadBarrier
+
+SC_BrickWall
+
+SC_Streetlight
+
+SC_LightAnchors
+
+⸻
+
+2.  REFERENCE SCENE
+
+After creating the individual assets, assemble a reference scene
+reproducing the original film still as closely as possible.
+
+Use the reference for:
+
+-   relative scale;
+
+-   spatial relationships;
+
+-   camera position;
+
+-   object placement;
+
+-   character posing;
+
+-   distance between objects.
+
+The reference scene is for composition only.
+
+All components must remain independently editable.
+
+⸻
+
+3.  CAR
+
+Create the silver/grey compact hatchback shown in the reference.
+
+Treat the car as a reusable hero prop.
+
+Model:
+
+-   body shell;
+
+-   bonnet;
+
+-   roof;
+
+-   doors;
+
+-   windows;
+
+-   windscreen;
+
+-   rear-view mirrors;
+
+-   wheel arches;
+
+-   four wheels;
+
+-   tyres;
+
+-   headlights;
+
+-   basic interior visible through windows;
+
+-   front seats;
+
+-   dashboard silhouette;
+
+-   steering wheel if visible.
+
+Do not create a completely generic rectangular hatchback.
+
+Use the reference to reproduce the overall proportions and early-2000s
+compact-car silhouette.
+
+Do not obsess over microscopic manufacturer-specific mechanical details
+unless clearly visible.
+
+Keep:
+
+SC_Car_Body
+
+SC_Car_Wheels
+
+SC_Car_Glass
+
+SC_Car_Interior
+
+logically separated.
+
+⸻
+
+4.  CAR INTERACTION / GAME USE
+
+The car may later function as a broken-down environmental object.
+
+Therefore:
+
+-   doors should be separable if practical;
+
+-   driver’s/passenger windows should be distinct glass objects;
+
+-   bonnet may optionally remain separate;
+
+-   passenger compartment must have believable depth.
+
+The car should not contain baked character geometry.
+
+⸻
+
+5.  WOMAN LEANING / SITTING ON CAR
+
+Create the woman in front of the car as a completely separate character
+asset:
+
+SC_Woman_OnCar
+
+The pose should match the film still:
+
+-   body leaning backward against/front of car;
+
+-   legs extended toward ground;
+
+-   torso tilted backward;
+
+-   head lifted upward;
+
+-   relaxed but theatrical posture;
+
+-   arms held relatively close behind/downward depending on the
+    reference.
+
+This character is part of the film vignette and should read as a posed
+human figure rather than furniture fused to the bonnet.
+
+⸻
+
+6.  CHARACTER CONSTRUCTION
+
+For this pass, prioritise:
+
+-   believable human proportions;
+
+-   silhouette;
+
+-   pose;
+
+-   hair volume;
+
+-   clothing silhouette.
+
+Do NOT concentrate on:
+
+-   skin pores;
+
+-   facial texture;
+
+-   detailed fabric;
+
+-   individual hair strands.
+
+Ideally create or preserve a simple armature:
+
+SC_Woman_OnCar_Rig
+
+so the pose can later be changed or subtly animated.
+
+If rigging is outside the current modelling scope, keep the mesh
+separate and anatomically sensible for later rigging.
+
+⸻
+
+7.  WOMAN INSIDE CAR
+
+Create the seated woman inside the car as another separate character:
+
+SC_Woman_InCar
+
+Do not merge her with the vehicle.
+
+Match the visible pose:
+
+-   seated in front passenger/driver area according to reference;
+
+-   upper torso visible through side window;
+
+-   one arm raised toward face/window;
+
+-   seated posture matching car interior.
+
+Where the photograph provides insufficient detail below window level,
+infer the simplest plausible seated pose.
+
+Do not invent elaborate details that cannot be seen.
+
+Ideally preserve:
+
+SC_Woman_InCar_Rig
+
+for later animation.
+
+⸻
+
+8.  CHARACTER / CAR RELATIONSHIP
+
+Both women should use the car only as a positional reference.
+
+Create Empties:
+
+SC_CarAnchor_WomanOutside
+
+SC_CarAnchor_WomanInside
+
+The character assets can later be snapped/aligned to those positions.
+
+This is preferable to parenting their mesh permanently into the car GLB.
+
+⸻
+
+9.  SAXOPHONIST
+
+Create the standing saxophonist as:
+
+SC_Saxophonist
+
+The saxophone can remain associated with the saxophonist for the default
+pose, but it should preferably remain its own mesh/object:
+
+SC_Saxophone
+
+This makes later animation much easier.
+
+Match the reference:
+
+-   standing near the roadworks barriers;
+
+-   instrument held in playing position;
+
+-   head/torso inclined toward saxophone;
+
+-   relaxed street-performance stance.
+
+Preserve believable proportions.
+
+⸻
+
+10. SAXOPHONE
+
+Model the saxophone with enough detail to read clearly at gameplay
+distance.
+
+Include:
+
+-   curved main body;
+
+-   bell;
+
+-   neck;
+
+-   mouthpiece;
+
+-   major key clusters as simplified forms.
+
+Do not model hundreds of tiny rods and screws.
+
+The silhouette and brass-instrument form matter most.
+
+Suggested:
+
+SC_Saxophone_Body
+
+SC_Saxophone_Mouthpiece
+
+⸻
+
+11. SAXOPHONE CASE
+
+The saxophone case is a separate asset:
+
+SC_SaxophoneCase
+
+Reconstruct the open/partially open case visible near the musician.
+
+Model:
+
+-   outer shell;
+
+-   lid;
+
+-   hinge relationship;
+
+-   interior cavity;
+
+-   handle.
+
+Keep the lid and base as separate objects if practical.
+
+This should be independently movable.
+
+⸻
+
+12. LITTER BIN
+
+Create the cylindrical public litter bin visible near the phone booth:
+
+SC_Bin
+
+Reconstruct:
+
+-   cylindrical body;
+
+-   domed/sloped upper rim if visible;
+
+-   opening;
+
+-   base;
+
+-   slight taper where appropriate.
+
+Keep it simple but recognisable.
+
+Do not bake dirt/graffiti into geometry.
+
+⸻
+
+13. ORANGE ROADWORKS BARRIER
+
+Create the plastic roadworks barrier as:
+
+SC_RoadBarrier
+
+It must be separate from the saxophonist.
+
+Model:
+
+-   rectangular plastic frame;
+
+-   feet;
+
+-   vertical end structures;
+
+-   internal horizontal/vertical pattern;
+
+-   connection points.
+
+Do not create an excessively high-poly plastic mesh.
+
+The orange colour and reflective markings will be added later.
+
+If multiple barriers are visible, model one reusable barrier and
+instance it.
+
+⸻
+
+14. TELEPHONE BOOTH
+
+The booth is a major hero environmental prop.
+
+Create:
+
+SC_PHONE_BOOTH_MASTER
+
+This must be a real enterable volume.
+
+The player should eventually be able to walk inside it.
+
+Model:
+
+-   outer enclosure;
+
+-   door/opening;
+
+-   glass/transparent panels where applicable;
+
+-   roof;
+
+-   floor;
+
+-   internal back wall;
+
+-   telephone equipment housing;
+
+-   shelf/panel;
+
+-   major signage or information panels as blank decal surfaces.
+
+Do not make it a shallow facade.
+
+⸻
+
+15. PHONE BOOTH ACCESS
+
+Maintain adequate realistic interior space for a human player.
+
+The booth should support:
+
+-   entering;
+
+-   turning slightly;
+
+-   looking at internal phone equipment;
+
+-   interacting with something inside.
+
+Do not artificially enlarge it excessively, but ensure collision can
+function reasonably.
+
+Keep the door/opening separate if it may later move.
+
+Suggested:
+
+SC_PhoneBooth_Shell
+
+SC_PhoneBooth_Door
+
+SC_PhoneBooth_Glass
+
+SC_PhoneBooth_Phone
+
+SC_PhoneBooth_InteractAnchor
+
+⸻
+
+16. PHONE EQUIPMENT
+
+The central/internal phone area visible in the reference should be
+reconstructed in simplified form.
+
+Model:
+
+-   telephone housing;
+
+-   handset shape;
+
+-   keypad/control region;
+
+-   major information panel;
+
+-   lower service panel.
+
+Do not attempt readable printed text yet.
+
+Use decal surfaces for later signage.
+
+⸻
+
+17. PHONE BOOTH INTERIOR LIGHT
+
+The booth has an important cold interior light.
+
+Do NOT bake this into the geometry.
+
+Create:
+
+SC_PhoneBooth_InteriorLightAnchor
+
+at the appropriate upper/internal position.
+
+Later the light should approximately produce:
+
+-   cool blue/cyan illumination;
+
+-   strong illumination on the internal back panel;
+
+-   cooler colour than the surrounding streetlight;
+
+-   subtle spill through the entrance/glass.
+
+⸻
+
+18. BRICK WALL BEHIND PHONE BOOTH
+
+Create the brick wall / low building facade as a separate architecture
+asset:
+
+SC_BrickWall
+
+Reconstruct:
+
+-   wall dimensions;
+
+-   actual wall thickness;
+
+-   phone-booth recess relationship;
+
+-   upper edge/parapet;
+
+-   corner return visible at right;
+
+-   major doorway/opening recesses if visible.
+
+Do not model individual bricks.
+
+Use geometry for:
+
+-   wall shape;
+
+-   corners;
+
+-   large recesses;
+
+-   sill/edge details.
+
+Use later PBR materials for brick and mortar.
+
+⸻
+
+19. IMPORTANT WALL RULE
+
+Do not project the original film still onto the brick wall.
+
+The wall must be a real three-dimensional architectural surface.
+
+Do not embed people, car reflections, lighting or props into the wall
+texture during this stage.
+
+⸻
+
+20. STREETLIGHT
+
+Create the streetlight visible above/near the saxophonist:
+
+SC_Streetlight
+
+Reconstruct:
+
+-   vertical pole;
+
+-   base;
+
+-   lamp head;
+
+-   mounting geometry.
+
+Match the approximate height and proportions from the reference.
+
+Do not fuse the streetlight into the pavement or barrier.
+
+⸻
+
+21. STREETLIGHT LIGHT SOURCE
+
+Add an Empty:
+
+SC_Streetlight_LightAnchor
+
+positioned inside/below the lamp head.
+
+This will later become the dominant warm light for the scene.
+
+The final lighting should approximate the still:
+
+-   warm yellow/green sodium-like cast;
+
+-   broad illumination across car and characters;
+
+-   warm pool around saxophonist;
+
+-   contrast against cold blue phone-booth light.
+
+Do not bake this lighting into textures.
+
+⸻
+
+22. LIGHTING CONTRAST IS IMPORTANT
+
+The eventual vignette should rely on two distinct lighting families:
+
+WARM STREET LIGHT
+
+from the lamp above the saxophonist.
+
+COLD PHONE BOOTH LIGHT
+
+from inside the booth.
+
+These should remain separate in the Three.js scene.
+
+The car and characters should receive real-time lighting rather than
+pre-baked colour.
+
+⸻
+
+23. DO NOT INCLUDE OVERHEAD VENTS
+
+The original studio-set image contains visible overhead
+ventilation/ductwork.
+
+DO NOT model this.
+
+It is not wanted as part of the reusable vignette.
+
+The game reconstruction should preserve the street-level scene without
+reproducing every studio-set element.
+
+⸻
+
+24. GROUND
+
+Create only a simple temporary ground plane for the reference
+composition.
+
+If a permanent environment patch is desired, keep it separately named:
+
+SC_GroundPatch
+
+Do not merge props into the ground.
+
+Later surface textures can reproduce:
+
+-   wet/dark tarmac;
+
+-   pavement;
+
+-   road markings;
+
+-   grime.
+
+⸻
+
+25. SCENE AUDIO ANCHOR
+
+The original short-film scene features the woman reciting Rilke’s First
+Elegy after her car breaks down.
+
+The original film audio should eventually be reusable in the game
+vignette.
+
+Do not embed audio in Blender geometry.
+
+Create an Empty:
+
+SC_RilkeAudioAnchor
+
+positioned near the woman outside the car.
+
+This can later be used by Three.js as the origin for spatial or
+semi-spatial playback.
+
+The actual audio implementation belongs to the game engine.
+
+⸻
+
+26. SAXOPHONE AUDIO ANCHOR
+
+Also create:
+
+SC_SaxophoneAudioAnchor
+
+at the saxophonist’s approximate position.
+
+This gives later sound design the option to spatialise:
+
+-   live saxophone;
+
+-   ambient music;
+
+-   diegetic performance audio.
+
+Do not implement audio in Blender.
+
+⸻
+
+27. CHARACTER AUDIO / ANIMATION COMPATIBILITY
+
+Do not fuse:
+
+-   mouth;
+
+-   hands;
+
+-   instrument;
+
+-   car;
+
+together in ways that make later animation impossible.
+
+The eventual vignette may include subtle:
+
+-   head movement;
+
+-   breathing;
+
+-   saxophone playing;
+
+-   hand movement;
+
+-   woman speaking/reciting.
+
+Build with that future possibility in mind.
+
+⸻
+
+28. PLACEHOLDER MATERIAL GROUPS
+
+Use simple placeholder materials only:
+
+MAT_SC_Car_PLACEHOLDER
+
+MAT_SC_Glass_PLACEHOLDER
+
+MAT_SC_Skin_PLACEHOLDER
+
+MAT_SC_Clothes_PLACEHOLDER
+
+MAT_SC_Metal_PLACEHOLDER
+
+MAT_SC_Brick_PLACEHOLDER
+
+MAT_SC_PhoneBooth_PLACEHOLDER
+
+MAT_SC_PlasticBarrier_PLACEHOLDER
+
+No final textures.
+
+⸻
+
+29. REAL-WORLD SCALE
+
+1 Blender unit = 1 metre
+
+Z = vertical
+
+Use human figures and the car as primary scale references.
+
+Maintain consistent scale across all assets.
+
+This is especially important because they need to recombine into the
+reference composition correctly.
+
+⸻
+
+30. ORIGINS
+
+Set logical origins:
+
+-   car origin near centre of vehicle at ground level;
+
+-   characters at feet/root;
+
+-   saxophone case near base centre;
+
+-   bin at bottom centre;
+
+-   phone booth at ground centre;
+
+-   barrier at centre of base;
+
+-   wall at ground/base corner;
+
+-   streetlight at base of pole.
+
+Correct origins are important for later Three.js placement.
+
+⸻
+
+31. THREE.JS PERFORMANCE
+
+These are hero props but still real-time assets.
+
+Allocate detail according to visual importance.
+
+Higher detail:
+
+-   car exterior;
+
+-   character silhouettes;
+
+-   saxophone;
+
+-   phone booth;
+
+-   streetlight head.
+
+Medium detail:
+
+-   saxophone case;
+
+-   bin;
+
+-   road barrier.
+
+Lower detail:
+
+-   brick wall surface.
+
+Do not model:
+
+-   individual bricks;
+
+-   tiny car mechanical components;
+
+-   individual hair strands;
+
+-   every saxophone key screw.
+
+⸻
+
+32. BLOCKOUT FIRST
+
+First create:
+
+salford_celluloid_blockout.blend
+
+containing simple blockouts for ALL separate objects.
+
+Assemble them to roughly reproduce the supplied still.
+
+Produce clay renders:
+
+VIEW A
+
+Camera-matched view resembling the original film still.
+
+VIEW B
+
+Three-quarter scene view proving that all elements exist independently
+in 3D.
+
+VIEW C
+
+Phone booth with door/opening visible.
+
+VIEW D
+
+Car alone.
+
+VIEW E
+
+Character + car relationship from the side.
+
+VIEW F
+
+Saxophonist, saxophone case and road barrier showing clear object
+separation.
+
+Then STOP for review.
+
+⸻
+
+33. SECOND GEOMETRY PASS
+
+After blockout approval, refine:
+
+-   car panels and wheels;
+
+-   vehicle glazing/interior;
+
+-   character silhouettes;
+
+-   clothing;
+
+-   hair masses;
+
+-   saxophone;
+
+-   open case;
+
+-   bin;
+
+-   road barrier;
+
+-   telephone booth interior;
+
+-   telephone hardware;
+
+-   brick-wall depth;
+
+-   lamp head.
+
+Still do not create final textures or lighting.
+
+⸻
+
+34. FINAL REFERENCE SCENE
+
+Create a reference Blender scene arranging the finished assets to
+closely reproduce the original shot.
+
+This reference scene should contain:
+
+-   the car;
+
+-   both women;
+
+-   saxophonist;
+
+-   saxophone;
+
+-   saxophone case;
+
+-   bin;
+
+-   road barriers;
+
+-   phone booth;
+
+-   brick wall;
+
+-   streetlight;
+
+-   lighting anchors;
+
+-   audio anchors.
+
+The reference scene may reproduce the film composition, but its
+constituent assets must remain separate.
+
+⸻
+
+35. DELIVERABLES
+
+Export individual GLBs where practical:
+
+sc_car.glb
+
+sc_woman_on_car.glb
+
+sc_woman_in_car.glb
+
+sc_saxophonist.glb
+
+sc_saxophone_case.glb
+
+sc_bin.glb
+
+sc_phone_booth.glb
+
+sc_road_barrier.glb
+
+sc_brick_wall.glb
+
+sc_streetlight.glb
+
+and:
+
+salford_celluloid_scene.blend
+
+containing the full reconstructed composition.
+
+The saxophone may either live inside sc_saxophonist.glb as a distinct
+named child object, or be exported separately as:
+
+sc_saxophone.glb
+
+if this is more useful for animation.
+
+⸻
+
+36. FINAL QUALITY CHECK
+
+Verify that:
+
+1.  Car can be deleted without deleting either woman.
+
+2.  Either woman can be moved independently.
+
+3.  Saxophone can be separated from performer.
+
+4.  Saxophone case is independent.
+
+5.  Bin is independent.
+
+6.  Road barrier is independent.
+
+7.  Phone booth can stand alone.
+
+8.  Player-scale space exists inside phone booth.
+
+9.  Brick wall is independent.
+
+10. Streetlight is independently movable.
+
+11. Audio anchors are independent Empties.
+
+12. No overhead ventilation has been modelled.
+
+⸻
+
+SUCCESS CRITERION
+
+The completed asset set should allow the original Salford Celluloid
+frame to be reconstructed in 3D, while also allowing every significant
+object to be reused, moved or removed independently.
+
+Do not reconstruct the photograph as one static diorama. Reconstruct the
+physical ingredients that created the photograph.

@@ -1,5 +1,5 @@
 export type LocationKind = 'building' | 'park' | 'car-park';
-export type LocationStatus = 'finished' | 'placeholder';
+export type LocationStatus = 'finished' | 'geometry-wip' | 'placeholder';
 
 export interface WorldLocation {
   readonly id: string;
@@ -12,7 +12,7 @@ export interface WorldLocation {
   readonly width: number;
   readonly depth: number;
   readonly height: number;
-  readonly color: number;
+  readonly color?: number;
 }
 
 export interface WorldMarker {
@@ -26,7 +26,7 @@ export const WORLD_BOUNDS = {
   minX: -64,
   maxX: 64,
   minZ: -62,
-  maxZ: 62,
+  maxZ: 78,
 } as const;
 
 // Three.js coordinates: +X east, -X west, -Z north, +Z south.
@@ -36,26 +36,26 @@ export const ROAD_WIDTH = 7.5;
 export const PAVEMENT_WIDTH = 2.5;
 
 export const WORLD_LOCATIONS: readonly WorldLocation[] = [
-  { id: 'florist', name: 'Florist', kind: 'building', status: 'finished', front: 'south', x: -16, z: -36, width: 6, depth: 7.5, height: 10.4, color: 0x6f594c },
-  { id: 'dreams', name: 'Dreams', kind: 'building', status: 'finished', front: 'south', x: 0, z: -36, width: 18, depth: 8.5, height: 8.3, color: 0x4c4b55 },
-  { id: 'renae', name: 'Renae', kind: 'building', status: 'placeholder', front: 'south', x: 17, z: -36, width: 13, depth: 8, height: 8, color: 0x51464c },
+  { id: 'florist', name: 'Nice Things', kind: 'building', status: 'geometry-wip', front: 'south', x: -16, z: -36, width: 6, depth: 7.5, height: 14.55, color: 0xb56f72 },
+  { id: 'dreams', name: 'Dreams', kind: 'building', status: 'finished', front: 'north', x: 1.5, z: 39, width: 18, depth: 8.5, height: 8.3, color: 0x4c4b55 },
+  { id: 'renae', name: 'Renee', kind: 'building', status: 'geometry-wip', front: 'south', x: 17, z: -38.6, width: 13.8, depth: 13.2, height: 10.65, color: 0x51464c },
 
   { id: 'come-through-lab', name: 'Come Through Lab', kind: 'building', status: 'placeholder', front: 'east', x: -39, z: -15, width: 10, depth: 10, height: 8, color: 0x414954 },
   { id: 'village-books', name: 'Village Books', kind: 'building', status: 'placeholder', front: 'east', x: -39, z: -3.5, width: 10, depth: 9, height: 7, color: 0x4d4541 },
-  { id: 'm1', name: 'M1', kind: 'building', status: 'placeholder', front: 'east', x: -39, z: 7, width: 10, depth: 9, height: 6.5, color: 0x4b5052 },
-  { id: 'coral', name: 'Coral', kind: 'building', status: 'placeholder', front: 'east', x: -39, z: 17, width: 10, depth: 8, height: 6.8, color: 0x51434d },
-  { id: 'eastern-bloc', name: 'Eastern Bloc', kind: 'building', status: 'placeholder', front: 'east', x: -39, z: 27.5, width: 10, depth: 10, height: 7.8, color: 0x454b50 },
+  { id: 'mcr1', name: 'MCR1', kind: 'building', status: 'geometry-wip', front: 'south', x: -25, z: -36, width: 12, depth: 7, height: 9.8, color: 0x4b5052 },
+  { id: 'coral', name: 'Coral', kind: 'building', status: 'finished', front: 'east', x: -39, z: 17, width: 10, depth: 23, height: 13.7, color: 0x51434d },
+  { id: 'cass-art', name: 'Cass Art', kind: 'building', status: 'geometry-wip', front: 'north', x: -16.6, z: 39, width: 18.2, depth: 11.93, height: 6.19, color: 0x303538 },
 
-  { id: 'gullivers', name: "Gulliver's Pub", kind: 'building', status: 'placeholder', front: 'west', x: 38, z: -15, width: 9, depth: 11, height: 8.2, color: 0x50433d },
-  { id: 'terrace', name: 'Terrace', kind: 'building', status: 'placeholder', front: 'west', x: 48, z: -15, width: 9, depth: 11, height: 8.8, color: 0x413f4e },
+  { id: 'gullivers', name: "Gulliver's Pub", kind: 'building', status: 'geometry-wip', front: 'west', x: 38, z: -15, width: 16.6, depth: 8, height: 12.2 },
+  { id: 'vinyl-exchange', name: 'Vinyl Exchange', kind: 'building', status: 'placeholder', front: 'south', x: -7, z: 49, width: 12, depth: 10, height: 8.2, color: 0x4b4541 },
   { id: 'car-park', name: 'Car Park', kind: 'car-park', status: 'placeholder', x: 43, z: 0, width: 20, depth: 14, height: 0, color: 0x292c31 },
-  { id: 'advanced-photo', name: 'Advanced Photo', kind: 'building', status: 'placeholder', front: 'west', x: 37.5, z: 17, width: 9, depth: 10, height: 7, color: 0x3e4b53 },
-  { id: 'arts-council', name: 'Arts Council', kind: 'building', status: 'placeholder', front: 'west', x: 48, z: 22.5, width: 9, depth: 15, height: 8.5, color: 0x4c4548 },
+  { id: 'arts-council', name: 'Arts Council', kind: 'building', status: 'geometry-wip', front: 'west', x: 47, z: 20, width: 20.4, depth: 44.3, height: 33.12, color: 0x4c4548 },
 
-  { id: 'vinyl-exchange', name: 'Vinyl Exchange', kind: 'building', status: 'placeholder', front: 'north', x: -19, z: 39, width: 12, depth: 10, height: 8.2, color: 0x4b4541 },
-  { id: 'real-camera', name: 'Real Camera', kind: 'building', status: 'placeholder', front: 'north', x: -5, z: 39, width: 14, depth: 10, height: 7.2, color: 0x414a52 },
-  { id: 'spice-cabin', name: 'Spice Cabin', kind: 'building', status: 'placeholder', front: 'north', x: 10, z: 39, width: 11, depth: 10, height: 6.8, color: 0x54493f },
-  { id: 'off-licence', name: 'Off-Licence', kind: 'building', status: 'placeholder', front: 'north', x: 23, z: 39, width: 11, depth: 10, height: 7.6, color: 0x4e4247 },
+  { id: 'eastern-bloc', name: 'Eastern Bloc', kind: 'building', status: 'placeholder', front: 'north', x: 20, z: 69.75, width: 10, depth: 10, height: 7.8, color: 0x454b50 },
+  { id: 'spice-cabin', name: 'Spice Cabin', kind: 'building', status: 'placeholder', front: 'south', x: 10.5, z: 49, width: 11, depth: 10, height: 6.8, color: 0x54493f },
+  { id: 'off-licence', name: 'Off-Licence', kind: 'building', status: 'placeholder', front: 'south', x: 22.5, z: 49, width: 11, depth: 10, height: 7.6, color: 0x4e4247 },
+  { id: 'real-camera', name: 'Real Camera', kind: 'building', status: 'placeholder', front: 'north', x: -11.5, z: 69.75, width: 14, depth: 10, height: 7.2, color: 0x414a52 },
+  { id: 'advanced-photo', name: 'Advanced Photo', kind: 'building', status: 'placeholder', front: 'north', x: 10.5, z: 69.75, width: 9, depth: 10, height: 7, color: 0x3e4b53 },
 
   { id: 'central-park', name: 'Central Park', kind: 'park', status: 'placeholder', x: PARK.x, z: PARK.z, width: PARK.width, depth: PARK.depth, height: 0, color: 0x263d2b },
 ] as const;
@@ -72,7 +72,7 @@ export const STERLING_BIKE_DOCKS: readonly WorldMarker[] = [
 
 export const FUTURE_EXITS: readonly WorldMarker[] = [
   { id: 'north-road', name: 'North Road', x: 0, z: -59 },
-  { id: 'south-road', name: 'South Road', x: 0, z: 59 },
+  { id: 'south-road', name: 'South Road', x: 0, z: 75 },
   { id: 'west-exit', name: 'West', x: -61, z: 25.5 },
   { id: 'east-exit', name: 'East', x: 61, z: 0 },
 ] as const;

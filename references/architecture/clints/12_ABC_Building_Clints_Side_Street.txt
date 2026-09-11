@@ -1,0 +1,1300 @@
+ABC BUILDING, CLINTS + SIDE STREET, MANCHESTER
+
+Full exterior architectural asset with hero Clints storefront
+
+Create an accurate, game-ready Blender reconstruction of the ABC
+Buildings complex in Manchester, based on ALL supplied reference
+photographs.
+
+This asset is for Zealot of Harpurhey, a Three.js game.
+
+The building must include the complete recognisable external massing of
+the ABC building, including its tall tower and lower retail podium.
+
+However, there are two especially important ground-floor locations:
+
+1.  CLINTS
+
+This is the primary hero location.
+
+The player will eventually be able to enter the shop.
+
+2.  SIDE STREET
+
+This needs an accurate and attractive exterior facade and enough
+interior depth to look convincing through the glazing, but a detailed
+interior is NOT required during this iteration.
+
+The detailed Clints interior will also be built during a later
+iteration.
+
+This task is therefore:
+
+DETAILED EXTERIOR GEOMETRY + INTERIOR-READY SHELLS ONLY.
+
+Do not create final textures, clothing, retail stock, posters, graffiti,
+plant foliage, logos, final lighting or detailed interior furnishings
+yet.
+
+⸻
+
+1.  REFERENCE PRIORITY
+
+Study all supplied images before modelling.
+
+The references provide:
+
+-   direct Clints facade photographs;
+
+-   nighttime Clints frontage;
+
+-   Side Street frontage;
+
+-   wide views of the podium;
+
+-   low-angle tower views;
+
+-   oblique street views;
+
+-   side/rear elevations;
+
+-   relationship between the podium and tower;
+
+-   repetitive upper-window grid;
+
+-   glazed corner/vertical tower section;
+
+-   canopy structure running across the retail frontage.
+
+Cross-reference all images.
+
+Do not reproduce Google Street View lens distortion as actual geometry.
+
+Infer a consistent architectural model.
+
+⸻
+
+2.  DETAIL HIERARCHY
+
+Allocate modelling effort according to gameplay importance.
+
+HIGHEST DETAIL
+
+-   Clints frontage
+
+-   Clints entrance
+
+-   Clints glazing
+
+-   canopy immediately around Clints
+
+-   structural columns at pedestrian level
+
+MEDIUM-HIGH DETAIL
+
+-   Side Street exterior
+
+-   neighbouring retail bays
+
+-   full retail podium
+
+-   large upper-floor windows above podium
+
+MEDIUM DETAIL
+
+-   tower facade
+
+-   tower windows
+
+-   vertical glazed corner section
+
+-   roofline
+
+LOW DETAIL
+
+-   surfaces not visible from normal player routes
+
+-   inaccessible rear/service areas
+
+Do not give every part of this enormous building the same polygon
+density.
+
+⸻
+
+3.  MASTER ASSET STRUCTURE
+
+Create:
+
+ABC_BUILDING_MASTER
+
+Suggested major collections:
+
+ABC_Tower
+
+ABC_Podium
+
+ABC_RetailFacade
+
+ABC_CLINTS
+
+ABC_SIDE_STREET
+
+ABC_OtherRetailBays
+
+ABC_Glass
+
+ABC_InteriorShells
+
+ABC_SignageSurfaces
+
+ABC_InteractionAnchors
+
+Keep Clints and Side Street logically separable even though they belong
+to the same building.
+
+⸻
+
+4.  OVERALL BUILDING MASSING
+
+Begin with the complete overall silhouette.
+
+The references show a substantial modernist/post-war office building
+comprising:
+
+-   tall rectangular tower;
+
+-   strong repetitive grid facade;
+
+-   lower horizontally extended podium;
+
+-   large retail frontage at ground level;
+
+-   large glazed windows above the retail frontage;
+
+-   a projecting canopy;
+
+-   a contrasting vertical glazed tower/corner section.
+
+Establish these proportions before modelling storefront detail.
+
+The tower should feel tall and imposing when viewed from pavement level.
+
+⸻
+
+5.  TOWER
+
+Model the main tower as efficient modular architecture.
+
+Do not manually build every identical window independently.
+
+Create reusable modules for:
+
+ABC_TowerWindow_Module
+
+ABC_TowerBay_Module
+
+Build the facade from repeated instances or linked geometry.
+
+Preserve:
+
+-   strong rectangular concrete/stone structural grid;
+
+-   recessed glazing;
+
+-   horizontal bands within windows;
+
+-   vertical bay rhythm;
+
+-   large uninterrupted side wall where shown;
+
+-   overall tower proportions.
+
+⸻
+
+6.  TOWER WINDOW GRID
+
+The repeated square/rectangular window grid is the dominant
+upper-building feature.
+
+It must read correctly in silhouette and perspective.
+
+Model real recess depth between:
+
+-   projecting structural frame;
+
+-   window plane.
+
+Avoid using a completely flat facade with a window texture.
+
+But do not over-model individual window mechanisms.
+
+⸻
+
+7.  TOWER SIDE WALL
+
+Some elevations include large relatively blank wall surfaces with far
+fewer openings.
+
+Preserve this asymmetry.
+
+Do not simply repeat the main window grid around every side of the
+tower.
+
+Use the references to determine which elevations are glazed and which
+are more solid.
+
+⸻
+
+8.  VERTICAL GLAZED TOWER SECTION
+
+One corner/section of the building contains a strong vertical glazed
+element.
+
+Model:
+
+-   tall glass curtain-wall section;
+
+-   vertical mullions;
+
+-   floor divisions;
+
+-   structural frame;
+
+-   top termination.
+
+This is important to the tower silhouette.
+
+Keep glass as separate material objects.
+
+⸻
+
+9.  ROOFLINE
+
+Reconstruct the visible roof/parapet silhouette.
+
+Include:
+
+-   projecting top slab/cornice;
+
+-   raised vertical portions;
+
+-   any visible glazed/top-floor section.
+
+Do not invent rooftop equipment unless clearly visible.
+
+⸻
+
+10. ABC VERTICAL LETTERING
+
+The tower includes large vertical ABC lettering visible in some
+references.
+
+Create:
+
+ABC_TowerLogoAnchor
+
+or low-depth placeholder lettering if useful for judging composition.
+
+Keep final typography/material treatment for the texture/signage pass.
+
+⸻
+
+11. LOWER PODIUM
+
+The podium is critical because this is the part the player experiences
+directly.
+
+Reconstruct:
+
+-   long horizontal facade;
+
+-   first/upper-level large glazing;
+
+-   projecting structural bays;
+
+-   ground-floor retail units;
+
+-   canopy;
+
+-   columns;
+
+-   recessed storefronts.
+
+The podium must connect structurally and proportionally to the tower.
+
+⸻
+
+12. UPPER PODIUM WINDOWS
+
+Above the shops are large rectangular glazed bays.
+
+Model:
+
+-   substantial outer frame;
+
+-   recessed glass;
+
+-   mullion/grid divisions;
+
+-   realistic bay depth.
+
+Reuse modules wherever dimensions repeat.
+
+⸻
+
+13. LONG RETAIL CANOPY
+
+THIS IS A MAJOR PLAYER-LEVEL FEATURE.
+
+A long illuminated canopy/marquee runs across the shopfronts.
+
+Reconstruct it carefully.
+
+It should include:
+
+-   projecting horizontal canopy;
+
+-   dark upper fascia;
+
+-   white/light sign bands;
+
+-   underside grid of rectangular illuminated panels;
+
+-   thin framing divisions;
+
+-   supporting relationship to columns/building.
+
+Do not make it a single flat slab.
+
+⸻
+
+14. CANOPY UNDERSIDE
+
+The illuminated underside is especially distinctive around Clints.
+
+Model an actual regular grid of panel divisions.
+
+Suggested:
+
+ABC_Canopy_Frame
+
+ABC_Canopy_Panels
+
+ABC_Canopy_SignBand
+
+Later, the panels can use emissive materials.
+
+The current task only needs geometry and simple placeholders.
+
+⸻
+
+15. CANOPY BRAND NAMES
+
+References show several names along the marquee, including:
+
+-   CLINTS
+
+-   Side Street-related neighbouring businesses
+
+-   other retail tenants
+
+Do not make all names permanent geometry.
+
+Create individual signage surfaces/anchors.
+
+For Clints:
+
+CL_SignAnchor_Canopy
+
+For Side Street:
+
+SS_SignAnchor
+
+Other brands can remain placeholder surfaces.
+
+⸻
+
+16. STRUCTURAL COLUMNS
+
+Ground-floor concrete/white structural columns divide the shopfront
+bays.
+
+Model these accurately because they establish:
+
+-   shop widths;
+
+-   rhythm;
+
+-   canopy support;
+
+-   pedestrian circulation.
+
+Avoid making them too thick.
+
+Compare them carefully against door and human scale.
+
+⸻
+
+17. CLINTS: HERO STOREFRONT
+
+CLINTS IS THE PRIMARY FOCUS OF THIS ASSET.
+
+Reconstruct the Clints exterior as accurately as possible.
+
+Include:
+
+-   full storefront width;
+
+-   entrance;
+
+-   large floor-to-ceiling glazing;
+
+-   black/dark metal frames;
+
+-   central/offset doorway arrangement visible in the references;
+
+-   mullions;
+
+-   transoms;
+
+-   threshold;
+
+-   canopy above;
+
+-   neighbouring structural columns.
+
+The storefront must already be recognisable in an untextured clay
+render.
+
+⸻
+
+18. CLINTS ENTRANCE
+
+The player must eventually be able to physically enter Clints.
+
+Therefore create a genuine doorway rather than a decorative glass plane.
+
+Suggested hierarchy:
+
+CL_Entrance
+
+CL_Door
+
+CL_DoorFrame
+
+CL_DoorGlass
+
+CL_EntranceTriggerAnchor
+
+Door geometry should be independently movable.
+
+Use the reference showing the open door to understand:
+
+-   door width;
+
+-   opening direction;
+
+-   frame depth;
+
+-   entrance position.
+
+⸻
+
+19. CLINTS GLASS
+
+Keep each major glass section separate.
+
+Suggested:
+
+CL_Glass_Left
+
+CL_Glass_Right
+
+CL_Glass_Door
+
+CL_Glass_Transom
+
+This will allow later:
+
+-   reflections;
+
+-   transparency;
+
+-   nighttime interior visibility.
+
+Do NOT bake shop interior photographs into the glass.
+
+⸻
+
+20. CLINTS LOGO / NEON AREAS
+
+References show prominent Clints graphics and illuminated signage behind
+the glass.
+
+Do NOT model these as part of the window.
+
+Create dedicated internal signage planes/objects:
+
+CL_Neon_LeftAnchor
+
+CL_Neon_RightAnchor
+
+CL_LogoInteriorAnchor
+
+These can later receive emissive materials.
+
+⸻
+
+21. CLINTS INTERIOR-READY SHELL
+
+Although the detailed interior comes later, the exterior model must
+already support entering the store.
+
+Create a simplified interior shell containing:
+
+-   floor;
+
+-   ceiling;
+
+-   rear wall;
+
+-   side walls;
+
+-   entry vestibule;
+
+-   realistic shop depth;
+
+-   main circulation volume.
+
+Do NOT populate it with:
+
+-   clothes;
+
+-   shelving;
+
+-   mannequins;
+
+-   counters;
+
+-   detailed stairs;
+
+-   displays.
+
+Those will be handled in the dedicated Clints interior iteration.
+
+⸻
+
+22. DO NOT MAKE CLINTS A SHALLOW BOX
+
+From the pavement, the player should be able to look through the glazing
+and perceive real interior depth.
+
+Therefore:
+
+-   interior should extend several metres;
+
+-   ceiling should continue inward;
+
+-   side walls should make architectural sense;
+
+-   black void immediately behind the glass is NOT acceptable.
+
+⸻
+
+23. FUTURE CLINTS INTERIOR CONNECTION
+
+Organise the current interior shell so it can later be replaced or
+extended without remodelling the storefront.
+
+Suggested:
+
+CL_InteriorShell_TEMP
+
+Later:
+
+CL_Interior_FINAL
+
+The facade should remain unchanged when the detailed interior is added.
+
+⸻
+
+24. CLINTS INTERACTION ANCHORS
+
+Add:
+
+CL_EntranceTriggerAnchor
+
+CL_InteriorSpawnAnchor
+
+CL_ExitAnchor
+
+These are Blender Empties only.
+
+They will later be used by Three.js/game logic.
+
+⸻
+
+25. SIDE STREET
+
+Side Street is the second important venue.
+
+The requirement for this iteration is:
+
+high-quality exterior + convincing visible interior depth, but no
+detailed interior.
+
+Reconstruct:
+
+-   tall glazed frontage;
+
+-   large window opening;
+
+-   doorway;
+
+-   dark framing;
+
+-   white surrounding architecture;
+
+-   signage position;
+
+-   relationship to adjacent ABC facade.
+
+⸻
+
+26. SIDE STREET VERTICAL SCALE
+
+Side Street appears substantially taller internally than an ordinary
+shopfront.
+
+Preserve the large glazed opening and vertical proportions.
+
+Do not compress it to the same height as a conventional small retail
+unit.
+
+⸻
+
+27. SIDE STREET SIGNAGE
+
+The large side street logo is visible through/on the glazing.
+
+Create:
+
+SS_LogoSurface
+
+or:
+
+SS_LogoAnchor
+
+Do not bake the lettering into the glass.
+
+⸻
+
+28. SIDE STREET INTERIOR SHELL
+
+Create only:
+
+-   floor;
+
+-   walls;
+
+-   ceiling;
+
+-   shallow visible depth;
+
+-   major permanent architectural forms visible from street.
+
+If the references clearly show planters close to the window, those may
+be created later as props.
+
+Do not create a detailed restaurant/bar interior yet.
+
+⸻
+
+29. SIDE STREET ENTRANCE
+
+Keep the entrance as real usable geometry even if gameplay does not
+initially require entry.
+
+Suggested:
+
+SS_Door
+
+SS_Entrance
+
+SS_EntranceAnchor
+
+This future-proofs the asset.
+
+⸻
+
+30. OTHER GROUND-FLOOR UNITS
+
+The full ABC podium contains several other venues/businesses.
+
+Reconstruct their architectural bays so the building feels complete.
+
+Do NOT give them the same level of interior detail as Clints.
+
+For non-hero units:
+
+-   correct opening dimensions;
+
+-   glass;
+
+-   door placeholders;
+
+-   simple interior darkness/depth;
+
+-   signage anchor.
+
+This prevents the building becoming a Clints storefront floating inside
+an incomplete facade.
+
+⸻
+
+31. LARGE ABC PODIUM LETTERS
+
+Some references show large vertically arranged letters on the lower
+building.
+
+Model these as separate low-depth geometry or create dedicated mounting
+anchors.
+
+Preserve their scale and position.
+
+⸻
+
+32. SIDE / LOWER BYROM STREET ELEVATION
+
+The references show the building extending substantially around the
+side.
+
+Reconstruct the major side elevation.
+
+Include:
+
+-   tower wall;
+
+-   repeated windows;
+
+-   lower podium forms;
+
+-   ground-floor window openings;
+
+-   large solid wall portions;
+
+-   service-level grilles/openings where significant.
+
+⸻
+
+33. LOWER WALL / SERVICE GRILLE
+
+One side reference shows patterned/vented panels along the lower facade.
+
+Represent the major recess and panel pattern.
+
+Use:
+
+-   low-poly repeated modules;
+
+-   texture/normal map later for tiny detail.
+
+Do not model thousands of tiny openings.
+
+⸻
+
+34. PROJECTING GLASS VOLUME
+
+One side of the tower/podium contains a projecting glazed volume.
+
+Model its:
+
+-   cantilever/projection;
+
+-   slab;
+
+-   glass face;
+
+-   side returns;
+
+-   relation to tower.
+
+This should affect the silhouette.
+
+⸻
+
+35. GLASS STRATEGY
+
+Keep glass separated by architectural zone:
+
+ABC_TowerGlass
+
+ABC_PodiumGlass
+
+CL_Glass
+
+SS_Glass
+
+This allows different optimisation and material settings later.
+
+⸻
+
+36. PAVEMENT
+
+Do not permanently merge the large surrounding pavement into the
+building GLB.
+
+A temporary pavement plane may be included for reference renders.
+
+The actual game streetscape will provide:
+
+-   pavement;
+
+-   road;
+
+-   kerbs;
+
+-   street furniture.
+
+⸻
+
+37. PLANTERS
+
+Large rectangular planters are visible outside the retail frontage.
+
+These should NOT be fused into the architecture.
+
+If modelled now, create:
+
+ABC_Planter_Module
+
+as an independent reusable prop.
+
+Do not model detailed vegetation yet.
+
+⸻
+
+38. STREET FURNITURE
+
+Do NOT permanently include:
+
+-   lamp posts;
+
+-   parked bikes;
+
+-   cars;
+
+-   pedestrians;
+
+-   Google Street View markers;
+
+-   road markings;
+
+-   bollards.
+
+These belong to the world environment.
+
+⸻
+
+39. SIGNAGE AND GRAPHICS
+
+Reserve proper surfaces/anchors for:
+
+-   CLINTS
+
+-   SIDE STREET
+
+-   ABC
+
+-   other canopy tenant names
+
+-   Clints internal neon
+
+Do not finalise typography during geometry pass.
+
+⸻
+
+40. PLACEHOLDER MATERIALS
+
+Use simple placeholder materials only:
+
+MAT_ABC_Concrete_PLACEHOLDER
+
+MAT_ABC_WhiteFacade_PLACEHOLDER
+
+MAT_ABC_DarkMetal_PLACEHOLDER
+
+MAT_ABC_Glass_PLACEHOLDER
+
+MAT_ABC_Canopy_PLACEHOLDER
+
+MAT_CLINTS_PLACEHOLDER
+
+MAT_SIDE_STREET_PLACEHOLDER
+
+No final textures.
+
+No final emissive signage.
+
+⸻
+
+41. NIGHTTIME READINESS
+
+This game has substantial nighttime content.
+
+Design the geometry so later night lighting works convincingly.
+
+Important future emissive/light areas include:
+
+-   canopy underside;
+
+-   Clints neon signage;
+
+-   Clints interior;
+
+-   Side Street interior;
+
+-   other shop interiors.
+
+Do not bake lighting into textures.
+
+⸻
+
+42. REAL-WORLD SCALE
+
+Work at real-world scale.
+
+1 Blender unit = 1 metre
+
+Z = vertical
+
+Use:
+
+-   doors;
+
+-   people;
+
+-   shopfronts;
+
+-   bikes;
+
+-   floor-to-floor height;
+
+as visual scale references.
+
+⸻
+
+43. MODULAR TOWER CONSTRUCTION
+
+The tower is repetitive.
+
+Do not generate hundreds of unique meshes.
+
+Build modular pieces and instance them.
+
+Example:
+
+ABC_WindowBay_A
+
+ABC_WindowBay_B
+
+ABC_WindowBay_Corner
+
+ABC_BlankWallBay
+
+Use these to construct the upper facade.
+
+⸻
+
+44. PERFORMANCE TARGET
+
+The player may approach Clints very closely while also seeing the entire
+tower.
+
+Therefore use a split-detail strategy:
+
+CLOSE-RANGE GEOMETRY
+
+Clints and podium.
+
+MID-RANGE GEOMETRY
+
+first few tower floors.
+
+DISTANCE GEOMETRY
+
+repetitive upper tower.
+
+Avoid unnecessary bevels on every tower window.
+
+⸻
+
+45. OPTIONAL FUTURE LODS
+
+Structure geometry so later LODs can easily be created.
+
+Suggested later:
+
+ABC_LOD0
+
+detailed player-level version.
+
+ABC_LOD1
+
+simplified tower windows.
+
+ABC_LOD2
+
+silhouette / distant building.
+
+Do not create them unless requested now.
+
+⸻
+
+46. ORIGINS
+
+Set the master origin at a logical ground-level corner of the building
+footprint.
+
+Store entrances and individual movable doors should have their own
+sensible pivots.
+
+Clints door pivot should be at the actual hinge.
+
+⸻
+
+47. BLOCKOUT FIRST
+
+DO NOT immediately build the final detailed asset.
+
+First create:
+
+abc_building_blockout.blend
+
+The blockout must contain:
+
+-   entire tower mass;
+
+-   podium mass;
+
+-   major tower grid;
+
+-   glazed vertical section;
+
+-   retail canopy;
+
+-   ground-floor structural columns;
+
+-   Clints storefront;
+
+-   Side Street facade;
+
+-   other major shop bays.
+
+Produce the following clay renders:
+
+VIEW A
+
+Wide street view showing the full retail podium and tower.
+
+VIEW B
+
+Low-angle tower view matching the strongest supplied low-angle
+reference.
+
+VIEW C
+
+Straight-on Clints facade.
+
+VIEW D
+
+Clints three-quarter view showing canopy depth.
+
+VIEW E
+
+Straight-on Side Street facade.
+
+VIEW F
+
+Side / Lower Byrom Street elevation.
+
+VIEW G
+
+Distant view demonstrating complete tower silhouette.
+
+Then STOP for review.
+
+⸻
+
+48. BLOCKOUT REVIEW PRIORITIES
+
+Before continuing, verify:
+
+1.  Tower height.
+
+2.  Tower width.
+
+3.  Window-grid spacing.
+
+4.  Podium height.
+
+5.  Canopy projection.
+
+6.  Clints width.
+
+7.  Clints entrance position.
+
+8.  Side Street dimensions.
+
+9.  relationship between podium and tower.
+
+10. side-elevation massing.
+
+Do NOT proceed to fine detail if these proportions are incorrect.
+
+⸻
+
+49. SECOND GEOMETRY PASS
+
+After blockout approval, refine:
+
+-   tower window recesses;
+
+-   curtain-wall mullions;
+
+-   podium framing;
+
+-   canopy panel grid;
+
+-   structural columns;
+
+-   Clints entrance and glazing;
+
+-   Clints door;
+
+-   Side Street glazing;
+
+-   Side Street doorway;
+
+-   service-level panels;
+
+-   signage surfaces.
+
+Still do not build the detailed Clints interior.
+
+⸻
+
+50. CLINTS VALIDATION
+
+The Clints facade is the single most important quality check.
+
+Verify:
+
+-   shop width;
+
+-   glazing divisions;
+
+-   door width;
+
+-   door height;
+
+-   entrance location;
+
+-   canopy height;
+
+-   structural columns;
+
+-   relationship between door and windows;
+
+-   interior depth behind glass.
+
+It must not become a generic luxury clothing storefront.
+
+It should specifically match the supplied Clints exterior.
+
+⸻
+
+51. SIDE STREET VALIDATION
+
+Verify:
+
+-   tall glazing;
+
+-   frame width;
+
+-   entrance;
+
+-   facade height;
+
+-   correct positioning relative to ABC complex.
+
+Side Street should look finished externally even though its detailed
+interior is postponed.
+
+⸻
+
+52. FINAL DELIVERABLE STRUCTURE
+
+Deliver:
+
+abc_building_blockout.blend
+
+abc_building.blend
+
+abc_building.glb
+
+If useful for loading/performance, also optionally export:
+
+abc_tower.glb
+
+abc_podium.glb
+
+abc_clints_shell.glb
+
+but maintain a master Blender file that preserves the entire building
+assembled correctly.
+
+⸻
+
+53. GLB EXPORT CHECK
+
+Before export:
+
+-   apply transforms;
+
+-   verify normals;
+
+-   remove temporary cameras/lights;
+
+-   remove Google reference planes;
+
+-   remove test geometry;
+
+-   ensure glass is separate;
+
+-   keep Clints door separate;
+
+-   retain interaction anchors;
+
+-   test GLB reimport.
+
+⸻
+
+54. SUCCESS CRITERION
+
+The asset succeeds if:
+
+from distance: it unmistakably reads as the large ABC building through
+its tower proportions and repetitive window grid;
+
+from street level: the podium and canopy feel architecturally
+convincing;
+
+up close: Clints feels like a specific real shop rather than a generic
+glass retail unit;
+
+for gameplay: the Clints doorway and interior shell already permit
+eventual player entry;
+
+for Side Street: the facade is visually finished enough to exist
+convincingly in the world, even before its detailed interior is built.

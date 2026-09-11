@@ -4,9 +4,11 @@ import {
   CylinderGeometry,
   Float32BufferAttribute,
   Group,
+  InstancedMesh,
   Mesh,
   MeshBasicMaterial,
   MeshStandardMaterial,
+  Object3D,
   Quaternion,
   Vector3,
   type Material,
@@ -14,6 +16,8 @@ import {
 import {
   createDreamsSignMaterial,
   createGraffitiMaterial,
+  createNoticeMaterial,
+  createStickerClusterMaterial,
 } from '../rendering/worldGraphics';
 import { createWorldMaterial } from '../rendering/worldMaterials';
 import type { WorldLocation } from './worldLayout';
@@ -22,7 +26,7 @@ const FRONT_Z = 4.32;
 const RAIL_RADIUS = 0.035;
 const UP = new Vector3(0, 1, 0);
 const boxGeometryCache = new Map<string, BoxGeometry>();
-const railGeometryCache = new Map<string, CylinderGeometry>();
+const unitRailGeometry = new CylinderGeometry(RAIL_RADIUS, RAIL_RADIUS, 1, 6);
 
 function getBoxGeometry(width: number, height: number, depth: number): BoxGeometry {
   const key = `${width}:${height}:${depth}`;
@@ -30,16 +34,6 @@ function getBoxGeometry(width: number, height: number, depth: number): BoxGeomet
   if (!geometry) {
     geometry = new BoxGeometry(width, height, depth);
     boxGeometryCache.set(key, geometry);
-  }
-  return geometry;
-}
-
-function getRailGeometry(length: number): CylinderGeometry {
-  const key = length.toFixed(4);
-  let geometry = railGeometryCache.get(key);
-  if (!geometry) {
-    geometry = new CylinderGeometry(RAIL_RADIUS, RAIL_RADIUS, length, 6);
-    railGeometryCache.set(key, geometry);
   }
   return geometry;
 }
@@ -102,22 +96,17 @@ function createRailMaterial(): MeshStandardMaterial {
   });
 }
 
+interface RailSegment {
+  readonly start: Vector3;
+  readonly end: Vector3;
+}
+
 function addRailBetween(
-  root: Group,
-  name: string,
+  segments: RailSegment[],
   start: Vector3,
   end: Vector3,
-  material: Material,
 ): void {
-  const direction = new Vector3().subVectors(end, start);
-  const beam = new Mesh(
-    getRailGeometry(direction.length()),
-    material,
-  );
-  beam.name = `Dreams ${name}`;
-  beam.position.copy(start).add(end).multiplyScalar(0.5);
-  beam.quaternion.copy(new Quaternion().setFromUnitVectors(UP, direction.normalize()));
-  root.add(beam);
+  segments.push({ start, end });
 }
 
 function addRampAndRailings(root: Group, brick: Material, rail: Material): void {
@@ -149,54 +138,59 @@ function addRampAndRailings(root: Group, brick: Material, rail: Material): void 
   );
   ramp.rotation.z = -0.105;
 
+  const segments: RailSegment[] = [];
   for (const z of [4.42, 5.74]) {
     for (const x of [-4.75, -2.4, 0, 2.35, 3.55]) {
       addRailBetween(
-        root,
-        'platform railing post',
+        segments,
         new Vector3(x, 0.61, z),
         new Vector3(x, 1.46, z),
-        rail,
       );
     }
     addRailBetween(
-      root,
-      'platform upper handrail',
+      segments,
       new Vector3(-4.75, 1.46, z),
       new Vector3(3.55, 1.46, z),
-      rail,
     );
     addRailBetween(
-      root,
-      'platform lower handrail',
+      segments,
       new Vector3(-4.75, 1.02, z),
       new Vector3(3.55, 1.02, z),
-      rail,
     );
 
     const rampStart = new Vector3(3.55, 1.46, z);
     const rampEnd = new Vector3(7.82, 1.02, z);
-    addRailBetween(root, 'sloping handrail', rampStart, rampEnd, rail);
+    addRailBetween(segments, rampStart, rampEnd);
     addRailBetween(
-      root,
-      'sloping lower rail',
+      segments,
       new Vector3(3.55, 1.02, z),
       new Vector3(7.82, 0.58, z),
-      rail,
     );
     for (const [x, low, high] of [
       [5.65, 0.39, 1.24],
       [7.82, 0.17, 1.02],
     ] as const) {
       addRailBetween(
-        root,
-        'ramp railing post',
+        segments,
         new Vector3(x, low, z),
         new Vector3(x, high, z),
-        rail,
       );
     }
   }
+
+  const railing = new InstancedMesh(unitRailGeometry, rail, segments.length);
+  railing.name = 'Dreams instanced ramp and platform railings';
+  const dummy = new Object3D();
+  segments.forEach(({ start, end }, index) => {
+    const direction = new Vector3().subVectors(end, start);
+    dummy.position.copy(start).add(end).multiplyScalar(0.5);
+    dummy.quaternion.copy(new Quaternion().setFromUnitVectors(UP, direction.clone().normalize()));
+    dummy.scale.set(1, direction.length(), 1);
+    dummy.updateMatrix();
+    railing.setMatrixAt(index, dummy.matrix);
+  });
+  railing.instanceMatrix.needsUpdate = true;
+  root.add(railing);
 }
 
 function addShutterBay(
@@ -219,25 +213,41 @@ function addSignLights(root: Group): void {
     roughness: 0.72,
     metalness: 0.35,
   });
-  for (const x of [-4.55, -1.5, 1.55, 4.6]) {
-    addPart(root, 'cold fascia tube', box(2.7, 0.075, 0.08, tubeMaterial), x, 5.86, FRONT_Z + 0.46);
-    for (const bracketX of [x - 1.05, x + 1.05]) {
-      const bracket = addPart(
-        root,
-        'fluorescent bracket',
-        box(0.08, 0.22, 0.22, bracketMaterial),
-        bracketX,
-        5.78,
-        FRONT_Z + 0.34,
-      );
-      bracket.rotation.x = -0.3;
-    }
-  }
+  const dummy = new Object3D();
+  const upper = new InstancedMesh(getBoxGeometry(2.7, 0.075, 0.08), tubeMaterial, 4);
+  upper.name = 'Dreams instanced cold fascia tubes';
+  [-4.55, -1.5, 1.55, 4.6].forEach((x, index) => {
+    dummy.position.set(x, 5.86, FRONT_Z + 0.46);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(1, 1, 1);
+    dummy.updateMatrix();
+    upper.setMatrixAt(index, dummy.matrix);
+  });
+  upper.instanceMatrix.needsUpdate = true;
+  root.add(upper);
+
+  const brackets = new InstancedMesh(getBoxGeometry(0.08, 0.22, 0.22), bracketMaterial, 8);
+  brackets.name = 'Dreams instanced fluorescent brackets';
+  [-5.6, -3.5, -2.55, -0.45, 0.5, 2.6, 3.55, 5.65].forEach((x, index) => {
+    dummy.position.set(x, 5.78, FRONT_Z + 0.34);
+    dummy.rotation.set(-0.3, 0, 0);
+    dummy.updateMatrix();
+    brackets.setMatrixAt(index, dummy.matrix);
+  });
+  brackets.instanceMatrix.needsUpdate = true;
+  root.add(brackets);
 
   const lowerTube = new MeshBasicMaterial({ color: 0xbde9ef });
-  for (const x of [-4.3, -1.35, 1.6, 4.55]) {
-    addPart(root, 'cool shutter wash tube', box(2.65, 0.055, 0.06, lowerTube), x, 3.31, FRONT_Z + 0.5);
-  }
+  const lower = new InstancedMesh(getBoxGeometry(2.65, 0.055, 0.06), lowerTube, 4);
+  lower.name = 'Dreams instanced cool shutter wash tubes';
+  [-4.3, -1.35, 1.6, 4.55].forEach((x, index) => {
+    dummy.position.set(x, 3.31, FRONT_Z + 0.5);
+    dummy.rotation.set(0, 0, 0);
+    dummy.updateMatrix();
+    lower.setMatrixAt(index, dummy.matrix);
+  });
+  lower.instanceMatrix.needsUpdate = true;
+  root.add(lower);
 }
 
 export function createDreamsBuilding(location: WorldLocation): Group {
@@ -254,10 +264,17 @@ export function createDreamsBuilding(location: WorldLocation): Group {
   const stainedCladding = createWorldMaterial('concrete-cracked-overhaul', {
     repeatX: 4,
     repeatY: 2,
-    tint: 0xd4d2c4,
+    tint: 0xd7d3c7,
     emissive: 0xa9bdbe,
     emissiveIntensity: 0.42,
     roughness: 0.93,
+  });
+  const photographicGable = createWorldMaterial('dreams-cladding-hero', {
+    clamp: true,
+    tint: 0xd8d4c8,
+    emissive: 0xa9bdbe,
+    emissiveIntensity: 0.18,
+    roughness: 0.94,
   });
   const darkRoof = createWorldMaterial('metal-oxidised-overhaul', {
     repeatX: 5,
@@ -266,12 +283,12 @@ export function createDreamsBuilding(location: WorldLocation): Group {
     roughness: 0.92,
     metalness: 0.12,
   });
-  const shutter = createWorldMaterial('shutter-grimy-overhaul', {
-    repeatX: 2,
+  const shutter = createWorldMaterial('dreams-shutter-hero', {
+    repeatX: 1,
     repeatY: 1,
-    tint: 0xb7b1a6,
+    tint: 0xffffff,
     emissive: 0x75868b,
-    emissiveIntensity: 0.08,
+    emissiveIntensity: 0.22,
     roughness: 0.82,
     metalness: 0.16,
   });
@@ -283,7 +300,7 @@ export function createDreamsBuilding(location: WorldLocation): Group {
   });
 
   addPart(root, 'brick shell', box(18, 5.62, 8.5, brick), 0, 2.81, 0);
-  const gable = new Mesh(createGableGeometry(18, 8.5), stainedCladding);
+  const gable = new Mesh(createGableGeometry(18, 8.5), photographicGable);
   addPart(root, 'deep gabled volume', gable, 0, 0, 0);
 
   const roofAngle = Math.atan2(2.82, 9);
@@ -303,7 +320,12 @@ export function createDreamsBuilding(location: WorldLocation): Group {
   addShutterBay(root, 'central entrance', -1.52, 2.62, shutter, frame);
   addShutterBay(root, 'right', 2.15, 4.55, shutter, frame);
 
-  addPart(root, 'right brick return', box(3.35, 3.28, 0.22, brick), 7.22, 1.68, FRONT_Z + 0.07);
+  const rightBrick = createWorldMaterial('dreams-brick-hero', {
+    clamp: true,
+    tint: 0xc5a99b,
+    roughness: 0.94,
+  });
+  addPart(root, 'right brick return', box(3.35, 3.28, 0.22, rightBrick), 7.22, 1.68, FRONT_Z + 0.07);
   addPart(root, 'right wall panel frame', box(1.35, 2.12, 0.2, frame), 7.15, 1.84, FRONT_Z + 0.23);
   addPart(root, 'right wall panel face', box(1.08, 1.82, 0.08, new MeshStandardMaterial({ color: 0xc7c3b5, roughness: 0.94 })), 7.15, 1.88, FRONT_Z + 0.37);
   addPart(root, 'right panel faded yellow stripe', box(1.08, 0.35, 0.035, new MeshStandardMaterial({ color: 0xa7a014, roughness: 0.9 })), 7.15, 1.62, FRONT_Z + 0.43);
@@ -316,6 +338,28 @@ export function createDreamsBuilding(location: WorldLocation): Group {
 
   const graffiti = addPart(root, 'restrained shutter tagging', box(2.2, 1.15, 0.025, createGraffitiMaterial('MCR', '#29252b')), -5.65, 1.62, FRONT_Z + 0.24);
   graffiti.rotation.z = -0.08;
+
+  addPart(
+    root,
+    'handwritten no dumping notice',
+    box(0.72, 0.78, 0.025, createNoticeMaterial('NO DUMPING', 'CCTV IN USE\nKEEP CLEAR', '#d2b731')),
+    7.15,
+    2.25,
+    FRONT_Z + 0.46,
+  );
+  const stickers = addPart(
+    root,
+    'sticker cluster decal',
+    box(0.68, 0.8, 0.02, createStickerClusterMaterial()),
+    8.18,
+    1.12,
+    FRONT_Z + 0.22,
+  );
+  stickers.rotation.z = -0.045;
+  addPart(root, 'right drainpipe', box(0.14, 5.35, 0.16, frame), 8.58, 2.68, FRONT_Z + 0.22);
+  addPart(root, 'rainwater hopper', box(0.34, 0.38, 0.3, frame), 8.58, 5.18, FRONT_Z + 0.22);
+  addPart(root, 'wall cable', box(5.8, 0.045, 0.045, frame), 5.55, 3.18, FRONT_Z + 0.39).rotation.z = -0.025;
+  addPart(root, 'cheap wall vent', box(0.58, 0.42, 0.08, frame), 5.72, 0.62, FRONT_Z + 0.42);
 
   addRampAndRailings(root, brick, createRailMaterial());
   addSignLights(root);

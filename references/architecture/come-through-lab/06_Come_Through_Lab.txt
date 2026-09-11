@@ -1,0 +1,1056 @@
+COME THROUGH LAB, MANCHESTER
+
+Untextured Blender reconstruction for Zealot of Harpurhey
+
+Create an accurate, game-ready Blender reconstruction of the Come
+Through Lab premises in Manchester, using ALL supplied reference
+photographs.
+
+This asset is for Zealot of Harpurhey, a Three.js game.
+
+This task is GEOMETRY ONLY.
+
+Do not create final textures, decals, logos, QR codes, printed
+instructions, graffiti, brick textures, signage graphics or lighting
+yet.
+
+The goal is to reconstruct:
+
+the historic brick facade;
+
+entrance;
+
+windows;
+
+stone detailing;
+
+security grilles;
+
+number 84;
+
+Come Through Lab drop box;
+
+envelope/pencil holder beside it;
+
+immediate architectural surroundings;
+
+accurately enough that the building reads correctly in plain clay
+materials.
+
+⸻
+
+1.  IMPORTANT GAMEPLAY REQUIREMENT
+
+The Come Through Lab drop box is a functional gameplay object.
+
+In the real location, customers can leave film for processing when the
+lab is closed.
+
+The later game mechanic should support approximately:
+
+Player approaches the CTL drop box.
+
+Player interacts with it.
+
+Player can submit exposed film.
+
+The game can reference an order/payment process.
+
+Film is considered deposited.
+
+Developed files become available later.
+
+Negatives can subsequently be collected.
+
+Do NOT implement any gameplay logic in Blender.
+
+However, the drop box must be modelled as a distinct, well-organised
+asset suitable for interaction.
+
+⸻
+
+2.  STUDY ALL REFERENCES BEFORE MODELLING
+
+Cross-reference every supplied image.
+
+The references provide:
+
+a close frontal view of the entrance;
+
+a close-up of the CTL drop box;
+
+wider street views showing scale;
+
+views showing more of the complete building;
+
+views showing upper floors;
+
+views showing the building’s relationship to the neighbouring industrial
+architecture;
+
+useful views of window spacing and facade rhythm.
+
+Do not copy Google Street View lens distortion as geometry.
+
+Infer a consistent architectural structure from all views.
+
+⸻
+
+3.  BUILDING SCOPE
+
+Model enough of the building containing Come Through Lab to establish
+the location convincingly.
+
+Include:
+
+ground floor;
+
+upper floors visible in the references;
+
+left edge/corner of the building;
+
+entrance;
+
+repeated ground-floor windows;
+
+upper sash-style windows;
+
+brick facade;
+
+stone details;
+
+projecting balcony sections where visible;
+
+roof/parapet massing where visible.
+
+Do not attempt to reconstruct the entire street.
+
+Adjacent buildings, cars, fences, trees and modern structures should not
+be fused into this asset.
+
+⸻
+
+4.  HISTORIC BRICK FACADE
+
+The brick facade is an important part of the visual identity.
+
+Do NOT simplify it into a generic perfectly flat red wall.
+
+Preserve the main physical brick architecture using geometry where
+appropriate.
+
+Important geometry includes:
+
+wall thickness;
+
+recessed window openings;
+
+projecting stone sills;
+
+brick arches above windows;
+
+alternating brick colour patterns within arches;
+
+horizontal brick bands;
+
+projecting brick piers;
+
+changes in wall plane;
+
+entrance surround;
+
+balcony supports.
+
+Do not model every individual brick.
+
+Individual bricks, mortar, chipped surfaces and colour variation should
+be added later through PBR textures.
+
+However, the larger brick patterns that materially change the shape or
+architectural rhythm should be represented.
+
+⸻
+
+5.  BRICK ARCHES
+
+The ground-floor windows have distinctive shallow brick arches.
+
+These must exist as real architectural geometry.
+
+Do not make rectangular windows and rely on a future texture to fake the
+arches.
+
+Reconstruct:
+
+curved top opening;
+
+arch depth;
+
+visible outer brick arch profile;
+
+surrounding wall reveal.
+
+Preserve the characteristic alternating red/darker brick rhythm only as
+a future texture/material detail.
+
+⸻
+
+6.  MAIN ENTRANCE
+
+The entrance is a major hero area.
+
+Reconstruct:
+
+tall timber door;
+
+arched/curved upper door profile;
+
+door frame;
+
+stone surround;
+
+heavy projecting lintel/header;
+
+decorative stone blocks;
+
+narrow threshold;
+
+metal kick plate;
+
+letter slot;
+
+long vertical handle;
+
+recessed doorway depth.
+
+Keep the door separate.
+
+Suggested objects:
+
+CTL_Entrance
+
+CTL_Door
+
+CTL_DoorFrame
+
+CTL_StoneSurround
+
+CTL_DoorHandle
+
+CTL_LetterSlot
+
+CTL_EntranceTriggerAnchor
+
+Add an Empty:
+
+CTL_EntranceTriggerAnchor
+
+for later Three.js interaction.
+
+⸻
+
+7.  DOOR TIMBER
+
+Do not create final wood grain yet.
+
+But model the door so its vertical plank construction can later be
+represented convincingly.
+
+It should not look like a generic flat modern door.
+
+Preserve:
+
+overall plank rhythm;
+
+arched upper outline;
+
+realistic thickness;
+
+frame depth.
+
+⸻
+
+8.  ADDRESS NUMBER 84
+
+The large metallic 84 mounted on the brick facade is an important
+landmark.
+
+Create either:
+
+simple separate number geometry;
+
+OR
+
+dedicated decal/sign surfaces if that is more efficient.
+
+Suggested:
+
+CTL_Address84
+
+Position it accurately above/right of the entrance.
+
+The final material should later reproduce its dark metallic raised
+appearance.
+
+⸻
+
+9.  GROUND-FLOOR WINDOWS
+
+Reconstruct the windows immediately to the right of the entrance.
+
+They feature:
+
+shallow brick arches;
+
+recessed glazing;
+
+dark/grey frame;
+
+stone/concrete sill;
+
+substantial external security grilles.
+
+Keep glazing separate from grilles.
+
+Suggested:
+
+CTL_Window_Ground01
+
+CTL_Window_Ground02
+
+CTL_Window_Ground03
+
+CTL_WindowGlass_Ground01
+
+CTL_Grille_Ground01
+
+etc.
+
+⸻
+
+10. SECURITY GRILLES
+
+These are visually important and should be actual geometry.
+
+Model the metal mesh/grille using an efficient repeated grid.
+
+Preserve:
+
+outer frame;
+
+vertical and horizontal members;
+
+slight projection away from the window;
+
+mounting relationship to the brick facade.
+
+Avoid modelling every wire with excessive radial subdivisions.
+
+The grille should be visibly separate from the window behind it.
+
+⸻
+
+11. UPPER WINDOWS
+
+Reconstruct the upper windows using modular components.
+
+They appear to be painted sash-style or similar multi-pane windows.
+
+Model:
+
+openings;
+
+reveals;
+
+sill projections;
+
+frame;
+
+main horizontal/vertical divisions;
+
+recessed glass.
+
+Suggested:
+
+CTL_Window_Upper_TypeA
+
+CTL_Window_Upper_TypeB
+
+Use linked instances when dimensions repeat.
+
+⸻
+
+12. UPPER BALCONY / WALKWAY DETAILS
+
+Some reference views show balcony-like sections or small projecting
+walkways with:
+
+metal structure;
+
+transparent/mesh guarding;
+
+masonry supports.
+
+Model the major structure because it contributes to the facade
+silhouette.
+
+Do not over-model tiny fixings.
+
+⸻
+
+13. COME THROUGH LAB DROP BOX
+
+THIS IS A HERO ASSET.
+
+Reconstruct the black wall-mounted CTL drop box shown in the close-up
+reference.
+
+It must be a separate object hierarchy.
+
+Suggested:
+
+CTL_DROPBOX_MASTER
+
+containing:
+
+CTL_DropBox_Body
+
+CTL_DropBox_Door
+
+CTL_DropBox_Lid
+
+CTL_DropBox_Lock
+
+CTL_DropBox_LabelSurface
+
+CTL_DropBox_InstructionSurface
+
+CTL_DropBox_InteractAnchor
+
+The drop box should be independently movable/removable from the
+building.
+
+Do not merge it permanently into the brick wall mesh.
+
+⸻
+
+14. DROP BOX PHYSICAL FORM
+
+Study the close-up carefully.
+
+Reconstruct:
+
+rectangular black metal body;
+
+slightly projecting upper lid/cap;
+
+front door/panel;
+
+visible lock;
+
+lower panel region;
+
+shallow side depth;
+
+wall mounting.
+
+Maintain realistic sheet-metal thickness.
+
+Avoid making it look like a thick plastic vending machine.
+
+⸻
+
+15. DROP BOX SIGNAGE SURFACES
+
+The real drop box includes several important printed elements:
+
+Come Through Lab branding;
+
+bright green instruction panel;
+
+QR code;
+
+instructions;
+
+CTL DROP BOX text.
+
+For this geometry pass, create clean dedicated surfaces:
+
+CTL_DropBox_LogoSurface
+
+CTL_DropBox_InstructionsSurface
+
+CTL_DropBox_TextSurface
+
+Do not model the QR code or letters as geometry.
+
+Later textures/decals should reproduce them closely.
+
+⸻
+
+16. DROP BOX INTERACTION ANCHOR
+
+Add an Empty:
+
+CTL_DropBox_InteractAnchor
+
+positioned at comfortable player interaction height immediately in front
+of the drop box.
+
+This will later support a Three.js interaction such as:
+
+PRESS E TO DROP OFF FILM
+
+Do not implement this in Blender.
+
+⸻
+
+17. FILM DROP MECHANISM
+
+The drop box should visually support the idea that an envelope can be
+deposited.
+
+If the actual slot or opening is visible in the references, model it.
+
+If uncertain, keep the box externally accurate and provide a logical
+interaction point without inventing an elaborate mechanical system.
+
+Do not over-design unsupported details.
+
+⸻
+
+18. ENVELOPE + PENCIL HOLDER
+
+To the left of the drop box there is a small clear/wall-mounted holder
+containing materials used for film drop-off.
+
+This is important and should be preserved.
+
+Model it as a separate small asset:
+
+CTL_SUPPLY_HOLDER_MASTER
+
+Include:
+
+transparent/plastic outer holder;
+
+mounting backplate;
+
+open upper/front access;
+
+internal divider if visible.
+
+This holder may contain:
+
+film envelopes;
+
+pencils/pens.
+
+Do not permanently fuse individual envelopes into the architecture.
+
+⸻
+
+19. ENVELOPES
+
+Create one simple reusable envelope prop:
+
+CTL_FilmEnvelope
+
+Keep it low-poly.
+
+It should have believable dimensions for holding film.
+
+Multiple envelopes can later be instanced inside the holder.
+
+No printed graphics yet.
+
+⸻
+
+20. PENCIL
+
+Create one simple reusable pencil/pen prop if useful:
+
+CTL_Pencil
+
+This should remain independent from the holder.
+
+The later interaction system may allow the player to conceptually write
+an order number on an envelope.
+
+Do not implement writing mechanics in Blender.
+
+⸻
+
+21. GAMEPLAY WORKFLOW TO SUPPORT
+
+The final game interaction may approximately work as:
+
+PLAYER HAS EXPOSED FILM
+
+↓
+
+Player approaches CTL drop box.
+
+↓
+
+Interact.
+
+↓
+
+Interface references placing/confirming an order.
+
+↓
+
+Player takes or uses an envelope.
+
+↓
+
+Order number is associated with the film.
+
+↓
+
+Film is deposited into drop box.
+
+↓
+
+Development occurs after an in-game delay.
+
+↓
+
+Digital scans become available.
+
+↓
+
+Negatives may later be collected.
+
+None of this logic should be built into Blender.
+
+The Blender asset must only provide clean physical interaction points
+and separable props.
+
+⸻
+
+22. DROP BOX AS A 24-HOUR ACCESS POINT
+
+The drop box should remain usable in the game even when the main lab
+entrance is considered closed.
+
+Therefore:
+
+it must be externally accessible;
+
+it must not require the door to open;
+
+collision around it should allow the player to stand directly in front;
+
+interaction anchor should be independent from the main entrance.
+
+⸻
+
+23. EXTERIOR WALL FIXTURES
+
+Reconstruct visually significant fixed elements where useful:
+
+exterior conduit/cables;
+
+alarm/light boxes;
+
+major wall-mounted fixtures;
+
+rainwater/downpipe if clearly present;
+
+large electrical boxes.
+
+Do not model every cable.
+
+Prioritise the fixtures that strongly contribute to the industrial
+character of the facade.
+
+⸻
+
+24. BRICK DETAIL STRATEGY
+
+Because the user specifically wants the brick architecture preserved:
+
+use geometry for:
+
+arched openings;
+
+bands;
+
+sill projections;
+
+recessed openings;
+
+major brick/stone plane changes.
+
+use future textures/normal maps for:
+
+individual brick edges;
+
+mortar;
+
+colour variation;
+
+weathering;
+
+chipped bricks;
+
+stains;
+
+moss.
+
+The facade should already have the correct architectural brick rhythm
+before texturing begins.
+
+⸻
+
+25. SURROUNDINGS
+
+Do NOT include as permanent parts of this asset:
+
+parked vans;
+
+cars;
+
+metal perimeter fencing;
+
+modern building opposite;
+
+road signs;
+
+streetlight poles;
+
+road;
+
+trees;
+
+Google Street View artefacts.
+
+These belong to the wider environment.
+
+A minimal pavement strip may be created temporarily for clay renders
+only.
+
+⸻
+
+26. PLACEHOLDER MATERIALS
+
+Use only simple placeholder materials:
+
+MAT_CTL_Brick_PLACEHOLDER
+
+MAT_CTL_Stone_PLACEHOLDER
+
+MAT_CTL_Wood_PLACEHOLDER
+
+MAT_CTL_Metal_PLACEHOLDER
+
+MAT_CTL_WindowFrame_PLACEHOLDER
+
+MAT_CTL_Glass_PLACEHOLDER
+
+MAT_CTL_DropBox_PLACEHOLDER
+
+No image textures.
+
+No brick procedural shader.
+
+No final PBR work.
+
+⸻
+
+27. REAL-WORLD SCALE
+
+Work at real-world scale.
+
+1 Blender unit = 1 metre
+
+Z = vertical
+
+Ground = Z 0
+
+Use:
+
+door dimensions;
+
+drop box dimensions;
+
+windows;
+
+standard brick proportions;
+
+to infer scale.
+
+Apply transforms before export.
+
+⸻
+
+28. OBJECT ORGANISATION
+
+Suggested hierarchy:
+
+CTL_BUILDING_MASTER
+
+CTL_ExteriorShell
+
+CTL_BrickFacade
+
+CTL_StoneDetails
+
+CTL_Entrance
+
+CTL_Windows
+
+CTL_Grilles
+
+CTL_UpperBalconies
+
+CTL_WallFixtures
+
+CTL_DROPBOX_MASTER
+
+CTL_SUPPLY_HOLDER_MASTER
+
+CTL_InteractionAnchors
+
+Keep the drop box and supply holder outside the core building mesh
+hierarchy so they can be exported separately if required.
+
+⸻
+
+29. THREE.JS OPTIMISATION
+
+Prioritise geometry for:
+
+building silhouette;
+
+entrance surround;
+
+brick arches;
+
+window recesses;
+
+stone sills;
+
+grilles;
+
+balconies;
+
+drop box;
+
+envelope holder.
+
+Leave for textures/decals:
+
+individual bricks;
+
+QR code;
+
+CTL logos;
+
+instructions;
+
+graffiti;
+
+weathering;
+
+door wood grain;
+
+moss;
+
+tiny signage.
+
+Avoid excessive bevels.
+
+Avoid modelling every grille wire with unnecessary complexity.
+
+Reuse modular windows where possible.
+
+⸻
+
+30. BLOCKOUT FIRST
+
+First create:
+
+come_through_lab_blockout.blend
+
+The blockout should contain:
+
+building envelope;
+
+floor heights;
+
+door;
+
+major windows;
+
+brick arch shapes;
+
+balcony masses;
+
+drop-box position;
+
+supply-holder position.
+
+Create clay renders:
+
+VIEW A
+
+Straight-on entrance view matching the clearest frontal reference.
+
+VIEW B
+
+Wider three-quarter street view.
+
+VIEW C
+
+Low-angle view showing upper floors.
+
+VIEW D
+
+Close view of door + drop box + first two windows.
+
+VIEW E
+
+Close view of drop box demonstrating that it is an independent asset
+mounted on the wall.
+
+Then STOP for review.
+
+⸻
+
+31. SECOND GEOMETRY PASS
+
+Only after blockout approval, add:
+
+detailed entrance surround;
+
+door geometry;
+
+address number;
+
+refined brick arches;
+
+grilles;
+
+window framing;
+
+balcony guards;
+
+drop-box detail;
+
+lock;
+
+supply holder;
+
+envelope prop;
+
+interaction anchors.
+
+Do not texture yet.
+
+⸻
+
+32. FINAL VALIDATION
+
+Compare against every reference.
+
+Check:
+
+Door width and height.
+
+Entrance surround proportions.
+
+84 position.
+
+Drop-box size and height.
+
+Drop-box distance from door.
+
+Supply-holder position.
+
+Window spacing.
+
+Arch shape.
+
+Grille depth.
+
+Sill projection.
+
+Upper-window rhythm.
+
+Brick facade proportions.
+
+Avoid:
+
+generic brick warehouse architecture;
+
+perfectly flat facade;
+
+incorrect door shape;
+
+oversized drop box;
+
+merged drop-box/building geometry;
+
+chunky grilles;
+
+toy-like stonework.
+
+⸻
+
+33. DELIVERABLES
+
+Deliver:
+
+come_through_lab_blockout.blend
+
+come_through_lab.blend
+
+come_through_lab.glb
+
+ctl_dropbox.glb
+
+optionally ctl_dropoff_props.glb
+
+containing:
+
+supply holder;
+
+envelope;
+
+pencil.
+
+Before export:
+
+apply transforms;
+
+check normals;
+
+remove test geometry;
+
+remove temporary ground;
+
+verify real-world scale;
+
+verify object naming;
+
+test GLB import.
+
+⸻
+
+SUCCESS CRITERION
+
+The untextured building should already read as this specific historic
+Manchester industrial facade through its brick arches, entrance
+surround, window rhythm, grilles and proportions.
+
+The Come Through Lab drop box must exist as a clearly separate hero
+gameplay object mounted beside the entrance.
+
+The envelope/pencil holder must also remain a separate interactable prop
+system.
+
+The final geometry should make it possible to reproduce the real CTL
+film-drop process later without needing to remodel the facade.
