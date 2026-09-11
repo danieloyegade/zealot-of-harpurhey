@@ -10,7 +10,7 @@
 - **Primary runtime 3D asset format:** `.glb` (binary glTF)
 - **Version control:** Git and GitHub
 - **Deployment:** static browser build
-- **Target public path:** `/zealot-of-harperhay/`
+- **Target public path:** `/zealot-of-harperhey/`
 - **Initial hosting:** GitHub Pages, through the existing website
 - **Possible later asset hosting:** Cloudflare R2, if asset volume or delivery requirements justify it
 - **Initial platform:** desktop browser MVP
@@ -60,7 +60,7 @@ Development FPS is derived from raw frame time. The development overlay also rep
 
 The default desktop quality is **MEDIUM**. Use `?quality=low`, `?quality=medium`, or `?quality=high` during development and profiling. Full policy and measured Phase 1 results are documented in `PERFORMANCE.md` and `ENGINE_STABILISATION_REPORT.md`.
 
-Most environmental illumination in Zealot of Harpurhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights. The normal local-light budget is four on MEDIUM, with five available on HIGH and two on LOW. Streetlights do not use real-time spotlights.
+Most environmental illumination in Zealot of Harperhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights. The normal local-light budget is four on MEDIUM, with five available on HIGH and two on LOW. Streetlights do not use real-time spotlights.
 
 ### Camera
 
@@ -82,7 +82,7 @@ The player is represented on the ground plane by a circle with a temporary radiu
 
 ### Assets
 
-- Use lowercase `kebab-case` filenames, for example `harperhay-bus-stop.glb`.
+- Use lowercase `kebab-case` filenames, for example `harperhey-bus-stop.glb`.
 - Use ASCII letters, numbers, and hyphens only; do not use spaces.
 - Add a meaningful variant suffix where needed, for example `brick-wall-wet-albedo.jpg`.
 - Use conventional texture suffixes: `-albedo`, `-normal`, `-roughness`, `-metalness`, `-emissive`, and `-ao`.
@@ -126,7 +126,7 @@ The script derives the project root from its own location and creates parent dir
 - Object names are descriptive lowercase kebab-case. Asset filenames use the project-wide lowercase kebab-case convention.
 - Runtime exports use binary glTF (`.glb`) with selected asset objects only and Y-up conversion enabled.
 
-Three.js loads runtime models with `GLTFLoader`. Model URLs are built from `import.meta.env.BASE_URL`, followed by the path beneath `public/`; this preserves both Vite development and deployment beneath `/zealot-of-harperhay/`.
+Three.js loads runtime models with `GLTFLoader`. Model URLs are built from `import.meta.env.BASE_URL`, followed by the path beneath `public/`; this preserves both Vite development and deployment beneath `/zealot-of-harperhey/`.
 
 `.blend` source files belong under `blender/source/` and are not copied into production builds. Runtime-ready GLBs belong under `public/assets/models/` and are copied into the static build. Preview renders remain under `renders/` and are development-only.
 

@@ -876,10 +876,10 @@ async function replaceCoralFallback(
 ): Promise<void> {
   try {
     const [shop, bin, streetlight, bollard] = await Promise.all([
-      loadModel('assets/models/harperhay-coral-shop.glb'),
-      loadModel('assets/models/harperhay-coral-bin.glb'),
-      loadModel('assets/models/harperhay-coral-streetlight.glb'),
-      loadModel('assets/models/harperhay-coral-bollard.glb'),
+      loadModel('assets/models/harperhey-coral-shop.glb'),
+      loadModel('assets/models/harperhey-coral-bin.glb'),
+      loadModel('assets/models/harperhey-coral-streetlight.glb'),
+      loadModel('assets/models/harperhey-coral-bollard.glb'),
     ]);
 
     applyCoralModelPolicy(shop);
@@ -887,7 +887,7 @@ async function replaceCoralFallback(
     applyCoralModelPolicy(streetlight);
     applyCoralModelPolicy(bollard);
 
-    shop.name = 'Harperhay Coral finished hero asset';
+    shop.name = 'Harperhey Coral finished hero asset';
     shop.position.set(location.x, 0, location.z);
     // The Blender façade faces +Z after glTF axis conversion. Rotate it to the
     // east-facing west-side plot. Preserve the authored frontage and height;
@@ -975,10 +975,10 @@ async function replaceDreamsFallback(
   fallback.visible = false;
   try {
     const dreams = await loadModel(
-      'assets/models/harperhay-dreams-greybox.glb?v=geometry-approved-20260911',
+      'assets/models/harperhey-dreams-greybox.glb?v=geometry-approved-20260911',
     );
     applyDreamsModelPolicy(dreams);
-    dreams.name = 'Harperhay Dreams geometry-first hero asset';
+    dreams.name = 'Harperhey Dreams geometry-first hero asset';
     dreams.position.set(location.x, 0, location.z);
     dreams.rotation.y = location.front === 'north' ? Math.PI : 0;
     root.add(dreams);
@@ -987,7 +987,7 @@ async function replaceDreamsFallback(
     fallback.visible = true;
     fallback.name = 'Dreams procedural fallback after GLB load error';
     console.error(
-      '[World] Failed to load harperhay-dreams-greybox.glb. Showing the procedural fallback.',
+      '[World] Failed to load harperhey-dreams-greybox.glb. Showing the procedural fallback.',
       error,
     );
   }
@@ -999,7 +999,7 @@ async function addGulliversModel(
 ): Promise<void> {
   try {
     const gullivers = await loadModel(
-      'assets/models/harperhay-gullivers.glb?v=geometry-wip-20260911',
+      'assets/models/harperhey-gullivers.glb?v=geometry-wip-20260911',
     );
     applyGulliversModelPolicy(gullivers);
     gullivers.name = 'Gullivers geometry WIP — textures pending';
@@ -1010,7 +1010,7 @@ async function addGulliversModel(
     root.add(gullivers);
   } catch (error) {
     console.error(
-      '[World] Failed to load harperhay-gullivers.glb. No legacy fallback is retained.',
+      '[World] Failed to load harperhey-gullivers.glb. No legacy fallback is retained.',
       error,
     );
   }
@@ -1022,7 +1022,7 @@ async function addMcr1Model(
 ): Promise<void> {
   try {
     const mcr1 = await loadModel(
-      'assets/models/harperhay-mcr1-geometry.glb?v=geometry-wip-20260911',
+      'assets/models/harperhey-mcr1-geometry.glb?v=geometry-wip-20260911',
     );
     applyMcr1ModelPolicy(mcr1);
     mcr1.name = 'MCR1 geometry WIP — textures pending';
@@ -1033,7 +1033,7 @@ async function addMcr1Model(
     root.add(mcr1);
   } catch (error) {
     console.error(
-      '[World] Failed to load harperhay-mcr1-geometry.glb. No legacy M1 fallback is retained.',
+      '[World] Failed to load harperhey-mcr1-geometry.glb. No legacy M1 fallback is retained.',
       error,
     );
   }

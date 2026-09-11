@@ -1,12 +1,12 @@
 VINYL EXCHANGE, OLDHAM STREET / DALE STREET, MANCHESTER
 
-Detailed untextured architectural reconstruction for Zealot of Harpurhey
+Detailed untextured architectural reconstruction for Zealot of Harperhey
 
 Create an accurate, game-ready Blender reconstruction of Vinyl Exchange
 on the corner of Oldham Street and Dale Street, Manchester, using ALL
 supplied reference images.
 
-This asset is for Zealot of Harpurhey, a Three.js game.
+This asset is for Zealot of Harperhey, a Three.js game.
 
 This building must not be treated as a generic record shop.
 

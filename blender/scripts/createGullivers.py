@@ -13,8 +13,8 @@ from mathutils import Vector
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-BLEND_PATH = PROJECT_ROOT / "blender" / "source" / "harperhay-gullivers.blend"
-GLB_PATH = PROJECT_ROOT / "public" / "assets" / "models" / "harperhay-gullivers.glb"
+BLEND_PATH = PROJECT_ROOT / "blender" / "source" / "harperhey-gullivers.blend"
+GLB_PATH = PROJECT_ROOT / "public" / "assets" / "models" / "harperhey-gullivers.glb"
 RENDER_ROOT = PROJECT_ROOT / "renders" / "gullivers-greybox"
 
 WIDTH = 7.40

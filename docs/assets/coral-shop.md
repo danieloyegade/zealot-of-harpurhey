@@ -7,9 +7,9 @@ dependencies.
 
 ## Source and preview
 
-- Editable master: `blender/source/harperhay-coral-shop.blend`
+- Editable master: `blender/source/harperhey-coral-shop.blend`
 - Rebuild script: `blender/scripts/createCoralShop.py`
-- Review render: `renders/coral-shop/harperhay-coral-shop-preview.png`
+- Review render: `renders/coral-shop/harperhey-coral-shop-preview.png`
 
 Rebuild from the repository root with:
 
@@ -25,14 +25,14 @@ All runtime files are self-contained GLB files in `public/assets/models/`.
 
 | File | Purpose |
 | --- | --- |
-| `harperhay-coral-shop.glb` | Complete shopfront and upper residential block |
-| `harperhay-coral-street-set.glb` | Preassembled building, pavement, road, bin, lamp and bollards |
-| `harperhay-coral-shopfront.glb` | Ground-floor betting-shop façade |
-| `harperhay-coral-upper-block.glb` | Upper floors, windows, deck, rails and service block |
-| `harperhay-coral-window-module.glb` | Reusable upper-storey window bay |
-| `harperhay-coral-bin.glb` | Teal public bin with domed lid, opening, wheels and graffiti |
-| `harperhay-coral-streetlight.glb` | Black sodium-style streetlamp |
-| `harperhay-coral-bollard.glb` | Black octagonal bollard with reflector band |
+| `harperhey-coral-shop.glb` | Complete shopfront and upper residential block |
+| `harperhey-coral-street-set.glb` | Preassembled building, pavement, road, bin, lamp and bollards |
+| `harperhey-coral-shopfront.glb` | Ground-floor betting-shop façade |
+| `harperhey-coral-upper-block.glb` | Upper floors, windows, deck, rails and service block |
+| `harperhey-coral-window-module.glb` | Reusable upper-storey window bay |
+| `harperhey-coral-bin.glb` | Teal public bin with domed lid, opening, wheels and graffiti |
+| `harperhey-coral-streetlight.glb` | Black sodium-style streetlamp |
+| `harperhey-coral-bollard.glb` | Black octagonal bollard with reflector band |
 
 ## Blender collections
 

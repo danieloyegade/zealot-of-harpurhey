@@ -1,12 +1,12 @@
 COME THROUGH LAB, MANCHESTER
 
-Untextured Blender reconstruction for Zealot of Harpurhey
+Untextured Blender reconstruction for Zealot of Harperhey
 
 Create an accurate, game-ready Blender reconstruction of the Come
 Through Lab premises in Manchester, using ALL supplied reference
 photographs.
 
-This asset is for Zealot of Harpurhey, a Three.js game.
+This asset is for Zealot of Harperhey, a Three.js game.
 
 This task is GEOMETRY ONLY.
 

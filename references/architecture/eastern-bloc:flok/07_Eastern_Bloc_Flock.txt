@@ -1,6 +1,6 @@
 EASTERN BLOC + FLOCK / FLŌK, STEVENSON SQUARE, MANCHESTER
 
-Combined untextured Blender reconstruction for Zealot of Harpurhey
+Combined untextured Blender reconstruction for Zealot of Harperhey
 
 Create an accurate, game-ready Blender reconstruction of Eastern Bloc
 and Flock/Flōk as one connected architectural asset, using ALL supplied
@@ -9,7 +9,7 @@ reference photographs.
 These venues are physically connected in real life and should be
 modelled together as one coherent corner-building asset.
 
-This asset is for Zealot of Harpurhey, a Three.js game.
+This asset is for Zealot of Harperhey, a Three.js game.
 
 This task is GEOMETRY ONLY.
 

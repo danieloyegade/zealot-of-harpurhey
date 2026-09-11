@@ -14,8 +14,8 @@ from mathutils import Vector
 
 
 ROOT = Path(__file__).resolve().parents[2]
-BLEND = ROOT / "blender" / "source" / "harperhay-mcr1-geometry.blend"
-GLB = ROOT / "public" / "assets" / "models" / "harperhay-mcr1-geometry.glb"
+BLEND = ROOT / "blender" / "source" / "harperhey-mcr1-geometry.blend"
+GLB = ROOT / "public" / "assets" / "models" / "harperhey-mcr1-geometry.glb"
 RENDERS = ROOT / "renders" / "mcr1"
 
 

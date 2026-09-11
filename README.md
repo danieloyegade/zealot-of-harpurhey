@@ -1,6 +1,6 @@
-# Zealot of Harperhay
+# Zealot of Harperhey
 
-Zealot of Harperhay is a desktop-first, browser-based 3D artwork and exploration game. It is set across a fictional city block informed by North-West England and uses a deliberately early-3D, Dreamcast-era visual language.
+Zealot of Harperhey is a desktop-first, browser-based 3D artwork and exploration game. It is set across a fictional city block informed by North-West England and uses a deliberately early-3D, Dreamcast-era visual language.
 
 ## Status
 
@@ -35,7 +35,7 @@ Create a production build:
 npm run build
 ```
 
-The static production files are written to `dist/`. The build uses `/zealot-of-harperhay/` as its public base path so it can be deployed beneath that path on the existing website.
+The static production files are written to `dist/`. The build uses `/zealot-of-harperhey/` as its public base path so it can be deployed beneath that path on the existing website.
 
 To inspect a production build locally:
 
@@ -51,9 +51,9 @@ Asset-specific files use a stable lowercase slug such as `mcr1`:
 
 - Immutable source photography: `references/architecture/<asset-slug>/`
 - Reproducible Blender builders: `blender/scripts/create<Name>.py`
-- Editable masters: `blender/source/harperhay-<asset-slug>[-stage].blend`
+- Editable masters: `blender/source/harperhey-<asset-slug>[-stage].blend`
 - Review renders: `renders/<asset-slug>/`
-- Runtime exports: `public/assets/models/harperhay-<asset-slug>[-stage].glb`
+- Runtime exports: `public/assets/models/harperhey-<asset-slug>[-stage].glb`
 - Source and output manifests: `docs/assets/<asset-slug>.md`
 
 Keep reference photography and review renders outside `public/`; only files required by the shipped application belong there. Avoid spaces and case-only distinctions in new asset directory names so paths remain portable across macOS, Linux, CI and web hosting.

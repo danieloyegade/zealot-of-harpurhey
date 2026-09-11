@@ -1,6 +1,6 @@
-SPICE CABIN — HARpurhey / Manchester Takeaway Shopfront Codex / Blender
+SPICE CABIN — HARperhey / Manchester Takeaway Shopfront Codex / Blender
 Asset Build Prompt Reference-led, reusable GLB asset for Zealot of
-Harperhay
+Harperhey
 
 1.  ROLE AND GOAL
 
@@ -267,7 +267,7 @@ The target is observed realism, not a post-apocalyptic texture pass.
 
 12. GAME AESTHETIC
 
-The asset belongs to Zealot of Harperhay.
+The asset belongs to Zealot of Harperhey.
 
 The desired visual language is no longer overtly Dreamcast or
 deliberately low-poly. It should sit between hyper-real and game-like.

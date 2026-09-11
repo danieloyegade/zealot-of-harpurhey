@@ -1,4 +1,4 @@
-# AGENTS.md — Zealot of Harpurhey
+# AGENTS.md — Zealot of Harperhey
 
 This project is developed across **two AI coding tools — Codex and Claude Code — alternating on whichever still has credits**, plus Daniel working directly. You (whichever tool you are) do not share memory with the other tool. The repo — commits, code, `docs/`, and `SYNC.md` — is the only channel between you.
 
@@ -13,11 +13,13 @@ Append an entry to `SYNC.md` using the template at the top of that file: what yo
 
 ## What this project is
 
-Zealot of Harpurhey (canonical spelling — the repo currently uses `harperhay` in the package name, Vite base path, and most filenames; not yet reconciled, see `SYNC.md`) is a browser-based Three.js exploration game and artwork, not just "a Manchester delivery game." It is simultaneously a delivery game, an explorable fictional-collage Manchester, autobiographical fiction, a philosophical/surreal social-realist piece, and an extension of Daniel's photography/filmmaking practice — especially his parent project **The Spectres Are All Around Us (TSAU)**, whose visual grammar (planimetric composition, streetlight pools in darkness, deadpan museum-style labelling of mundane objects, municipal architecture, surveillance aesthetics) should shape the game's look throughout, not appear as easter eggs.
+Zealot of Harperhey (canonical spelling — the repo currently uses `harperhey` in the package name, Vite base path, and most filenames; not yet reconciled, see `SYNC.md`) is a browser-based Three.js exploration game and artwork, not just "a Manchester delivery game." It is simultaneously a delivery game, an explorable fictional-collage Manchester, autobiographical fiction, a philosophical/surreal social-realist piece, and an extension of Daniel's photography/filmmaking practice — especially his parent project **The Spectres Are All Around Us (TSAU)**, whose visual grammar (planimetric composition, streetlight pools in darkness, deadpan museum-style labelling of mundane objects, municipal architecture, surveillance aesthetics) should shape the game's look throughout, not appear as easter eggs.
 
 Visual direction has moved **away from the Dreamcast/PS2-era retro look** referenced early in development, toward "uncanny realism suspended between the photographic and the obviously constructed" — `docs/ART_DIRECTION.md` still describes the old Dreamcast-era target and has not been updated to match; treat it as stale until someone reconciles it.
 
 Philosophical references (Barthes, Baudrillard, Rilke, Don Quixote, etc.) should manifest environmentally — an unstable sign, a ridiculous ritual played sincerely — never as exposition-heavy dialogue. Avoid generic gamification (XP, skill trees, quest arrows, minimaps, health bars) unless it concretely serves the work.
+
+**Before generating any creative content** — environments, characters, quests, events, dialogue, object descriptions, UI copy, asset names, lighting setups — read `docs/creative-constitution.md` in full. It's the conceptual framework behind the paragraph above (Barthes, Baudrillard, Derrida, Benjamin, TSAU, the gig economy as digital feudalism, etc.), including what to avoid (generic liminal-space/backrooms clichés, lore dumps, philosophy-NPC dialogue, over-explaining).
 
 ## How to work on this codebase
 

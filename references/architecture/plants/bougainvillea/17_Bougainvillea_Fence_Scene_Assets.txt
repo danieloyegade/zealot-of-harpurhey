@@ -1,5 +1,5 @@
 BOUGAINVILLEA FENCE SCENE — MODULAR ASSET SET Codex / Blender Asset
-Build Prompt Reference-led, reusable GLB assets for Zealot of Harperhay
+Build Prompt Reference-led, reusable GLB assets for Zealot of Harperhey
 
 1.  ROLE AND GOAL
 
@@ -27,7 +27,7 @@ traffic-sign pole, weathered timber fence, intense pink bougainvillea,
 dense dark-green foliage, and hard directional sunlight creating
 intricate botanical shadows.
 
-The finished result should occupy the established Zealot of Harperhay
+The finished result should occupy the established Zealot of Harperhey
 visual space between photographic reality and a game environment. It
 should be materially convincing and recognisably based on the photograph
 without becoming over-polished, plastic, decorative, or generically
@@ -333,7 +333,7 @@ flowers, tree and sign behave under a nearby streetlight.
 15. THE SPECTRES ARE ALL AROUND US / GAME AESTHETIC
 
 This scene is particularly important to the visual language of Zealot of
-Harperhay.
+Harperhey.
 
 The combination of: - municipal sign; - ordinary timber boundary; -
 aggressive artificial infrastructure; - luxuriant flowers; - deep
@@ -517,7 +517,7 @@ Also save the Blender source file with the complete assembled validation
 scene.
 
 Use the established Blender-to-Three.js export settings for Zealot of
-Harperhay.
+Harperhey.
 
 Do not include validation cameras/lights in individual production GLBs
 unless the existing pipeline specifically requires them.
@@ -544,5 +544,5 @@ flowers, municipal infrastructure, sunlight and shadow.
 It should not look like a generic garden asset pack.
 
 It should look specific enough that, when assembled between two
-buildings in Zealot of Harperhay, it retains the photographic
+buildings in Zealot of Harperhey, it retains the photographic
 strangeness and beauty of the supplied reference image.

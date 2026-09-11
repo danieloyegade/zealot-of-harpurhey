@@ -15,8 +15,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SOURCE_ROOT = PROJECT_ROOT / "blender" / "source"
 MODEL_ROOT = PROJECT_ROOT / "public" / "assets" / "models"
 RENDER_ROOT = PROJECT_ROOT / "renders" / "coral-shop"
-BLEND_PATH = SOURCE_ROOT / "harperhay-coral-shop.blend"
-PREVIEW_PATH = RENDER_ROOT / "harperhay-coral-shop-preview.png"
+BLEND_PATH = SOURCE_ROOT / "harperhey-coral-shop.blend"
+PREVIEW_PATH = RENDER_ROOT / "harperhey-coral-shop-preview.png"
 
 FRONT_Y = -3.35
 ASSET_COLLECTIONS = {
@@ -575,13 +575,13 @@ def export_assets(assets):
     MODEL_ROOT.mkdir(parents=True, exist_ok=True)
     # Individual modular kits.
     for slug, col_name in ASSET_COLLECTIONS.items():
-        export_objects(MODEL_ROOT / f"harperhay-coral-{slug}.glb", recursive_objects(assets[slug]))
+        export_objects(MODEL_ROOT / f"harperhey-coral-{slug}.glb", recursive_objects(assets[slug]))
     # Complete architecture excludes loose scene context but includes all building pieces.
     complete = recursive_objects(assets["shopfront"]) + recursive_objects(assets["upper-block"])
-    export_objects(MODEL_ROOT / "harperhay-coral-shop.glb", complete)
+    export_objects(MODEL_ROOT / "harperhey-coral-shop.glb", complete)
     # Full set includes placed props and ground context for rapid scene dressing.
     full = complete + recursive_objects(assets["scene"])
-    export_objects(MODEL_ROOT / "harperhay-coral-street-set.glb", full)
+    export_objects(MODEL_ROOT / "harperhey-coral-street-set.glb", full)
 
 
 def point_at(obj, target):

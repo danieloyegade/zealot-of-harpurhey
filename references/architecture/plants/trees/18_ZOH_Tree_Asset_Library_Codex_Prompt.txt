@@ -1,5 +1,5 @@
 TREE LIBRARY — 8 MODULAR PHOTOGRAPHIC TREE ASSETS Codex / Blender Asset
-Build Prompt Reference-led production assets for Zealot of Harperhay
+Build Prompt Reference-led production assets for Zealot of Harperhey
 
 1.  ROLE AND GOAL
 
@@ -11,12 +11,12 @@ These are not generic vegetation-pack trees.
 Each tree should preserve a particular observed silhouette, branching
 habit, trunk character, foliage density and relationship to artificial
 light from the photographs. Together they should create a recognisable
-tree vocabulary for Zealot of Harperhay.
+tree vocabulary for Zealot of Harperhey.
 
 The references are the primary visual authority.
 
 The game’s trees should occupy the same visual territory as the rest of
-Zealot of Harperhay: somewhere between photographic realism and
+Zealot of Harperhey: somewhere between photographic realism and
 recognisably constructed game space. They should be convincing enough
 for cinematic screen recordings and close environmental compositions,
 but still practical for a browser-based Three.js world.
@@ -334,7 +334,7 @@ For distant LODs, simplify aggressively.
 11. THE SPECTRES ARE ALL AROUND US / ZOH AESTHETIC
 
 These trees should support the visual philosophy of The Spectres Are All
-Around Us within Zealot of Harperhay.
+Around Us within Zealot of Harperhey.
 
 They are not simply environmental dressing.
 
@@ -411,7 +411,7 @@ Keep sensible object naming throughout.
 For every tree: - origin at ground contact near trunk centre; - Z=0 at
 intended ground plane; - correct upright orientation; - apply scale and
 rotation; - clean transforms; - no arbitrary offsets; - consistent axis
-convention with the existing Zealot of Harperhay pipeline.
+convention with the existing Zealot of Harperhey pipeline.
 
 Each tree must be independently placeable.
 
@@ -586,5 +586,5 @@ It should feel like eight specific trees encountered and photographed in
 the world: strange, ordinary, isolated, illuminated, hanging, contorted,
 monumental or silhouetted.
 
-When placed throughout Zealot of Harperhay, they should help make the
+When placed throughout Zealot of Harperhey, they should help make the
 city feel observed rather than procedurally populated.

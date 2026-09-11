@@ -1,12 +1,12 @@
 REAL CAMERA, SEVENDALE HOUSE, MANCHESTER
 
-Detailed untextured architectural reconstruction for Zealot of Harpurhey
+Detailed untextured architectural reconstruction for Zealot of Harperhey
 
 Create an accurate, game-ready Blender reconstruction of Real Camera at
 Sevendale House, Manchester, based on ALL supplied reference
 photographs.
 
-This asset is for Zealot of Harpurhey, a Three.js game.
+This asset is for Zealot of Harperhey, a Three.js game.
 
 The defining feature of this building is its ornate red sandstone /
 terracotta architecture.

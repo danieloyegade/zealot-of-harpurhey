@@ -1,9 +1,9 @@
 STERLING BIKES
 
-Shared e-bike + docking station asset system for Zealot of Harpurhey
+Shared e-bike + docking station asset system for Zealot of Harperhey
 
 Create a modular, game-ready Blender asset system for Sterling Bikes,
-the fictional public shared-bike service in Zealot of Harpurhey.
+the fictional public shared-bike service in Zealot of Harperhey.
 
 Sterling Bikes is visually inspired by the yellow Manchester shared
 e-bikes shown in the supplied references.

@@ -48,10 +48,10 @@ The first exterior benchmark uses an estimated **7.5 m depth × 6.0 m frontage �
 
 Generated working derivatives remain outside the runtime build:
 
-- `blender/source/textures/florist/harperhay-florist-facade.jpg` — 512 × 768
-- `blender/source/textures/florist/harperhay-florist-shopfront.jpg` — 512 × 384
+- `blender/source/textures/florist/harperhey-florist-facade.jpg` — 512 × 768
+- `blender/source/textures/florist/harperhey-florist-shopfront.jpg` — 512 × 384
 
-Both are embedded in `public/assets/models/harperhay-florist.glb` during export. The primary crop isolates the central façade; the secondary crop preserves more shopfront signage and window content at pedestrian distance.
+Both are embedded in `public/assets/models/harperhey-florist.glb` during export. The primary crop isolates the central façade; the secondary crop preserves more shopfront signage and window content at pedestrian distance.
 
 Regenerate the complete asset from the project root with:
 
