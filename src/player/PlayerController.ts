@@ -73,12 +73,16 @@ export class PlayerController {
     }
 
     const isMoving = this.movementDirection.lengthSq() > 0;
-    const speed = input.isRunning ? this.runningSpeed : this.walkingSpeed;
+    const speed = input.isWalking ? this.walkingSpeed : this.runningSpeed;
     this.targetVelocity.copy(this.movementDirection).multiplyScalar(speed);
 
-    const responsiveness = isMoving ? 8 : 11;
+    const responsiveness = isMoving ? 16 : 20;
     const velocityBlend = 1 - Math.exp(-responsiveness * deltaTime);
     this.velocity.lerp(this.targetVelocity, velocityBlend);
+
+    if (!isMoving && this.velocity.lengthSq() < 0.0025) {
+      this.velocity.set(0, 0, 0);
+    }
 
     this.previousPosition.copy(this.position);
     this.frameMovement.copy(this.velocity).multiplyScalar(deltaTime);
@@ -91,6 +95,16 @@ export class PlayerController {
     this.position.y = 0;
 
     this.frameMovement.subVectors(this.position, this.previousPosition);
+
+    // Reconcile velocity with what actually happened, so walking into a wall
+    // drops the blocked component instead of holding it against the surface.
+    if (deltaTime > 0) {
+      this.velocity.copy(this.frameMovement).divideScalar(deltaTime);
+      if (this.velocity.lengthSq() > speed * speed) {
+        this.velocity.setLength(speed);
+      }
+    }
+
     if (this.frameMovement.lengthSq() > 0.000001) {
       this.facingDirection.copy(this.frameMovement).normalize();
       const facingAngle = Math.atan2(
@@ -105,9 +119,9 @@ export class PlayerController {
     }
 
     this.movementState = isMoving
-      ? input.isRunning
-        ? 'Running'
-        : 'Walking'
+      ? input.isWalking
+        ? 'Walking'
+        : 'Running'
       : 'Idle';
   }
 

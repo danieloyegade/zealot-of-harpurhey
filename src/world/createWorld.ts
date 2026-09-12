@@ -313,6 +313,7 @@ function addCollisionFootprint(
     maxX: location.x + location.width / 2,
     minZ: location.z - location.depth / 2,
     maxZ: location.z + location.depth / 2,
+    height: location.height,
   });
 }
 
@@ -833,6 +834,7 @@ function addBusShelter(
     maxX: marker.x + 2.55,
     minZ: marker.z - 0.9,
     maxZ: marker.z + 0.9,
+    height: 2.6,
   });
   addDevelopmentLabel(root, marker.name, marker.x, 3.4, marker.z);
 }

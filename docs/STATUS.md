@@ -12,6 +12,47 @@ an append-only log. When it gets long, older entries get archived (see
 
 ## 2026-09-12 — Claude — `claude/engineer-communication-workflow-uex7id`
 
+**Status:** Done
+
+**Did:** Implemented the movement and camera fixes from the review entry
+below. Camera now does a segment test against collision obstacles and
+pulls in front of anything it would sit inside, and hides the player
+figure below 1.7m so it cannot fill the screen. Added pointer lock (drag
+still works as fallback), Q/E yaw and R/F pitch for mouseless play, wheel
+zoom (3.4-10.5m), auto-follow behind the direction of travel after 1.2s
+without manual orbit, and a single smoothed anchor driving both camera
+position and look target. Movement acceleration raised 8/11 -> 16/20 with
+a zero-snap; running is now the default pace with `Shift` to walk; player
+velocity is reconciled against actual displacement so walls drop the
+blocked component. Collision reworked to move-then-depenetrate, which
+also fixes the trapped-inside-an-obstacle case. `CollisionObstacle` gained
+a `height` field (needed by the camera segment test).
+
+**State of the repo:** `tsc --noEmit` and `npm run build` both clean.
+Verified in Chromium against the running dev build, not just compiled:
+run/walk states and speeds correct (7.67m vs 4.62m over equal holds),
+idle drift exactly 0.0000, player rests at z=-31.37 against the Dreams
+face (-31.75 + 0.38 radius, i.e. exact contact), no page errors, and
+screenshots confirm the camera stays out of the shopfronts while orbiting
+hard against them. Note for whoever is next: an intermediate version of
+the occlusion clamp pushed the camera *back* inside walls — the cleared
+distance must always win over any minimum-distance floor. That is
+commented at `ThirdPersonCamera.ts` `MIN_OCCLUDED_DISTANCE`.
+
+**Next up:** Gamepad and touch input were deliberately left out — they are
+a new feature rather than a fix, and touch devices still have no movement
+input at all. Unclaimed. Camera tuning constants are all named at the top
+of `ThirdPersonCamera.ts` if Daniel wants the feel adjusted.
+
+**Blockers / questions for tech lead:** Took the run-by-default call
+myself given the world size; it is a one-line flip in
+`PlayerController.update` if you disagree. The mobile/touch question from
+the entry below is still open.
+
+---
+
+## 2026-09-12 — Claude — `claude/engineer-communication-workflow-uex7id`
+
 **Status:** Done (review only — no gameplay code changed)
 
 **Did:** Reviewed movement and camera mechanics for feel/playability

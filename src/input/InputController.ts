@@ -12,13 +12,21 @@ const MOVEMENT_KEYS = new Set([
   'Space',
 ]);
 
+const ZOOM_METRES_PER_NOTCH = 0.0045;
+
 export class InputController {
+  // Orbit travel expressed in screen heights, so sensitivity is independent
+  // of display size.
   readonly orbitDelta = new Vector2();
+
+  zoomDelta = 0;
 
   private readonly pressedKeys = new Set<string>();
   private readonly pendingOrbitDelta = new Vector2();
   private readonly lastPointerPosition = new Vector2();
+  private pendingZoomDelta = 0;
   private isDragging = false;
+  private isPointerLocked = false;
   private activePointerId: number | null = null;
   private overlayToggleQueued = false;
 
@@ -26,15 +34,20 @@ export class InputController {
     window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('keyup', this.handleKeyUp);
     window.addEventListener('blur', this.handleBlur);
+    document.addEventListener('pointerlockchange', this.handlePointerLockChange);
     element.addEventListener('pointerdown', this.handlePointerDown);
     element.addEventListener('pointermove', this.handlePointerMove);
     element.addEventListener('pointerup', this.handlePointerUp);
     element.addEventListener('pointercancel', this.handlePointerUp);
+    element.addEventListener('wheel', this.handleWheel, { passive: false });
   }
 
   update(): void {
-    this.orbitDelta.copy(this.pendingOrbitDelta);
+    const screenHeight = this.element.clientHeight || window.innerHeight || 1;
+    this.orbitDelta.copy(this.pendingOrbitDelta).divideScalar(screenHeight);
     this.pendingOrbitDelta.set(0, 0);
+    this.zoomDelta = this.pendingZoomDelta;
+    this.pendingZoomDelta = 0;
   }
 
   getMovementAxes(target: Vector2): Vector2 {
@@ -46,11 +59,23 @@ export class InputController {
     return target.set(right - left, forward - backward);
   }
 
-  get isRunning(): boolean {
+  getKeyboardOrbitYaw(): number {
+    const left = this.pressedKeys.has('KeyQ') ? 1 : 0;
+    const right = this.pressedKeys.has('KeyE') ? 1 : 0;
+
+    return right - left;
+  }
+
+  getKeyboardOrbitPitch(): number {
+    const up = this.pressedKeys.has('KeyR') ? 1 : 0;
+    const down = this.pressedKeys.has('KeyF') ? 1 : 0;
+
+    return down - up;
+  }
+
+  get isWalking(): boolean {
     return (
-      this.pressedKeys.has('ShiftLeft') ||
-      this.pressedKeys.has('ShiftRight') ||
-      this.pressedKeys.has('Space')
+      this.pressedKeys.has('ShiftLeft') || this.pressedKeys.has('ShiftRight')
     );
   }
 
@@ -86,23 +111,36 @@ export class InputController {
 
   private readonly handleBlur = (): void => {
     this.pressedKeys.clear();
+    this.pendingOrbitDelta.set(0, 0);
     this.endDrag();
   };
 
   private readonly handlePointerDown = (event: PointerEvent): void => {
-    if (event.button !== 0) {
+    if (event.button !== 0 || this.isPointerLocked) {
       return;
     }
 
+    // Drag-to-orbit stays live as the fallback for the frames before the lock
+    // engages, and for browsers that refuse the request outright.
     this.isDragging = true;
     this.activePointerId = event.pointerId;
     this.lastPointerPosition.set(event.clientX, event.clientY);
     this.element.setPointerCapture(event.pointerId);
     this.element.classList.add('is-dragging');
     event.preventDefault();
+
+    void Promise.resolve(this.element.requestPointerLock()).catch(() => {
+      // Locking is a convenience; dragging already covers this case.
+    });
   };
 
   private readonly handlePointerMove = (event: PointerEvent): void => {
+    if (this.isPointerLocked) {
+      this.pendingOrbitDelta.x += event.movementX;
+      this.pendingOrbitDelta.y += event.movementY;
+      return;
+    }
+
     if (!this.isDragging || event.pointerId !== this.activePointerId) {
       return;
     }
@@ -122,6 +160,19 @@ export class InputController {
     }
 
     this.endDrag();
+  };
+
+  private readonly handlePointerLockChange = (): void => {
+    this.isPointerLocked = document.pointerLockElement === this.element;
+
+    if (this.isPointerLocked) {
+      this.endDrag();
+    }
+  };
+
+  private readonly handleWheel = (event: WheelEvent): void => {
+    event.preventDefault();
+    this.pendingZoomDelta += event.deltaY * ZOOM_METRES_PER_NOTCH;
   };
 
   private endDrag(): void {

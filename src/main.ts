@@ -36,7 +36,7 @@ renderer.info.autoReset = false;
 app.appendChild(renderer.domElement);
 
 const camera = new PerspectiveCamera(
-  50,
+  58,
   window.innerWidth / window.innerHeight,
   0.1,
   120,
@@ -73,9 +73,10 @@ if (import.meta.env.DEV) {
 
 const thirdPersonCamera = new ThirdPersonCamera(
   camera,
+  world.collision,
   requestedView === 'dreams-target' ? 3.15 : 1.05,
 );
-thirdPersonCamera.snapTo(player.position);
+thirdPersonCamera.snapTo(player);
 const postProcessing = createPostProcessing(renderer, scene, camera, quality);
 
 const debugOverlay = import.meta.env.DEV ? new DebugOverlay() : null;
@@ -117,7 +118,8 @@ function frame(timestamp: number): void {
     elapsedSeconds += fixedDelta;
   });
   const cameraDelta = simulationResult.resetAfterExtremeGap ? 0 : rawDelta;
-  thirdPersonCamera.update(cameraDelta, input, player.position);
+  thirdPersonCamera.update(cameraDelta, input, player);
+  player.object.visible = !thirdPersonCamera.isTargetObscuringView;
 
   renderer.info.reset();
   postProcessing.render(elapsedSeconds);

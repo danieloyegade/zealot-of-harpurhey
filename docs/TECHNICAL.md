@@ -38,13 +38,19 @@ Development-only references, source photography, `.blend` masters, and renders l
 - Move backward: `S` or `Arrow Down`
 - Move left: `A` or `Arrow Left`
 - Move right: `D` or `Arrow Right`
-- Run: hold `Shift` or `Space` while moving
-- Orbit camera: click and drag with the primary mouse button
+- Walk: hold `Shift` while moving (running is the default pace)
+- Orbit camera: move the mouse after clicking to capture the pointer, or click and drag
+- Turn camera by keyboard: `Q` and `E` for yaw, `R` and `F` for pitch
+- Zoom camera: mouse wheel, between **3.4** and **10.5** metres
 - Hide/show development labels and debug panel: `H`
 - Temporary walking speed: **2.4 metres per second**
 - Temporary running speed: **4.5 metres per second**
 
 Movement is calculated relative to the camera's horizontal facing direction. Velocity accelerates and decelerates smoothly to give the placeholder movement some weight. There is no jumping.
+
+The world is roughly 128 by 124 metres, so running is the default pace and `Shift` drops to a walk for close manoeuvring. Pointer lock is requested on click so the camera can be turned without repeated dragging; drag-to-orbit remains as the fallback when a browser refuses the lock.
+
+The camera keeps itself out of geometry: a segment test against the collision obstacles pulls it in front of anything it would otherwise sit inside, and the player figure is hidden once the camera is pulled closer than 1.7 metres so it cannot fill the screen. When the player is moving and has not orbited manually for 1.2 seconds, the camera eases back behind the direction of travel.
 
 ## Performance and simulation policy
 
