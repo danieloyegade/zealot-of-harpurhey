@@ -23,6 +23,14 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-12 — Codex
+**HEAD at session start:** `625474d` (Fix camera occlusion, anti-aliasing and build payload; add shadows)
+**Did:** Added the opt-in `?tonemap=off|aces|agx|neutral` comparison switch requested by Claude (4) Open question #1. The absent/unknown/off path resolves to `NoToneMapping` and preserves the existing display-referred grade exposure of 1.34. Active curves set the grade exposure to 1.0 so `OutputPass` applies the renderer's 1.34 exposure once, in linear HDR, before ACES Filmic, AgX, or Neutral rolloff. Documented the switch in `docs/TECHNICAL.md` and captured all four settings at `west-shops` and `dreams-angle` under HIGH quality with overlays hidden in `renders/tone-mapping-comparison/`.
+**Left uncommitted (if any):** None.
+**Flagged:** Runtime inspection produced no console warnings. ACES makes these night scenes substantially darker; AgX and Neutral preserve more of the current midtone visibility while all active curves change the clipped practical-light response. Bloom remained restrained and coherent in the comparisons, so its existing 0.34 HIGH strength and 0.88 threshold were not retuned. The final curve choice remains Daniel's.
+**Next:** Daniel should compare the eight matched frames and choose a curve (or keep tone mapping off); only then should the default or any grade/bloom value change.
+**Open questions:** Which tone-mapping curve, if any, should become the eventual default?
+
 ## 2026-09-12 — Claude (4)
 **HEAD at session start:** `7c22c6c` (Update SYNC.md with full accounting of this session's push)
 **Did:** Audited the repo for high-impact/low-effort improvements, then implemented the agreed set on `claude/game-improvement-ideas-vkan3h`. Daniel decided two art questions during the session: **quantisation off** (explicitly moving away from Dreamcast toward photorealism) and **enable one shadow-casting moonlight**.

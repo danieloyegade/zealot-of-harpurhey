@@ -1,8 +1,10 @@
 import {
   HalfFloatType,
+  NoToneMapping,
   ShaderMaterial,
   Vector2,
   WebGLRenderTarget,
+  type ToneMapping,
   type PerspectiveCamera,
   type Scene,
   type WebGLRenderer,
@@ -24,6 +26,7 @@ export function createPostProcessing(
   scene: Scene,
   camera: PerspectiveCamera,
   quality: QualityProfile,
+  toneMapping: ToneMapping,
 ): PostProcessingPipeline {
   // EffectComposer's own default target is created without `samples`, so the
   // renderer's `antialias` flag buys nothing: the default framebuffer it
@@ -56,7 +59,15 @@ export function createPostProcessing(
     new ShaderMaterial({
       uniforms: {
         tDiffuse: { value: null },
-        exposure: { value: VISUAL_STYLE.render.exposure },
+        // OutputPass applies renderer.toneMappingExposure in linear HDR only
+        // when a tone curve is active. Keep the legacy display-referred grade
+        // exposure solely for NoToneMapping; otherwise 1.34 would land twice.
+        exposure: {
+          value:
+            toneMapping === NoToneMapping
+              ? VISUAL_STYLE.render.exposure
+              : 1,
+        },
         saturation: { value: VISUAL_STYLE.render.saturation },
         contrast: { value: VISUAL_STYLE.render.contrast },
         quantizationLevels: {

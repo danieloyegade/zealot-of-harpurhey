@@ -1,8 +1,13 @@
 import {
+  ACESFilmicToneMapping,
+  AgXToneMapping,
   LinearFilter,
   LinearMipmapLinearFilter,
   NearestFilter,
   NearestMipmapNearestFilter,
+  NeutralToneMapping,
+  NoToneMapping,
+  type ToneMapping,
   type Texture,
   type WebGLRenderer,
 } from 'three';
@@ -158,6 +163,14 @@ export function resolveQualityProfile(search: string): QualityProfile {
     return QUALITY_PROFILES[requested];
   }
   return QUALITY_PROFILES[DEFAULT_QUALITY_LEVEL];
+}
+
+export function resolveToneMapping(search: string): ToneMapping {
+  const requested = new URLSearchParams(search).get('tonemap')?.toLowerCase();
+  if (requested === 'aces') return ACESFilmicToneMapping;
+  if (requested === 'agx') return AgXToneMapping;
+  if (requested === 'neutral') return NeutralToneMapping;
+  return NoToneMapping;
 }
 
 export function applyTextureProfile(

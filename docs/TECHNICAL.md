@@ -65,6 +65,13 @@ Development FPS is derived from raw frame time. The development overlay also rep
 
 The default desktop quality is **MEDIUM**. Use `?quality=low`, `?quality=medium`, or `?quality=high` during development and profiling. Full policy and measured Phase 1 results are documented in `PERFORMANCE.md` and `ENGINE_STABILISATION_REPORT.md`.
 
+Tone mapping defaults to the current uncurved render. Use `?tonemap=off`,
+`?tonemap=aces`, `?tonemap=agx`, or `?tonemap=neutral` to compare the same
+scene through Three.js's NoToneMapping, ACES Filmic, AgX, and Neutral curves.
+With no `?tonemap=` parameter (or an unrecognised value), tone mapping remains
+off. Development camera positions can be selected with `?view=<name>`; combine
+that with `?quality=high&overlays=off` for clean, repeatable comparisons.
+
 Most environmental illumination in Zealot of Harperhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights. The normal local-light budget is four on MEDIUM, with five available on HIGH and two on LOW. Streetlights do not use real-time spotlights.
 
 ### Camera

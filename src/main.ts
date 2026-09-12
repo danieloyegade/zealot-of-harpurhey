@@ -18,6 +18,7 @@ import { createPostProcessing } from './rendering/createPostProcessing';
 import {
   applyInternalResolution,
   resolveQualityProfile,
+  resolveToneMapping,
   VISUAL_STYLE,
 } from './rendering/visualStyle';
 import { DebugOverlay } from './ui/DebugOverlay';
@@ -41,8 +42,10 @@ const scene = new Scene();
 // default framebuffer this flag would multisample is never drawn to.
 const renderer = new WebGLRenderer({ antialias: false });
 const quality = resolveQualityProfile(window.location.search);
+const toneMapping = resolveToneMapping(window.location.search);
 applyInternalResolution(renderer, window.innerWidth, window.innerHeight, quality);
 renderer.outputColorSpace = SRGBColorSpace;
+renderer.toneMapping = toneMapping;
 renderer.toneMappingExposure = VISUAL_STYLE.render.exposure;
 renderer.info.autoReset = false;
 
@@ -111,7 +114,13 @@ const thirdPersonCamera = new ThirdPersonCamera(
 );
 thirdPersonCamera.setOrbit(requestedYaw, requestedPitch);
 thirdPersonCamera.snapTo(player.position);
-const postProcessing = createPostProcessing(renderer, scene, camera, quality);
+const postProcessing = createPostProcessing(
+  renderer,
+  scene,
+  camera,
+  quality,
+  toneMapping,
+);
 
 const debugOverlay = import.meta.env.DEV ? new DebugOverlay() : null;
 const timer = new Timer();
