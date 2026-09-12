@@ -47,12 +47,12 @@ assigned cleanly.
 
 The geometry-first GLB is loaded directly by `src/world/createWorld.ts`. The old
 procedural Gulliver's building, fallback generation and façade styling data have
-been removed completely. It is positioned at the east-side plot and rotated so
-the Oldham Street frontage faces west. The model remains explicitly labelled as
-a geometry WIP in development builds: **final textures have not yet been
-produced or applied**. Its authored dimensions are used for placement and
-collision. Vinyl Exchange now occupies the north-row plot beside Renae,
-leaving the complete Whittle Street return clear.
+been removed completely. It is positioned directly east of Renee on the north
+row, with both south-facing front planes aligned and a 0.1 m gap between their
+authored envelopes. The model remains explicitly labelled as a geometry WIP in
+development builds: **final textures have not yet been produced or applied**.
+Its 8 × 16.6 m placed dimensions are used for placement and collision,
+with the complete Whittle Street return extending north from the shared frontage.
 
 ## Runtime optimisation
 

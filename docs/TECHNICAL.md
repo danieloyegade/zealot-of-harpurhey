@@ -23,6 +23,7 @@ Development-only references, source photography, `.blend` masters, and renders l
 - `main.ts` owns renderer and scene initialisation, raw render timing, and the fixed-step game loop.
 - `FixedStepClock` advances gameplay at 60 Hz with bounded catch-up and explicit extreme-gap resets.
 - `InputController` tracks keyboard movement, running, and click-drag camera input.
+- `AmbientAudio` layers the local street recording beneath the current ambient music track. Browser autoplay rules mean audio begins on the first key press or pointer interaction; `M` toggles music without muting the street layer.
 - `PlayerController` owns the primitive player representation, velocity, facing direction, movement state, and collision movement.
 - `ThirdPersonCamera` owns orbit angles, camera-relative movement direction, and smoothed following.
 - `createWorld` builds the canonical city layout, visual blockouts and its collision description.
@@ -68,7 +69,7 @@ The prototype uses a 50-degree perspective camera placed 6.8 metres from the pla
 
 ### Collision
 
-The player is represented on the ground plane by a circle with a temporary radius of 0.38 metres. Buildings and the bus shelter use two-dimensional axis-aligned bounding boxes. Movement is resolved one horizontal axis at a time, allowing the player to slide along obstacles, and is clamped to the current playable blockout bounds. This intentionally small collision layer can later be replaced without changing the input or camera systems.
+The player is represented on the ground plane by a circle with a temporary radius of 0.38 metres. Buildings and the bus shelter use two-dimensional axis-aligned bounding boxes. Movement is resolved one horizontal axis at a time, allowing the player to slide along obstacles, and is clamped to the current playable blockout bounds. Before movement, any overlap caused by a changed level layout or development teleport is resolved toward the nearest valid obstacle edge so the player cannot remain trapped inside moved geometry. This intentionally small collision layer can later be replaced without changing the input or camera systems.
 
 ## Naming conventions
 

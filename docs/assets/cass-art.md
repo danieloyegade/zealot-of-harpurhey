@@ -70,8 +70,10 @@ entrance remains open to the player.
 
 The ceiling fixtures use the dedicated `MAT_CASS_LightFixture_PLACEHOLDER`
 material. Runtime policy turns those fixtures warm and emissive and adds a low
-warm response to the interior shell, making the shop visibly open at night
-without adding more real-time local lights.
+warm response to the interior shell. Three warm point lights at the exported
+window and central track anchors illuminate the front glazing, shelves and
+floor. They participate in the same nearest-light budget as the exterior hero
+lights, so the active-light ceiling does not increase.
 
 Real Camera has moved to `(-11.5, 69.75)`, opposite Vinyl Exchange and west of
 Advanced Photo. The slight westward offset leaves the South Road outward

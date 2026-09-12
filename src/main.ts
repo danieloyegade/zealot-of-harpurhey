@@ -7,6 +7,7 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three';
+import { AmbientAudio } from './audio/AmbientAudio';
 import { ThirdPersonCamera } from './camera/ThirdPersonCamera';
 import { FixedStepClock } from './core/FixedStepClock';
 import { InputController } from './input/InputController';
@@ -45,6 +46,7 @@ const camera = new PerspectiveCamera(
 
 const world = createWorld(scene, quality.maximumActiveLocalLights);
 const input = new InputController(renderer.domElement);
+new AmbientAudio();
 const player = new PlayerController(world.collision);
 scene.add(player.object);
 
@@ -56,8 +58,11 @@ let requestedYaw = 0;
 let requestedPitch = 0.31;
 if (import.meta.env.DEV) {
   const developmentViews: Record<string, readonly [number, number, number?, number?]> = {
-    'park-florist': [-13, -22],
-    'bus-shelter': [-9, 27],
+    'park-florist': [-13.9, -18],
+    'greek-gyros': [14, -15.2, 0, 0.2],
+    'come-through-lab': [-26, -15, Math.PI / 2, 0.2],
+    'village-books': [-27, -3.5, Math.PI / 2, 0.16],
+    'bus-shelter': [0, 27],
     'collision-dreams': [-3, 32.5, Math.PI],
     'dreams-target': [-3, 29.8, Math.PI],
     'dreams-angle': [-11, 29, 2.45, 0.18],
@@ -69,6 +74,8 @@ if (import.meta.env.DEV) {
     'east-shops': [29.5, 19],
     'south-shops': [0, 22],
     'south-road': [0, 53.5, Math.PI, 0.24],
+    'real-camera': [-11.5, 58, Math.PI, 0.06],
+    'real-camera-corner': [-26, 58.5, 2.3, 0.06],
     pickup: [5, 16.5],
   };
   const requestedPosition = requestedView
@@ -76,6 +83,7 @@ if (import.meta.env.DEV) {
     : undefined;
   if (requestedPosition) {
     player.position.set(requestedPosition[0], 0, requestedPosition[1]);
+    player.recoverFromCollisionOverlap();
     requestedYaw = requestedPosition[2] ?? 0;
     requestedPitch = requestedPosition[3] ?? 0.31;
   }

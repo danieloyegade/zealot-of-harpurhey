@@ -210,8 +210,8 @@ def add_grille(name, x_center, y_front, half_width, bottom_z, top_z, material, t
     """A restrained repeated grid rather than a densely subdivided wire mesh."""
     width = half_width * 2
     height = top_z - bottom_z
-    box(f"{name}_FrameTop", (bar, width, bar), (x_center, y_front, top_z), material, target_collection)
-    box(f"{name}_FrameBottom", (bar, width, bar), (x_center, y_front, bottom_z), material, target_collection)
+    box(f"{name}_FrameTop", (width, bar, bar), (x_center, y_front, top_z), material, target_collection)
+    box(f"{name}_FrameBottom", (width, bar, bar), (x_center, y_front, bottom_z), material, target_collection)
     box(f"{name}_FrameLeft", (bar, bar, height), (x_center - half_width, y_front, (top_z + bottom_z) / 2), material, target_collection)
     box(f"{name}_FrameRight", (bar, bar, height), (x_center + half_width, y_front, (top_z + bottom_z) / 2), material, target_collection)
     for i in range(1, v_bars + 1):
@@ -219,7 +219,7 @@ def add_grille(name, x_center, y_front, half_width, bottom_z, top_z, material, t
         box(f"{name}_VBar_{i:02d}", (bar, bar, height), (x, y_front, (top_z + bottom_z) / 2), material, target_collection)
     for i in range(1, h_bars + 1):
         z = bottom_z + height * i / (h_bars + 1)
-        box(f"{name}_HBar_{i:02d}", (bar, width, bar), (x_center, y_front, z), material, target_collection)
+        box(f"{name}_HBar_{i:02d}", (width, bar, bar), (x_center, y_front, z), material, target_collection)
 
 
 # ---------------------------------------------------------------------------
@@ -391,11 +391,11 @@ def build_blockout():
     box("CTL_Context_Ground", (30.0, 24.0, 0.15), (shell_center_x, 6.0, -0.15), mats["ground"], groups["context"])
 
     cameras = [
-        camera("CAMERA_A_StraightOnEntrance", (-0.7, -7.5, 1.7), (-0.7, 0.0, 2.3), 45, groups["cameras"]),
-        camera("CAMERA_B_WiderThreeQuarterStreet", (-8.5, -8.0, 4.5), (0.2, 1.0, 3.2), 40, groups["cameras"]),
-        camera("CAMERA_C_LowAngleUpperFloors", (-1.2, -3.2, 0.85), (-0.4, 1.0, 6.6), 32, groups["cameras"]),
-        camera("CAMERA_D_DoorDropboxWindows", (-1.6, -2.4, 1.35), (-1.55, 0.0, 1.35), 40, groups["cameras"]),
-        camera("CAMERA_E_DropboxIndependent", (-1.65, -1.05, 1.35), (-1.65, 0.0, 1.35), 55, groups["cameras"]),
+        camera("CAMERA_A_StraightOnEntrance", (-0.2, -9.0, 3.3), (-0.2, 0.0, 3.3), 40, groups["cameras"]),
+        camera("CAMERA_B_WiderThreeQuarterStreet", (-4.0, -11.0, 4.2), (-0.2, 1.5, 3.0), 38, groups["cameras"]),
+        camera("CAMERA_C_LowAngleUpperFloors", (-1.0, -4.2, 1.0), (-0.2, 1.5, 6.8), 30, groups["cameras"]),
+        camera("CAMERA_D_DoorDropboxWindows", (-0.5, -4.5, 1.4), (-0.5, 0.0, 1.4), 32, groups["cameras"]),
+        camera("CAMERA_E_DropboxIndependent", (-1.65, -1.6, 1.35), (-1.65, 0.0, 1.35), 45, groups["cameras"]),
     ]
 
     area_light("CTL_Key", (-9.0, -9.0, 9.0), 3600, 8.0, (0.0, 1.0, 3.0), groups["lights"])

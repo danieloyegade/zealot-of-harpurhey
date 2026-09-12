@@ -26,15 +26,15 @@ Coordinates are plot centres. Footprints are X width × Z depth.
 
 | Location | Centre (X, Z) | Footprint | Status / relationship |
 | --- | ---: | ---: | --- |
-| Florist | (-16, -36) | 6 × 7.5 m | Finished photographic asset on the north row |
+| Florist | (-16.9, -32) | 6 × 7.5 m | Finished photographic asset aligned beside MCR1's integrated stone doorway |
 | Dreams | (1.5, 39) | 18 × 8.5 m | North-facing photographic hero asset shifted east to accommodate the enlarged Cass Art frontage |
 | Renee | (17, -38.6) | 13.8 × 13.2 m | Geometry-first Renee blockout; final textures and interior-detail pass pending |
-| Come Through Lab | (-39, -15) | 10 × 10 m | Northernmost west-side shop |
-| Village Books | (-39, -3.5) | 10 × 9 m | West side, south of Come Through Lab |
-| MCR1 | (-25, -36) | 12 × 7 m | Geometry-first corner-shop asset immediately west of Florist; final textures pending |
+| Come Through Lab | (-37, -15) | 6 × 9.7 m | Geometry-complete east-facing GLB hero asset, shopfront flush to the plot's east edge (shared -34 building line with Village Books/Coral); drop box and supply holder load as independent props at the entrance; final textures pending |
+| Village Books | (-38.12, -3.5) | 8.24 × 7.88 m | East-facing geometry blockout replacing the old box shop; fascia aligned to the shared X = -34 building line; detail pass and textures pending |
+| MCR1 | (-29, -36) | 12 × 7 m | Geometry-first corner-shop asset west of Florist with a clear gap between their authored envelopes; final textures pending |
 | Coral | (-39, 17) | 10 × 23 m | Full-scale east-facing Blender hero asset occupying the expanded west plot |
 | Cass Art | (-16.6, 39) | 18.2 × 11.93 m | Enlarged enterable geometry-first GLB in the former Real Camera area, with illuminated interior fixtures |
-| Gulliver's Pub | (38, -15) | 16.6 × 8 m | Geometry-first Blender asset; placeholder materials, final textures pending |
+| Gulliver's Pub | (27.9, -40) | 8 × 16.6 m | South-facing geometry-first asset directly east of Renee, with aligned front planes and a 0.1 m envelope gap; final textures pending |
 | Vinyl Exchange | (-7, 49) | 12 × 10 m | South-facing unit directly behind Eastern Bloc; the two rear walls touch |
 | Car Park | (43, 0) | 20 × 14 m | Open surface between upper and lower east plots |
 | Arts Council / The Hive | (47, 20) | 20.4 × 44.3 m | Geometry asset centred on the east-side plot with its Lever Street frontage facing west |
@@ -62,13 +62,16 @@ Advanced Photo is now active as a compact South Road shop opposite Spice Cabin. 
 
 ## Player and transport infrastructure
 
-- Player start: (0, 21), on the southern edge of Central Park
-- Bus Stop A: (-9, 20.4), close to player start
+- Player start: (0, 3.5), just south of and facing the Central Park fountain
+- Bus Stop A: (0, 20.4), centred on the South park zebra crossing
 - Bus Stop B: (0, -49), on outer North Road
 - Sterling Bikes South dock: (-24, 26)
 - Sterling Bikes East dock: (27, 4), near the car park
+- Greek Gyros food stand: (14, -19.35), on the park's north pavement opposite Renee
 
 Both bus stops instance the geometry-first North Road, Preston shelter and its independently parented shopping trolley. The glass is truly transparent and contains no baked background photography. The bike docks are development blockout markers only; no bicycle gameplay is implemented.
+
+The Greek Gyros kiosk is a standalone placeable prop rather than a named plot, declared in `FOOD_STANDS` alongside the other markers. It backs onto North Road with its authored serving frontage facing +Z into the park, so the queue forms on the park side and the stand reads across the road from Renee's frontage. It sits west of the existing bollard pair and streetlight at x = 18.5-20. Its collision box is 6.4 m wide by 2.6 m deep, extended 0.56 m east to enclose the side service step, and stops the player at the counter lip while leaving the projecting canopy overhead clear. The asset is untextured geometry: the fascia carries no wordmark or flags and nothing glows yet, though the GLB ships four light anchors for that pass.
 
 ## Implementation boundaries
 

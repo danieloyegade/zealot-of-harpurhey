@@ -48,6 +48,7 @@ import {
 } from './createEnvironmentKit';
 import {
   BUS_STOPS,
+  FOOD_STANDS,
   FUTURE_EXITS,
   PARK,
   PAVEMENT_WIDTH,
@@ -570,6 +571,40 @@ function applyNiceThingsBlockoutPolicy(model: Group): void {
   });
 }
 
+function applyVillageBooksBlockoutPolicy(model: Group): void {
+  // Village Books is still at its geometry-review hold. Preserve the authored
+  // placeholder palette, disable accidental emissive treatment and configure
+  // only the documented shopfront/upper glazing for the runtime renderer.
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.map = null;
+      material.emissiveMap = null;
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+      if (material.name === 'MAT_VB_Glass_PLACEHOLDER') {
+        material.transparent = true;
+        material.opacity = 0.2;
+        material.depthWrite = false;
+        material.roughness = 0.18;
+        material.metalness = 0.04;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.58);
+      }
+    }
+  });
+}
+
 function applyDreamsModelPolicy(model: Group): void {
   applyPhotographicModelPolicy(model);
   model.traverse((child) => {
@@ -769,6 +804,88 @@ function applyTheHiveModelPolicy(model: Group): void {
         material.metalness = 0.32;
       } else {
         material.roughness = Math.max(material.roughness, 0.58);
+      }
+    }
+  });
+}
+
+function applyComeThroughLabModelPolicy(model: Group): void {
+  // Come Through Lab is a geometry-only detail pass (no textures, decals or
+  // QR code yet). Keep its authored placeholder palette and only configure
+  // the glazing so the shopfront reads through the grilles.
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.map = null;
+      material.emissiveMap = null;
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+      if (material.name.toLowerCase().includes('mat_ctl_glass_placeholder')) {
+        material.transparent = true;
+        material.opacity = 0.55;
+        material.depthWrite = false;
+        material.roughness = 0.25;
+        material.metalness = 0.05;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.55);
+      }
+    }
+  });
+}
+
+function applyRealCameraModelPolicy(model: Group): void {
+  // Real Camera authors its own sandstone/shopfront palette rather than clay
+  // placeholders, so the colours are kept. Only the glazing and the interior
+  // fluorescents need runtime treatment so the shop reads through the windows.
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+      if (material.name === 'MAT_RC_Fluorescent') {
+        material.color.set(0xf2f6ff);
+        material.emissive.set(0xcfe2ff);
+        material.emissiveIntensity = 2.1 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        material.roughness = 0.3;
+      } else if (material.name === 'MAT_RC_ShopGlass') {
+        // The shopfront glazing stays readable: the lit interior behind it is
+        // the whole point of the display window.
+        material.transparent = true;
+        material.opacity = 0.26;
+        material.depthWrite = false;
+        material.roughness = 0.16;
+        material.metalness = 0.05;
+      } else if (material.name === 'MAT_RC_WindowGlass') {
+        material.transparent = true;
+        material.opacity = 0.42;
+        material.depthWrite = false;
+        material.roughness = 0.22;
+        material.metalness = 0.05;
+      } else if (material.name === 'MAT_RC_LensGlass') {
+        material.roughness = 0.14;
+        material.metalness = 0.35;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.55);
       }
     }
   });
@@ -1004,9 +1121,8 @@ async function addGulliversModel(
     applyGulliversModelPolicy(gullivers);
     gullivers.name = 'Gullivers geometry WIP — textures pending';
     gullivers.position.set(location.x, 0, location.z);
-    // Blender front (-Y) imports facing +Z. Turn it west while retaining the
-    // authored metric proportions and complete Whittle Street side return.
-    gullivers.rotation.y = -Math.PI / 2;
+    // Blender front (-Y) imports facing +Z, aligning the Oldham Street
+    // frontage south beside Renee while retaining the full side return.
     root.add(gullivers);
   } catch (error) {
     console.error(
@@ -1120,6 +1236,114 @@ async function addTheHiveModel(
   }
 }
 
+async function addComeThroughLabModel(
+  root: Group,
+  location: WorldLocation,
+): Promise<void> {
+  try {
+    const [lab, dropbox, props] = await Promise.all([
+      loadModel('assets/models/come_through_lab.glb?v=geometry-20260912'),
+      loadModel('assets/models/ctl_dropbox.glb?v=geometry-20260912'),
+      loadModel('assets/models/ctl_dropoff_props.glb?v=geometry-20260912'),
+    ]);
+    applyComeThroughLabModelPolicy(lab);
+    applyComeThroughLabModelPolicy(dropbox);
+    applyComeThroughLabModelPolicy(props);
+    lab.name = 'Come Through Lab geometry asset — textures pending';
+    dropbox.name = 'Come Through Lab drop box (independent hero prop)';
+    props.name = 'Come Through Lab supply holder + envelope + pencil';
+    // Blender's -Y frontage imports facing +Z. Rotate that frontage east, then
+    // sit the authored metric envelope on the plot with its shopfront flush to
+    // the plot's east edge so the door and drop-box wall meet the pavement.
+    // `width` is the east-west extent, matching addCollisionFootprint.
+    lab.rotation.y = Math.PI / 2;
+    lab.updateMatrixWorld(true);
+    const bounds = new Box3().setFromObject(lab);
+    const centre = bounds.getCenter(new Vector3());
+    lab.position.x += location.x + location.width / 2 - bounds.max.x;
+    lab.position.y -= bounds.min.y;
+    lab.position.z += location.z - centre.z;
+    root.add(lab);
+
+    // The drop box and supply holder were authored in the same Blender scene
+    // as the building and exported separately only so they stay independently
+    // placeable (never fused into the building mesh, per the brief's 24-hour
+    // drop-off requirement). Applying the identical rotation + position delta
+    // keeps them exactly where they were authored relative to the entrance.
+    for (const prop of [dropbox, props]) {
+      prop.rotation.y = Math.PI / 2;
+      prop.position.copy(lab.position);
+      root.add(prop);
+    }
+  } catch (error) {
+    console.error(
+      '[World] Failed to load the Come Through Lab hero asset set (building, drop box, supply holder).',
+      error,
+    );
+  }
+}
+
+async function replaceVillageBooksFallback(
+  root: Group,
+  fallback: Mesh,
+  location: WorldLocation,
+): Promise<void> {
+  try {
+    const villageBooks = await loadModel(
+      'assets/models/village-books-blockout.glb?v=geometry-wip-20260912',
+    );
+    applyVillageBooksBlockoutPolicy(villageBooks);
+    villageBooks.name = 'Village Books geometry blockout — detail pass pending';
+    // Blender's -Y Oldham Street frontage imports facing +Z. Rotate it east,
+    // then align the measured fascia projection to the canonical X = -34
+    // building line and centre its north-south envelope on the plot.
+    villageBooks.rotation.y = Math.PI / 2;
+    villageBooks.updateMatrixWorld(true);
+    const bounds = new Box3().setFromObject(villageBooks);
+    const centre = bounds.getCenter(new Vector3());
+    villageBooks.position.x += location.x + location.width / 2 - bounds.max.x;
+    villageBooks.position.y -= bounds.min.y;
+    villageBooks.position.z += location.z - centre.z;
+    root.add(villageBooks);
+    root.remove(fallback);
+  } catch (error) {
+    markLoadFailure(fallback, 'Village Books');
+    console.error(
+      '[World] Failed to load village-books-blockout.glb. Showing the magenta fallback.',
+      error,
+    );
+  }
+}
+
+async function addRealCameraModel(
+  root: Group,
+  location: WorldLocation,
+): Promise<void> {
+  try {
+    const realCamera = await loadModel(
+      'assets/models/real_camera.glb?v=geometry-20260912',
+    );
+    applyRealCameraModelPolicy(realCamera);
+    realCamera.name = 'Real Camera geometry asset — textures pending';
+    // Blender's -Y Dale Street frontage imports facing +Z. Rotate it to face
+    // north, then sit the authored metric envelope on the plot with the
+    // shopfront flush to the plot's north edge so it meets the pavement.
+    realCamera.rotation.y = Math.PI;
+    realCamera.updateMatrixWorld(true);
+    const bounds = new Box3().setFromObject(realCamera);
+    const centre = bounds.getCenter(new Vector3());
+    realCamera.position.x += location.x - centre.x;
+    realCamera.position.y -= bounds.min.y;
+    realCamera.position.z += location.z - location.depth / 2 - bounds.min.z;
+    root.add(realCamera);
+  } catch (error) {
+    console.error(
+      '[World] Failed to load real_camera.glb. No legacy Real Camera blockout is retained.',
+      error,
+    );
+  }
+}
+
 function addFacadePanel(
   root: Group,
   location: WorldLocation,
@@ -1199,7 +1423,7 @@ function addFacadeProjection(
 function createBlockoutBuildingMass(location: WorldLocation): Mesh {
   const frontTexture = location.id === 'dreams' || location.id === 'renae'
     ? 'brick-painted-overhaul'
-    : location.id === 'arts-council' || location.id === 'come-through-lab'
+    : location.id === 'arts-council'
       ? 'concrete-cracked-overhaul'
       : 'brick-soot-overhaul';
   const frontTint = location.id === 'dreams'
@@ -1209,17 +1433,15 @@ function createBlockoutBuildingMass(location: WorldLocation): Mesh {
       : 0xffffff;
   const frontEmissive = location.id === 'renae'
     ? VISUAL_STYLE.lighting.magenta
-    : location.id === 'come-through-lab'
-      ? VISUAL_STYLE.lighting.fluorescent
-      : ['coral', 'arts-council'].includes(location.id)
-        ? VISUAL_STYLE.lighting.coldWhite
-        : VISUAL_STYLE.lighting.sodium;
+    : ['coral', 'arts-council'].includes(location.id)
+      ? VISUAL_STYLE.lighting.coldWhite
+      : VISUAL_STYLE.lighting.sodium;
   const frontMaterial = createWorldMaterial(frontTexture, {
     repeatX: Math.max(2, Math.round(location.width / 4)),
     repeatY: Math.max(2, Math.round(location.height / 2)),
     tint: frontTint,
     emissive: frontEmissive,
-    emissiveIntensity: ['renae', 'coral', 'come-through-lab'].includes(location.id)
+    emissiveIntensity: ['renae', 'coral'].includes(location.id)
       ? 0.16
       : 0.1,
     roughness: 0.94,
@@ -1280,8 +1502,6 @@ function addBlockoutFacade(root: Group, location: WorldLocation): void {
     renae: ['#7e2348', '#f1ccd7', VISUAL_STYLE.lighting.magenta],
     coral: ['#183b74', '#eee6d5', VISUAL_STYLE.lighting.coldWhite],
     'eastern-bloc': ['#856b31', '#10151c', VISUAL_STYLE.lighting.sodium],
-    'village-books': ['#d5c8a7', '#7c231d', VISUAL_STYLE.lighting.sodium],
-    'come-through-lab': ['#1d2938', '#b6d6c9', VISUAL_STYLE.lighting.fluorescent],
     'vinyl-exchange': ['#d3c6a0', '#a12f28', VISUAL_STYLE.lighting.sodium],
     'real-camera': ['#ddd1ae', '#8c2a22', VISUAL_STYLE.lighting.sodium],
     'spice-cabin': ['#8d2d29', '#f0d28c', VISUAL_STYLE.lighting.sodium],
@@ -1431,7 +1651,7 @@ function addBlockoutFacade(root: Group, location: WorldLocation): void {
       variant % 2 === 0 ? 0.31 : -0.31,
     );
   }
-  if (['dreams', 'come-through-lab', 'eastern-bloc', 'arts-council'].includes(location.id)) {
+  if (['dreams', 'eastern-bloc', 'arts-council'].includes(location.id)) {
     addFacadePanel(
       root,
       location,
@@ -1510,6 +1730,55 @@ function addBuildingLocation(
     root.add(fallback);
     void replaceReneeFallback(root, fallback, location);
     addReneeInteriorCollision(obstacles, location);
+    addDevelopmentLabel(
+      root,
+      `${location.name} · geometry WIP · textures pending`,
+      location.x,
+      location.height + 1.1,
+      location.z,
+    );
+    return;
+  }
+
+  if (location.id === 'village-books') {
+    const fallback = createBlockoutBuildingMass(location);
+    fallback.position.set(location.x, location.height / 2, location.z);
+    fallback.name = 'Village Books loading placeholder';
+    root.add(fallback);
+    void replaceVillageBooksFallback(root, fallback, location);
+    // The blockout includes a visible closed door but no door animation or
+    // interaction system yet, so retain a solid measured collision footprint.
+    addCollisionFootprint(obstacles, location);
+    addDevelopmentLabel(
+      root,
+      `${location.name} · geometry blockout · detail pass pending`,
+      location.x,
+      location.height + 1.1,
+      location.z,
+    );
+    return;
+  }
+
+  if (location.id === 'come-through-lab') {
+    void addComeThroughLabModel(root, location);
+    addCollisionFootprint(obstacles, location);
+    addDevelopmentLabel(
+      root,
+      `${location.name} · geometry complete · textures pending`,
+      location.x,
+      location.height + 1.1,
+      location.z,
+    );
+    return;
+  }
+
+  if (location.id === 'real-camera') {
+    void addRealCameraModel(root, location);
+    // Solid footprint rather than an interior shell: the authored shop floor
+    // sits 0.82 m up a stair flight, and the player is pinned to y = 0 with
+    // XZ-only collision, so the interior cannot be entered without vertical
+    // support. The GLB already ships the entry/spawn anchors for when it can.
+    addCollisionFootprint(obstacles, location);
     addDevelopmentLabel(
       root,
       `${location.name} · geometry WIP · textures pending`,
@@ -1609,8 +1878,8 @@ function createBusShelterFallback(): Group {
   return shelter;
 }
 
-function markShelterLoadFailure(fallback: Group): void {
-  fallback.name = 'Bus shelter load error';
+function markShelterLoadFailure(fallback: Group, assetName = 'Bus shelter'): void {
+  fallback.name = `${assetName} load error`;
   fallback.traverse((child) => {
     if (child instanceof Mesh && child.material instanceof MeshStandardMaterial) {
       child.material.color.set(0xff00c8);
@@ -1640,6 +1909,104 @@ async function replaceBusShelterFallback(
       error,
     );
   }
+}
+
+function applyGreekGyrosPolicy(model: Group): void {
+  // The kiosk is a geometry-only asset: keep its authored placeholder palette
+  // and let the glass screen read as glass without inheriting emissive light.
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.map = null;
+      material.emissiveMap = null;
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+      if (material.name === 'MAT_GG_Glass_PLACEHOLDER') {
+        material.transparent = true;
+        material.opacity = 0.22;
+        material.depthWrite = false;
+        material.roughness = 0.14;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.42);
+      }
+    }
+  });
+}
+
+function createGreekGyrosFallback(): Group {
+  const stand = new Group();
+  stand.name = 'Greek Gyros loading placeholder';
+  const body = new MeshStandardMaterial({ color: 0x6a7076, roughness: 0.85 });
+  const fascia = new MeshStandardMaterial({ color: 0x21386d, roughness: 0.6 });
+
+  const shell = new Mesh(getBoxGeometry(6.4, 2.16, 2.6), body);
+  shell.position.set(0, 1.34, 0);
+  stand.add(shell);
+  const counter = new Mesh(getBoxGeometry(6.36, 0.06, 0.62), body);
+  counter.position.set(0, 1.25, 1.15);
+  stand.add(counter);
+  const sign = new Mesh(getBoxGeometry(6.72, 0.94, 0.38), fascia);
+  sign.position.set(0, 2.85, 1.49);
+  stand.add(sign);
+  return stand;
+}
+
+async function replaceGreekGyrosFallback(
+  root: Group,
+  fallback: Group,
+): Promise<void> {
+  try {
+    const stand = await loadModel(
+      'assets/models/greek_gyros.glb?v=geometry-pass-20260912',
+    );
+    applyGreekGyrosPolicy(stand);
+    stand.name = fallback.name.replace(' loading placeholder', '');
+    stand.position.copy(fallback.position);
+    stand.rotation.copy(fallback.rotation);
+    root.add(stand);
+    root.remove(fallback);
+  } catch (error) {
+    markShelterLoadFailure(fallback, 'Greek Gyros');
+    console.error(
+      '[World] Failed to load greek_gyros.glb. Showing the magenta fallback.',
+      error,
+    );
+  }
+}
+
+function addGreekGyros(
+  root: Group,
+  obstacles: CollisionObstacle[],
+  marker: WorldMarker,
+): void {
+  const fallback = createGreekGyrosFallback();
+  fallback.name = `${marker.name} loading placeholder`;
+  fallback.position.set(marker.x, 0, marker.z);
+  root.add(fallback);
+  void replaceGreekGyrosFallback(root, fallback);
+
+  obstacles.push({
+    name: marker.name,
+    minX: marker.x - 3.2,
+    // The side service step projects 0.56 m past the east wall; enclosing it
+    // keeps the player from clipping through the step rather than over it.
+    maxX: marker.x + 3.76,
+    minZ: marker.z - 1.3,
+    // The authored frontage faces +Z: stop the player at the counter lip and
+    // leave the projecting canopy overhead clear.
+    maxZ: marker.z + 1.5,
+  });
+  addDevelopmentLabel(root, marker.name, marker.x, 4.1, marker.z);
 }
 
 function addBusShelter(
@@ -2303,13 +2670,106 @@ function addDevelopmentPickup(root: Group): (deltaTime: number) => void {
 }
 
 function addHeroLocalLights(root: Group): PointLight[] {
-  const definitions = [
-    ['Bus Stop A hero light', -9, 2.35, 20.4, 0xb9ffe7, 8, 8],
+  type HeroLightDefinition = readonly [
+    name: string,
+    x: number,
+    y: number,
+    z: number,
+    color: number,
+    intensity: number,
+    distance: number,
+  ];
+
+  const definitions: HeroLightDefinition[] = [
+    ['Bus Stop A hero light', 0, 2.35, 20.4, 0xb9ffe7, 8, 8],
     ['Dreams hero light', -3, 4.5, 33.2, VISUAL_STYLE.lighting.coldWhite, 1.8, 10],
     ['Renee hero light', 17, 2.5, -30.8, VISUAL_STYLE.lighting.magenta, 7, 9],
-    ['Florist hero light', -16, 2.7, -31, VISUAL_STYLE.lighting.sodium, 7.5, 9],
+    ['Florist hero light', -16.9, 2.7, -27, VISUAL_STYLE.lighting.sodium, 7.5, 9],
     ['Bus Stop B hero light', 0, 2.35, -49, 0xb9ffe7, 8, 8],
-  ] as const;
+  ];
+
+  const cassArt = WORLD_LOCATIONS.find((location) => location.id === 'cass-art');
+  if (cassArt) {
+    const scale = cassArt.width / 18;
+    const modelOriginZ = cassArt.z - cassArt.depth / 2;
+    const cassLightDefinitions = [
+      ['Cass Art window fill', 0, 0.65, 3.68, 7, 7],
+      ['Cass Art interior track west', -2.1, 5.75, 4.02, 9, 8],
+      ['Cass Art interior track east', 1.9, 5.75, 4.02, 9, 8],
+    ] as const;
+
+    // The model is rotated 180 degrees at runtime: authored +X becomes world
+    // -X, while authored interior depth (+Y) extends south in world +Z.
+    for (const [name, localX, localDepth, localHeight, intensity, distance] of cassLightDefinitions) {
+      definitions.push([
+        name,
+        cassArt.x - localX * scale,
+        localHeight * scale,
+        modelOriginZ + localDepth * scale,
+        0xffcf91,
+        intensity,
+        distance,
+      ]);
+    }
+  }
+
+  const comeThroughLab = WORLD_LOCATIONS.find(
+    (location) => location.id === 'come-through-lab',
+  );
+  if (comeThroughLab) {
+    // The plot now carries the authored parapet top (7.15 m = ground 3.50 +
+    // upper 3.40 + cap 0.25); sit the pair just under the cap and slightly
+    // proud of the frontage so the wash reaches both upper corners instead of
+    // only the flat wall. `width` is the east-west extent.
+    const parapetTop = comeThroughLab.height;
+    const frontPlaneX = comeThroughLab.x + comeThroughLab.width / 2;
+    for (const [suffix, offsetZ] of [
+      ['north', -4.6],
+      ['south', 4.6],
+    ] as const) {
+      definitions.push([
+        `Come Through Lab parapet corner ${suffix}`,
+        frontPlaneX + 0.4,
+        parapetTop - 0.25,
+        comeThroughLab.z + offsetZ,
+        VISUAL_STYLE.lighting.coldWhite,
+        3.2,
+        7,
+      ]);
+    }
+  }
+
+  const realCamera = WORLD_LOCATIONS.find(
+    (location) => location.id === 'real-camera',
+  );
+  if (realCamera) {
+    // The model is rotated 180 degrees and its frontage aligned to the plot's
+    // north edge, so an authored Blender point (bx, by, bz) lands at
+    // world x = -bx + (plot x - 0.275), y = bz, z = by + (front plane + 5.963).
+    const worldX = (authoredX: number) => realCamera.x - 0.275 - authoredX;
+    const worldZ = (authoredY: number) =>
+      realCamera.z - realCamera.depth / 2 + 5.963 + authoredY;
+    const realCameraLights = [
+      // Sodium wash on the hero shopfront, sitting proud of the facade so the
+      // awning, hanging sign and stone piers catch it rather than one flat wall.
+      ['Real Camera shopfront', 0.05, -6.4, 3.7, VISUAL_STYLE.lighting.sodium, 7, 10],
+      // Interior fluorescents read through the display glazing after dark.
+      ['Real Camera interior west', -4.55, -1.55, 3.3, VISUAL_STYLE.lighting.fluorescent, 5, 7],
+      ['Real Camera interior east', -0.2, -1.55, 3.3, VISUAL_STYLE.lighting.fluorescent, 5, 7],
+    ] as const;
+
+    for (const [name, authoredX, authoredY, height, color, intensity, distance] of realCameraLights) {
+      definitions.push([
+        name,
+        worldX(authoredX),
+        height,
+        worldZ(authoredY),
+        color,
+        intensity,
+        distance,
+      ]);
+    }
+  }
 
   return definitions.map(([name, x, y, z, color, intensity, distance]) => {
     const light = new PointLight(color, intensity, distance, 2);
@@ -2360,6 +2820,9 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
 
   addBusShelter(root, obstacles, BUS_STOPS[0], -Math.PI / 2);
   addBusShelter(root, obstacles, BUS_STOPS[1], -Math.PI / 2);
+  for (const marker of FOOD_STANDS) {
+    addGreekGyros(root, obstacles, marker);
+  }
   addStreetDressing(root);
   for (const marker of STERLING_BIKE_DOCKS) {
     addBikeDock(root, marker);

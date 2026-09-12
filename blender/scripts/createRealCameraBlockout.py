@@ -112,6 +112,7 @@ def point_at(obj, target):
 def camera(name, location, target, lens, target_collection):
     data = bpy.data.cameras.new(f"{name}_Data")
     data.lens = lens
+    data.sensor_fit = "HORIZONTAL"
     data.sensor_width = 36
     data.clip_start = 0.06
     data.clip_end = 200
@@ -134,25 +135,6 @@ def area_light(name, location, target, energy, size, target_collection):
     return obj
 
 
-def arched_window(name, x, z_base, width, height, front_y, mats, target):
-    """Recessed rectangular pane with a genuine rounded arch head (§25)."""
-    depth = 0.30
-    box(f"{name}_Recess", (width, depth, height), (x, front_y - depth / 2, z_base + height / 2), mats["glass"], target)
-    box(f"{name}_Reveal_L", (0.12, depth + 0.06, height), (x - width / 2, front_y - depth / 2, z_base + height / 2), mats["frame"], target)
-    box(f"{name}_Reveal_R", (0.12, depth + 0.06, height), (x + width / 2, front_y - depth / 2, z_base + height / 2), mats["frame"], target)
-    cylinder(
-        f"{name}_ArchHead",
-        radius=width / 2,
-        depth=depth + 0.06,
-        location=(x, front_y - depth / 2, z_base + height),
-        mat=mats["frame"],
-        target=target,
-        rotation=(1.5708, 0.0, 0.0),
-        vertices=16,
-    )
-    box(f"{name}_Sill", (width + 0.24, 0.24, 0.10), (x, front_y + 0.10, z_base - 0.05), mats["stone"], target)
-
-
 def rect_window(name, x, z_base, width, height, front_y, mats, target):
     depth = 0.26
     box(f"{name}_Recess", (width, depth, height), (x, front_y - depth / 2, z_base + height / 2), mats["glass"], target)
@@ -169,9 +151,9 @@ def pilaster(name, x, z_base, height, front_y, mats, target):
     box(f"{name}_Capital", (0.78, 0.42, 0.26), (x, front_y - 0.21, z_base + height - 0.13), mats["stone"], target)
 
 
-def string_course(name, z, front_y, width, mats, target):
-    box(f"{name}_Band", (width, 0.34, 0.24), (0.0, front_y - 0.17, z), mats["stone"], target)
-    box(f"{name}_Step", (width, 0.22, 0.10), (0.0, front_y - 0.11, z + 0.17), mats["stone"], target)
+def string_course(name, z, front_y, width, mats, target, center_x=0.0):
+    box(f"{name}_Band", (width, 0.34, 0.24), (center_x, front_y - 0.17, z), mats["stone"], target)
+    box(f"{name}_Step", (width, 0.22, 0.10), (center_x, front_y - 0.11, z + 0.17), mats["stone"], target)
 
 
 def stairs(name, x_center, y_front, y_back, z_top, width, step_count, mats, target):
@@ -229,9 +211,9 @@ def build_scene():
         "ground_review": material("MAT_RC_ReviewGround", (0.27, 0.275, 0.27)),
     }
 
-    # Coherent inferred envelope: 14.0 m Dale Street frontage, storeys from the
-    # street photography (ground shopfronts, three upper floors, cornice/parapet).
-    width = 14.0
+    # Coherent inferred envelope, storeys from the street photography (ground
+    # shopfronts, three upper floors, cornice/parapet). The facade width is
+    # derived below from the corner mass position once it's known.
     front_y, back_y = -5.0, 5.0
     ground_h, floor1_h, floor2_h, floor3_h, cornice_h = 4.20, 3.30, 3.30, 2.60, 0.80
     z_floor1 = ground_h
@@ -240,11 +222,25 @@ def build_scene():
     z_cornice = z_floor3 + floor3_h
     total_h = z_cornice + cornice_h
 
-    corner_x = -7.0
+    # Pushed 1.5 m further west than the first pass: the reference photography
+    # shows a narrow secondary (grey, plain-painted) door between the corner
+    # and the Gallery entrance, which the first pass omitted entirely.
+    corner_x = -8.5
+    cylinder_right_edge = corner_x + 0.35  # corner_x - 1.0 (centre) + 1.35 (radius)
 
-    # --- Overall shell mass -------------------------------------------------
-    box("RC_MainVolume", (width, back_y - front_y, total_h), (0.0, (front_y + back_y) / 2, total_h / 2), mats["redstone"], groups["shell"])
-    box("RC_RoofCap", (width + 0.20, back_y - front_y + 0.20, 0.20), (0.0, (front_y + back_y) / 2, total_h + 0.10), mats["darktrim"], groups["shell"])
+    # --- Overall shell mass --------------------------------------------------
+    # Upper mass only: the ground floor is left open behind its piers so the
+    # Gallery/shop/adjacent openings actually read as openings, not a solid
+    # wall with floating trim in front of it. Spans from the corner mass's
+    # right edge to the east corner, so it also covers the new door bay.
+    facade_width = 7.0 - cylinder_right_edge
+    center_x = (7.0 + cylinder_right_edge) / 2
+    upper_mass_h = total_h - ground_h
+    box("RC_MainVolume", (facade_width, back_y - front_y, upper_mass_h), (center_x, (front_y + back_y) / 2, ground_h + upper_mass_h / 2), mats["redstone"], groups["shell"])
+    box("RC_RoofCap", (facade_width + 0.20, back_y - front_y + 0.20, 0.20), (center_x, (front_y + back_y) / 2, total_h + 0.10), mats["darktrim"], groups["shell"])
+    # Solid backing behind the whole ground floor, set well back from the
+    # street face so it closes off the interior without blocking any opening.
+    box("RC_GroundFloor_BackWall", (facade_width, 0.20, ground_h), (center_x, front_y + 3.0, ground_h / 2), mats["redstone"], groups["shell"])
 
     # Rounded/chamfered corner mass wrapping onto the Lever Street return (§18).
     cylinder(
@@ -265,6 +261,22 @@ def build_scene():
         groups["shell"],
     )
 
+    # --- Secondary door: the plain grey door between the corner and the
+    # Gallery entrance, visible in the street photography and missed by the
+    # first pass. Sits in the gap between the corner mass and the west pier.
+    door_x = (cylinder_right_edge + (-6.65 - 0.31)) / 2
+    door_w = 0.95
+    box("RC_SecondaryDoor_Reveal_L", (0.14, 0.30, ground_h - 1.6), (door_x - door_w / 2, front_y + 0.15, (ground_h - 1.6) / 2), mats["stone"], groups["ground"])
+    box("RC_SecondaryDoor_Reveal_R", (0.14, 0.30, ground_h - 1.6), (door_x + door_w / 2, front_y + 0.15, (ground_h - 1.6) / 2), mats["stone"], groups["ground"])
+    box("RC_SecondaryDoor_Head", (door_w + 0.14, 0.30, 0.18), (door_x, front_y + 0.15, ground_h - 1.69), mats["stone"], groups["ground"])
+    box("RC_SecondaryDoor_Leaf", (door_w - 0.10, 0.06, 2.05), (door_x, front_y + 0.05, 1.05), mats["shutter"], groups["ground"])
+    box("RC_SecondaryDoor_Threshold", (door_w + 0.10, 0.30, 0.06), (door_x, front_y + 0.15, 0.03), mats["stone"], groups["ground"])
+
+    # --- Downpipes: prominent service elements visible running down the
+    # facade in the street photography (§29). ------------------------------
+    cylinder("RC_Downpipe_A", 0.055, total_h - 1.2, (2.95, front_y - 0.32, (total_h - 1.2) / 2), mats["metal"], groups["ground"])
+    cylinder("RC_Downpipe_B", 0.055, total_h - 1.2, (-6.9, front_y - 0.32, (total_h - 1.2) / 2), mats["metal"], groups["ground"])
+
     # --- Ground-floor rhythm: corner pier | Gallery entrance | pier | Real
     # Camera shop | pier | adjacent shopfront | corner pier (§7). ------------
     pier_positions = (-6.65, -2.70, 2.95, 6.65)
@@ -272,7 +284,7 @@ def build_scene():
         pilaster(f"RC_Pilaster_{index:02d}", x, 0.0, ground_h, front_y, mats, groups["ornament"])
 
     # Ground-floor stone bases/plinth (§20).
-    box("RC_GroundPlinth", (width - 0.6, 0.50, 0.30), (0.0, front_y - 0.15, 0.15), mats["stone"], groups["ground"])
+    box("RC_GroundPlinth", (facade_width - 0.6, 0.50, 0.30), (center_x, front_y - 0.15, 0.15), mats["stone"], groups["ground"])
 
     # --- Gallery entrance: recessed opening, stair flight, doors (§12,13). --
     gallery_x, gallery_w = -4.5, 3.0
@@ -305,10 +317,18 @@ def build_scene():
     box("RC_AwningBrandSurface", (shop_w + 0.30, 0.04, 0.34), (shop_x, front_y - 0.32, 4.42), mats["signage"], groups["mainshop"])
     box("RC_SignageAnchor", (shop_w + 0.60, 0.12, 0.10), (shop_x, front_y + 0.30, 4.10), mats["darktrim"], groups["mainshop"])
 
-    # Lower shutter/glazing zone below the awning (§11, matches the open-shutter
-    # references showing shop stock through the lower glazing).
-    box("RC_LowerShutter_Recess", (shop_w - 0.30, 0.14, 2.40), (shop_x, front_y + 0.30, 1.20), mats["shutter"], groups["mainshop"])
+    # Real entrance: two glass doors behind the roller shutter (§8, §11). The
+    # street photography shows the shutter raised during opening hours,
+    # revealing a genuine double-door entrance rather than a solid panel.
+    entrance_w = shop_w - 0.30
+    door_h = 2.20
     box("RC_LowerShutter_Frame", (shop_w - 0.10, 0.18, 2.55), (shop_x, front_y + 0.20, 1.20), mats["frame"], groups["mainshop"])
+    box("RC_MainEntrance_Door_L", (entrance_w / 2 - 0.06, 0.05, door_h), (shop_x - entrance_w / 4, front_y + 0.30, 1.10), mats["glass"], groups["mainshop"])
+    box("RC_MainEntrance_Door_R", (entrance_w / 2 - 0.06, 0.05, door_h), (shop_x + entrance_w / 4, front_y + 0.30, 1.10), mats["glass"], groups["mainshop"])
+    box("RC_MainEntrance_DoorFrame_Mid", (0.10, 0.14, door_h + 0.06), (shop_x, front_y + 0.26, 1.10), mats["frame"], groups["mainshop"])
+    box("RC_MainEntrance_Threshold", (entrance_w, 0.30, 0.06), (shop_x, front_y + 0.30, 0.03), mats["stone"], groups["mainshop"])
+    # Rolled-up shutter housing, tucked under the awning above the doors.
+    box("RC_MainEntrance_ShutterBox", (entrance_w, 0.16, 0.28), (shop_x, front_y + 0.24, 2.34), mats["shutter"], groups["mainshop"])
 
     # --- Adjacent shopfront continuation with roller shutter (§7, §11). -----
     adj_x, adj_w = 4.80, 3.00
@@ -318,26 +338,29 @@ def build_scene():
     box("RC_AdjacentShutter_Recess", (adj_w - 0.20, 0.14, 2.65), (adj_x, front_y + 0.25, 1.35), mats["shutter"], groups["ground"])
     box("RC_AdjacentShutter_Frame", (adj_w, 0.18, 2.80), (adj_x, front_y + 0.15, 1.35), mats["frame"], groups["ground"])
 
-    # --- Upper facade: string courses + arched/rect windows (§22-§26). ------
-    string_course("RC_StringCourse_Floor1", z_floor1, front_y, width, mats, groups["ornament"])
-    string_course("RC_StringCourse_Floor2", z_floor2, front_y, width, mats, groups["ornament"])
-    string_course("RC_StringCourse_Floor3", z_floor3, front_y, width, mats, groups["ornament"])
+    # --- Upper facade: string courses + rectangular windows (§22-§24). The
+    # reference photography shows flat-topped rectangular sashes on every
+    # upper floor - no arched openings anywhere on this building. -----------
+    string_course("RC_StringCourse_Floor1", z_floor1, front_y, facade_width, mats, groups["ornament"], center_x)
+    string_course("RC_StringCourse_Floor2", z_floor2, front_y, facade_width, mats, groups["ornament"], center_x)
+    string_course("RC_StringCourse_Floor3", z_floor3, front_y, facade_width, mats, groups["ornament"], center_x)
 
     bay_centers = (-4.5, 0.10, 4.80)
-    # Floor 1: rounded arch heads directly above the shopfronts (§25).
-    for bay_index, bx in enumerate(bay_centers):
-        for wing_index, dx in enumerate((-0.95, 0.95)):
-            arched_window(f"RC_Floor1Window_{bay_index}{wing_index}", bx + dx, z_floor1 + 0.35, 1.35, 1.90, front_y, mats, groups["windows"])
-    # Floors 2-3: rectangular recessed windows (§24).
-    for floor_index, (z_base, win_h) in enumerate(((z_floor2 + 0.30, 1.75), (z_floor3 + 0.28, 1.55)), start=2):
+    # All three upper floors use plain rectangular recessed windows (§24):
+    # the reference photography does not show arched openings on this
+    # building anywhere, on any floor - confirmed against the street-level
+    # frontal photo, which is flat-topped rectangular sashes throughout.
+    for floor_index, (z_base, win_h) in enumerate(
+        ((z_floor1 + 0.35, 1.90), (z_floor2 + 0.30, 1.75), (z_floor3 + 0.28, 1.55)), start=1
+    ):
         for bay_index, bx in enumerate(bay_centers):
             for wing_index, dx in enumerate((-0.95, 0.95)):
                 rect_window(f"RC_Floor{floor_index}Window_{bay_index}{wing_index}", bx + dx, z_base, 1.35, win_h, front_y, mats, groups["windows"])
 
     # --- Cornice / roofline (§27, §28). -------------------------------------
-    box("RC_Cornice_LowerBand", (width + 0.30, 0.42, 0.24), (0.0, front_y - 0.21, z_cornice + 0.12), mats["stone"], groups["ornament"])
-    box("RC_Cornice_Projection", (width + 0.50, 0.30, 0.20), (0.0, front_y - 0.15, z_cornice + 0.34), mats["stone"], groups["ornament"])
-    box("RC_Cornice_TopCap", (width + 0.20, 0.36, 0.24), (0.0, front_y - 0.18, z_cornice + 0.56), mats["stone"], groups["ornament"])
+    box("RC_Cornice_LowerBand", (facade_width + 0.30, 0.42, 0.24), (center_x, front_y - 0.21, z_cornice + 0.12), mats["stone"], groups["ornament"])
+    box("RC_Cornice_Projection", (facade_width + 0.50, 0.30, 0.20), (center_x, front_y - 0.15, z_cornice + 0.34), mats["stone"], groups["ornament"])
+    box("RC_Cornice_TopCap", (facade_width + 0.20, 0.36, 0.24), (center_x, front_y - 0.18, z_cornice + 0.56), mats["stone"], groups["ornament"])
 
     # --- Hanging Real Camera sign with brackets (§15,16). -------------------
     sign_x, sign_z = 3.05, ground_h + 0.55
@@ -346,12 +369,13 @@ def build_scene():
     cylinder("RC_HangingSign_Bracket_Bottom", 0.05, 0.55, (sign_x, front_y - 0.35, sign_z - 0.40), mats["metal"], groups["sign"], rotation=(1.5708, 0.0, 0.0))
     box("RC_HangingSign_MountPlate", (0.18, 0.10, 1.30), (sign_x, front_y + 0.02, sign_z), mats["metal"], groups["sign"])
 
-    # --- Corner clock on the rounded corner mass (§17). ---------------------
-    clock_x, clock_y, clock_z = corner_x - 2.15, front_y + 0.55, z_floor1 + 0.55
+    # --- Corner clock, mounted proud of the Lever St return's flat face (§17).
+    # The return wing's street-facing plane sits at x = wing_center_x - 1.8.
+    wing_face_x = (corner_x - 3.2) - 1.8
+    clock_x, clock_y, clock_z = wing_face_x - 0.35, front_y + 1.6, z_floor1 + 0.55
     box("RC_CornerClock_Housing", (0.55, 0.55, 0.55), (clock_x, clock_y, clock_z), mats["darktrim"], groups["clock"])
-    cylinder("RC_CornerClock_FaceA", 0.30, 0.06, (clock_x - 0.30, clock_y, clock_z), mats["signage"], groups["clock"], rotation=(0.0, 1.5708, 0.0))
-    cylinder("RC_CornerClock_FaceB", 0.30, 0.06, (clock_x, clock_y - 0.30, clock_z), mats["signage"], groups["clock"], rotation=(1.5708, 0.0, 0.0))
-    box("RC_CornerClock_Bracket", (0.14, 0.14, 0.70), (clock_x + 0.20, clock_y + 0.20, clock_z - 0.55), mats["metal"], groups["clock"])
+    cylinder("RC_CornerClock_Face", 0.30, 0.06, (clock_x - 0.30, clock_y, clock_z), mats["signage"], groups["clock"], rotation=(0.0, 1.5708, 0.0))
+    box("RC_CornerClock_Bracket", (0.35, 0.14, 0.14), ((wing_face_x + clock_x) / 2, clock_y, clock_z - 0.35), mats["metal"], groups["clock"])
 
     # --- Basic interior shells behind both openings (§34). ------------------
     box("RC_MainShop_InteriorFloor", (shop_w - 0.10, 4.0, 0.10), (shop_x, shop_recess_y + 2.1, 0.05), mats["darktrim"], groups["interior"])
@@ -371,17 +395,21 @@ def build_scene():
     box("RC_Review_Pavement", (24.0, 8.0, 0.12), (0.0, front_y - 4.5, -0.06), mats["ground_review"], groups["review"])
     box("RC_Review_Ground", (36.0, 34.0, 0.12), (0.0, 4.0, -0.16), mats["ground_review"], groups["review"])
 
+    # Visual centre of the full corner-to-corner span, now that the west side
+    # extends further out for the corner mass, wing and secondary door.
+    facade_visual_center_x = (corner_x - 1.0 - 1.35 + 7.35) / 2
+
     cameras = (
-        camera("CAMERA_A_StraightOnLowerFacade", (0.0, -22.0, 3.4), (0.0, front_y, 2.6), 50, groups["cameras"]),
+        camera("CAMERA_A_StraightOnLowerFacade", (facade_visual_center_x, -30.0, 2.6), (facade_visual_center_x, front_y, 2.0), 36, groups["cameras"]),
         camera("CAMERA_B_ThreeQuarterDepth", (-16.0, -18.0, 5.5), (0.0, front_y + 1.5, 4.5), 42, groups["cameras"]),
-        camera("CAMERA_C_LowAngleUpperFacade", (2.0, -12.0, 2.0), (0.0, front_y, total_h - 2.5), 38, groups["cameras"]),
-        camera("CAMERA_D_CornerWithClock", (corner_x - 10.0, front_y - 8.0, 7.5), (corner_x - 2.0, front_y, 6.0), 40, groups["cameras"]),
-        camera("CAMERA_E_ShopAndGalleryClose", (0.0, -8.5, 2.4), (-1.5, front_y, 2.2), 46, groups["cameras"]),
+        camera("CAMERA_C_LowAngleUpperFacade", (2.0, -12.0, 1.6), (0.0, front_y, total_h - 2.5), 30, groups["cameras"]),
+        camera("CAMERA_D_CornerWithClock", (wing_face_x - 14.0, front_y - 10.0, 6.5), (wing_face_x, front_y + 1.6, 5.0), 40, groups["cameras"]),
+        camera("CAMERA_E_ShopAndGalleryClose", (-2.0, -16.0, 2.3), (-2.0, front_y, 2.0), 48, groups["cameras"]),
     )
 
     area_light("RC_Review_Key", (-12.0, -16.0, 16.0), (0.0, front_y, 5.0), 2600, 7.0, groups["lights"])
     area_light("RC_Review_Fill", (12.0, -10.0, 12.0), (0.0, front_y, 4.5), 1600, 6.0, groups["lights"])
-    area_light("RC_Review_Corner", (corner_x - 8.0, front_y - 4.0, 10.0), (corner_x - 2.0, front_y, 5.5), 1400, 5.0, groups["lights"])
+    area_light("RC_Review_Corner", (wing_face_x - 10.0, front_y - 2.0, 10.0), (wing_face_x, front_y + 1.6, 5.5), 1600, 5.0, groups["lights"])
 
     world = scene.world or bpy.data.worlds.new("RC_BlockoutWorld")
     scene.world = world
@@ -403,17 +431,52 @@ def build_scene():
     note = bpy.data.texts.new("REAL_CAMERA_BLOCKOUT_NOTES")
     note.write(
         "FIRST PASS / REVIEW HOLD - GEOMETRY ONLY (see 13_Real_Camera.txt SS42-43)\n"
-        "Inferred dimensions: 14.0 m Dale St frontage x 10.0 m depth x 14.2 m to parapet.\n"
+        f"Inferred dimensions: {facade_width:.2f} m Dale St frontage x 10.0 m depth x {total_h:.2f} m to parapet.\n"
         "Dale Street faces -Y; ground is Z=0; one unit equals one metre.\n"
-        "Ground rhythm (west to east): corner mass+clock, Gallery entrance, pier,\n"
-        "Real Camera shop (hero, red awning), pier, adjacent shuttered unit, corner pier.\n"
+        "Ground rhythm (west to east): corner mass+clock, secondary grey door, pier,\n"
+        "Gallery entrance, pier, Real Camera shop (hero, red awning, two-door entrance),\n"
+        "pier, adjacent shuttered unit, corner pier. Two downpipes run the facade height.\n"
         "Corner mass is a rounded cylinder wrapping toward a short Lever St return wing.\n"
         "Fine ornament (capitals, carving, stone joints, weathering, typography,\n"
         "reflections, shop stock) is deliberately deferred to the ornament/texture passes.\n"
         "Open validation items per S43: bay widths, storey heights, corner curvature\n"
         "and pilaster spacing are estimated from photography, not surveyed.\n"
     )
-    return cameras
+
+    # Layout values handed to the ornament pass (createRealCamera.py) so it
+    # never has to re-derive or duplicate these numbers.
+    layout = {
+        "groups": groups,
+        "mats": mats,
+        "width": facade_width,
+        "center_x": center_x,
+        "front_y": front_y,
+        "back_y": back_y,
+        "ground_h": ground_h,
+        "z_floor1": z_floor1,
+        "z_floor2": z_floor2,
+        "z_floor3": z_floor3,
+        "z_cornice": z_cornice,
+        "total_h": total_h,
+        "corner_x": corner_x,
+        "wing_face_x": wing_face_x,
+        "pier_positions": pier_positions,
+        "bay_centers": bay_centers,
+        "gallery_x": gallery_x,
+        "gallery_w": gallery_w,
+        "gallery_recess_y": gallery_recess_y,
+        "shop_x": shop_x,
+        "shop_w": shop_w,
+        "shop_recess_y": shop_recess_y,
+        "adj_x": adj_x,
+        "adj_w": adj_w,
+        "sign_x": sign_x,
+        "sign_z": sign_z,
+        "clock_x": clock_x,
+        "clock_y": clock_y,
+        "clock_z": clock_z,
+    }
+    return cameras, layout
 
 
 def apply_mesh_transforms():
@@ -495,7 +558,7 @@ def render_reviews(cameras):
 
 def main():
     BLEND_PATH.parent.mkdir(parents=True, exist_ok=True)
-    cameras = build_scene()
+    cameras, _layout = build_scene()
     apply_mesh_transforms()
     validate()
     bpy.ops.wm.save_as_mainfile(filepath=str(BLEND_PATH), check_existing=False)
