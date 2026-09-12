@@ -1,0 +1,1096 @@
+NORTH ROAD PRESTON BUS SHELTER
+
+NORTH ROAD PRESTON BUS SHELTER
+
+Hero architectural/prop reconstruction for Zealot of Harperhey
+
+Create an accurate Blender reconstruction of the bus shelter and
+shopping trolley shown in the supplied reference photograph.
+
+This photograph is an important visual reference for the artistic
+language of Zealot of Harperhey and should be treated as a hero asset,
+not as generic street furniture.
+
+The goal is to reconstruct the physical objects as faithfully as
+possible so that a later material, decal and lighting pass can reproduce
+the original photograph closely.
+
+IMPORTANT
+
+This task is primarily a GEOMETRY PASS.
+
+Do not create final photographic textures yet.
+
+However, create properly separated surfaces and named objects for:
+
+bus timetable;
+
+No Smoking notice;
+
+shelter identification number;
+
+advertising panel;
+
+glass;
+
+lighting;
+
+so that accurate decals and materials can be applied later.
+
+⸻
+
+1.  ASSET SEPARATION IS MANDATORY
+
+The scene contains two principal assets:
+
+ASSET A
+
+PRESTON_BUS_SHELTER
+
+ASSET B
+
+PRESTON_SHOPPING_TROLLEY
+
+THESE MUST BE COMPLETELY SEPARATE OBJECT HIERARCHIES.
+
+The shopping trolley is NOT part of the bus shelter.
+
+It must:
+
+have its own origin;
+
+have its own mesh objects;
+
+be independently movable;
+
+be independently rotatable;
+
+be independently removable;
+
+export independently if required.
+
+Do not join the trolley to:
+
+bench;
+
+rail;
+
+shelter;
+
+glass;
+
+pavement.
+
+The trolley happens to be positioned approximately in front of the bench
+in the reference photograph. This is only its scene placement, not a
+structural relationship.
+
+The bench may remain part of the bus shelter asset.
+
+⸻
+
+2.  ABSOLUTELY DO NOT RECREATE THE BACKGROUND
+
+This is extremely important.
+
+The following elements visible through the shelter are NOT PART OF THE
+BUS STOP:
+
+trees;
+
+foliage;
+
+houses;
+
+brick walls;
+
+parked cars;
+
+grass;
+
+fencing;
+
+red utility box;
+
+orange/yellow illuminated background;
+
+road behind the shelter.
+
+DO NOT place an image of these elements on the rear glass.
+
+DO NOT create a transparent vinyl decal containing the background.
+
+DO NOT create a photographic backdrop attached to the shelter.
+
+DO NOT project the source photograph onto the glass.
+
+The rear and side panels of the shelter are simply transparent glass.
+
+In the finished game, the player must be able to look through the
+shelter and see the actual Three.js world behind it.
+
+The warm orange appearance of the background in the photograph comes
+from the real environment, nighttime illumination and photographic
+exposure.
+
+It is not artwork printed onto the shelter.
+
+⸻
+
+3.  PRIMARY REFERENCE
+
+Use the supplied photograph as the authoritative reference.
+
+Study it carefully before modelling.
+
+Pay particular attention to:
+
+overall shelter width;
+
+shelter height;
+
+roof profile;
+
+vertical support spacing;
+
+glass panel dimensions;
+
+bench position;
+
+bench height;
+
+advertisement housing;
+
+timetable position;
+
+trolley scale;
+
+trolley placement;
+
+relative thickness of metal framing.
+
+Do not turn the shelter into a generic modern bus stop.
+
+Reconstruct this specific model/configuration of shelter as closely as
+the photograph allows.
+
+⸻
+
+4.  OVERALL SHELTER PROPORTIONS
+
+Establish real-world dimensions before adding detail.
+
+Use approximately realistic bus-shelter scale.
+
+The shelter appears to contain roughly three major rear glazed bays plus
+narrow side structures.
+
+Reconstruct:
+
+full width;
+
+height;
+
+shallow roof depth;
+
+rear support structure;
+
+side panels;
+
+advertisement end panel;
+
+bench/rail.
+
+Use the shopping trolley and standard signage dimensions as additional
+scale references.
+
+Avoid making the structure too chunky.
+
+The reference shelter uses relatively slender metal framing.
+
+⸻
+
+5.  ROOF
+
+Carefully reproduce the long shallow roof.
+
+It has a distinctive:
+
+long horizontal profile;
+
+slightly rounded outer/front edge;
+
+shallow depth;
+
+dark metallic construction;
+
+slight projection beyond the vertical supports.
+
+Do not simplify it into a thick rectangular concrete slab.
+
+Model sufficient underside depth for later lighting.
+
+The shelter identification number:
+
+3309 00 83
+
+appears near the upper left/front edge.
+
+Do not model the numbers as permanent high-poly geometry.
+
+Instead create a dedicated clean decal surface/object:
+
+BUSSTOP_Number_DecalSurface
+
+positioned correctly on the roof/front beam.
+
+Later this will receive the exact text:
+
+3309 00 83
+
+⸻
+
+6.  STRUCTURAL FRAME
+
+Reconstruct the metal framing accurately.
+
+Model:
+
+left upright;
+
+right upright;
+
+internal vertical divisions;
+
+upper horizontal rails;
+
+lower horizontal rails;
+
+side-panel frames;
+
+roof supports;
+
+advertisement-panel mounting structure.
+
+The frames should remain relatively thin.
+
+Avoid the previous failure mode where the shelter becomes one thick,
+fused object.
+
+Components should remain visually and structurally legible.
+
+Suggested hierarchy:
+
+BUSSTOP_Frame
+
+BUSSTOP_Roof
+
+BUSSTOP_GlassRear
+
+BUSSTOP_GlassLeft
+
+BUSSTOP_GlassRight
+
+BUSSTOP_Bench
+
+BUSSTOP_AdvertHousing
+
+BUSSTOP_Signage
+
+⸻
+
+7.  GLASS PANELS
+
+The glazing is extremely important.
+
+Create separate transparent glass surfaces for the major panels.
+
+Suggested:
+
+BUSSTOP_Glass_Rear01
+
+BUSSTOP_Glass_Rear02
+
+BUSSTOP_Glass_Rear03
+
+BUSSTOP_Glass_Left
+
+BUSSTOP_Glass_Right
+
+The glass should be physically located within the metal frames.
+
+Do not place background imagery on it.
+
+For this modelling pass, use only a basic neutral transparent
+placeholder if required for visualisation.
+
+The final glass material will later contain:
+
+transparency;
+
+subtle roughness;
+
+nighttime reflections;
+
+faint grime;
+
+reflected advertisement light.
+
+Do not fake reflections using printed images.
+
+Reflections must eventually arise from the real glass shader and
+surrounding game lighting.
+
+⸻
+
+8.  GLASS REFLECTION REQUIREMENT
+
+The original photograph contains important reflections, particularly
+from the illuminated advertisement on the right side.
+
+At this geometry stage:
+
+DO NOT paint those reflections onto the glass.
+
+Instead, ensure:
+
+glass faces have correct normals;
+
+glass is separate from framing;
+
+advertisement panel occupies its correct physical position;
+
+glass surfaces can later use a reflective Three.js material;
+
+the advertisement can later emit actual light.
+
+This will allow the reflection to occur naturally.
+
+⸻
+
+9.  BUS TIMETABLE / “NEXT BUS?” DISPLAY
+
+The left rear section contains a prominent public-transport timetable
+panel.
+
+The visible sign includes:
+
+“When’s the next bus?”
+
+and bus information below it.
+
+At this stage, reconstruct the physical sign holder and mounting
+position.
+
+Create:
+
+BUSSTOP_Timetable_Backplate
+
+BUSSTOP_Timetable_DecalSurface
+
+The panel should:
+
+be correctly sized relative to the shelter;
+
+sit against/in front of the glass at the correct position;
+
+have slight physical thickness;
+
+have believable mounting.
+
+Do not attempt to model all timetable typography as geometry.
+
+The later texture pass will recreate the sign as closely as possible
+from the photograph.
+
+⸻
+
+10. NO SMOKING SIGN
+
+A small No Smoking sign is mounted near the upper-left section of the
+shelter.
+
+Create:
+
+BUSSTOP_NoSmoking_Backplate
+
+BUSSTOP_NoSmoking_DecalSurface
+
+Position and scale it according to the reference.
+
+Do not create the printed symbol as geometry.
+
+⸻
+
+11. BENCH / RED RAIL
+
+The reference contains a very minimal bench/resting rail arrangement.
+
+Reconstruct this carefully rather than inventing a conventional bus-stop
+seat.
+
+It consists visually of a prominent red/orange horizontal rail with
+vertical supports.
+
+Study the photograph closely for:
+
+height;
+
+length;
+
+tubular thickness;
+
+support positions;
+
+relationship to rear shelter frame.
+
+This element may remain part of the bus shelter asset.
+
+Name it:
+
+BUSSTOP_BenchRail
+
+Do not attach the trolley to this object.
+
+⸻
+
+12. RIGHT-HAND ADVERTISEMENT LIGHTBOX
+
+The illuminated advertisement on the right side is one of the most
+important visual components.
+
+Reconstruct the actual physical lightbox.
+
+Model:
+
+outer dark housing;
+
+projecting depth;
+
+front display/glass surface;
+
+mounting relationship to shelter;
+
+rear enclosure;
+
+frame around advertisement;
+
+slight orientation visible in the photograph.
+
+Suggested hierarchy:
+
+BUSSTOP_AdvertHousing
+
+BUSSTOP_AdvertGlass
+
+BUSSTOP_Advert_DecalSurface
+
+BUSSTOP_AdvertLightAnchor
+
+Do not recreate the advertisement artwork as geometry.
+
+The later texture pass should recreate it as closely as practical from
+the original photograph.
+
+⸻
+
+13. ADVERTISEMENT LIGHTING
+
+The reference photograph shows the advertisement functioning as a bright
+illuminated lightbox.
+
+This is important to the final visual appearance.
+
+Do not bake lighting into the geometry.
+
+Add an Empty:
+
+BUSSTOP_AdvertLightAnchor
+
+positioned immediately behind/in front of the advertisement surface as
+appropriate.
+
+Later, the game should use:
+
+emissive advertisement material;
+
+subtle local area/rectangular light if necessary;
+
+reflection on the shelter glass;
+
+pale magenta/pink spill;
+
+slight illumination of nearby framing and pavement.
+
+The advert should be capable of becoming one of the brightest sources in
+the immediate composition.
+
+⸻
+
+14. UNDER-ROOF LIGHTING
+
+The photograph shows subtle shelter lighting beneath the roof.
+
+Model any clearly visible physical light fixtures or recessed light
+strips in simplified form.
+
+Add appropriately positioned Empty objects such as:
+
+BUSSTOP_RoofLight_Left
+
+BUSSTOP_RoofLight_Centre
+
+BUSSTOP_RoofLight_Right
+
+Do not create final lighting yet.
+
+These anchors will later allow the nighttime scene to reproduce the
+characteristic illumination.
+
+⸻
+
+15. SHOPPING TROLLEY: COMPLETELY SEPARATE ASSET
+
+Reconstruct the shopping trolley visible in the photograph as its own
+model.
+
+This object is extremely important compositionally.
+
+It should look like a convincing British supermarket trolley rather than
+a generic box on wheels.
+
+Create:
+
+PRESTON_TROLLEY_MASTER
+
+containing approximately:
+
+TROLLEY_Basket
+
+TROLLEY_Frame
+
+TROLLEY_Handle
+
+TROLLEY_Wheel_FL
+
+TROLLEY_Wheel_FR
+
+TROLLEY_Wheel_RL
+
+TROLLEY_Wheel_RR
+
+TROLLEY_Chain
+
+if the chain is feasible at reasonable polygon cost.
+
+⸻
+
+16. TROLLEY BASKET
+
+The trolley basket must read as an open wire basket.
+
+Do not make it a solid grey bucket.
+
+Reconstruct:
+
+tapering basket shape;
+
+upper rim;
+
+wire grid;
+
+front/rear inclination;
+
+basket depth;
+
+child-seat area only if clearly visible;
+
+handle.
+
+Optimise intelligently.
+
+Do not create unnecessarily high-resolution round wires.
+
+Use low-sided cylindrical or curve-based geometry where appropriate.
+
+The silhouette and open wire structure matter much more than perfect
+microscopic construction.
+
+⸻
+
+17. TROLLEY UNDERCARRIAGE
+
+Reconstruct the distinctive tubular lower frame visible in the
+photograph.
+
+Pay attention to:
+
+diagonal support tubes;
+
+wheel mounting;
+
+basket height;
+
+wheel spacing;
+
+front/rear frame relationship.
+
+The trolley should not look fused to the ground.
+
+Each wheel should visibly connect through appropriate supports.
+
+⸻
+
+18. TROLLEY WHEELS
+
+Create four separate caster wheels.
+
+Include simplified:
+
+wheel;
+
+axle;
+
+caster/fork housing.
+
+Keep them efficient but recognisable.
+
+In the reference, wheel orientation is not perfectly uniform.
+
+Match the photograph approximately where practical.
+
+⸻
+
+19. TROLLEY PLACEMENT
+
+Once both assets are constructed, create a reference scene in which the
+trolley is positioned approximately as it appears in the photograph:
+
+in front of the central/lower portion of the shelter;
+
+partly overlapping the visual line of the red rail;
+
+separated from the shelter by real three-dimensional space.
+
+This is only a reference composition.
+
+The trolley must remain independently movable.
+
+⸻
+
+20. NO OBJECT MELDING
+
+This requirement is critical.
+
+Do not:
+
+boolean the trolley into the shelter;
+
+join trolley geometry to the bench;
+
+place trolley geometry into the same mesh as the shelter;
+
+make the rail physically pass through the trolley;
+
+fuse the wheels into the pavement;
+
+fuse glass to the background;
+
+combine advertisements with glass.
+
+Every object must make physical sense.
+
+There should be visible negative space between independent objects.
+
+⸻
+
+21. PAVEMENT
+
+The main asset does not need the complete surrounding road environment.
+
+If needed for clay renders, create only a very simple temporary ground
+plane.
+
+Do not permanently include:
+
+road;
+
+double yellow lines;
+
+houses;
+
+trees;
+
+cars;
+
+grass;
+
+background walls.
+
+These belong to the larger game environment.
+
+⸻
+
+22. PLACEHOLDER MATERIAL REGIONS
+
+Although this is not a texturing pass, simple placeholder material
+assignments may distinguish components:
+
+MAT_BusStop_DarkMetal_PLACEHOLDER
+
+MAT_BusStop_Glass_PLACEHOLDER
+
+MAT_BusStop_RedRail_PLACEHOLDER
+
+MAT_BusStop_Advert_PLACEHOLDER
+
+MAT_Trolley_Metal_PLACEHOLDER
+
+MAT_Trolley_Plastic_PLACEHOLDER
+
+Do not create final PBR materials.
+
+⸻
+
+23. REAL-WORLD SCALE
+
+Work at real-world scale.
+
+1 Blender unit = 1 metre.
+
+Z = vertical.
+
+Ground = Z 0.
+
+Use:
+
+trolley dimensions;
+
+signage dimensions;
+
+standard bus-shelter heights;
+
+as scale references.
+
+Apply transforms before export.
+
+⸻
+
+24. THREE.JS OPTIMISATION
+
+These assets will be rendered in Three.js.
+
+Prioritise geometry for:
+
+shelter silhouette;
+
+framing;
+
+roof;
+
+rail;
+
+advertisement housing;
+
+sign holders;
+
+trolley silhouette;
+
+trolley basket structure;
+
+wheels.
+
+Leave for textures/materials:
+
+small writing;
+
+advertisement artwork;
+
+timetable content;
+
+No Smoking symbol;
+
+bus-stop identification numbers;
+
+grime;
+
+scratches;
+
+fingerprints;
+
+glass reflections;
+
+metal wear.
+
+⸻
+
+25. HERO-ASSET QUALITY
+
+This is not background street furniture.
+
+The player may encounter the shelter repeatedly and it has substantial
+artistic importance within the game.
+
+Therefore give particular attention to:
+
+proportions;
+
+object separation;
+
+thin structural members;
+
+accurate signage placement;
+
+advertisement housing;
+
+glass panel dimensions;
+
+trolley silhouette.
+
+Avoid:
+
+generic videogame bus-stop proportions;
+
+oversized beams;
+
+excessively thick glass;
+
+toy-like trolley geometry;
+
+excessive bevels;
+
+unnecessary rounded edges;
+
+one-piece fused meshes.
+
+⸻
+
+26. BLOCKOUT FIRST
+
+First create:
+
+preston_busstop_blockout.blend
+
+containing:
+
+shelter frame;
+
+roof;
+
+glass-panel locations;
+
+bench rail;
+
+advert housing;
+
+timetable position;
+
+trolley blockout as a SEPARATE asset.
+
+Do not add detailed trolley wires yet.
+
+Produce clay renders:
+
+VIEW A
+
+Straight-on view corresponding as closely as possible to the original
+photograph.
+
+VIEW B
+
+Left three-quarter view demonstrating that the glass is actually
+transparent.
+
+VIEW C
+
+Right three-quarter view clearly showing advertisement-box depth.
+
+VIEW D
+
+Side view proving that the trolley is physically separate from the
+shelter.
+
+Then STOP for review.
+
+⸻
+
+27. SECOND GEOMETRY PASS
+
+Only after the proportions are approved, add:
+
+refined metal profiles;
+
+advertisement casing;
+
+timetable holder;
+
+No Smoking sign plate;
+
+bus-stop number decal surface;
+
+roof-light fixture geometry;
+
+refined bench rail;
+
+detailed trolley basket;
+
+trolley underframe;
+
+caster wheels;
+
+optional trolley chain.
+
+Still do not create final textures.
+
+⸻
+
+28. FUTURE TEXTURE AND LIGHTING REQUIREMENTS
+
+Keep the asset structured so a later pass can accurately recreate:
+
+dark green/black painted metal;
+
+aged metal finish;
+
+transparent slightly dirty glass;
+
+bright advertisement artwork;
+
+advertisement emission;
+
+exact 3309 00 83 numbering;
+
+When’s the next bus? timetable;
+
+Lancashire County Council graphics;
+
+No Smoking sign;
+
+red/orange rail;
+
+metal trolley;
+
+glass reflections;
+
+nighttime light spill.
+
+DO NOT ATTEMPT THESE DURING THIS PASS.
+
+⸻
+
+29. FINAL VALIDATION
+
+Compare the clay model against the original photograph.
+
+Check:
+
+Total shelter width.
+
+Shelter height.
+
+Roof thickness.
+
+Roof overhang.
+
+Number of glass bays.
+
+Upright spacing.
+
+Bench/rail height.
+
+Advertisement size.
+
+Advertisement depth.
+
+Timetable size and position.
+
+No Smoking sign position.
+
+Trolley height.
+
+Trolley basket width.
+
+Trolley wheelbase.
+
+Trolley placement.
+
+Most importantly:
+
+VIEW THE MODEL FROM BEHIND THE SHELTER.
+
+You should be able to see completely through the transparent glass.
+
+There must be no trees, houses, cars, orange background or photographic
+scenery attached to the bus shelter geometry.
+
+⸻
+
+30. DELIVERABLES
+
+Deliver:
+
+preston_busstop_blockout.blend
+
+preston_busstop.blend
+
+preston_busstop.glb
+
+preston_trolley.glb
+
+and a reference .blend containing both assets positioned as in the
+photograph.
+
+The final hierarchy should allow me to remove the trolley and still have
+a complete bus shelter, or remove the shelter and retain a complete
+trolley.
+
+⸻
+
+SUCCESS CRITERION
+
+The bus shelter should exist as a believable transparent physical
+structure in three-dimensional space.
+
+The shopping trolley should exist as an entirely independent object
+positioned in front of it.
+
+Nothing visible through the glass in the original photograph should be
+mistaken for part of the bus shelter itself.
+
+The finished untextured model should match the geometry and composition
+of the source photograph closely enough that a later material and
+lighting pass can recreate the photograph without changing the
+underlying model.
+
+There are three things I’d be especially strict about when you review
+Codex’s first render.
+
+First, ask for a render from behind the bus stop. That’s probably the
+easiest diagnostic for the exact mistake it made before. If you rotate
+the camera 180 degrees and suddenly discover trees, cars or a photograph
+floating on the glass, the asset has been built incorrectly. From every
+angle it should simply be a transparent glass shelter.
+
+Second, I’d actually make three separate deliverable concepts, even
+though two of them can travel together:
+
+PrestonBusShelter.glb contains the structure, glass, bench/rail,
+timetable holders, advert casing and lighting anchors.
+
+PrestonTrolley.glb contains only the trolley.
+
+Then the scene decides that the trolley happens to be sitting in front
+of that bus stop. This matters because later you can reuse the exact
+trolley elsewhere, remove it, move it six feet down the road, have an
+NPC push it, or have it mysteriously disappear at another time of night.
+It stops being baked into the photograph and becomes an object in the
+world.
+
+Third, the reflection should never be a texture pretending to be a
+reflection. Once this reaches the material stage, I’d have the advert
+genuinely emissive and give the shelter glass a physically plausible
+transmissive/reflective material. Then, depending on how you implement
+reflections in Three.js, that intense pale pink advert can genuinely
+appear in the glass. That is precisely the distinction between
+recreating the objects that produced the photograph and simply putting
+the photograph into a game.

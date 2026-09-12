@@ -1,0 +1,1076 @@
+THE HIVE / ARTS COUNCIL ENGLAND
+
+THE HIVE / ARTS COUNCIL ENGLAND
+
+Untextured architectural reconstruction for Zealot of Harperhey
+
+Build an accurate, game-ready Blender reconstruction of The Hive on
+Lever Street, Manchester, the building containing Arts Council England’s
+Manchester office, using ALL supplied reference photographs.
+
+This asset is for Zealot of Harperhey, a Three.js game.
+
+This task is ARCHITECTURAL GEOMETRY ONLY.
+
+Do not create final textures, decals, signage graphics, weathering or
+detailed materials yet.
+
+The objective is to produce an architectural model that is recognisable
+as The Hive from its massing, proportions, facade structure and geometry
+alone, even when rendered entirely in neutral clay materials.
+
+⸻
+
+1.  IMPORTANT: STUDY ALL REFERENCES BEFORE MODELLING
+
+Do not begin by modelling directly from the first image.
+
+First inspect every supplied photograph and identify which architectural
+information each image provides.
+
+The references include:
+
+a historical exterior three-quarter view showing the overall building
+massing;
+
+closer street-level views showing the black-brick lower volumes;
+
+views clearly showing the large perforated metal facade/screens;
+
+a near-frontal view of those screens;
+
+a photograph of the current Lever Street entrance;
+
+an interior architectural reference showing the character of the
+lobby/reception area.
+
+Cross-reference all images.
+
+Do not reproduce photographic perspective distortion as building
+geometry.
+
+Infer a coherent rectilinear architectural structure from the different
+viewpoints.
+
+Before detailed modelling, establish:
+
+approximate overall footprint;
+
+street frontage length;
+
+total height;
+
+individual storey heights;
+
+location and dimensions of the different building volumes;
+
+relative position of the two taller pale-brick volumes;
+
+lower black-brick volume;
+
+screened central facade;
+
+entrance locations;
+
+setbacks;
+
+window rhythm.
+
+When exact dimensions cannot be determined, use conservative
+architectural estimates based on doors, windows, floor heights, concrete
+columns and other recognisable features.
+
+Maintain consistency between elevations.
+
+⸻
+
+2.  MODEL THE BUILDING AS SEVERAL INTERLOCKING VOLUMES
+
+Do not treat The Hive as one rectangular building with facade textures.
+
+A defining characteristic of this architecture is its composition from
+several overlapping volumes.
+
+Establish these major masses first.
+
+A. Ground/street-level volume
+
+A relatively transparent base consisting of:
+
+large glazed openings;
+
+dark framing;
+
+substantial pale concrete/stone structural columns;
+
+recessed entrances;
+
+shop/office-sized glazed bays;
+
+sections recessed beneath upper floors.
+
+B. Dark lower/middle building
+
+Above and around the base is a substantial volume clad in very dark
+charcoal/black brick.
+
+This volume contains:
+
+tall narrow windows;
+
+vertically stacked window groups;
+
+deeply contrasting dark masonry;
+
+projecting and recessed sections;
+
+corners that turn visibly around the building.
+
+C. Screened central facade
+
+A major portion of the Lever Street facade is covered by enormous
+perforated metal screen panels mounted away from the building.
+
+These screens are architecturally important and MUST NOT be represented
+merely as a flat texture pasted onto the wall.
+
+D. Pale upper towers
+
+The building contains multiple taller upper volumes clad in pale
+beige/tan brick.
+
+These rise substantially above the dark lower structure.
+
+They contain:
+
+narrow vertical windows;
+
+large dark vertical facade strips;
+
+strong rectangular silhouettes;
+
+recessed intermediate floors;
+
+pronounced cantilevered/projecting upper masses.
+
+The relationship between these towers and the lower building is one of
+the most important aspects of the asset.
+
+⸻
+
+3.  MASSING FIRST
+
+Construct a clean blockout before adding architectural detail.
+
+The initial blockout should establish:
+
+total building length;
+
+approximate depth;
+
+lower dark volume;
+
+ground floor;
+
+screened facade zone;
+
+both major upper tower volumes;
+
+setbacks;
+
+cantilevers;
+
+roof heights;
+
+major corner conditions.
+
+Do not proceed immediately into windows and facade detailing.
+
+Create several clay/blockout renders first.
+
+The building should already resemble The Hive based purely on its
+silhouette.
+
+⸻
+
+4.  GROUND FLOOR
+
+The ground floor should receive considerably more detail than distant
+upper portions because the player will encounter the building at
+pedestrian height.
+
+Model:
+
+structural concrete/stone columns;
+
+recessed glazing;
+
+full-height windows;
+
+entrance openings;
+
+door frames;
+
+mullions;
+
+deep facade recesses;
+
+soffits/ceilings above recessed areas;
+
+threshold geometry;
+
+major wall divisions.
+
+Windows should not simply sit on the wall plane.
+
+Create believable:
+
+reveals;
+
+frame thickness;
+
+glass position;
+
+structural depth.
+
+Use simple placeholder glass only.
+
+⸻
+
+5.  ARTS COUNCIL / 47-51 LEVER STREET ENTRANCE
+
+THIS IS A HERO AREA OF THE MODEL.
+
+The player will walk directly toward this entrance and attempt to
+interact with it.
+
+Therefore this portion should withstand much closer viewing than the
+upper building.
+
+Use the supplied contemporary photograph as the primary architectural
+reference for the entrance.
+
+Reconstruct:
+
+large rectangular projecting canopy;
+
+substantial dark side supports;
+
+recessed entrance bay;
+
+double entrance doors;
+
+surrounding glazed panels;
+
+door frames;
+
+threshold;
+
+facade behind the canopy;
+
+depth between canopy and entrance;
+
+neighbouring structural elements.
+
+The entrance should feel physically recessed into the building.
+
+Do not model the current printed graphics as geometry.
+
+However, preserve clean surfaces suitable for later decals/textures.
+
+The real-world photograph contains notices including:
+
+“Entrance Closed”
+
+and directions to use another entrance.
+
+These will be recreated later as decals/materials.
+
+Do not bake them into the architectural mesh.
+
+⸻
+
+6.  GAMEPLAY REQUIREMENT FOR THIS ENTRANCE
+
+The Arts Council entrance has a specific gameplay function.
+
+The player will approach the front entrance expecting to enter.
+
+Therefore:
+
+doors must be separately identifiable objects;
+
+doorway/collision geometry must be clean;
+
+entrance should support an interaction trigger;
+
+the entrance must be easy to identify programmatically;
+
+the doors should remain separate from surrounding facade geometry.
+
+Suggested naming:
+
+ACE_FrontEntrance
+
+ACE_FrontDoor_Left
+
+ACE_FrontDoor_Right
+
+ACE_EntranceCanopy
+
+ACE_EntranceGlass
+
+ACE_EntranceTriggerAnchor
+
+The trigger anchor can simply be an Empty placed logically in front of
+the doors.
+
+Do not implement game logic in Blender.
+
+It only needs to provide a sensible anchor for Three.js.
+
+⸻
+
+7.  BLACK-BRICK FACADES
+
+Model the dark brick portions as clean architectural surfaces.
+
+Do not model individual bricks.
+
+Brick relief will be handled through PBR materials later.
+
+Concentrate instead on:
+
+wall planes;
+
+corners;
+
+recesses;
+
+window reveals;
+
+changes in facade depth;
+
+parapets;
+
+junctions between black and pale sections.
+
+Windows in these areas are predominantly narrow vertical openings.
+
+Accurately reproduce their rhythm and relative dimensions.
+
+Repeating windows may use linked/instanced geometry where appropriate.
+
+⸻
+
+8.  PERFORATED METAL SCREEN FACADE
+
+This is one of the most distinctive architectural features of The Hive.
+
+Large rectangular perforated metal panels are suspended in front of
+portions of the facade.
+
+These MUST have actual spatial separation from the building.
+
+Model:
+
+individual major panel sections;
+
+surrounding frames;
+
+vertical structural supports;
+
+horizontal divisions where clearly visible;
+
+mounting offset from the underlying facade.
+
+The screens should visibly float/project in front of the building rather
+than being coplanar with it.
+
+However:
+
+DO NOT model thousands of individual perforations.
+
+That would be wasteful for a Three.js asset.
+
+Instead create clean panel geometry that can later receive:
+
+alpha/opacity texture;
+
+normal map;
+
+patterned material;
+
+appropriate metallic shader.
+
+The panel frames and major structural divisions should be geometry.
+
+The microscopic mesh/perforation pattern should be texture/material
+information.
+
+The ornamental/figurative patterns visible within the screen should also
+be handled later through textures/masks, not geometry.
+
+⸻
+
+9.  SCREEN DEPTH AND PARALLAX
+
+Because players will walk along the pavement beside these screens, they
+need believable parallax.
+
+The architecture should consist approximately of:
+
+building wall
+
+→ windows / underlying facade
+
+→ air gap
+
+→ metal screen
+
+→ street
+
+The player should be able to perceive that the screen is a separate
+architectural layer.
+
+This is more important than modelling the tiny perforations.
+
+⸻
+
+10. INTERMEDIATE WHITE / RECESSED FLOOR
+
+The reference photographs show lighter recessed facade sections between
+the dark lower mass and pale upper towers.
+
+Reconstruct these accurately.
+
+Include:
+
+white/light wall planes;
+
+windows;
+
+recess from the primary facade;
+
+dark projecting shading elements/louvres;
+
+structural relationship to the upper tower.
+
+Several windows have large projecting dark louvre/shading structures.
+
+These affect the silhouette and MUST be geometry.
+
+Do not represent them with textures.
+
+⸻
+
+11. UPPER PALE-BRICK TOWERS
+
+These should remain relatively efficient but architecturally accurate.
+
+Pay particular attention to:
+
+rectangular massing;
+
+large cantilevered/projecting upper sections;
+
+pale brick wall surfaces;
+
+tall narrow windows;
+
+dark vertical window/louvre strips;
+
+corner window conditions;
+
+deep window recesses;
+
+roof/parapet line.
+
+Do not model individual pale bricks.
+
+Do not make every upper window uniquely high-poly.
+
+Create efficient reusable window modules where dimensions repeat.
+
+⸻
+
+12. WINDOWS
+
+Create modular window types.
+
+Likely categories include:
+
+Hive_Window_DarkFacade
+
+Hive_Window_UpperNarrow
+
+Hive_Window_Corner
+
+Hive_Window_RecessedFloor
+
+Hive_GroundFloor_Glazing
+
+Each window should contain enough geometry to establish:
+
+outer opening;
+
+reveal;
+
+frame;
+
+major mullions;
+
+recessed glass plane.
+
+Do not model unnecessary tiny seals, screws or hardware.
+
+⸻
+
+13. CORNERS
+
+Carefully study the references for how windows and facade systems turn
+corners.
+
+Avoid the common procedural-building mistake where one facade simply
+intersects another at 90 degrees without resolving the architectural
+junction.
+
+Properly construct:
+
+brick corners;
+
+glazing corners;
+
+screen termination;
+
+structural columns;
+
+cantilever corners;
+
+parapets.
+
+⸻
+
+14. INTERIOR: ENTRANCE / RECEPTION ONLY
+
+The supplied interior photograph is a reference for the architectural
+character of the interior.
+
+Do NOT attempt to reconstruct the entire office building.
+
+Create only enough interior architecture to support what a player might
+see through glazing or encounter near the entrance.
+
+Create a simplified:
+
+lobby volume;
+
+floor;
+
+ceiling;
+
+internal walls;
+
+corridor suggestion;
+
+reception area;
+
+doorway/opening arrangement.
+
+Where useful, loosely reference the supplied interior photograph:
+
+pale concrete/block walls;
+
+dark exposed ceiling;
+
+long black ceiling beams/baffles;
+
+recessed timber-framed openings;
+
+dark reception desk;
+
+minimal contemporary institutional architecture.
+
+Do not model office workers, computers, chairs or detailed office
+equipment at this stage.
+
+Importantly, the player is not intended to freely explore the entire
+Arts Council office in the initial implementation.
+
+Therefore do not waste geometry constructing unseen floors.
+
+⸻
+
+15. GAMEPLAY INTERACTION CONCEPT
+
+Do NOT implement dialogue or UI inside Blender.
+
+However, construct the entrance so the later Three.js implementation can
+support this sequence:
+
+Player approaches front entrance.
+
+Player attempts to enter.
+
+Door does not open.
+
+A rejection-style institutional message appears, approximately:
+
+“Unfortunately, due to exceptionally high demand, you have not been
+selected on this occasion.”
+
+The architectural asset should therefore support the joke through
+physical staging:
+
+clearly visible entrance;
+
+convincing doors;
+
+player can walk directly up to them;
+
+doors remain closed;
+
+interaction point immediately outside.
+
+Do not add exaggerated visual comedy to the architecture.
+
+The building should remain realistic.
+
+The humour comes from the interaction and the institutional language,
+not from cartoon architecture.
+
+⸻
+
+16. DO NOT MODEL
+
+Do not model:
+
+individual bricks;
+
+individual perforations in metal screens;
+
+microscopic facade details;
+
+printed entrance notices;
+
+Arts Council logos;
+
+The Hive graphics;
+
+QR codes;
+
+CCTV warning graphics;
+
+dirt;
+
+stains;
+
+scratches;
+
+graffiti;
+
+pedestrians;
+
+cars;
+
+streetlights;
+
+bollards;
+
+roads;
+
+paving beyond a minimal contextual strip;
+
+adjacent buildings;
+
+detailed offices;
+
+desks/chairs throughout the building.
+
+These will be handled separately.
+
+⸻
+
+17. PLACEHOLDER MATERIAL REGIONS
+
+Although final texturing is NOT part of this task, create simple flat
+placeholder material assignments so architectural regions are easy to
+identify.
+
+Suggested material slots:
+
+MAT_DarkBrick_PLACEHOLDER
+
+MAT_PaleBrick_PLACEHOLDER
+
+MAT_Concrete_PLACEHOLDER
+
+MAT_MetalScreen_PLACEHOLDER
+
+MAT_DarkMetal_PLACEHOLDER
+
+MAT_Glass_PLACEHOLDER
+
+MAT_WhiteWall_PLACEHOLDER
+
+MAT_Interior_PLACEHOLDER
+
+No image textures.
+
+No procedural brick materials.
+
+No weathering.
+
+No final PBR work.
+
+⸻
+
+18. REAL-WORLD SCALE
+
+Work at real-world architectural scale.
+
+1 Blender unit = 1 metre.
+
+Z = vertical.
+
+Ground level = Z 0.
+
+Estimate scale using:
+
+standard commercial doors;
+
+people visible in references;
+
+storey heights;
+
+concrete columns;
+
+window dimensions.
+
+Do not arbitrarily scale the building after modelling.
+
+Apply transforms before final export.
+
+⸻
+
+19. OBJECT ORGANISATION
+
+Use clear object/collection names.
+
+Suggested hierarchy:
+
+HIVE_MASTER
+
+HIVE_GroundFloor
+
+HIVE_DarkBrickVolume
+
+HIVE_UpperTower_A
+
+HIVE_UpperTower_B
+
+HIVE_RecessedFloor
+
+HIVE_ScreenFacade
+
+HIVE_ScreenFrames
+
+HIVE_Windows
+
+HIVE_GroundGlazing
+
+HIVE_ConcreteColumns
+
+HIVE_Louvres
+
+HIVE_Entrance
+
+HIVE_InteriorLobby
+
+Within the entrance:
+
+ACE_FrontEntrance
+
+ACE_FrontDoor_Left
+
+ACE_FrontDoor_Right
+
+ACE_EntranceCanopy
+
+ACE_EntranceGlass
+
+ACE_EntranceTriggerAnchor
+
+Avoid meaningless Blender names such as:
+
+Cube.023
+
+Plane.014
+
+Cylinder.008
+
+⸻
+
+20. THREE.JS PERFORMANCE
+
+This is a substantial building but will be viewed in real time.
+
+Optimise intelligently.
+
+Use geometry for:
+
+silhouette;
+
+major massing;
+
+windows/recesses;
+
+cornices;
+
+structural columns;
+
+screen frames;
+
+facade depth;
+
+large louvres;
+
+entrance;
+
+major projections.
+
+Use future textures/materials for:
+
+bricks;
+
+metal perforations;
+
+ornamental screen patterns;
+
+concrete grain;
+
+signage;
+
+weathering;
+
+tiny surface imperfections.
+
+Reuse/instance repeating window geometry while constructing the asset
+where practical.
+
+Avoid excessive bevel segments.
+
+Small bevels may be used on important architectural edges so they catch
+light naturally.
+
+Do not bevel everything uniformly.
+
+Avoid the rounded, soft, plastic appearance common to poorly optimised
+game architecture.
+
+⸻
+
+21. LEVEL OF DETAIL
+
+Allocate geometry according to likely player distance.
+
+HIGH DETAIL
+
+Arts Council entrance, ground-floor columns, glazing, doors, screen
+facade and street-level corners.
+
+MEDIUM DETAIL
+
+Black-brick lower floors, recessed intermediate level, large louvres,
+lower tower windows.
+
+LOWER DETAIL
+
+Highest floors, roof elements and architectural surfaces unlikely to be
+approached closely.
+
+This does not mean altering their proportions. Their silhouettes and
+window rhythms must remain accurate.
+
+⸻
+
+22. FIRST PASS: BLOCKOUT ONLY
+
+Do NOT attempt the entire finished geometry in one uninterrupted
+operation.
+
+First create a BLOCKOUT.
+
+The blockout should contain:
+
+overall footprint;
+
+ground-floor height;
+
+black lower volumes;
+
+screen facade envelope;
+
+recessed intermediate floor;
+
+Tower A;
+
+Tower B;
+
+major cantilevers;
+
+Arts Council entrance position.
+
+Do not add detailed windows, screen frames or interior geometry yet.
+
+Produce clay renders from at least:
+
+CAMERA A: wide three-quarter street view corresponding approximately to
+the supplied historical exterior reference.
+
+CAMERA B: opposite three-quarter view showing the dark brick volume and
+towers.
+
+CAMERA C: near-frontal Lever Street facade.
+
+CAMERA D: pedestrian-height view looking toward the Arts Council
+entrance.
+
+Save the blockout.
+
+STOP AND PRESENT THE BLOCKOUT FOR REVIEW BEFORE PROCEEDING TO DETAILED
+ARCHITECTURAL MODELLING.
+
+⸻
+
+23. SECOND PASS AFTER APPROVAL
+
+Only after the blockout has been approved should the detailed geometry
+pass add:
+
+window modules;
+
+window recesses;
+
+ground-floor glazing;
+
+concrete columns;
+
+entrance canopy;
+
+doors;
+
+metal screen panels;
+
+screen frames;
+
+louvres;
+
+parapets;
+
+intermediate-floor architecture;
+
+simplified lobby.
+
+Then produce a second set of clay renders.
+
+⸻
+
+24. FINAL GEOMETRY VALIDATION
+
+Before export, compare the model against every reference.
+
+Specifically check:
+
+Overall height-to-width ratio.
+
+Relative height of dark and pale sections.
+
+Tower dimensions.
+
+Tower setbacks.
+
+Cantilever depth.
+
+Screen facade height and width.
+
+Screen offset from building.
+
+Ground-floor column spacing.
+
+Window rhythm.
+
+Entrance dimensions.
+
+Entrance canopy depth.
+
+Building corners.
+
+Recessed intermediate floor.
+
+Roof/parapet silhouette.
+
+Look specifically for:
+
+genericised architecture;
+
+oversized frames;
+
+toy-like proportions;
+
+excessive bevels;
+
+flat windows;
+
+incorrect tower placement;
+
+excessively thick screen structures.
+
+Correct these before export.
+
+⸻
+
+25. DELIVERABLES
+
+Deliver:
+
+1.  the_hive_blockout.blend
+
+2.  Approved detailed the_hive.blend
+
+3.  the_hive.glb
+
+4.  Blockout clay renders
+
+5.  Final geometry clay renders
+
+Ensure the GLB:
+
+opens correctly;
+
+maintains correct scale;
+
+maintains object hierarchy where useful;
+
+contains no missing geometry;
+
+contains no unnecessary cameras/lights/test objects;
+
+contains no final textures;
+
+has applied transforms;
+
+has correct normals.
+
+⸻
+
+SUCCESS CRITERION
+
+The untextured model must be recognisable as The Hive before any brick
+textures, metal textures, signage, Arts Council branding or
+environmental detail are added.
+
+If textures would be required to make the building recognisable, the
+geometry is not yet sufficiently accurate.
+
+Architectural fidelity takes priority over decorative detail.

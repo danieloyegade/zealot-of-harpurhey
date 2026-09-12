@@ -18,11 +18,11 @@ The renderer and gameplay clock are separate. Raw animation-frame time is used f
 
 ## Lighting budget and philosophy
 
-Most environmental illumination in Zealot of Harpurhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights.
+Most environmental illumination in Zealot of Harperhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights.
 
 Phase 1 removes all 16 streetlight spotlights and the routine point lights attached to storefronts, Dreams fixtures, the pickup, and bus-shelter accents. Those locations retain their identity through emissive signs and textures, painted reflection geometry, visible additive cones, fake pools, and photographic illumination.
 
-Five genuine hero point lights remain in the scene: Dreams, Renae, the florist, and the two bus shelters. A nearest-light selector maintains the active budget for the current quality profile. No local spotlights remain.
+Five exterior hero point lights remain in the scene: Dreams, Renae, the florist, and the two bus shelters. Cass Art contributes three warm interior candidates at its authored window and central ceiling-track anchors. A nearest-light selector chooses among all eight candidates while maintaining the active budget for the current quality profile. No local spotlights remain.
 
 ## Quality profiles
 

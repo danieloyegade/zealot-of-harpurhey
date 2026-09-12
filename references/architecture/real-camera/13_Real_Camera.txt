@@ -1,0 +1,1199 @@
+REAL CAMERA, SEVENDALE HOUSE, MANCHESTER
+
+Detailed untextured architectural reconstruction for Zealot of Harperhey
+
+Create an accurate, game-ready Blender reconstruction of Real Camera at
+Sevendale House, Manchester, based on ALL supplied reference
+photographs.
+
+This asset is for Zealot of Harperhey, a Three.js game.
+
+The defining feature of this building is its ornate red sandstone /
+terracotta architecture.
+
+Do NOT simplify this into a flat red-brick shopfront.
+
+The modelling priority is:
+
+1.  architectural form;
+
+2.  decorative facade depth;
+
+3.  shopfront proportions;
+
+4.  corner massing;
+
+5.  windows;
+
+6.  Real Camera storefront;
+
+7.  signage-ready surfaces;
+
+8.  later texture/detail work.
+
+This pass is primarily GEOMETRY ONLY.
+
+Do not create final textures, photographic signage, grime, graffiti,
+glass reflections or detailed shop stock yet.
+
+⸻
+
+1.  REFERENCE STRATEGY
+
+Use all supplied references together.
+
+They show:
+
+-   frontal Real Camera facade;
+
+-   oblique lower facade;
+
+-   upper-floor architecture;
+
+-   corner bay;
+
+-   arched/rounded window openings;
+
+-   moulded stone bands;
+
+-   projecting pilasters;
+
+-   shop entrance;
+
+-   separate camera-shop window;
+
+-   red awning/sign;
+
+-   projecting hanging sign;
+
+-   adjacent Real Camera Shopping Centre & Gallery entrance;
+
+-   roller shutter;
+
+-   upper-storey windows;
+
+-   corner clock.
+
+Do not copy Street View lens distortion into the mesh.
+
+Reconstruct one consistent building.
+
+⸻
+
+2.  SCOPE
+
+Build enough of Sevendale House around Real Camera that the shop feels
+embedded in a real building rather than floating inside an isolated
+shopfront.
+
+The asset should include:
+
+-   Real Camera shop frontage;
+
+-   adjacent Real Camera Shopping Centre & Gallery entrance;
+
+-   lower two to three storeys of the surrounding facade;
+
+-   corner bay / corner return;
+
+-   enough upper facade to establish the building’s identity;
+
+-   projecting clock;
+
+-   major architectural ornament.
+
+Full detailed interiors are not required yet.
+
+⸻
+
+3.  DETAIL PRIORITY
+
+Highest geometry fidelity:
+
+-   lower facade;
+
+-   Real Camera frontage;
+
+-   entrance arch/recess;
+
+-   pilasters;
+
+-   bases;
+
+-   capitals;
+
+-   moulded stone bands;
+
+-   projecting window surrounds;
+
+-   bay/window projections;
+
+-   corner detail;
+
+-   hanging sign bracket;
+
+-   clock mount.
+
+Medium detail:
+
+-   upper windows;
+
+-   cornice;
+
+-   roofline.
+
+Lower detail:
+
+-   distant or inaccessible wall surfaces.
+
+⸻
+
+4.  DO NOT FLATTEN THE ORNAMENT
+
+Many facade elements must exist as real geometry.
+
+Model as geometry:
+
+-   major cornices;
+
+-   lintels;
+
+-   sills;
+
+-   pilasters;
+
+-   column-like vertical projections;
+
+-   horizontal moulding bands;
+
+-   recessed arches;
+
+-   capitals;
+
+-   carved blocks;
+
+-   bay-window projections;
+
+-   corner chamfers/curves;
+
+-   deep window reveals;
+
+-   ground-floor rustication;
+
+-   large decorative panels.
+
+Do not solve all of this with a single normal map.
+
+⸻
+
+5.  ORNAMENT RULE
+
+Use this test:
+
+If the detail creates a clearly visible shadow or changes the silhouette
+from pavement distance, model it.
+
+If it is fine engraving, weathering, cracks or shallow carving, leave it
+for later texture/normal work.
+
+⸻
+
+6.  MAIN MATERIAL MASSES
+
+Even though final materials are not required, organise the architecture
+by material family:
+
+RC_RedStone
+
+RC_DarkPaintedTrim
+
+RC_WindowFrames
+
+RC_Glass
+
+RC_Metalwork
+
+RC_Shopfront
+
+RC_SignageSurfaces
+
+Use simple placeholder materials only.
+
+⸻
+
+7.  GROUND-FLOOR RHYTHM
+
+Carefully reconstruct the lower facade sequence visible in the frontal
+references:
+
+-   corner/side bay;
+
+-   Real Camera Shopping Centre & Gallery entrance;
+
+-   substantial stone pier;
+
+-   Real Camera shop window;
+
+-   surrounding structural piers;
+
+-   adjacent facade continuation.
+
+Do not treat these openings as equal-width generic rectangles.
+
+⸻
+
+8.  REAL CAMERA SHOPFRONT
+
+The main Real Camera retail unit should be a hero element.
+
+Model:
+
+-   broad upper shop window;
+
+-   red awning/sign housing;
+
+-   lower window/shutter zone;
+
+-   surrounding stone jambs;
+
+-   recessed glazing;
+
+-   threshold/plinth;
+
+-   framing.
+
+Suggested hierarchy:
+
+RC_MainShop
+
+RC_MainWindow
+
+RC_MainWindowFrame
+
+RC_RedAwning
+
+RC_LowerShutter
+
+RC_SignageAnchor
+
+⸻
+
+9.  RED REAL CAMERA AWNING
+
+Preserve the physical shape of the red curved/projecting canopy carrying
+the Real Camera branding.
+
+Model:
+
+-   curved front face;
+
+-   top projection;
+
+-   side returns;
+
+-   mounting relationship to facade.
+
+Do not bake the lettering into the geometry.
+
+Create:
+
+RC_AwningBrandSurface
+
+for later:
+
+the Real CAMERA co.
+
+branding.
+
+⸻
+
+10. SHOP WINDOW
+
+The upper main Real Camera window contains visible shop stock in the
+references.
+
+For this iteration, create:
+
+-   actual recessed glass;
+
+-   interior darkness/depth;
+
+-   simple interior backing shell.
+
+Do NOT texture photographs of stock onto the glass.
+
+Later interior props can include:
+
+-   cameras;
+
+-   lenses;
+
+-   bags;
+
+-   boxed stock;
+
+-   shelves.
+
+⸻
+
+11. LOWER ROLLER SHUTTER
+
+Model the lower shutter assembly as real geometry.
+
+Include:
+
+-   shutter recess;
+
+-   shutter plane;
+
+-   surrounding frame;
+
+-   sill/base.
+
+The horizontal corrugation can be:
+
+-   low-relief repeated geometry;
+
+or
+
+-   simplified geometry with later normal map.
+
+Do not create hundreds of unnecessarily dense folds.
+
+⸻
+
+12. SHOPPING CENTRE & GALLERY ENTRANCE
+
+The adjacent entrance is architecturally important.
+
+Reconstruct:
+
+-   broad recessed opening;
+
+-   sign panel above;
+
+-   internal stair flight;
+
+-   double entrance doors;
+
+-   side walls;
+
+-   ceiling/recess;
+
+-   threshold.
+
+Suggested:
+
+RC_GalleryEntrance
+
+RC_GalleryStairs
+
+RC_GalleryDoors
+
+RC_GallerySignSurface
+
+⸻
+
+13. STAIRS
+
+The steps into the gallery/shop entrance should be actual walkable
+geometry.
+
+Model:
+
+-   correct rise/run;
+
+-   landing;
+
+-   door threshold;
+
+-   side edges.
+
+Do not fake the stairs using a flat ramp or texture.
+
+⸻
+
+14. FUTURE ENTRY
+
+Even if the Real Camera interior is not implemented immediately, prepare
+the architecture for later entry.
+
+Create:
+
+RC_EntranceAnchor
+
+RC_InteriorSpawnAnchor
+
+RC_ExitAnchor
+
+and a simple interior shell.
+
+⸻
+
+15. HANGING REAL CAMERA SIGN
+
+The projecting square Real Camera sign is a distinctive prop.
+
+Model as separate object:
+
+RC_HangingSign
+
+Include:
+
+-   rectangular sign box;
+
+-   realistic thickness;
+
+-   metal brackets;
+
+-   mounting plates;
+
+-   projection from facade.
+
+Keep the sign artwork as a future texture.
+
+Do not permanently merge it into the wall.
+
+⸻
+
+16. SIGN BRACKETS
+
+The hanging sign should not float.
+
+Reproduce the visible metal support brackets and fixings.
+
+These are worth modelling because they produce a clear silhouette from
+below.
+
+⸻
+
+17. CORNER CLOCK
+
+The corner clock seen in the wider references is an important
+architectural landmark.
+
+Create:
+
+RC_CornerClock
+
+as a separate prop.
+
+Include:
+
+-   projecting box/housing;
+
+-   clock faces;
+
+-   bracket/support;
+
+-   approximate depth.
+
+Clock graphics can be textured later.
+
+⸻
+
+18. CORNER ARCHITECTURE
+
+The building corner is highly articulated.
+
+Preserve:
+
+-   rounded/chamfered corner massing;
+
+-   projecting bays;
+
+-   layered mouldings;
+
+-   strong vertical stone piers;
+
+-   horizontal string courses.
+
+Do not model the corner as a simple 90-degree box.
+
+⸻
+
+19. PILASTERS
+
+The facade repeatedly uses strong vertical pilaster-like projections.
+
+Model:
+
+-   shaft;
+
+-   projecting base;
+
+-   capital/head;
+
+-   transitions into cornice bands.
+
+Build reusable modules if multiple pilasters repeat.
+
+⸻
+
+20. BASES
+
+The ground-floor stone bases are especially chunky and visually
+important.
+
+Include:
+
+-   stepped plinths;
+
+-   battered/projecting bases;
+
+-   horizontal ledges.
+
+These should cast actual shadows.
+
+⸻
+
+21. CAPITALS / ORNAMENTAL HEADS
+
+Several facade piers terminate in carved or stepped heads.
+
+Build simplified but recognisable forms.
+
+Do not attempt to reproduce every tiny carving.
+
+Use:
+
+-   large block shape;
+
+-   stepped profile;
+
+-   visible fluting/groove where strong.
+
+Fine carving can come later through normals.
+
+⸻
+
+22. HORIZONTAL STRING COURSES
+
+Model the major horizontal decorative bands separating storeys.
+
+Include:
+
+-   projections;
+
+-   recesses;
+
+-   stepped moulding profile.
+
+These are essential to the building’s Victorian/Edwardian facade rhythm.
+
+⸻
+
+23. BAY WINDOWS
+
+Reconstruct the projecting bay-window forms visible on upper floors.
+
+Model:
+
+-   central front window;
+
+-   angled/side windows where applicable;
+
+-   structural stone surround;
+
+-   projecting sill;
+
+-   upper moulding.
+
+Do not fake bay windows with flat window textures.
+
+⸻
+
+24. UPPER WINDOWS
+
+Model actual recessed windows.
+
+Include:
+
+-   stone reveal;
+
+-   frame;
+
+-   mullions;
+
+-   transom;
+
+-   upper small-pane section where visible.
+
+Keep glazing separately addressable.
+
+⸻
+
+25. ARCHED UPPER WINDOWS
+
+Some upper openings use curved/arched heads.
+
+Preserve:
+
+-   real arch geometry;
+
+-   recessed glazing;
+
+-   surrounding stone profile.
+
+Do not approximate these with rectangular windows.
+
+⸻
+
+26. WINDOW LEADED / SMALL-PANE DETAILS
+
+The upper portions of some windows contain small geometric panes.
+
+Do not model every individual lead line as thick geometry at this stage.
+
+Use:
+
+-   simple major pane divisions;
+
+-   later texture/normal for finer leadwork.
+
+⸻
+
+27. CORNICE
+
+The upper facade contains prominent stepped cornices.
+
+These should be actual geometry.
+
+Model:
+
+-   lower band;
+
+-   projection;
+
+-   stepped upper band;
+
+-   top cap.
+
+Use reusable profile/extrusion methods where possible.
+
+⸻
+
+28. PEDIMENT / ROOFLINE ELEMENTS
+
+Preserve visible raised roofline/pediment forms seen in wider street
+references.
+
+Model only what is supported by the references.
+
+Do not invent extra gothic/Victorian ornament.
+
+⸻
+
+29. DOWNPIPES / SERVICE ELEMENTS
+
+Include only prominent pipes/cables that materially affect the facade
+silhouette.
+
+Create these separately:
+
+RC_Downpipe_A
+
+RC_Downpipe_B
+
+Do not model every wire.
+
+⸻
+
+30. SECURITY ALARMS / SMALL WALL OBJECTS
+
+Major wall-mounted security boxes may be separate low-poly props.
+
+Do not merge them into facade geometry.
+
+Tiny stickers/signs can be decals later.
+
+⸻
+
+31. GRAFFITI
+
+The shutter and parts of the facade contain graffiti in some references.
+
+Do NOT model graffiti as geometry.
+
+Reserve decal-friendly surfaces.
+
+⸻
+
+32. SURFACE WEATHERING
+
+Do NOT model:
+
+-   stains;
+
+-   stone discoloration;
+
+-   chipped paint;
+
+-   scratches;
+
+-   tiny cracks;
+
+-   dirt;
+
+-   moss.
+
+These belong to the future texture/material pass.
+
+⸻
+
+33. STONE JOINTS
+
+Do not individually model every masonry block.
+
+Use geometry only for:
+
+-   large architectural block divisions;
+
+-   deep joints where visually significant.
+
+Fine stone joints should be normal/displacement texture later.
+
+⸻
+
+34. BASIC INTERIOR SHELL
+
+Behind both Real Camera openings, create enough depth that glazing does
+not reveal an empty void.
+
+Include:
+
+-   floor;
+
+-   ceiling;
+
+-   side walls;
+
+-   rear wall;
+
+-   broad retail volume.
+
+No detailed retail fixtures yet.
+
+⸻
+
+35. GLASS
+
+Keep glazing separate:
+
+RC_MainShopGlass
+
+RC_GalleryEntranceGlass
+
+RC_UpperWindowGlass
+
+Do not bake Street View or photographed reflections into the panes.
+
+The game’s environment should provide real reflections.
+
+⸻
+
+36. SIGNAGE SURFACES
+
+Provide clean surfaces/anchors for:
+
+-   red Real Camera awning;
+
+-   Shopping Centre & Gallery sign;
+
+-   hanging Real Camera sign;
+
+-   website/telephone details;
+
+-   any small permanent shop lettering.
+
+Geometry pass should NOT depend on the typography being present.
+
+⸻
+
+37. REAL-WORLD SCALE
+
+1 Blender unit = 1 metre
+
+Z = vertical
+
+Use:
+
+-   entrance doors;
+
+-   people in references;
+
+-   step height;
+
+-   shop windows;
+
+as scale guides.
+
+⸻
+
+38. MODEL ORGANISATION
+
+Suggested hierarchy:
+
+REAL_CAMERA_MASTER
+
+├── RC_BuildingShell
+
+├── RC_GroundFloorArchitecture
+
+├── RC_UpperFacade
+
+├── RC_Ornament
+
+├── RC_Windows
+
+├── RC_MainShop
+
+├── RC_GalleryEntrance
+
+├── RC_HangingSign
+
+├── RC_CornerClock
+
+├── RC_Glass
+
+├── RC_InteriorShell
+
+└── RC_InteractionAnchors
+
+Do not leave objects named Cube.001, Cube.002, etc.
+
+⸻
+
+39. ORNAMENT MODULARITY
+
+Where decorative features repeat, make reusable modules rather than
+unique meshes.
+
+For example:
+
+RC_Pilaster_Module_A
+
+RC_Capital_Module_A
+
+RC_WindowSurround_Module_A
+
+RC_StringCourse_Profile
+
+This keeps the architecture manageable.
+
+⸻
+
+40. THREE.JS PERFORMANCE
+
+This is a hero architectural asset, but it still needs to render in real
+time.
+
+Spend polygons on:
+
+-   silhouette;
+
+-   corners;
+
+-   mouldings;
+
+-   deep recesses;
+
+-   shopfront;
+
+-   distinctive ornament.
+
+Save polygons on:
+
+-   flat wall surfaces;
+
+-   hidden backs;
+
+-   tiny carvings;
+
+-   masonry joints;
+
+-   shutter grooves;
+
+-   microscopic window details.
+
+⸻
+
+41. NORMAL MAP PREPARATION
+
+Keep surfaces clean enough that later normal maps can add:
+
+-   sandstone pores;
+
+-   erosion;
+
+-   fine carving;
+
+-   mortar joints;
+
+-   scratches.
+
+Do not create noisy geometry that makes proper texturing difficult.
+
+⸻
+
+42. BLOCKOUT FIRST
+
+First create:
+
+real_camera_blockout.blend
+
+Model only:
+
+-   overall facade width;
+
+-   corner massing;
+
+-   major pilasters;
+
+-   shop openings;
+
+-   Gallery entrance;
+
+-   upper bay windows;
+
+-   major floor bands;
+
+-   cornice;
+
+-   roofline.
+
+At this stage, do not add fine ornament.
+
+Produce:
+
+VIEW A
+
+Straight-on lower facade.
+
+VIEW B
+
+Three-quarter view showing building depth.
+
+VIEW C
+
+Low-angle view showing upper facade.
+
+VIEW D
+
+Corner view showing the clock.
+
+VIEW E
+
+Close clay render of Real Camera + gallery entrances.
+
+Then STOP for review.
+
+⸻
+
+43. BLOCKOUT VALIDATION
+
+Before detail work, verify:
+
+1.  Ground-floor bay widths.
+
+2.  Real Camera window width.
+
+3.  Gallery entrance width.
+
+4.  Stair depth.
+
+5.  Storey heights.
+
+6.  Bay-window projection.
+
+7.  Pilaster spacing.
+
+8.  Corner angle/curvature.
+
+9.  cornice height.
+
+10. overall facade proportions.
+
+Do not compensate for incorrect proportions with ornament.
+
+⸻
+
+44. ORNAMENT PASS
+
+After blockout approval, add the architectural details.
+
+Focus on:
+
+-   pilaster bases;
+
+-   capitals;
+
+-   stepped mouldings;
+
+-   horizontal string courses;
+
+-   window surrounds;
+
+-   arched heads;
+
+-   bay-window ledges;
+
+-   ground-floor rustication;
+
+-   cornice profiles;
+
+-   facade recesses.
+
+This pass is where the building should begin to feel unmistakably like
+the reference.
+
+⸻
+
+45. ORNAMENT MUST HAVE DEPTH
+
+Do not make mouldings as flat lines drawn on the wall.
+
+Give them enough projection to create:
+
+-   highlight;
+
+-   shadow;
+
+-   depth;
+
+-   parallax when the player walks past.
+
+This matters particularly because the game camera can approach close to
+the building.
+
+⸻
+
+46. TEXTURE PASS IS LATER
+
+Stop before:
+
+-   realistic stone texture;
+
+-   red/brown colour variation;
+
+-   dirt;
+
+-   graffiti;
+
+-   typography;
+
+-   window reflections;
+
+-   shop stock.
+
+The current deliverable is a strong architectural model.
+
+⸻
+
+47. OPTIONAL DECORATION DETAIL LEVEL
+
+If some ornament is too complex for efficient game geometry, simplify
+its shape, but preserve:
+
+-   location;
+
+-   projection;
+
+-   scale;
+
+-   visual rhythm.
+
+A simplified carved capital with correct silhouette is preferable to a
+completely flat wall.
+
+⸻
+
+48. COLLISION
+
+Collision will be handled primarily in-game.
+
+Ensure the facade architecture is physically coherent, particularly:
+
+-   stairs;
+
+-   recessed entrance;
+
+-   protruding bases;
+
+-   projecting signs.
+
+Do not create unnecessarily complex collision meshes inside Blender.
+
+⸻
+
+49. DELIVERABLES
+
+Deliver:
+
+real_camera_blockout.blend
+
+real_camera.blend
+
+real_camera.glb
+
+Optional separate props:
+
+real_camera_hanging_sign.glb
+
+real_camera_clock.glb
+
+if useful.
+
+⸻
+
+50. FINAL CHECK
+
+The untextured clay model should still communicate:
+
+-   ornate historic Manchester architecture;
+
+-   deep stone articulation;
+
+-   prominent vertical pilasters;
+
+-   projecting bay windows;
+
+-   strong horizontal moulding bands;
+
+-   distinctive Real Camera storefront;
+
+-   recessed gallery entrance;
+
+-   projecting shop sign;
+
+-   corner clock.
+
+If the model only becomes recognisable after applying a photograph as a
+texture, the geometry is not detailed enough.
+
+⸻
+
+SUCCESS CRITERION
+
+Real Camera should feel carved out of a substantial red sandstone
+historic building, not pasted onto a rectangular facade.
+
+A player walking along the pavement should perceive real parallax and
+shadow across:
+
+-   columns/pilasters;
+
+-   window surrounds;
+
+-   mouldings;
+
+-   cornices;
+
+-   bases;
+
+-   arches;
+
+-   bay windows.
+
+Preserve the building’s architectural flourishes even where they require
+more geometry than the simpler modern buildings elsewhere in the game.

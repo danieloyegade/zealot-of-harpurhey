@@ -17,10 +17,6 @@ const RUNNING_FIELD_OF_VIEW = 64;
 const ORBIT_RADIANS_PER_SCREEN = 3.2;
 const KEYBOARD_ORBIT_SPEED = 2.2;
 
-// How long manual orbiting suppresses auto-follow, so the camera does not
-// fight a player who is deliberately looking somewhere else.
-const MANUAL_ORBIT_HOLD_SECONDS = 1.2;
-
 const OCCLUSION_PADDING = 0.18;
 
 // Only guards against the camera landing exactly on the look target; it must
@@ -47,8 +43,6 @@ export class ThirdPersonCamera {
   private readonly maxPitch = 1.02;
   private readonly followResponsiveness = 9;
   private readonly anchorResponsiveness = 14;
-  private readonly autoFollowResponsiveness = 2.4;
-  private manualOrbitHold = 0;
   private targetHidden = false;
   private fieldOfView = WALKING_FIELD_OF_VIEW;
   private readonly anchor = new Vector3();
@@ -66,6 +60,11 @@ export class ThirdPersonCamera {
     camera.updateProjectionMatrix();
   }
 
+  setOrbit(yaw: number, pitch = 0.31): void {
+    this.yaw = yaw;
+    this.pitch = MathUtils.clamp(pitch, this.minPitch, this.maxPitch);
+  }
+
   getPlanarForward(target: Vector3): Vector3 {
     return target.set(-Math.sin(this.yaw), 0, -Math.cos(this.yaw));
   }
@@ -80,13 +79,17 @@ export class ThirdPersonCamera {
     this.anchor.copy(target.position);
     this.calculateDesiredPosition();
     this.camera.position.copy(this.desiredPosition);
+    this.applyOcclusionClamp();
     this.updateLookTarget();
     this.camera.lookAt(this.lookTarget);
   }
 
   update(deltaTime: number, input: InputController, target: CameraTarget): void {
     this.applyOrbitInput(deltaTime, input);
-    this.applyAutoFollow(deltaTime, target);
+
+    if (input.consumeRecenterRequest()) {
+      this.recenterBehind(target);
+    }
 
     this.distance = MathUtils.clamp(
       this.distance + input.zoomDelta,
@@ -105,6 +108,7 @@ export class ThirdPersonCamera {
     this.calculateDesiredPosition();
     const followBlend = 1 - Math.exp(-this.followResponsiveness * deltaTime);
     this.camera.position.lerp(this.desiredPosition, followBlend);
+    this.applyOcclusionClamp();
 
     this.updateLookTarget();
     this.camera.lookAt(this.lookTarget);
@@ -143,30 +147,17 @@ export class ThirdPersonCamera {
       this.minPitch,
       this.maxPitch,
     );
-
-    if (yawChange !== 0 || pitchChange !== 0) {
-      this.manualOrbitHold = MANUAL_ORBIT_HOLD_SECONDS;
-    } else {
-      this.manualOrbitHold = Math.max(0, this.manualOrbitHold - deltaTime);
-    }
   }
 
-  private applyAutoFollow(deltaTime: number, target: CameraTarget): void {
-    if (this.manualOrbitHold > 0 || target.movementState === 'Idle') {
-      return;
-    }
-
-    const desiredYaw = Math.atan2(
+  // Snapping behind the player is a deliberate, one-shot action. Easing yaw
+  // toward the direction of travel every frame cannot work here: movement is
+  // camera-relative, so rotating the camera rotates the movement basis, and a
+  // strafing player is carried round in a circle that never converges.
+  private recenterBehind(target: CameraTarget): void {
+    this.yaw = Math.atan2(
       -target.facingDirection.x,
       -target.facingDirection.z,
     );
-    const shortestTurn = MathUtils.euclideanModulo(
-      desiredYaw - this.yaw + Math.PI,
-      Math.PI * 2,
-    ) - Math.PI;
-
-    this.yaw += shortestTurn
-      * (1 - Math.exp(-this.autoFollowResponsiveness * deltaTime));
   }
 
   private calculateDesiredPosition(): void {
@@ -183,10 +174,17 @@ export class ThirdPersonCamera {
       this.anchor.y + 1.15 + verticalDistance,
       this.anchor.z + Math.cos(this.yaw) * horizontalDistance,
     );
+  }
 
+  // Occlusion is a hard constraint on the final position, not a target to ease
+  // toward: a camera that smoothly approaches its unoccluded position spends
+  // the whole approach inside the wall it just detected. Pulling in is
+  // therefore immediate, while easing back out falls out of the follow lerp
+  // once the obstruction is gone.
+  private applyOcclusionClamp(): void {
     const clearFraction = findSegmentObstruction(
       this.occlusionOrigin,
-      this.desiredPosition,
+      this.camera.position,
       OCCLUSION_PADDING,
       this.collisionWorld,
     );
@@ -195,16 +193,21 @@ export class ThirdPersonCamera {
       return;
     }
 
-    const fullDistance = this.occlusionOrigin.distanceTo(this.desiredPosition);
+    const fullDistance = this.occlusionOrigin.distanceTo(this.camera.position);
+
+    if (fullDistance <= 0) {
+      return;
+    }
+
     const clearedDistance = Math.min(
       Math.max(fullDistance * clearFraction, MIN_OCCLUDED_DISTANCE),
       fullDistance,
     );
 
-    this.desiredPosition.lerpVectors(
+    this.camera.position.lerpVectors(
       this.occlusionOrigin,
-      this.desiredPosition,
-      fullDistance > 0 ? clearedDistance / fullDistance : 1,
+      this.camera.position,
+      clearedDistance / fullDistance,
     );
   }
 

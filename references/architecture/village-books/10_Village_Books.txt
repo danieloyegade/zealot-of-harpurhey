@@ -1,0 +1,838 @@
+VILLAGE BOOKS, 131 OLDHAM STREET, MANCHESTER
+
+Untextured Blender reconstruction for Zealot of Harperhey
+
+Create an accurate, game-ready Blender reconstruction of Village Books,
+131 Oldham Street, Manchester, using ALL supplied reference photographs.
+
+This asset is for Zealot of Harperhey, a Three.js game.
+
+This task is GEOMETRY ONLY.
+
+Do not create final textures, decals, logos, books, magazines, posters,
+graffiti, stickers, reflections, dirt, signage graphics or lighting yet.
+
+The goal is to reconstruct:
+
+-   the Village Books storefront;
+
+-   entrance;
+
+-   large glazing;
+
+-   surrounding black facade frame;
+
+-   basic ground-floor interior shell;
+
+-   enough of the upper building to make the asset architecturally
+    complete;
+
+-   the correct relationship to the neighbouring pub, The City, which is
+    visible in one of the supplied references.
+
+The untextured clay model should already read as Village Books from its
+proportions and facade layout.
+
+⸻
+
+1.  IMPORTANT REFERENCE LIMITATION
+
+The storefront of Village Books is clearly documented.
+
+The upper floors directly above it are not fully shown in dedicated
+close-up references.
+
+However, one supplied photograph of the neighbouring pub The City shows
+part of the upper structure directly beside Village Books.
+
+Use this image to infer the upper mass of the Village Books building.
+
+Do NOT invent elaborate unsupported architecture.
+
+Where the evidence is uncertain:
+
+-   use the simplest plausible continuation;
+
+-   match the visible neighbouring building height;
+
+-   match the street rhythm;
+
+-   maintain realistic Manchester commercial-building proportions;
+
+-   avoid ornamental detail unless visible.
+
+The storefront must be much more accurate than the inferred upper
+facade.
+
+⸻
+
+2.  REFERENCE PRIORITY
+
+Use the references in this order of authority:
+
+Highest priority
+
+-   direct frontal Village Books photograph;
+
+-   oblique Village Books photographs.
+
+Secondary priority
+
+-   photograph showing The City next door and the upper building
+    relationship.
+
+Lowest priority
+
+-   architectural inference where no evidence is visible.
+
+⸻
+
+3.  SCOPE
+
+Model:
+
+-   complete Village Books shopfront;
+
+-   entrance;
+
+-   black/charcoal facade frame;
+
+-   large display windows;
+
+-   side residential/office-style door at 131A where visible;
+
+-   immediate facade returns;
+
+-   upper building mass;
+
+-   enough upper windows to fit the visible streetscape;
+
+-   basic interior shell;
+
+-   basic shelving/display furniture.
+
+Do not reconstruct the full neighbouring City pub as part of this asset.
+
+Only use it as a spatial/architectural reference.
+
+⸻
+
+4.  STOREFRONT PROPORTIONS
+
+The Village Books storefront is the hero area.
+
+Reconstruct accurately:
+
+-   full width;
+
+-   fascia height;
+
+-   entrance width;
+
+-   display-window proportions;
+
+-   side door width;
+
+-   black framing thickness;
+
+-   transom height;
+
+-   lower plinth;
+
+-   facade depth.
+
+Do not simplify it into a generic glass rectangle.
+
+⸻
+
+5.  MAIN FASCIA
+
+The upper shopfront has a broad charcoal/grey fascia.
+
+Model:
+
+-   horizontal sign band;
+
+-   left and right returns;
+
+-   slight projection from the wall;
+
+-   junction with vertical shopfront posts.
+
+Create:
+
+VB_Fascia
+
+VB_VillageLogoSurface
+
+VB_AddressSurface
+
+The later signage pass should reproduce:
+
+Village
+
+and:
+
+131 Oldham St
+
+Do not bake the final lettering into the geometry yet.
+
+⸻
+
+6.  MAIN GLAZING
+
+Model the large glass shopfront as separate panes.
+
+Include:
+
+-   left display glazing;
+
+-   central entrance glazing;
+
+-   right display glazing;
+
+-   transom glazing above;
+
+-   black metal/aluminium frames;
+
+-   mullions;
+
+-   recessed glass.
+
+Suggested:
+
+VB_Glass_Left
+
+VB_Glass_Entrance
+
+VB_Glass_Right
+
+VB_Glass_Transom
+
+Keep glass separate from frames.
+
+⸻
+
+7.  ENTRANCE
+
+Reconstruct the entrance as a real, player-usable doorway.
+
+Include:
+
+-   door;
+
+-   frame;
+
+-   glazing;
+
+-   threshold;
+
+-   handle;
+
+-   recessed depth;
+
+-   relationship to surrounding glass.
+
+Add:
+
+VB_EntranceTriggerAnchor
+
+Keep the door as a separate object.
+
+⸻
+
+8.  SIDE DOOR / 131A
+
+The left side of the frontage contains a separate narrow door associated
+with 131A Oldham Street.
+
+This must remain distinct from the shop entrance.
+
+Model:
+
+-   tall narrow doorway;
+
+-   frame;
+
+-   frosted/opaque glass panel;
+
+-   vertical handle;
+
+-   letterbox;
+
+-   lower kick/plinth area.
+
+Suggested:
+
+VB_131A_Door
+
+VB_131A_Glass
+
+Do not accidentally treat this as the Village Books entrance.
+
+⸻
+
+9.  WINDOW TEXT AREAS
+
+The right display window includes the text:
+
+Books
+
+Magazines
+
+Zines
+
+Editions
+
+and lower web/address text.
+
+Do NOT model this lettering as permanent geometry.
+
+Create clean decal surfaces:
+
+VB_WindowText_Surface
+
+VB_WindowAddress_Surface
+
+These will be textured later.
+
+⸻
+
+10. DISPLAY WINDOW DEPTH
+
+Behind the front glazing, create a real shallow display area.
+
+Do not paste books onto the window.
+
+Model:
+
+-   lower display plinths;
+
+-   small shelving/display blocks;
+
+-   interior floor continuing behind glazing;
+
+-   enough depth that later book props can sit naturally.
+
+⸻
+
+11. BASIC INTERIOR
+
+Village Books should eventually be enterable.
+
+Build a simplified but real interior shell.
+
+Include:
+
+-   floor;
+
+-   ceiling;
+
+-   side walls;
+
+-   rear wall;
+
+-   major shelving;
+
+-   central display table/counter;
+
+-   circulation path.
+
+Do not fill the shop with hundreds of books in this pass.
+
+⸻
+
+12. SHELVING
+
+Create modular shelving based on the visible interior.
+
+Suggested:
+
+VB_Shelf_Wall_Module
+
+VB_Shelf_Low_Module
+
+VB_DisplayTable
+
+VB_Counter
+
+Keep shelves simple and reusable.
+
+Books, magazines and zines should later be separate prop clusters.
+
+⸻
+
+13. INTERIOR CEILING / LIGHTING SUPPORT
+
+Reconstruct the visible simple retail ceiling.
+
+Include:
+
+-   ceiling plane;
+
+-   major linear light fixture locations;
+
+-   any obvious soffits.
+
+Do not create final lighting.
+
+Add optional anchors:
+
+VB_Light_01
+
+VB_Light_02
+
+⸻
+
+14. UPPER BUILDING INFERENCE
+
+Above the shopfront, construct a conservative upper facade consistent
+with the visible streetscape.
+
+Use the supplied photograph of The City to infer:
+
+-   overall building height;
+
+-   approximate storey count;
+
+-   window rhythm;
+
+-   party-wall relationship;
+
+-   roof/parapet height.
+
+Do NOT copy The City’s ornate facade onto Village Books.
+
+Village Books appears to sit within a simpler adjoining building.
+
+Therefore the inferred upper facade should be restrained.
+
+⸻
+
+15. UPPER MASSING
+
+Create:
+
+-   simple wall planes;
+
+-   plausible floor heights;
+
+-   rectangular upper windows;
+
+-   modest sills/reveals;
+
+-   parapet/roof edge.
+
+If only a narrow strip of upper facade is visible in the references, do
+not invent elaborate balconies, arches or carved ornament.
+
+⸻
+
+16. RELATIONSHIP TO THE CITY PUB
+
+The City sits immediately beside Village Books.
+
+Use the reference image to ensure:
+
+-   compatible floor heights;
+
+-   believable shared street line;
+
+-   correct relative building height;
+
+-   plausible party-wall boundary.
+
+Do not merge The City into this GLB.
+
+Create a clean side boundary so a future City asset can sit directly
+beside Village Books.
+
+⸻
+
+17. BLACK SIDE PILASTER / PARTY-WALL EDGE
+
+The right-hand edge of Village Books sits beside the ornate black facade
+of The City.
+
+Preserve the visible black vertical boundary/pilaster as part of the
+Village Books context only if required by the actual shopfront.
+
+Do not model The City’s full decorative facade.
+
+⸻
+
+18. GRAFFITI / STICKERS
+
+The references show a lot of:
+
+-   stickers;
+
+-   tags;
+
+-   graffiti;
+
+-   pasted notices.
+
+These are important for the later look but should NOT be geometry now.
+
+Reserve suitable decal surfaces on:
+
+-   vertical shopfront posts;
+
+-   side walls;
+
+-   door frames.
+
+⸻
+
+19. A-FRAME SIGN
+
+The freestanding wooden Village pavement sign may be created as a
+separate prop:
+
+VB_AFrameSign
+
+Keep it independently movable.
+
+Do not fuse it into the building.
+
+Do not create final writing yet.
+
+⸻
+
+20. BOOK / MAGAZINE PROPS
+
+Do not model individual books into the architectural asset.
+
+Future props should be separate:
+
+VB_BookCluster
+
+VB_MagazineStack
+
+VB_ZineDisplay
+
+VB_WindowBookStack
+
+This keeps the architecture reusable and lightweight.
+
+⸻
+
+21. INTERACTION ANCHORS
+
+Add:
+
+VB_EntranceTriggerAnchor
+
+VB_CounterInteractionAnchor
+
+VB_ShopkeeperAnchor
+
+If the game later allows browsing:
+
+VB_BrowseAnchor_01
+
+VB_BrowseAnchor_02
+
+These are Empties only.
+
+⸻
+
+22. GLASS RULE
+
+The shopfront glass should later show actual reflections from the Oldham
+Street environment.
+
+Do NOT bake reflections of opposite buildings or people into the glass.
+
+Do NOT use the reference photograph as a transparent window texture.
+
+The interior should be genuinely visible behind real transparent glass.
+
+⸻
+
+23. PLACEHOLDER MATERIALS
+
+Use simple placeholder materials only:
+
+MAT_VB_DarkFacade_PLACEHOLDER
+
+MAT_VB_Glass_PLACEHOLDER
+
+MAT_VB_UpperWall_PLACEHOLDER
+
+MAT_VB_WindowFrame_PLACEHOLDER
+
+MAT_VB_InteriorWall_PLACEHOLDER
+
+MAT_VB_Floor_PLACEHOLDER
+
+MAT_VB_Wood_PLACEHOLDER
+
+No final textures.
+
+⸻
+
+24. REAL-WORLD SCALE
+
+Work at real-world scale.
+
+1 Blender unit = 1 metre
+
+Z = vertical
+
+Ground = Z 0
+
+Use:
+
+-   shop door;
+
+-   side door;
+
+-   bookshelves;
+
+-   people visible in references;
+
+as scale guides.
+
+⸻
+
+25. OBJECT ORGANISATION
+
+Suggested hierarchy:
+
+VILLAGE_BOOKS_MASTER
+
+VB_BuildingShell
+
+VB_UpperFacade
+
+VB_Shopfront
+
+VB_Fascia
+
+VB_MainGlass
+
+VB_Entrance
+
+VB_131A_Door
+
+VB_InteriorShell
+
+VB_Shelving
+
+VB_DisplayFurniture
+
+VB_SignageSurfaces
+
+VB_InteractionAnchors
+
+VB_OptionalProps
+
+Avoid generic names such as Cube.011.
+
+⸻
+
+26. THREE.JS OPTIMISATION
+
+Use geometry for:
+
+-   facade depth;
+
+-   frames;
+
+-   doors;
+
+-   window recesses;
+
+-   upper window surrounds;
+
+-   interior shelving;
+
+-   major display furniture.
+
+Use later textures/decals for:
+
+-   Village logo;
+
+-   window lettering;
+
+-   stickers;
+
+-   graffiti;
+
+-   book covers;
+
+-   magazine covers;
+
+-   surface wear;
+
+-   dirt.
+
+⸻
+
+27. BLOCKOUT FIRST
+
+First create:
+
+village_books_blockout.blend
+
+Include only:
+
+-   storefront width/height;
+
+-   fascia;
+
+-   main glass;
+
+-   entrance;
+
+-   131A side door;
+
+-   basic interior shell;
+
+-   inferred upper building mass.
+
+Produce clay renders:
+
+VIEW A
+
+Straight-on frontal shop view.
+
+VIEW B
+
+Left three-quarter view based on the oblique reference.
+
+VIEW C
+
+Right three-quarter view showing the boundary with The City.
+
+VIEW D
+
+Wider street view showing full inferred upper building.
+
+VIEW E
+
+Player-height view through the shop window.
+
+Then STOP for review.
+
+⸻
+
+28. SECOND GEOMETRY PASS
+
+After blockout approval, add:
+
+-   accurate metal frames;
+
+-   side-door detail;
+
+-   display plinths;
+
+-   interior shelves;
+
+-   counter;
+
+-   upper window frames;
+
+-   parapet;
+
+-   signage/decal surfaces;
+
+-   interaction anchors.
+
+Still do not texture.
+
+⸻
+
+29. FINAL VALIDATION
+
+Compare the model against all supplied Village Books images.
+
+Check:
+
+1.  Storefront width.
+
+2.  Fascia height.
+
+3.  Door position.
+
+4.  Main window proportions.
+
+5.  131A door proportions.
+
+6.  Frame thickness.
+
+7.  Shop depth.
+
+8.  Interior sightline.
+
+9.  Upper-building height.
+
+10. Upper-window rhythm.
+
+11. Party-wall relationship to The City.
+
+Most importantly:
+
+Do not let the inferred upper architecture become more visually dominant
+or more detailed than the documented storefront.
+
+The storefront is known.
+
+The upper building is partially inferred.
+
+Treat certainty accordingly.
+
+⸻
+
+30. DELIVERABLES
+
+Deliver:
+
+village_books_blockout.blend
+
+village_books.blend
+
+village_books.glb
+
+optionally:
+
+village_books_props.glb
+
+containing:
+
+-   A-frame sign;
+
+-   book stacks;
+
+-   magazine stacks;
+
+-   zine displays.
+
+Before export:
+
+-   apply transforms;
+
+-   verify normals;
+
+-   verify scale;
+
+-   remove temporary ground;
+
+-   remove test objects;
+
+-   preserve interaction anchors;
+
+-   test GLB import.
+
+⸻
+
+SUCCESS CRITERION
+
+Village Books should be immediately recognisable from its documented
+shopfront even before textures and books are added.
+
+The uncertain upper part should feel architecturally plausible and
+consistent with the surrounding Oldham Street block, but it should not
+contain invented decorative features unsupported by the references.

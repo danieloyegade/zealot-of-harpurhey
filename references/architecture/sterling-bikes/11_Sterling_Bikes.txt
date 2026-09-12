@@ -1,0 +1,1406 @@
+STERLING BIKES
+
+Shared e-bike + docking station asset system for Zealot of Harperhey
+
+Create a modular, game-ready Blender asset system for Sterling Bikes,
+the fictional public shared-bike service in Zealot of Harperhey.
+
+Sterling Bikes is visually inspired by the yellow Manchester shared
+e-bikes shown in the supplied references.
+
+The name STERLING is an intentional fictional variation.
+
+The finished game design should strongly evoke the real shared-bike
+system through:
+
+-   yellow step-through e-bike frame;
+
+-   heavy-duty shared-bike construction;
+
+-   partially enclosed rear wheel;
+
+-   front basket;
+
+-   integrated lights;
+
+-   broad tyres;
+
+-   upright handlebars;
+
+-   chain guard;
+
+-   docking hardware;
+
+-   distinctive street-bike silhouette;
+
+while using STERLING BIKES as the final in-game branding.
+
+This task is primarily GEOMETRY ONLY.
+
+Do not create final branding textures, decals, dirt, stickers,
+scratches, final lighting or PBR materials yet.
+
+⸻
+
+1.  ASSET ARCHITECTURE
+
+Do NOT build three permanently fused bicycles.
+
+Create the following reusable assets:
+
+ASSET A
+
+STERLING_BIKE_MASTER
+
+One complete reusable Sterling shared e-bike.
+
+ASSET B
+
+STERLING_DOCK_MASTER
+
+One reusable docking-point module.
+
+ASSET C
+
+STERLING_STATION_REFERENCE
+
+A reference scene containing approximately three dock modules and three
+instances of the bike positioned as a working station.
+
+The player should later be able to:
+
+-   remove one bicycle;
+
+-   return it;
+
+-   encounter empty docks;
+
+-   encounter partially occupied stations;
+
+-   encounter Sterling bikes elsewhere in the city.
+
+Therefore the bicycles must never be fused into the dock geometry.
+
+⸻
+
+2.  USE ALL REFERENCE PHOTOGRAPHS
+
+Study every supplied photograph before modelling.
+
+They provide close references for:
+
+-   overall bicycle proportions;
+
+-   yellow frame;
+
+-   rear wheel enclosure;
+
+-   rear wheel;
+
+-   drivetrain;
+
+-   pedal/crank;
+
+-   front fork;
+
+-   front wheel;
+
+-   integrated front basket;
+
+-   rear light;
+
+-   handlebars;
+
+-   cables;
+
+-   docking interface;
+
+-   dock shape;
+
+-   reflective strips;
+
+-   branding-panel positions.
+
+Cross-reference them instead of extrapolating from only the widest
+photograph.
+
+⸻
+
+3.  BIKE OVERALL PROPORTIONS
+
+Reconstruct the bicycle as a believable heavy-duty urban rental e-bike.
+
+It should have:
+
+-   low step-through frame;
+
+-   upright riding position;
+
+-   relatively small/medium wheels;
+
+-   broad durable tyres;
+
+-   heavy frame tubing;
+
+-   integrated electronic/battery section;
+
+-   rear wheel cover;
+
+-   front basket;
+
+-   full mudguards;
+
+-   durable pedals;
+
+-   utilitarian saddle.
+
+It should NOT resemble:
+
+-   a lightweight road bike;
+
+-   a mountain bike;
+
+-   a BMX;
+
+-   a generic bicycle with a basket attached.
+
+The recognisable public-bike silhouette is important.
+
+⸻
+
+4.  FRAME
+
+Model the main frame carefully.
+
+The references show a relatively unusual thick step-through frame
+incorporating the e-bike/battery system.
+
+Reconstruct:
+
+-   main down tube;
+
+-   seat tube;
+
+-   rear stays;
+
+-   lower chainstay;
+
+-   front head tube;
+
+-   reinforcing members;
+
+-   mounting areas around the rear enclosure.
+
+Avoid perfectly cylindrical bicycle tubes where the actual reference
+uses flattened or custom profiles.
+
+The frame should feel manufactured specifically for a rental fleet.
+
+Suggested hierarchy:
+
+SB_Frame
+
+SB_Fork
+
+SB_HandlebarStem
+
+SB_RearFrame
+
+⸻
+
+5.  ELECTRIC BIKE BODY / BATTERY AREA
+
+The central frame contains a substantial e-bike housing.
+
+Model the physical shell.
+
+Include:
+
+-   thick central frame section;
+
+-   removable/access-panel seam where visible;
+
+-   lower connection to crank region;
+
+-   front transition into head tube.
+
+Do not model battery cells or electronics internally unless later
+required.
+
+⸻
+
+6.  FRONT WHEEL
+
+Create a complete front wheel assembly:
+
+SB_FrontWheel
+
+containing:
+
+-   tyre;
+
+-   rim;
+
+-   spokes;
+
+-   hub;
+
+-   axle;
+
+-   brake disc if visible;
+
+-   front fork.
+
+The spokes may use efficient low-poly geometry.
+
+Do not create excessively dense cylindrical spokes.
+
+The front wheel must rotate independently.
+
+Set the object’s origin at the axle.
+
+⸻
+
+7.  REAR WHEEL
+
+Create:
+
+SB_RearWheel
+
+with:
+
+-   tyre;
+
+-   rim;
+
+-   spokes;
+
+-   hub/motor housing;
+
+-   rear axle;
+
+-   brake hardware where visible.
+
+The rear wheel must remain mechanically separate from the frame.
+
+Set origin at rear axle for later rotation.
+
+⸻
+
+8.  REAR WHEEL COVER
+
+One of the strongest visual characteristics is the large partially
+enclosed rear-wheel cover / advertising panel.
+
+Reconstruct this carefully.
+
+Model:
+
+-   outer dark rim/housing;
+
+-   large flat side panel;
+
+-   curved upper profile;
+
+-   lower termination;
+
+-   rear reflector/light integration;
+
+-   clearance around the actual wheel.
+
+Suggested:
+
+SB_RearWheelCover_Left
+
+SB_RearWheelCover_Right
+
+SB_RearBrandingSurface
+
+The later texture should display:
+
+STERLING
+
+Do not model that lettering now.
+
+⸻
+
+9.  IMPORTANT REAR-COVER RULE
+
+The rear enclosure is not the wheel itself.
+
+It surrounds and partially conceals the wheel.
+
+Preserve actual depth between:
+
+-   tyre;
+
+-   spokes;
+
+-   enclosure;
+
+-   frame.
+
+Avoid merging them into one solid disc.
+
+⸻
+
+10. TYRES
+
+Reconstruct broad urban tyres with visible tread silhouette.
+
+Do not individually model every tiny tread groove.
+
+Use:
+
+-   moderate tyre geometry;
+
+-   major tread form;
+
+with finer pattern handled later through normals/materials.
+
+⸻
+
+11. FRONT MUDGUARD
+
+Model the long front mudguard visible in the references.
+
+Include:
+
+-   curved profile;
+
+-   correct clearance above tyre;
+
+-   mounting points;
+
+-   rearward extension.
+
+Keep it separate from wheel geometry.
+
+⸻
+
+12. REAR MUDGUARD
+
+Where visible around/inside the wheel-cover assembly, model the rear
+mudguard as a separate functional piece.
+
+Do not accidentally merge the rear cover, mudguard and tyre into a
+single shell.
+
+⸻
+
+13. CRANKSET
+
+The crank area is clearly shown in the close-up references.
+
+Model:
+
+-   central crank housing;
+
+-   left and right crank arms;
+
+-   pedals;
+
+-   chainring area;
+
+-   protective chainring enclosure.
+
+Suggested:
+
+SB_Crank_Left
+
+SB_Crank_Right
+
+SB_Pedal_Left
+
+SB_Pedal_Right
+
+The crank should be able to rotate later.
+
+⸻
+
+14. PEDALS
+
+Reconstruct the broad black platform pedals.
+
+Keep:
+
+-   pedal body;
+
+-   axle;
+
+-   major openings;
+
+but avoid modelling tiny moulding details.
+
+⸻
+
+15. CHAIN / DRIVE
+
+Model enough drivetrain detail to look plausible.
+
+Include:
+
+-   chain path;
+
+-   major sprocket;
+
+-   chain tensioner if clearly visible.
+
+Use efficient geometry.
+
+The chain does not need hundreds of individually modelled links.
+
+A curve or simplified chain mesh is sufficient.
+
+⸻
+
+16. CHAIN GUARD
+
+The bike uses substantial drivetrain protection suitable for a public
+hire bicycle.
+
+Model the black protective chain/drive cover accurately.
+
+This should remain visually distinct from the yellow frame.
+
+⸻
+
+17. HANDLEBARS
+
+Create:
+
+SB_Handlebar
+
+SB_Stem
+
+SB_Grip_Left
+
+SB_Grip_Right
+
+SB_BrakeLever_Left
+
+SB_BrakeLever_Right
+
+Match the upright urban shape visible in the references.
+
+Do not create racing-style or mountain-bike handlebars.
+
+⸻
+
+18. STEERING HIERARCHY
+
+Parent logically so later game animation can rotate:
+
+Handlebar
+
+↓
+
+Stem
+
+↓
+
+Fork
+
+↓
+
+FrontWheel
+
+around the steering axis.
+
+Do not apply a destructive join that makes steering animation
+impossible.
+
+⸻
+
+19. CABLES
+
+Model only the major visible brake/electrical cables.
+
+Use curves with low resolution.
+
+Do not create every small cable.
+
+They should add plausibility without causing unnecessary geometry.
+
+⸻
+
+20. SADDLE
+
+Model the saddle:
+
+-   broad rental-bike profile;
+
+-   seat post;
+
+-   mounting assembly.
+
+Suggested:
+
+SB_Saddle
+
+SB_SeatPost
+
+Keep the saddle separate if later height variation is desired.
+
+⸻
+
+21. FRONT BASKET
+
+The front basket is another defining feature.
+
+Reconstruct:
+
+-   deep dark plastic basket;
+
+-   tapered profile;
+
+-   rounded corners;
+
+-   front face;
+
+-   side perforation pattern;
+
+-   mounting bracket.
+
+Suggested:
+
+SB_Basket
+
+SB_BasketMount
+
+Do not model every tiny ventilation hole if expensive.
+
+Major holes can be geometry, with finer pattern later handled by
+normal/alpha material.
+
+⸻
+
+22. BASKET INTERACTION POSSIBILITY
+
+Keep the basket interior physically open.
+
+Do not fill it with a solid hidden block.
+
+This will allow later gameplay props to be placed inside it, for
+example:
+
+-   flowers;
+
+-   film;
+
+-   shopping;
+
+-   delivery items;
+
+depending on game systems.
+
+⸻
+
+23. FRONT LIGHT
+
+Identify the bike’s front lighting unit from the references where
+possible.
+
+Model:
+
+SB_FrontLightHousing
+
+SB_FrontLightLens
+
+SB_FrontLightAnchor
+
+Do not create final illumination yet.
+
+The later game should be able to activate this light at night.
+
+⸻
+
+24. REAR LIGHT
+
+The references clearly show a vertically oriented rear red light
+integrated near the rear wheel cover.
+
+Reconstruct it.
+
+Create:
+
+SB_RearLightHousing
+
+SB_RearLightLens
+
+SB_RearLightAnchor
+
+This is an important nighttime functional detail.
+
+The red lens should later receive an emissive material when the bike is
+active.
+
+⸻
+
+25. REFLECTORS
+
+Preserve major reflectors:
+
+-   wheel reflectors;
+
+-   frame reflective strips;
+
+-   docking-facing reflective plates;
+
+-   rear reflector.
+
+Use geometry only when the reflector has significant physical thickness.
+
+Otherwise create decal/material surfaces.
+
+⸻
+
+26. BIKE IDENTIFICATION NUMBER
+
+The real bikes contain individual fleet numbers, such as the visible
+76167.
+
+Sterling Bikes should use a similar fictional fleet-number system.
+
+Create a decal surface:
+
+SB_FleetNumber_Surface
+
+Do not bake a permanent number into the base bike.
+
+This allows each instance to later have a different number.
+
+For example:
+
+STERLING 0142
+
+STERLING 0188
+
+STERLING 0231
+
+⸻
+
+27. STERLING BRANDING AREAS
+
+Preserve clean surfaces for later branding.
+
+Suggested:
+
+SB_Branding_RearCover
+
+SB_Branding_DownTube
+
+SB_Branding_DockSide
+
+The final fictional branding should use:
+
+STERLING
+
+and:
+
+STERLING BIKES
+
+Do not create STARLING as final branding.
+
+⸻
+
+28. COLOUR DESIGN FOR LATER
+
+The final material design should stay close to the references:
+
+-   primary frame: warm yellow;
+
+-   rear wheel panel: pale mint/light cyan;
+
+-   structural hardware: grey/silver;
+
+-   tyres: black;
+
+-   basket: dark charcoal;
+
+-   mudguards: dark;
+
+-   branding: dark blue/grey.
+
+Do not finalise those materials yet.
+
+⸻
+
+29. BIKE RIG / FUNCTIONAL MOVEMENT
+
+This asset will be ridden by the player.
+
+Organise the bike for future animation.
+
+At minimum, preserve independent transforms for:
+
+-   front wheel rotation;
+
+-   rear wheel rotation;
+
+-   steering;
+
+-   crank rotation;
+
+-   left pedal;
+
+-   right pedal;
+
+and optionally:
+
+-   kickstand;
+
+-   saddle.
+
+Suggested parent hierarchy:
+
+STERLING_BIKE_MASTER
+
+├── SB_Frame
+
+├── SB_SteeringRoot
+
+│ ├── SB_Handlebars
+
+│ ├── SB_Fork
+
+│ └── SB_FrontWheel
+
+├── SB_RearWheel
+
+├── SB_CrankRoot
+
+│ ├── SB_Crank_Left
+
+│ ├── SB_Crank_Right
+
+│ ├── SB_Pedal_Left
+
+│ └── SB_Pedal_Right
+
+├── SB_Basket
+
+└── SB_Lights
+
+⸻
+
+30. BIKE COLLISION
+
+Do not create unnecessarily complex collision meshes in Blender.
+
+However, ensure the geometry is organised so Three.js can later use
+simple collision primitives approximately corresponding to:
+
+-   overall bike body;
+
+-   wheels;
+
+-   basket.
+
+⸻
+
+31. DOCK / HUB MODULE
+
+Create a reusable docking point based on the supplied references.
+
+Asset:
+
+STERLING_DOCK_MASTER
+
+Model:
+
+-   substantial dark grey upright housing;
+
+-   sloping front/side profile;
+
+-   yellow/light coloured branding panel;
+
+-   wheel channel;
+
+-   lower baseplate;
+
+-   bolts/major mounting points;
+
+-   upper locking interface;
+
+-   reflective strip;
+
+-   bike-retaining shape.
+
+Do not treat the dock as a flat sign.
+
+It must physically hold and locate the bicycle’s front wheel/frame.
+
+⸻
+
+32. DOCK BASE
+
+Model:
+
+-   ground plate;
+
+-   bolt positions;
+
+-   upright body;
+
+-   wheel-guiding channel;
+
+-   lower stabilising forms.
+
+Keep it compact and durable-looking.
+
+⸻
+
+33. DOCK BRANDING SURFACE
+
+Create:
+
+SD_BrandingSurface
+
+for later:
+
+STERLING BIKES
+
+BIKE HIRE
+
+graphics.
+
+Do not use final real-world branding.
+
+⸻
+
+34. DOCKING POINT / SNAP ANCHOR
+
+Add an Empty:
+
+SD_BikeDockAnchor
+
+positioned exactly where the bike should align when docked.
+
+Each bike should also have:
+
+SB_DockAnchor
+
+The game can later snap those transforms together.
+
+This is important.
+
+Do not rely on manually eyeballing the bike position in Three.js.
+
+⸻
+
+35. DOCK INTERACTION ANCHOR
+
+Add:
+
+SD_InteractionAnchor
+
+positioned where the player should stand when hiring/returning the
+bicycle.
+
+Do not implement game logic in Blender.
+
+⸻
+
+36. STARTING STATION
+
+Create a reference station with approximately:
+
+3 docks
+
+and
+
+3 bike instances
+
+initially occupied.
+
+Do NOT create three unique high-poly bike meshes.
+
+Use instances/linked duplicates from STERLING_BIKE_MASTER.
+
+Suggested:
+
+STERLING_STATION_REFERENCE
+
+├── Dock_01
+
+├── Dock_02
+
+├── Dock_03
+
+├── Bike_01
+
+├── Bike_02
+
+└── Bike_03
+
+The game code will ultimately control station occupancy.
+
+⸻
+
+37. ALLOW EMPTY DOCKS
+
+Verify that removing any bike leaves a visually complete docking
+station.
+
+The dock must not contain pieces of the bicycle geometry.
+
+Likewise, the bicycle should remain complete after being removed from
+the dock.
+
+⸻
+
+38. PLAYER RIDING STATE
+
+When the player hires a bike:
+
+-   bike detaches from dock;
+
+-   wheels rotate;
+
+-   front wheel steers;
+
+-   pedals/crank can rotate;
+
+-   lights may activate at night.
+
+Organise the Blender object specifically to support this later.
+
+⸻
+
+39. PARKED / ABANDONED STATE
+
+The exact same bicycle asset should also work:
+
+-   leaning against a wall;
+
+-   standing in a station;
+
+-   abandoned on pavement;
+
+-   being ridden;
+
+-   placed in unusual narrative situations.
+
+Avoid geometry that assumes the bike is permanently docked.
+
+⸻
+
+40. LIGHTING BEHAVIOUR FOR LATER
+
+Add Empty anchors:
+
+SB_FrontLightAnchor
+
+SB_RearLightAnchor
+
+At night:
+
+-   front light should cast a small practical beam;
+
+-   rear light should glow red;
+
+-   reflectors should respond strongly to headlights/streetlights.
+
+Do not implement final lights in this pass.
+
+⸻
+
+41. OPTIONAL KICKSTAND
+
+If a kickstand is visible or needed to support an undocked parked state,
+create:
+
+SB_Kickstand
+
+as a separate low-poly object.
+
+Set its pivot at the hinge.
+
+This can later animate between raised and lowered positions.
+
+⸻
+
+42. DON’T MODEL TEMPORARY REFERENCE ENVIRONMENT
+
+Do not include:
+
+-   cars;
+
+-   building interiors;
+
+-   pavement;
+
+-   people;
+
+-   other unrelated bikes;
+
+-   road;
+
+-   planters;
+
+-   background lights.
+
+These are only visible in the photographs because of where the bikes
+were photographed.
+
+⸻
+
+43. PLACEHOLDER MATERIALS
+
+Use simple placeholder materials:
+
+MAT_SB_Frame_PLACEHOLDER
+
+MAT_SB_Metal_PLACEHOLDER
+
+MAT_SB_Rubber_PLACEHOLDER
+
+MAT_SB_RearPanel_PLACEHOLDER
+
+MAT_SB_Basket_PLACEHOLDER
+
+MAT_SB_LightLens_PLACEHOLDER
+
+MAT_SD_Dock_PLACEHOLDER
+
+No final textures.
+
+⸻
+
+44. THREE.JS PERFORMANCE
+
+The player may see multiple Sterling bikes simultaneously.
+
+Therefore optimise intelligently.
+
+Spend geometry on:
+
+-   recognisable frame silhouette;
+
+-   wheels;
+
+-   basket;
+
+-   handlebars;
+
+-   rear wheel cover;
+
+-   crank;
+
+-   docking hardware.
+
+Keep inexpensive:
+
+-   cables;
+
+-   reflectors;
+
+-   bolts;
+
+-   tread;
+
+-   branding.
+
+Avoid:
+
+-   extremely high-poly tyre tread;
+
+-   excessive bevel segments;
+
+-   hundreds of chain links;
+
+-   unnecessary hidden geometry.
+
+Because multiple bikes may appear simultaneously, target a sensible
+mid-poly game asset.
+
+⸻
+
+45. LOD-FRIENDLY CONSTRUCTION
+
+Structure the model so lower-detail versions can be made later.
+
+High/close version:
+
+-   spokes;
+
+-   chain;
+
+-   crank detail;
+
+-   cables;
+
+-   dock fasteners.
+
+Lower-detail version:
+
+-   simplified wheels;
+
+-   simplified basket;
+
+-   reduced cables;
+
+-   simplified drivetrain.
+
+Do not create LODs unless requested, but keep topology suitable for
+them.
+
+⸻
+
+46. REAL-WORLD SCALE
+
+Use real-world bicycle scale.
+
+1 Blender unit = 1 metre
+
+Z = vertical
+
+Approximate:
+
+-   wheel diameter from references;
+
+-   saddle height;
+
+-   handlebar height;
+
+-   basket width;
+
+-   dock spacing.
+
+The bike must feel correctly sized beside a 1.7-1.9 m human.
+
+⸻
+
+47. ORIGINS
+
+Set:
+
+STERLING_BIKE_MASTER
+
+origin around ground level between the wheels.
+
+Front/rear wheel origins:
+
+exact axle centres.
+
+Crank:
+
+crank spindle centre.
+
+Steering:
+
+head-tube steering axis.
+
+Dock:
+
+centre of baseplate at ground level.
+
+Correct pivots are mandatory.
+
+⸻
+
+48. BLOCKOUT FIRST
+
+First create:
+
+sterling_bike_blockout.blend
+
+containing:
+
+-   frame silhouette;
+
+-   wheels;
+
+-   rear panel;
+
+-   basket;
+
+-   handlebars;
+
+-   saddle;
+
+-   basic dock.
+
+Then create a test station with three bikes.
+
+Produce clay renders:
+
+VIEW A
+
+Bike left side.
+
+VIEW B
+
+Bike right side.
+
+VIEW C
+
+Front three-quarter view highlighting basket/handlebars.
+
+VIEW D
+
+Rear three-quarter view showing rear enclosure/light.
+
+VIEW E
+
+Bike docked in one dock.
+
+VIEW F
+
+Three-bike station.
+
+VIEW G
+
+Same station with middle bike removed, proving that bike and dock are
+independent.
+
+Then STOP for review.
+
+⸻
+
+49. SECOND GEOMETRY PASS
+
+After blockout approval, refine:
+
+-   frame profiles;
+
+-   wheel geometry;
+
+-   tyre profile;
+
+-   spokes;
+
+-   wheel cover;
+
+-   basket;
+
+-   crank;
+
+-   pedals;
+
+-   chain guard;
+
+-   handlebars;
+
+-   saddle;
+
+-   front/rear lights;
+
+-   reflectors;
+
+-   docking hardware;
+
+-   cables;
+
+-   kickstand if included.
+
+Still do not create final textures.
+
+⸻
+
+50. FUNCTIONAL VALIDATION
+
+Before final export, test:
+
+1.  Front wheel rotates correctly.
+
+2.  Rear wheel rotates correctly.
+
+3.  Handlebars steer around correct axis.
+
+4.  Front wheel follows steering hierarchy.
+
+5.  Crank rotates.
+
+6.  Pedals remain correctly positioned.
+
+7.  Bike separates cleanly from dock.
+
+8.  Dock remains complete without bike.
+
+9.  Bike remains complete without dock.
+
+10. Basket is open.
+
+11. Rear and front lights are separately addressable.
+
+12. Bike can be duplicated without broken links.
+
+13. Three bikes can appear without unreasonable scene complexity.
+
+⸻
+
+51. DELIVERABLES
+
+Deliver:
+
+sterling_bike_blockout.blend
+
+sterling_bike.blend
+
+sterling_bike.glb
+
+sterling_dock.glb
+
+sterling_station_reference.blend
+
+optionally:
+
+sterling_station_3dock.glb
+
+but only if the three docks remain logically separate and the bicycles
+are NOT baked into it.
+
+⸻
+
+SUCCESS CRITERION
+
+The bicycle should immediately read as a Manchester-style public shared
+e-bike even without branding or textures.
+
+It should be a fully reusable vehicle asset rather than a static prop.
+
+The docking station should operate as a modular system in which:
+
+-   bikes can appear;
+
+-   bikes can disappear;
+
+-   empty docks still look correct;
+
+-   one bike asset can be reused across the entire game.
+
+The final fictional version should be recognisable as:
+
+STERLING BIKES
+
+rather than Starling Bikes.
+
+There are a couple of choices in there that I think will save you
+headaches later.
+
+The most important is the dock anchor system. Give every dock an Empty
+called SD_BikeDockAnchor and every bike a corresponding SB_DockAnchor.
+Codex can line those up exactly in Blender. Then when your game code
+says “return bike”, you don’t need to work out wheel coordinates or
+manually tweak rotation. You just snap the bicycle’s docking transform
+onto the dock’s anchor.
+
+I’d also make the bike more mechanically separated than most of the
+buildings we’ve been doing. The front wheel, rear wheel,
+handlebars/steering root and crank absolutely should not be joined into
+the main frame. Those are the bits the game will need to animate.
+
+The rear light is also worth taking seriously. Once you have night
+cycling, a little blinking or constant red rear lamp, reflective
+wheel/frame strips and a weak front beam are going to do a lot for
+making the bikes feel like real objects inhabiting your nocturnal city
+rather than merely a movement mechanic.
+
+And the open basket is particularly useful for this game. Because you’re
+already building delivery mechanics, I can see it becoming visually
+functional: the Nice Things bouquet could visibly sit in the basket
+while you’re riding to the recipient, film could be carried there, or
+other delivery objects could occupy it. So I would absolutely prevent
+Codex from making the basket a closed solid block.

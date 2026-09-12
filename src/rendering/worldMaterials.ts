@@ -41,6 +41,11 @@ export type WorldTextureName =
   | 'poster-wall-overhaul'
   | 'window-row-overhaul'
   | 'dreams-photo-overhaul'
+  | 'dreams-cladding-hero'
+  | 'dreams-shutter-hero'
+  | 'dreams-brick-hero'
+  | 'street-detail-atlas'
+  | 'soil-litter-hero'
   | 'coral-photo-overhaul';
 
 const loader = new TextureLoader();

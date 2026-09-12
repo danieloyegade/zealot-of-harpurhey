@@ -1,0 +1,762 @@
+GREEK GYROS, DEANSGATE, MANCHESTER
+
+Untextured game-ready food stand asset for Zealot of Harperhey
+
+Create an accurate, game-ready Blender reconstruction of the Greek Gyros
+food stand in Deansgate, Manchester, using ALL supplied reference
+images.
+
+This asset is for Zealot of Harperhey, a Three.js game.
+
+This is a relatively small environmental asset compared with the larger
+buildings, but it should still feel specific to the real stand rather
+than like a generic food kiosk.
+
+The defining visual features are:
+
+-   rectangular freestanding kiosk form;
+
+-   large blue GREEK GYROS fascia across the top;
+
+-   Greek flag motifs at both ends of the fascia;
+
+-   open serving frontage;
+
+-   horizontal secondary strip beneath the main sign;
+
+-   stainless-steel serving counter;
+
+-   diamond-patterned metal cladding;
+
+-   lower blue front panel;
+
+-   menu/sign panels inside;
+
+-   side wall/openings;
+
+-   flat projecting roof/canopy;
+
+-   bright interior work area.
+
+This pass is primarily GEOMETRY ONLY.
+
+Do not create final photographic textures, food imagery, logos, dirt,
+stickers, menus or detailed kitchen clutter yet.
+
+⸻
+
+1.  REFERENCE STRATEGY
+
+Use all supplied reference images together.
+
+The images show:
+
+-   front elevation;
+
+-   three-quarter side view;
+
+-   nighttime lighting;
+
+-   top fascia;
+
+-   serving opening;
+
+-   counter;
+
+-   lower front panel;
+
+-   side profile;
+
+-   internal equipment arrangement.
+
+Do not reproduce camera distortion from the photographs.
+
+Reconstruct one consistent kiosk.
+
+⸻
+
+2.  OVERALL FORM
+
+Build the stand as a compact rectangular mobile/permanent kiosk.
+
+It should read approximately as:
+
+-   wide;
+
+-   relatively shallow;
+
+-   single-storey;
+
+-   flat-roofed;
+
+-   open across most of the customer-facing front.
+
+Do not make it oversized.
+
+Use people in the references to estimate realistic scale.
+
+1 Blender unit = 1 metre
+
+Z = vertical
+
+⸻
+
+3.  MASTER HIERARCHY
+
+Create:
+
+GREEK_GYROS_MASTER
+
+Suggested object structure:
+
+GG_KioskShell
+
+GG_RoofCanopy
+
+GG_MainFascia
+
+GG_SecondaryFascia
+
+GG_FrontOpening
+
+GG_ServiceCounter
+
+GG_LowerFront
+
+GG_SidePanels
+
+GG_MetalCladding
+
+GG_InteriorShell
+
+GG_KitchenProps
+
+GG_SignageSurfaces
+
+GG_LightingFixtures
+
+GG_InteractionAnchors
+
+Do not leave objects named Cube.001, Cube.002, etc.
+
+⸻
+
+4.  MAIN FASCIA
+
+The large upper fascia is one of the most recognisable parts of the
+asset.
+
+Model:
+
+-   long rectangular sign box;
+
+-   shallow projecting depth;
+
+-   front face;
+
+-   side returns;
+
+-   bottom edge;
+
+-   mounting to kiosk frame.
+
+Create:
+
+GG_MainSign
+
+Reserve a clean signage surface for later texturing.
+
+The final signage should later read:
+
+GREEK GYROS
+
+with Greek flag motifs at both ends.
+
+Do not bake the wording into the wall geometry unless using shallow
+separate text objects.
+
+⸻
+
+5.  SECONDARY STRIP
+
+Below the main fascia is a narrower horizontal strip.
+
+Preserve its physical position and dimensions.
+
+This strip later carries wording such as:
+
+CHICKEN • PORK • HALLOUMI • ON WRAPS OR BOXES
+
+Create:
+
+GG_MenuStrip
+
+Do not texture the wording yet.
+
+⸻
+
+6.  ROOF / CANOPY
+
+The kiosk has a broad flat roof/canopy that projects slightly beyond the
+serving frontage.
+
+Model:
+
+-   roof slab;
+
+-   shallow fascia thickness;
+
+-   front projection;
+
+-   side overhangs.
+
+Do not make the roof paper-thin.
+
+⸻
+
+7.  FRONT SERVICE OPENING
+
+Most of the front facade is an open serving bay.
+
+Model the opening as real architectural space.
+
+Include:
+
+-   top header;
+
+-   side jambs;
+
+-   lower counter;
+
+-   interior depth.
+
+Do not fake the open frontage with a black rectangle.
+
+⸻
+
+8.  SERVICE COUNTER
+
+The counter is a major visual element.
+
+Model:
+
+-   long stainless-style counter;
+
+-   horizontal worktop;
+
+-   front lip;
+
+-   lower front support;
+
+-   realistic thickness.
+
+Create:
+
+GG_ServiceCounter
+
+This should remain separate enough that materials can later distinguish
+metal from the rest of the kiosk.
+
+⸻
+
+9.  DIAMOND-PLATE / METAL CLADDING
+
+The stand uses metallic patterned cladding around the working area.
+
+Do not model every individual diamond.
+
+Create clean flat surfaces suitable for a later diamond-plate normal
+map/material.
+
+Use geometry only for major panel seams and framing.
+
+Suggested material placeholder:
+
+MAT_GG_MetalCladding_PLACEHOLDER
+
+⸻
+
+10. LOWER FRONT PANEL
+
+Below the service counter is a large blue panel spanning most of the
+stand.
+
+Model it as a separate inset/panel surface.
+
+Create:
+
+GG_LowerFrontPanel
+
+This will later carry:
+
+GREEK GYROS
+
+social icons and food imagery.
+
+Do not texture these yet.
+
+⸻
+
+11. FRONT FRAME
+
+Model the structural frame around the customer opening.
+
+Include:
+
+-   vertical uprights;
+
+-   horizontal header;
+
+-   corner posts;
+
+-   lower frame.
+
+Keep it relatively slim and utilitarian.
+
+⸻
+
+12. SIDE WALL
+
+The side profile is visible in the references.
+
+Model enough side depth to make the kiosk convincing from three-quarter
+angles.
+
+Include:
+
+-   side wall;
+
+-   side trim;
+
+-   rear return;
+
+-   roof overhang.
+
+Do not build only a front facade.
+
+⸻
+
+13. SIDE OPENING / SERVICE AREA
+
+Where visible, preserve any side access opening or recessed area.
+
+Keep it simple but physically plausible.
+
+Do not invent complex unseen architecture.
+
+⸻
+
+14. INTERIOR SHELL
+
+Build a simple interior volume.
+
+Include:
+
+-   floor;
+
+-   ceiling;
+
+-   rear wall;
+
+-   side walls;
+
+-   stainless preparation surfaces.
+
+The interior should have actual depth.
+
+Do not leave an empty black void behind the counter.
+
+⸻
+
+15. KITCHEN EQUIPMENT
+
+For this pass, include only broad forms that can be seen from outside.
+
+Possible low-detail props:
+
+GG_GrillUnit
+
+GG_PrepCounter
+
+GG_RefrigeratedCounter
+
+GG_Register
+
+GG_Shelf
+
+GG_CondimentArea
+
+Do not spend large amounts of geometry on hidden appliances.
+
+⸻
+
+16. REGISTER AREA
+
+One side of the serving frontage includes the ordering/payment area.
+
+Create:
+
+GG_RegisterCounter
+
+with a simplified till/POS block.
+
+This will help the kiosk read correctly even before detailed textures.
+
+⸻
+
+17. MENU BOARDS
+
+The interior contains vertical menu boards/sign panels.
+
+Create simple flat panels:
+
+GG_MenuBoard_A
+
+GG_MenuBoard_B
+
+GG_MenuBoard_C
+
+Do not texture food photographs or prices yet.
+
+⸻
+
+18. LIGHTING FIXTURES
+
+The nighttime reference is important.
+
+Model the visible lighting hardware, but do not bake the final lighting.
+
+Include:
+
+-   linear/strip fixtures under the fascia or ceiling;
+
+-   simple interior ceiling lights.
+
+Create:
+
+GG_LightFixture_A
+
+GG_LightFixture_B
+
+The eventual game version should be capable of glowing strongly at
+night.
+
+⸻
+
+19. NIGHTTIME READINESS
+
+Prepare the kiosk so that later materials and game lighting can
+reproduce the nighttime look:
+
+-   bright white interior;
+
+-   illuminated signage;
+
+-   strong light spill through the open front;
+
+-   reflective metal counter.
+
+Do not fake this with emissive textures during the geometry pass.
+
+⸻
+
+20. SIGNAGE SURFACES
+
+Create clean surfaces for later artwork:
+
+GG_MainSignSurface
+
+GG_MenuStripSurface
+
+GG_LowerFrontSignSurface
+
+GG_SideSignSurface
+
+Do not merge signage into surrounding geometry.
+
+⸻
+
+21. GREEK FLAG MOTIFS
+
+The Greek flag motifs at either end of the main sign are important to
+the identity.
+
+Do not model every stripe as geometry.
+
+Reserve clearly defined rectangular sign areas at both ends for later
+texture application.
+
+⸻
+
+22. CUSTOMER INTERACTION
+
+This is likely to be an interactive food vendor in-game.
+
+Create:
+
+GG_OrderAnchor
+
+in front of the service counter.
+
+Create:
+
+GG_VendorAnchor
+
+behind the counter.
+
+Create:
+
+GG_QueueAnchor_01
+
+GG_QueueAnchor_02
+
+GG_QueueAnchor_03
+
+These should be empties only.
+
+⸻
+
+23. COLLISION
+
+Keep collision simple.
+
+The player should collide with:
+
+-   kiosk outer shell;
+
+-   counter;
+
+-   side walls.
+
+The open serving frontage should remain open.
+
+Do not generate excessively complex collision geometry.
+
+⸻
+
+24. PLACEABLE WORLD ASSET
+
+This kiosk must work as a standalone environmental prop that can be
+positioned anywhere on the map.
+
+Do not permanently include:
+
+-   surrounding buildings;
+
+-   park;
+
+-   trees;
+
+-   people;
+
+-   bollards;
+
+-   pavement;
+
+-   queues;
+
+-   neighbouring signage.
+
+The export should contain only the Greek Gyros stand and its internal
+props.
+
+⸻
+
+25. ORIGIN
+
+Set the master origin at ground level, approximately centred along the
+back edge or geometric centre of the kiosk.
+
+The asset should be easy to snap onto pavement geometry in Three.js.
+
+⸻
+
+26. PLACEHOLDER MATERIALS
+
+Use simple placeholder materials only:
+
+MAT_GG_Blue_PLACEHOLDER
+
+MAT_GG_White_PLACEHOLDER
+
+MAT_GG_Metal_PLACEHOLDER
+
+MAT_GG_DarkMetal_PLACEHOLDER
+
+MAT_GG_Glass_PLACEHOLDER
+
+Do not attempt final realism yet.
+
+⸻
+
+27. POLYGON PRIORITY
+
+Spend geometry on:
+
+-   silhouette;
+
+-   counter;
+
+-   canopy;
+
+-   sign boxes;
+
+-   kiosk depth;
+
+-   framing;
+
+-   visible interior forms.
+
+Do not spend geometry on:
+
+-   food;
+
+-   tiny bolts;
+
+-   menu lettering;
+
+-   diamond-plate pattern;
+
+-   fine scratches;
+
+-   stickers.
+
+⸻
+
+28. MODULARITY
+
+Keep important elements separate so they can be edited later.
+
+Especially:
+
+GG_MainSign
+
+GG_ServiceCounter
+
+GG_MenuBoards
+
+GG_LightingFixtures
+
+GG_LowerFrontPanel
+
+This will make later texture and signage revisions easier.
+
+⸻
+
+29. BLOCKOUT FIRST
+
+Create:
+
+greek_gyros_blockout.blend
+
+First model only:
+
+-   main kiosk volume;
+
+-   canopy;
+
+-   fascia;
+
+-   serving opening;
+
+-   counter;
+
+-   lower front panel;
+
+-   side depth.
+
+Render:
+
+VIEW A
+
+Straight-on front.
+
+VIEW B
+
+Three-quarter front-left or front-right.
+
+VIEW C
+
+Side view.
+
+VIEW D
+
+Eye-level customer view at the counter.
+
+Then STOP for review.
+
+⸻
+
+30. SECOND PASS
+
+After blockout approval, add:
+
+-   vent/panel divisions;
+
+-   interior counters;
+
+-   menu boards;
+
+-   lighting fixtures;
+
+-   register;
+
+-   structural framing;
+
+-   signage mounting details.
+
+Do not proceed into final textures unless explicitly requested.
+
+⸻
+
+31. FINAL EXPORT
+
+Deliver:
+
+greek_gyros.blend
+
+greek_gyros.glb
+
+Before export:
+
+-   apply transforms;
+
+-   check normals;
+
+-   remove reference planes;
+
+-   remove temporary cameras;
+
+-   preserve object names;
+
+-   remove unused materials;
+
+-   test GLB reimport;
+
+-   ensure no surrounding environment is accidentally included.
+
+⸻
+
+SUCCESS CRITERION
+
+The untextured model should immediately read as a compact Manchester
+street-food kiosk rather than a generic rectangular booth.
+
+The following features should be clearly recognisable even without
+textures:
+
+-   large projecting top fascia;
+
+-   open front;
+
+-   broad service counter;
+
+-   lower front sign panel;
+
+-   horizontal secondary fascia;
+
+-   shallow flat canopy;
+
+-   metallic food-stand construction;
+
+visible internal work area.

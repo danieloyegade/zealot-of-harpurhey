@@ -1,6 +1,6 @@
 # World and geographic naming
 
-Zealot of Harperhay uses fictional collage geography assembled from real places and photographs around Manchester and North-West England.
+Zealot of Harperhey uses fictional collage geography assembled from real places and photographs around Manchester and North-West England.
 
 Real street names may be retained where they have a meaningful relationship to a transplanted real landmark, even though the surrounding geography is fictional.
 

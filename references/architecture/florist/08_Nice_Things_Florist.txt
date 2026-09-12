@@ -1,0 +1,1134 @@
+NICE THINGS, OLDHAM STREET, MANCHESTER
+
+Florist / plant shop architectural asset for Zealot of Harperhey
+
+Create an accurate, game-ready Blender reconstruction of Nice Things on
+Oldham Street, Manchester, using ALL supplied reference photographs.
+
+This asset is for Zealot of Harperhey, a Three.js game.
+
+Nice Things is a hero gameplay location because the player’s first
+flower delivery begins here.
+
+This task is GEOMETRY ONLY.
+
+Do NOT create final textures, decals, logos, plants, flowers,
+handwritten signs, graffiti, stickers, dirt, final lighting or final
+materials yet.
+
+The purpose of this pass is to reconstruct:
+
+-   the Nice Things storefront;
+
+-   the relevant historic building facade above it;
+
+-   entrance;
+
+-   shop glazing;
+
+-   architectural detailing;
+
+-   enough interior volume for later player access;
+
+-   gameplay interaction points.
+
+The untextured clay model should already resemble the real location
+before any pink materials, branding, plants or flowers are added.
+
+⸻
+
+1.  IMPORTANT GAMEPLAY CONTEXT
+
+Nice Things is the florist used for an early delivery mission.
+
+The intended gameplay flow will eventually be approximately:
+
+PLAYER RECEIVES FLOWER DELIVERY JOB
+
+↓
+
+Player travels to Nice Things.
+
+↓
+
+Player enters or interacts with the shop.
+
+↓
+
+Player receives/picks up flowers.
+
+↓
+
+Flowers become a carried delivery item.
+
+↓
+
+Player delivers them to the recipient.
+
+Do NOT implement this logic in Blender.
+
+However, the architecture must support:
+
+-   obvious entrance;
+
+-   player navigation;
+
+-   interaction near the counter;
+
+-   flower pickup point;
+
+-   shopkeeper NPC position;
+
+-   future interior exploration.
+
+⸻
+
+2.  REFERENCE INTERPRETATION
+
+Study ALL supplied photographs before modelling.
+
+The exterior references show:
+
+-   Nice Things straight-on;
+
+-   wider Oldham Street context;
+
+-   low-angle views showing several upper floors;
+
+-   relationship to the Central Buildings entrance;
+
+-   large historic stone facade;
+
+-   Nice Things’ distinctive pink shopfront;
+
+-   neighbouring shop boundaries;
+
+-   windows;
+
+-   upper cornices;
+
+-   recessed doorway;
+
+-   shop frontage proportions.
+
+Use the photographs together.
+
+Do not blindly copy Google Street View perspective distortion.
+
+Infer a coherent, rectilinear building.
+
+⸻
+
+3.  SCOPE
+
+Model:
+
+Nice Things
+
+-   full shopfront;
+
+-   entrance;
+
+-   display window;
+
+-   facade surround;
+
+-   sign zone;
+
+-   lower plinth;
+
+-   glazing;
+
+-   basic interior shell.
+
+Historic building above
+
+-   enough of the upper facade to establish the correct building
+    proportions;
+
+-   multiple upper storeys visible in the references;
+
+-   stone wall planes;
+
+-   window bays;
+
+-   projecting stone surrounds;
+
+-   horizontal courses;
+
+-   cornice/parapet silhouette.
+
+Adjacent architectural context
+
+Include the immediately adjacent Central Buildings entrance structure if
+necessary to reproduce the correct composition and spacing.
+
+Do not build the entire Oldham Street block unless required for this
+asset.
+
+⸻
+
+4.  NICE THINGS STOREFRONT
+
+The shopfront is strongly identifiable by its broad pink frontage.
+
+Reconstruct its geometry accurately.
+
+Model:
+
+-   main pink facade plane;
+
+-   shallow depth/projection from the historic building;
+
+-   sign area;
+
+-   large display window;
+
+-   shop entrance;
+
+-   framing;
+
+-   lower window base/plinth;
+
+-   side jambs;
+
+-   structural divisions;
+
+-   recessed doorway depth;
+
+-   fascia geometry.
+
+Do NOT rely on a single pink rectangle placed onto the front of the
+building.
+
+The shopfront should have believable construction depth.
+
+⸻
+
+5.  NICE THINGS LOGO AREA
+
+The raised nice things. branding is centred prominently on the
+shopfront.
+
+At this stage, create either:
+
+NT_LogoMount
+
+or
+
+NT_LogoAnchor
+
+positioned precisely where the logo belongs.
+
+Do NOT create the final typography yet unless extremely simple low-depth
+placeholder geometry is useful for judging scale.
+
+The later signage pass must reproduce the unusual Nice Things lettering
+rather than replacing it with generic text.
+
+⸻
+
+6.  PINK SHOPFRONT PANEL GEOMETRY
+
+The shopfront surface contains subtle diagonal divisions / panel joints
+visible in the references.
+
+These should be preserved only where they represent real physical panel
+construction.
+
+If they are shallow seams:
+
+-   create minimal inset geometry or leave them for a normal/decal map.
+
+Do not over-extrude them.
+
+The surface should remain elegant and relatively flat.
+
+⸻
+
+7.  LARGE DISPLAY WINDOW
+
+The main shop window is important both visually and for later interior
+visibility.
+
+Model:
+
+-   outer opening;
+
+-   structural frame;
+
+-   glass plane;
+
+-   sill/display ledge;
+
+-   lower facade/plinth;
+
+-   recess depth;
+
+-   interior display zone behind glass.
+
+Keep the glass as a separate object:
+
+NT_Glass_MainDisplay
+
+Do not put images of plants onto the glass.
+
+The plants will later exist as real interior props behind transparent
+glass.
+
+⸻
+
+8.  SHOP ENTRANCE
+
+Model the entrance accurately.
+
+Include:
+
+-   doorway opening;
+
+-   recessed entrance;
+
+-   frame;
+
+-   door;
+
+-   glazing where applicable;
+
+-   threshold;
+
+-   handle where visually significant;
+
+-   relation to shop window.
+
+Keep door geometry separate.
+
+Suggested:
+
+NT_Entrance
+
+NT_Door
+
+NT_DoorFrame
+
+NT_EntranceTriggerAnchor
+
+Add an Empty:
+
+NT_EntranceTriggerAnchor
+
+immediately outside the door.
+
+⸻
+
+9.  BUILDING ABOVE NICE THINGS
+
+Do not stop modelling at the top of the pink shopfront.
+
+The historic upper building is important to the street composition.
+
+Reconstruct:
+
+-   pale sandstone/stone facade;
+
+-   vertical structural bays;
+
+-   repeated upper windows;
+
+-   substantial window surrounds;
+
+-   projecting lintels/sills;
+
+-   horizontal string courses;
+
+-   upper cornice;
+
+-   parapet/roofline visible in references.
+
+Maintain accurate storey heights.
+
+This should feel like a substantial older Manchester
+commercial/institutional building with a contemporary shop inserted into
+its ground floor.
+
+⸻
+
+10. UPPER WINDOWS
+
+Create modular window types.
+
+Include:
+
+-   recessed openings;
+
+-   frame;
+
+-   glazing;
+
+-   major mullions;
+
+-   projecting sill;
+
+-   surrounding stone frame.
+
+Suggested:
+
+NT_UpperWindow_TypeA
+
+NT_UpperWindow_TypeB
+
+Use instances where appropriate.
+
+Avoid independently over-modelling every identical window.
+
+⸻
+
+11. STONE FACADE DETAIL
+
+Use geometry for large architectural forms:
+
+-   projecting window surrounds;
+
+-   horizontal courses;
+
+-   pilaster-like vertical divisions;
+
+-   cornices;
+
+-   major lintels;
+
+-   balcony/entrance details.
+
+Leave subtle:
+
+-   stone grain;
+
+-   dirt;
+
+-   erosion;
+
+-   staining;
+
+for later textures.
+
+Do not make the historic building perfectly smooth.
+
+But also do not model microscopic stone damage.
+
+⸻
+
+12. CENTRAL BUILDINGS ENTRANCE
+
+Immediately beside Nice Things is the ornate Central Buildings entrance.
+
+This is useful both compositionally and architecturally.
+
+If included within this asset, reconstruct enough of it to preserve:
+
+-   large recessed doorway;
+
+-   heavy stone surround;
+
+-   projecting cornice;
+
+-   balcony/balustrade;
+
+-   large arched opening above;
+
+-   radial fanlight/window divisions;
+
+-   decorative carved architectural bands.
+
+This should remain subordinate to Nice Things from a gameplay
+perspective, but it is important for the street’s visual accuracy.
+
+Suggested collection:
+
+NT_CentralBuildings_Context
+
+⸻
+
+13. CENTRAL BUILDINGS ARCH / BALCONY
+
+If modelling the adjacent entrance, pay particular attention to the
+large semicircular arch and projecting balcony structure.
+
+These affect silhouette and should be actual geometry.
+
+Model:
+
+-   arched recess;
+
+-   radial fanlight;
+
+-   projecting balcony slab;
+
+-   small balustrade;
+
+-   supporting cornice/moulding.
+
+Do not fake these with flat textures.
+
+⸻
+
+14. NICE THINGS INTERIOR
+
+Nice Things is intended eventually to be an enterable location.
+
+Build a proper but simplified ground-floor interior shell.
+
+Include:
+
+-   floor;
+
+-   ceiling;
+
+-   walls;
+
+-   shop depth;
+
+-   main circulation path;
+
+-   counter/service zone;
+
+-   major shelving zones;
+
+-   shop-window display zone.
+
+Do not fill it with flowers and plants during this geometry pass.
+
+⸻
+
+15. INTERIOR REFERENCES
+
+If supplied interior reference photographs are available, use them as
+the authoritative guide to:
+
+-   room proportions;
+
+-   shelving placement;
+
+-   counter position;
+
+-   display furniture;
+
+-   wall shelves;
+
+-   plant stands;
+
+-   ceiling treatment.
+
+If an area is not visible in the references:
+
+do not invent elaborate architecture.
+
+Use the simplest plausible continuation necessary for navigation.
+
+⸻
+
+16. FLORIST DISPLAY FURNITURE
+
+Nice Things will eventually contain many plants and flowers.
+
+During this stage, model only the major display structures.
+
+Potential reusable modules:
+
+NT_DisplayShelf_Wall
+
+NT_DisplayShelf_Low
+
+NT_PlantTable
+
+NT_PotShelf
+
+NT_DisplayPlinth
+
+NT_Counter
+
+Keep all plants and flowers as separate future prop assets.
+
+⸻
+
+17. COUNTER
+
+Create a believable shop counter based on interior references where
+available.
+
+Keep sufficient space behind it for an NPC florist.
+
+Add:
+
+NT_ShopkeeperAnchor
+
+NT_CustomerInteractionAnchor
+
+The player should be able to stand comfortably in front of the counter.
+
+⸻
+
+18. FLOWER PICKUP GAMEPLAY ANCHOR
+
+Add a dedicated Empty:
+
+NT_FlowerPickupAnchor
+
+positioned at a logical location near the counter or designated pickup
+area.
+
+Later, the flower-delivery mission can spawn or attach the bouquet here.
+
+Do not model the mission bouquet as part of the architecture.
+
+⸻
+
+19. FLOWERS AND PLANTS MUST REMAIN SEPARATE
+
+Do NOT merge plant geometry into:
+
+-   shelves;
+
+-   window;
+
+-   shopfront;
+
+-   counter.
+
+Plants should eventually exist as reusable independent assets.
+
+Suggested future structure:
+
+nice_things_architecture.glb
+
+nice_things_furniture.glb
+
+nice_things_plants.glb
+
+nice_things_delivery_bouquet.glb
+
+This separation is important for gameplay and optimisation.
+
+⸻
+
+20. WINDOW VISIBILITY
+
+The player should be able to look through the shop window and see actual
+objects inside.
+
+Therefore:
+
+-   use transparent glass;
+
+-   construct real depth behind the window;
+
+-   do NOT use a photograph of the Nice Things interior pasted onto the
+    glazing.
+
+This rule is mandatory.
+
+⸻
+
+21. FUTURE FLOWER DELIVERY PROP
+
+Do not create the final delivery flowers during this pass.
+
+However, keep the architecture compatible with a separate bouquet or
+flower bundle carried by the player.
+
+The mission prop must eventually remain fully independent from the shop.
+
+⸻
+
+22. NIGHTTIME COMPATIBILITY
+
+Build the asset so the same geometry works convincingly during:
+
+-   daytime;
+
+-   evening;
+
+-   night.
+
+Keep glass and interior surfaces separated so later interior lighting
+can illuminate the street naturally.
+
+Do not bake daytime lighting into the asset.
+
+⸻
+
+23. EXTERIOR LIGHTING FIXTURES
+
+Model only clear permanent physical fixtures such as:
+
+-   facade lights;
+
+-   security/alarm boxes;
+
+-   major sign illumination housings.
+
+Do not create final lights yet.
+
+Empty lighting anchors may be added where useful:
+
+NT_Light_Window
+
+NT_Light_Entrance
+
+NT_Light_Interior
+
+⸻
+
+24. LOWER PLINTH / SHOP BASE
+
+Carefully reproduce the physical base beneath the shop window.
+
+Include:
+
+-   projection/recess;
+
+-   sill;
+
+-   facade base.
+
+The shop should not appear to terminate as a glass sheet directly at
+pavement level.
+
+⸻
+
+25. PAVEMENT CONNECTION
+
+Establish accurate ground-floor height relative to pavement.
+
+Include only a minimal pavement strip if needed for:
+
+-   threshold;
+
+-   scale;
+
+-   clay renders.
+
+Do not permanently include Oldham Street road geometry within this GLB
+unless requested separately.
+
+⸻
+
+26. EXCLUDE STREET OBJECTS
+
+Do NOT permanently include:
+
+-   vans;
+
+-   pedestrians;
+
+-   buses;
+
+-   bollards;
+
+-   bike stands;
+
+-   Google Maps UI;
+
+-   Google Street View navigation markers;
+
+-   traffic signs;
+
+-   temporary construction objects.
+
+These belong to the larger environment.
+
+⸻
+
+27. PLACEHOLDER MATERIAL REGIONS
+
+Use only simple flat placeholder materials:
+
+MAT_NT_Stone_PLACEHOLDER
+
+MAT_NT_PinkFacade_PLACEHOLDER
+
+MAT_NT_Glass_PLACEHOLDER
+
+MAT_NT_WindowFrames_PLACEHOLDER
+
+MAT_NT_InteriorWall_PLACEHOLDER
+
+MAT_NT_Floor_PLACEHOLDER
+
+MAT_NT_Furniture_PLACEHOLDER
+
+No final textures.
+
+No plant materials.
+
+No final pink surface treatment.
+
+⸻
+
+28. SIGNAGE RESERVED FOR LATER
+
+Do not finalise:
+
+-   nice things. logo;
+
+-   window graphics;
+
+-   opening-hours information;
+
+-   A-frame artwork;
+
+-   stickers;
+
+-   chalk writing;
+
+-   temporary promotional signs.
+
+Preserve appropriate surfaces for later decal placement.
+
+⸻
+
+29. THREE.JS PERFORMANCE
+
+This will be viewed at both street level and close range.
+
+Use geometry for:
+
+-   facade depth;
+
+-   door;
+
+-   window recesses;
+
+-   stone surrounds;
+
+-   cornices;
+
+-   major mouldings;
+
+-   historic arch;
+
+-   counter;
+
+-   display furniture.
+
+Use later textures/normal maps for:
+
+-   stone grain;
+
+-   wall staining;
+
+-   scratches;
+
+-   paint wear;
+
+-   small seams;
+
+-   logos;
+
+-   printed graphics.
+
+Use instancing for repeated upper windows and repeated interior
+furniture where appropriate.
+
+⸻
+
+30. AVOID THE “GAME SHOP” LOOK
+
+Do not simplify the storefront into:
+
+-   one rectangular pink box;
+
+-   one large transparent window;
+
+-   generic square door;
+
+-   generic shelves.
+
+Preserve the exact relationship between:
+
+historic monumental stone building
+
+and
+
+small contemporary pink florist inserted into its ground floor.
+
+That contrast is an important part of the visual identity.
+
+⸻
+
+31. REAL-WORLD SCALE
+
+Work at real-world scale.
+
+1 Blender unit = 1 metre
+
+Z = vertical
+
+Ground level = Z 0
+
+Infer scale using:
+
+-   entrance door;
+
+-   pavement;
+
+-   people in references;
+
+-   upper windows;
+
+-   shop counter/shelves where visible.
+
+Apply transforms before export.
+
+⸻
+
+32. OBJECT ORGANISATION
+
+Suggested hierarchy:
+
+NICE_THINGS_MASTER
+
+NT_BuildingShell
+
+NT_HistoricUpperFacade
+
+NT_StoneDetails
+
+NT_UpperWindows
+
+NT_Shopfront
+
+NT_PinkFacade
+
+NT_LogoMount
+
+NT_MainWindow
+
+NT_Entrance
+
+NT_InteriorShell
+
+NT_Counter
+
+NT_DisplayFurniture
+
+NT_CentralBuildings_Context
+
+NT_InteractionAnchors
+
+Avoid default names such as:
+
+Cube.001
+
+Plane.018
+
+etc.
+
+⸻
+
+33. INTERACTION ANCHORS
+
+Include at minimum:
+
+NT_EntranceTriggerAnchor
+
+NT_ShopkeeperAnchor
+
+NT_CustomerInteractionAnchor
+
+NT_FlowerPickupAnchor
+
+Do not implement logic.
+
+These are only spatial references for Three.js.
+
+⸻
+
+34. BLOCKOUT FIRST
+
+Do NOT build the final detailed model immediately.
+
+First create:
+
+nice_things_blockout.blend
+
+The blockout should contain:
+
+-   building facade width;
+
+-   upper floors;
+
+-   Nice Things storefront;
+
+-   entrance;
+
+-   display window;
+
+-   Central Buildings entrance mass if included;
+
+-   ground-floor interior volume;
+
+-   approximate counter;
+
+-   main display areas.
+
+Do not add detailed plants or furniture yet.
+
+Produce clay renders:
+
+VIEW A
+
+Straight-on street-level view corresponding to the clearest facade
+reference.
+
+VIEW B
+
+Low-angle view showing Nice Things and the upper building.
+
+VIEW C
+
+Three-quarter view from the left showing the relationship to Central
+Buildings.
+
+VIEW D
+
+Three-quarter view from the right.
+
+VIEW E
+
+Player-height view looking through the Nice Things window.
+
+VIEW F
+
+Simple interior view looking toward the storefront.
+
+Then STOP for review.
+
+⸻
+
+35. SECOND GEOMETRY PASS
+
+Only after blockout approval, add:
+
+-   accurate stone window surrounds;
+
+-   cornices;
+
+-   upper facade courses;
+
+-   Nice Things shopfront panel geometry;
+
+-   accurate entrance;
+
+-   display-window frame;
+
+-   historic arch/balcony where included;
+
+-   simplified counter;
+
+-   display shelving;
+
+-   interaction anchors.
+
+Still do NOT texture.
+
+⸻
+
+36. FINAL VALIDATION
+
+Compare the clay model against every reference image.
+
+Check:
+
+1.  Nice Things shopfront width.
+
+2.  Shopfront height.
+
+3.  Main display-window proportions.
+
+4.  Door position.
+
+5.  Pink facade area.
+
+6.  Logo location.
+
+7.  Ground floor to upper-floor relationship.
+
+8.  Upper window rhythm.
+
+9.  Historic stone vertical bays.
+
+10. Cornice positions.
+
+11. Central Buildings arch scale if included.
+
+12. Total building height.
+
+13. Interior scale.
+
+14. Player circulation.
+
+15. Sightline from pavement into shop.
+
+Look particularly for:
+
+-   oversized shopfront;
+
+-   incorrect upper-storey heights;
+
+-   overly chunky window frames;
+
+-   toy-like stonework;
+
+-   generic florist architecture;
+
+-   perfectly flat historic facade;
+
+-   a shop interior that is visibly too shallow.
+
+⸻
+
+37. DELIVERABLES
+
+Deliver:
+
+nice_things_blockout.blend
+
+nice_things.blend
+
+nice_things.glb
+
+optionally later:
+
+nice_things_furniture.glb
+
+nice_things_plants.glb
+
+nice_things_delivery_bouquet.glb
+
+Before final export:
+
+-   apply transforms;
+
+-   verify normals;
+
+-   verify real-world scale;
+
+-   remove test geometry;
+
+-   remove unnecessary lights/cameras;
+
+-   retain interaction anchors;
+
+-   test GLB import.
+
+⸻
+
+SUCCESS CRITERION
+
+The untextured model must already read as the specific Nice Things
+location on Oldham Street through its narrow pink shopfront, glazing,
+entrance and relationship to the much larger historic stone building
+around it.
+
+The later pink materials, nice things. branding, plants and flowers
+should enhance an already accurate reconstruction rather than being
+required to make it recognisable.

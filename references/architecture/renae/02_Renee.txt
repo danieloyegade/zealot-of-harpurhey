@@ -1,0 +1,1014 @@
+RENAE
+
+RENEE, 45-47 THOMAS STREET, NORTHERN QUARTER, MANCHESTER
+
+Untextured Blender reconstruction for Zealot of Harperhey
+
+Create an accurate, game-ready Blender reconstruction of Renee, 45-47
+Thomas Street, Northern Quarter, Manchester, using ALL supplied
+reference images.
+
+This asset is for Zealot of Harperhey, a Three.js game.
+
+This task is GEOMETRY ONLY.
+
+Do not create final textures, decals, logos, graffiti, posters, emissive
+materials or lighting yet.
+
+The goal is to reconstruct the building exterior and the ground-floor
+Renee interior accurately enough that the model is recognisable in plain
+clay materials.
+
+⸻
+
+1.  IMPORTANT TEMPORAL REFERENCE RULE
+
+The supplied images show the building at more than one stage.
+
+Some exterior photographs were taken before the Renee signage had been
+installed.
+
+For example, the image showing “45-47 THOMAS STREET” on the black fascia
+is still the correct architectural location and facade for Renee, but
+the final game asset should represent the Renee-era version of the
+building.
+
+Therefore:
+
+ARCHITECTURE AND PROPORTIONS should be derived from all exterior
+references, including the earlier pre-signage photographs.
+
+FINAL SIGNAGE POSITION AND BRANDING LAYOUT should be derived from the
+photographs that actually show Renee branding.
+
+At this geometry stage, do not create the actual logo as a texture or
+mesh unless a physical sign structure projects from the facade.
+
+Reserve clean surfaces for the later Renee signage.
+
+⸻
+
+2.  SCOPE
+
+Model:
+
+street-facing ground-floor Renee facade;
+
+relevant upper facade above Renee;
+
+entrance;
+
+windows/glazing;
+
+ground-floor interior;
+
+bar;
+
+fixed seating;
+
+record shelving;
+
+major acoustic ceiling features;
+
+structural columns;
+
+wall panelling;
+
+permanent furniture and architectural fixtures.
+
+For now, DO NOT model the upstairs interior.
+
+The upper exterior can still be modelled, but the upstairs should remain
+a simplified closed volume for later development.
+
+⸻
+
+3.  REFERENCE INTERPRETATION
+
+Cross-reference all supplied images before modelling.
+
+The exterior photographs provide information about:
+
+total frontage width;
+
+entrance position;
+
+black fascia proportions;
+
+shopfront depth;
+
+upper-storey brick facade;
+
+window rhythm;
+
+relationship to neighbouring units;
+
+height of the ground floor.
+
+The interior photographs provide information about:
+
+floor plan;
+
+bar position;
+
+timber shelving;
+
+central structural columns;
+
+acoustic ceiling panels;
+
+globe pendant lights;
+
+booth seating;
+
+table layout;
+
+wall finishes;
+
+circulation through the room;
+
+relationship between entrance, windows and bar.
+
+Do not reproduce photographic perspective distortion as geometry.
+
+Infer the most plausible coherent three-dimensional layout from the
+multiple viewpoints.
+
+⸻
+
+4.  EXTERIOR BLOCKOUT
+
+Build the exterior massing first.
+
+The facade should include:
+
+red/brown brick upper floors;
+
+regular rectangular upper windows;
+
+black horizontal ground-floor fascia;
+
+recessed entrance area;
+
+large glazed frontage;
+
+shutter/opening zones where visible;
+
+structural brick piers between units;
+
+fascia depth;
+
+parapet/roofline where visible.
+
+Do not model individual bricks.
+
+Brick will be represented by PBR materials later.
+
+⸻
+
+5.  RENEE SHOPFRONT
+
+The ground-floor frontage should not be treated as a flat plane.
+
+Model:
+
+black fascia with actual depth;
+
+lower projecting lip/band;
+
+recessed glazing;
+
+entrance opening;
+
+door frame;
+
+large front window openings;
+
+mullions;
+
+sill/plinth where visible;
+
+side returns;
+
+structural posts;
+
+transition between facade and interior.
+
+Where the Renee logo appears on the black border/fascia, preserve a
+clean sign area for later decal/material placement.
+
+Do not create the Renee lettering yet.
+
+⸻
+
+6.  ENTRANCE
+
+The entrance is a player-accessible area and must work at human scale.
+
+Model:
+
+doorway opening;
+
+frame;
+
+door;
+
+glazing;
+
+threshold;
+
+depth of the reveal;
+
+interior transition.
+
+Keep the door as a separate object.
+
+Suggested names:
+
+REN_Entrance
+
+REN_Door
+
+REN_DoorFrame
+
+REN_EntranceTriggerAnchor
+
+Add an Empty named:
+
+REN_EntranceTriggerAnchor
+
+for later Three.js interaction logic.
+
+⸻
+
+7.  INTERIOR OVERALL LAYOUT
+
+Renee is an enterable location.
+
+Build the ground floor as a real navigable interior rather than as a
+shallow facade shell.
+
+Establish:
+
+floor plane;
+
+ceiling plane;
+
+wall positions;
+
+structural columns;
+
+main bar;
+
+circulation path;
+
+record shelving wall;
+
+seating zones;
+
+booth/banquette areas;
+
+rear door/toilets zone where visible;
+
+entrance relationship.
+
+Keep the overall proportions compact and plausible.
+
+Do not enlarge the space arbitrarily for gameplay.
+
+⸻
+
+8.  BAR
+
+The bar is one of the main hero assets.
+
+Reconstruct:
+
+main bar counter;
+
+customer-facing front;
+
+worktop;
+
+staff-side working volume;
+
+back-bar shelving;
+
+storage areas;
+
+raised areas if visible;
+
+major bottle shelf geometry.
+
+Do not model individual bottles at this stage.
+
+Those should become separate modular props later.
+
+Suggested objects:
+
+REN_Bar_Main
+
+REN_Bar_Back
+
+REN_Bar_Shelving
+
+REN_Bar_Countertop
+
+REN_BartenderAnchor
+
+REN_CustomerBarAnchor
+
+Add Empty objects for likely NPC and customer positions.
+
+⸻
+
+9.  RECORD SHELVING
+
+The wall of vinyl records is a defining visual feature.
+
+Model the shelving itself accurately.
+
+Include:
+
+large timber shelving wall;
+
+vertical divisions;
+
+horizontal shelf divisions;
+
+shelf depth;
+
+lower cabinet/plinth if present;
+
+realistic spacing for records.
+
+Do not model hundreds of vinyl records individually in the main
+architectural GLB.
+
+Instead:
+
+create empty shelf bays;
+
+optionally use one very low-cost placeholder record block for scale
+testing;
+
+remove placeholders before final export.
+
+Later, create modular vinyl-record clusters as separate props.
+
+Suggested:
+
+REN_RecordWall
+
+REN_RecordShelf_Module
+
+⸻
+
+10. ACOUSTIC CEILING
+
+The ceiling is a major architectural feature.
+
+The references show:
+
+dark exposed ceiling;
+
+timber-toned perforated acoustic panels;
+
+long rectangular ceiling rafts;
+
+beams between panels;
+
+pendant globe lights.
+
+Model the large acoustic panels as geometry.
+
+However, do not model every perforation individually.
+
+Use clean panel geometry.
+
+The small holes will later be represented with normal/opacity/material
+detail.
+
+Reconstruct:
+
+panel dimensions;
+
+panel spacing;
+
+suspension depth;
+
+dark gaps between panels;
+
+relationship to structural beams.
+
+This ceiling should produce believable parallax when the player walks
+underneath it.
+
+⸻
+
+11. STRUCTURAL COLUMNS
+
+Multiple exposed columns are visible within the space.
+
+These should be actual geometry.
+
+Accurately establish:
+
+position;
+
+thickness;
+
+relationship to ceiling beams;
+
+relationship to bar and seating.
+
+Avoid perfectly smooth featureless cylinders if the references indicate
+rectangular or irregular structural forms.
+
+⸻
+
+12. PENDANT LIGHTS
+
+The large spherical pendant lights are visually important.
+
+Model the fixture geometry:
+
+sphere;
+
+short suspension cable/rod;
+
+ceiling attachment point.
+
+Keep the geometry efficient.
+
+Do not implement the final emissive material or lighting yet.
+
+Suggested objects:
+
+REN_Pendant_01
+
+REN_Pendant_02
+
+etc.
+
+If possible, use linked instances.
+
+⸻
+
+13. SEATING
+
+Model the major permanent or repeated furniture types, not every
+uniquely positioned chair as bespoke geometry.
+
+Create modular:
+
+wooden dining table;
+
+square/rectangular table;
+
+tall bar table;
+
+wooden chair;
+
+metal-framed stool;
+
+booth/banquette seating;
+
+bench seating.
+
+Use instances where appropriate.
+
+The layout should broadly match the references.
+
+Do not overpopulate the scene at this stage.
+
+The architectural file should remain manageable.
+
+⸻
+
+14. BOOTHS / BANQUETTE SEATING
+
+The references show dark/red upholstered fixed seating along sections of
+the wall.
+
+Model:
+
+continuous banquette base;
+
+backrest;
+
+major seams only if geometrically significant;
+
+relationship to tables.
+
+Avoid dense upholstery geometry.
+
+Surface detail will be textured later.
+
+⸻
+
+15. WALL TREATMENTS
+
+The interior contains a combination of:
+
+dark painted walls;
+
+timber;
+
+concrete/plaster surfaces;
+
+acoustic timber slats/panels.
+
+Model actual depth only where the wall treatment projects significantly.
+
+Do not model paint, grain or roughness.
+
+⸻
+
+16. TOILETS / REAR ZONE
+
+One reference clearly shows a TOILETS door/wall area.
+
+At this stage:
+
+model the doorway;
+
+model the door;
+
+create a short simplified corridor or closed volume behind it.
+
+Do not construct detailed toilet interiors unless required later.
+
+Keep the door separately named:
+
+REN_ToiletsDoor
+
+⸻
+
+17. EXTERIOR TABLES AND BENCHES
+
+The street-facing references show beer-garden style tables/benches
+outside Renee.
+
+These should not be permanently fused into the building mesh.
+
+If created during this task, build one reusable modular picnic-table
+asset:
+
+REN_ExteriorTableBench
+
+It should be easily instanced later.
+
+Do not include pedestrians.
+
+Do not permanently bake a large crowd layout into the architectural GLB.
+
+⸻
+
+18. NIGHTTIME IDENTITY: RED LIGHTING
+
+IMPORTANT FOR LATER STAGES
+
+Renee has a distinctive nighttime identity characterised by strong red
+interior illumination.
+
+The supplied image redlights.jpeg is an important reference.
+
+For this modelling stage:
+
+DO NOT implement the red lighting yet.
+
+However, ensure the interior geometry can support it later.
+
+Add a small number of useful lighting anchors:
+
+REN_RedLight_Bar
+
+REN_RedLight_RecordWall
+
+REN_RedLight_Ceiling
+
+REN_RedLight_Window
+
+These should be Empty objects only.
+
+The later Three.js / materials pass should use the red illumination to
+create:
+
+red spill across timber;
+
+red glow behind records;
+
+red ambience near the bar;
+
+red reflections in glazing;
+
+warm/red night visibility from the street.
+
+The nighttime red lighting is a defining part of the location’s
+identity.
+
+Do not lose this in later stages.
+
+⸻
+
+19. DAY / NIGHT COMPATIBILITY
+
+Build the geometry so the same model works convincingly in both:
+
+DAY
+
+Natural/neutral interior visibility.
+
+and
+
+NIGHT
+
+Strong red interior illumination.
+
+Do not bake lighting into textures or geometry.
+
+⸻
+
+20. NO FINAL TEXTURES
+
+At this stage do not create:
+
+brick textures;
+
+wood grain;
+
+concrete texture;
+
+graffiti;
+
+Renee logo;
+
+record artwork;
+
+menus;
+
+posters;
+
+decals;
+
+glass dirt;
+
+stains;
+
+labels;
+
+bottle branding;
+
+upholstery texture.
+
+⸻
+
+21. PLACEHOLDER MATERIAL REGIONS
+
+Simple placeholder materials may be used only to distinguish
+architectural regions.
+
+Suggested:
+
+MAT_REN_Brick_PLACEHOLDER
+
+MAT_REN_BlackFacade_PLACEHOLDER
+
+MAT_REN_Glass_PLACEHOLDER
+
+MAT_REN_Timber_PLACEHOLDER
+
+MAT_REN_DarkWall_PLACEHOLDER
+
+MAT_REN_Concrete_PLACEHOLDER
+
+MAT_REN_Metal_PLACEHOLDER
+
+MAT_REN_Upholstery_PLACEHOLDER
+
+No image textures.
+
+No final shading work.
+
+⸻
+
+22. SCALE
+
+Work at real-world scale.
+
+1 Blender unit = 1 metre.
+
+Z = vertical.
+
+Ground floor = Z 0.
+
+Infer dimensions using:
+
+standard doors;
+
+stools;
+
+tables;
+
+human figures visible in references;
+
+upper-floor windows;
+
+typical brick dimensions.
+
+Maintain consistent scale between exterior and interior.
+
+⸻
+
+23. THREE.JS OPTIMISATION
+
+This is a close-range enterable asset.
+
+Use geometry for:
+
+silhouette;
+
+shopfront depth;
+
+doors;
+
+windows;
+
+columns;
+
+bar;
+
+shelving;
+
+ceiling panels;
+
+furniture silhouettes;
+
+fixed seating.
+
+Use textures/materials later for:
+
+brick detail;
+
+timber grain;
+
+perforation patterns;
+
+record sleeves;
+
+signage;
+
+graffiti;
+
+paint wear;
+
+tiny surface detail.
+
+Avoid:
+
+individual brick geometry;
+
+individual acoustic holes;
+
+unnecessarily dense vinyl records;
+
+high-poly bottle collections;
+
+excessive bevels;
+
+duplicate hidden geometry.
+
+⸻
+
+24. OBJECT / COLLECTION STRUCTURE
+
+Use a clean hierarchy such as:
+
+RENEE_MASTER
+
+REN_ExteriorShell
+
+REN_UpperFacade
+
+REN_GroundFacade
+
+REN_Fascia
+
+REN_Entrance
+
+REN_Glass
+
+REN_InteriorShell
+
+REN_Bar
+
+REN_RecordWall
+
+REN_Ceiling
+
+REN_AcousticPanels
+
+REN_Columns
+
+REN_Banquettes
+
+REN_Furniture
+
+REN_Doors
+
+REN_InteractionAnchors
+
+REN_LightingAnchors
+
+Avoid generic names such as Cube.034.
+
+⸻
+
+25. BLOCKOUT FIRST
+
+Do NOT build the finished asset immediately.
+
+First create:
+
+renee_blockout.blend
+
+The blockout should contain only:
+
+external building envelope;
+
+frontage;
+
+entrance;
+
+upper facade;
+
+ground-floor room shape;
+
+bar position;
+
+record-wall position;
+
+major columns;
+
+ceiling height;
+
+main fixed seating areas.
+
+Do NOT add detailed furniture or ceiling perforation.
+
+Produce clay renders:
+
+VIEW A
+
+Straight-on street view.
+
+VIEW B
+
+Three-quarter exterior view.
+
+VIEW C
+
+Entrance looking inward.
+
+VIEW D
+
+Interior wide view resembling the reference showing the bar and seating.
+
+VIEW E
+
+Interior view looking toward the record wall.
+
+Then STOP.
+
+Present the blockout for review before continuing.
+
+⸻
+
+26. SECOND GEOMETRY PASS
+
+After blockout approval, add:
+
+accurate window frames;
+
+shopfront moulding;
+
+fascia;
+
+detailed bar;
+
+shelving divisions;
+
+acoustic ceiling panels;
+
+pendant fixtures;
+
+banquettes;
+
+modular tables;
+
+modular stools/chairs;
+
+rear door;
+
+interaction anchors.
+
+Still do not create textures.
+
+⸻
+
+27. FINAL VALIDATION
+
+Compare final clay renders against every supplied photograph.
+
+Check:
+
+Overall frontage width.
+
+Ground-floor height.
+
+Upper facade proportions.
+
+Entrance placement.
+
+Window dimensions.
+
+Bar location.
+
+Record-wall position.
+
+Structural column positions.
+
+Ceiling height.
+
+Acoustic-panel layout.
+
+Furniture scale.
+
+Player circulation.
+
+Sightline from street into interior.
+
+Look specifically for:
+
+overly chunky furniture;
+
+oversized window frames;
+
+generic pub/bar architecture;
+
+inaccurate room proportions;
+
+too much rounding;
+
+excessive bevels;
+
+insufficient depth.
+
+The asset should resemble this specific venue, not merely a generic
+modern bar.
+
+⸻
+
+28. DELIVERABLES
+
+Deliver:
+
+renee_blockout.blend
+
+renee.blend
+
+renee.glb
+
+blockout clay renders
+
+final clay renders
+
+Before export:
+
+apply transforms;
+
+verify normals;
+
+verify scale;
+
+remove unused objects;
+
+remove temporary placeholders;
+
+remove unnecessary lights/cameras;
+
+ensure interaction anchors remain;
+
+test the GLB after export.
+
+⸻
+
+SUCCESS CRITERION
+
+Without textures, signage, red lighting, records, bottles or people, the
+clay model should already read as Renee from its architecture, room
+layout and distinctive interior features.
+
+The later red-lighting and material pass should enhance an already
+accurate model, not rescue an inaccurate one.

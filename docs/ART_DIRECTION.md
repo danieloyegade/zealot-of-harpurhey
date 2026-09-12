@@ -2,7 +2,7 @@
 
 ## Core principles
 
-- Project title: **Zealot of Harperhay**.
+- Project title: **Zealot of Harperhey**.
 - This is a browser-based 3D artwork and game.
 - The experience is desktop first and centred on third-person exploration.
 - Its visual language is Dreamcast-era urban 3D: it is **not** generic cyberpunk and **not** modern photorealistic PBR.
@@ -10,7 +10,7 @@
 - *The Spectres Are All Around Us* is a primary influence.
 - Frames should be planimetric and carefully composed.
 - The world is made from liminal urban spaces, pools of isolated streetlight at night, and deep darkness with photographic colour casts.
-- Architecture is derived partly from photographs of Manchester, Harpurhey, Preston, and elsewhere in North-West England.
+- Architecture is derived partly from photographs of Manchester, Harperhey, Preston, and elsewhere in North-West England.
 - Geography is fictional rather than a literal reconstruction of Manchester.
 - Photographic textures should be combined with deliberately simplified geometry.
 - Subtitles use EB Garamond in yellow.

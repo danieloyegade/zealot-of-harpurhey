@@ -1,0 +1,939 @@
+ADVANCED PHOTO
+
+ADVANCED PHOTO, ST ANN’S ARCADE, MANCHESTER
+
+Untextured Blender reconstruction for Zealot of Harperhey
+
+Create an accurate, game-ready Blender reconstruction of Advanced Photo,
+the photographic/film-processing shop located inside the arcade by St
+Ann’s Square in Manchester, using ALL supplied reference photographs.
+
+This asset is for Zealot of Harperhey, a Three.js game.
+
+IMPORTANT: THIS IS A GEOMETRY-ONLY PASS
+
+Do not create final textures.
+
+Do not create:
+
+photographic textures;
+
+logos;
+
+Advanced Photo graphics;
+
+posters;
+
+product packaging;
+
+film-brand labels;
+
+advertisements;
+
+decals;
+
+dirt/weathering;
+
+final PBR materials.
+
+The purpose of this pass is to reconstruct the physical architecture,
+shopfront, display cabinets and major interior fixtures.
+
+The finished asset should already be recognisable as this specific shop
+when rendered using plain clay/placeholder materials.
+
+⸻
+
+1.  STUDY ALL REFERENCE IMAGES FIRST
+
+Before modelling, inspect all supplied photographs together.
+
+They show the shop from several useful viewpoints:
+
+frontal views of the main display window;
+
+oblique views showing the depth of the shop;
+
+wider views showing how the frontage wraps around the arcade corner;
+
+views showing the entrance;
+
+views showing the large glazed display cases;
+
+views showing the interior counter and cabinetry;
+
+views showing the relationship between Advanced Photo and the
+surrounding arcade.
+
+Do not treat any single photograph as a perfect orthographic reference.
+
+Cross-reference them to infer the actual three-dimensional arrangement.
+
+Correct for photographic perspective rather than reproducing lens
+distortion as geometry.
+
+⸻
+
+2.  SCOPE
+
+This asset should include:
+
+A. Advanced Photo shopfront
+
+B. Entrance
+
+C. Main glazed display windows
+
+D. Basic shop interior
+
+E. Major display cabinets
+
+F. Main counter
+
+G. Enough surrounding arcade architecture to make the shop physically
+coherent
+
+Do NOT attempt to reconstruct the entire arcade.
+
+A short architectural envelope immediately surrounding the shop is
+sufficient for later connection to the larger environment.
+
+⸻
+
+3.  OVERALL SHOP LAYOUT
+
+Reconstruct the shop as a relatively small photographic retailer
+embedded into the arcade.
+
+The shop has a distinctive black-framed traditional shopfront wrapped
+around a corner/angled frontage.
+
+Establish the actual floor plan before modelling detail.
+
+Pay attention to:
+
+main entrance position;
+
+large front display window;
+
+secondary display window;
+
+corner relationship between the two glazed facades;
+
+shop depth;
+
+interior circulation;
+
+counter position;
+
+wall-mounted display areas.
+
+Do not simplify the entire shop into a rectangular room with a glass
+wall.
+
+The geometry of the wrapping shopfront is important.
+
+⸻
+
+4.  BLACK ARCHITECTURAL SHOPFRONT
+
+This is the most recognisable architectural feature.
+
+Reconstruct the black painted shopfront system accurately.
+
+Model:
+
+substantial black vertical framing;
+
+black horizontal fascia;
+
+projecting/recessed moulding;
+
+window surrounds;
+
+doorway surround;
+
+base/plinth beneath display windows;
+
+rectangular decorative panels along the lower frontage;
+
+corner transitions;
+
+upper framing;
+
+structural divisions between glass panels.
+
+Do NOT make this a single flat black rectangle.
+
+The reference photographs clearly show multiple layers of moulding and
+projection.
+
+These should have actual depth.
+
+Use modest bevels on exposed edges so the geometry catches light
+naturally.
+
+Avoid exaggerated bevels that make the shopfront look plastic or
+toy-like.
+
+⸻
+
+5.  MAIN DISPLAY WINDOW
+
+The large front photographic display is a HERO AREA.
+
+The player will see this at close range.
+
+Reconstruct:
+
+large outer glass window;
+
+black structural surround;
+
+deep lower plinth;
+
+decorative rectangular panels beneath;
+
+internal glass display cabinet;
+
+glass shelves;
+
+vertical supports;
+
+display base;
+
+rear/internal glazing where visible.
+
+Importantly, the display window has depth.
+
+It should not consist of products pasted behind a single glass plane.
+
+Build an actual shallow display volume behind the external glazing.
+
+⸻
+
+6.  GLASS DISPLAY CABINETS
+
+Advanced Photo contains multiple glass cabinets used to display cameras,
+film and photographic equipment.
+
+Model the cabinets themselves.
+
+Include:
+
+glass outer panels;
+
+thin metal/frame structures;
+
+glass shelves;
+
+cabinet bases;
+
+cabinet tops;
+
+doors/panel divisions where visible.
+
+Keep these efficient.
+
+Do NOT populate them with hundreds of products during this pass.
+
+Products will later be modular prop assets.
+
+However, the shelves must physically exist so those products can later
+be placed correctly.
+
+Suggested objects:
+
+AP_DisplayCabinet_Front
+
+AP_DisplayCabinet_Interior01
+
+AP_DisplayCabinet_Interior02
+
+AP_GlassShelves
+
+⸻
+
+7.  ENTRANCE
+
+Reconstruct the shop entrance accurately.
+
+Model:
+
+doorway opening;
+
+black frame;
+
+door;
+
+glass panel;
+
+handle where geometrically significant;
+
+threshold;
+
+surrounding framing;
+
+relationship between doorway and adjacent display window.
+
+The entrance must be usable by the player.
+
+Maintain realistic human scale.
+
+Keep the door as a separate object.
+
+Suggested naming:
+
+AP_Entrance
+
+AP_Door
+
+AP_DoorFrame
+
+AP_EntranceTriggerAnchor
+
+Place an Empty named AP_EntranceTriggerAnchor near the entrance for
+later Three.js interaction logic.
+
+Do not implement interaction logic in Blender.
+
+⸻
+
+8.  INTERIOR
+
+Unlike a background storefront, Advanced Photo is intended to function
+as an enterable game location.
+
+Therefore construct a real, simplified interior.
+
+Model:
+
+floor;
+
+ceiling;
+
+walls;
+
+structural columns where visible;
+
+counter;
+
+major cabinetry;
+
+major shelving;
+
+glass display cases;
+
+rear work/service area suggestion;
+
+doorway/openings where visible.
+
+Do not attempt to recreate every object visible in the photographs.
+
+Concentrate on the permanent architecture and furniture.
+
+⸻
+
+9.  MAIN COUNTER
+
+Create the customer service / photographic processing counter as a
+separate modular object.
+
+Use the references to approximate:
+
+counter length;
+
+counter height;
+
+depth;
+
+customer-facing side;
+
+staff working side;
+
+storage volume underneath.
+
+Keep enough clear space behind the counter for an NPC shopkeeper.
+
+Create an Empty:
+
+AP_ShopkeeperAnchor
+
+positioned behind the counter at a plausible standing location.
+
+Also create:
+
+AP_CustomerInteractionAnchor
+
+immediately in front of the counter.
+
+These will later support dialogue and purchasing/film-processing
+interactions in Three.js.
+
+⸻
+
+10. FILM-DEVELOPMENT GAMEPLAY REQUIREMENTS
+
+This shop will function as a photographic location within the game.
+
+The player may bring exposed 35mm film here for development and/or
+purchase photographic supplies.
+
+Therefore design the geometry to support:
+
+PLAYER ENTERS
+
+→
+
+PLAYER APPROACHES COUNTER
+
+→
+
+SHOPKEEPER INTERACTION
+
+→
+
+FILM / DEVELOPMENT TRANSACTION
+
+Do not implement these systems in Blender.
+
+Only ensure that:
+
+entrance is navigable;
+
+floor space accommodates player movement;
+
+counter is accessible;
+
+NPC position is logical;
+
+cabinets do not obstruct circulation;
+
+interaction anchors exist.
+
+⸻
+
+11. PRODUCT DISPLAY STRATEGY
+
+Do NOT individually model everything visible in the photographs.
+
+The references contain many:
+
+cameras;
+
+film boxes;
+
+batteries;
+
+photographic accessories;
+
+photo frames;
+
+passport-photo advertisements;
+
+memory cards;
+
+small electronics.
+
+These will eventually be separate reusable prop assets.
+
+During this geometry stage, create only a very small number of neutral
+primitive placeholder objects if necessary to judge shelf spacing.
+
+Remove those placeholders before final GLB export unless specifically
+required.
+
+The important thing is that the display architecture is correctly
+constructed.
+
+⸻
+
+12. WALL DISPLAY AREAS
+
+Create simplified physical structures for the interior wall displays
+visible in the references.
+
+Model:
+
+wall-mounted shelving;
+
+backing panels;
+
+display rails where substantial;
+
+cabinet volumes;
+
+major recessed/display zones.
+
+Do not model individual advertisements or packaging.
+
+⸻
+
+13. CEILING
+
+Reconstruct the visible ceiling volume sufficiently for an enterable
+interior.
+
+Include:
+
+main ceiling plane;
+
+major changes in ceiling height;
+
+obvious bulkheads;
+
+significant recessed areas.
+
+Do not model every spotlight as high-poly geometry.
+
+Simple fixture placeholders may be created where needed for later
+lighting placement.
+
+⸻
+
+14. LIGHTING ANCHORS
+
+The eventual shop should feel brightly and somewhat densely illuminated.
+
+Do NOT create final lighting during this modelling pass.
+
+However, create logically named Empty objects where useful:
+
+AP_Light_Ceiling01
+
+AP_Light_Ceiling02
+
+AP_Light_Display01
+
+AP_Light_Display02
+
+These can later guide Three.js lighting.
+
+Do not create dozens of unnecessary light anchors.
+
+⸻
+
+15. SURROUNDING ARCADE
+
+Model only enough surrounding arcade architecture to contextualise the
+shop.
+
+Include approximately:
+
+immediate floor outside the shop;
+
+short ceiling section;
+
+immediate neighbouring wall;
+
+arcade-facing shopfront boundary;
+
+any structural column directly attached to Advanced Photo.
+
+The wider arcade will eventually be a separate environment asset.
+
+Make the boundary clean enough that Advanced Photo can later connect to
+it without visible gaps.
+
+⸻
+
+16. GLASS
+
+There is a lot of glazing in this asset.
+
+Separate major glass surfaces logically.
+
+Suggested objects:
+
+AP_ExteriorGlass
+
+AP_DisplayGlass
+
+AP_CabinetGlass
+
+AP_DoorGlass
+
+Do not create thick multi-layer physically simulated glass.
+
+Use efficient planar or minimally thick geometry suitable for real-time
+rendering.
+
+Ensure overlapping glass surfaces are kept to a sensible minimum because
+excessive transparency can become expensive and visually problematic in
+Three.js.
+
+⸻
+
+17. MODEL AS GEOMETRY
+
+Features that should exist physically include:
+
+shopfront depth;
+
+fascia;
+
+mouldings;
+
+columns;
+
+window frames;
+
+doorway;
+
+display-case frames;
+
+shelves;
+
+counter;
+
+cabinetry;
+
+plinth;
+
+lower decorative panels;
+
+major ceiling bulkheads.
+
+⸻
+
+18. LEAVE FOR TEXTURES / DECALS
+
+Do NOT model:
+
+ADVANCED PHOTO lettering;
+
+shop logos;
+
+passport photo advertisements;
+
+price signs;
+
+opening notices;
+
+film logos;
+
+Kodak/Fujifilm/etc branding;
+
+photographs;
+
+printed posters;
+
+product labels;
+
+tiny scratches;
+
+paint wear;
+
+fingerprints;
+
+stickers;
+
+tiny screws.
+
+These belong to the later material/prop pass.
+
+⸻
+
+19. PLACEHOLDER MATERIALS
+
+Use simple flat placeholder materials only where useful for readability.
+
+Suggested:
+
+MAT_AP_BlackWood_PLACEHOLDER
+
+MAT_AP_Glass_PLACEHOLDER
+
+MAT_AP_Metal_PLACEHOLDER
+
+MAT_AP_InteriorWall_PLACEHOLDER
+
+MAT_AP_Floor_PLACEHOLDER
+
+MAT_AP_Counter_PLACEHOLDER
+
+No image textures.
+
+No final materials.
+
+No procedural surface detail.
+
+⸻
+
+20. REAL-WORLD SCALE
+
+1 Blender unit = 1 metre
+
+Z = vertical
+
+Floor = Z 0
+
+Use standard door dimensions, cabinet heights and other recognisable
+architectural objects to infer scale.
+
+The shop should feel relatively compact.
+
+Do not enlarge the interior merely to make player navigation easier.
+
+Preserve believable real-world dimensions first.
+
+If gameplay navigation later requires adjustment, that can be handled
+separately.
+
+⸻
+
+21. OBJECT STRUCTURE
+
+Suggested organisation:
+
+ADVANCED_PHOTO_MASTER
+
+AP_ShopShell
+
+AP_Shopfront
+
+AP_Fascia
+
+AP_Mouldings
+
+AP_Entrance
+
+AP_Door
+
+AP_ExteriorGlass
+
+AP_MainDisplay
+
+AP_DisplayCabinets
+
+AP_Interior
+
+AP_Counter
+
+AP_WallShelving
+
+AP_Ceiling
+
+AP_ArcadeContext
+
+AP_InteractionAnchors
+
+Keep repeated shelving/cabinet components modular where possible.
+
+Do not leave objects named Cube.001, Cube.002, etc.
+
+⸻
+
+22. THREE.JS OPTIMISATION
+
+This is a close-range enterable asset, but it still needs to run
+efficiently in Three.js.
+
+Prioritise polygons for:
+
+shopfront silhouette;
+
+moulding;
+
+recesses;
+
+doorway;
+
+display cases;
+
+counter;
+
+shelves;
+
+architectural depth.
+
+Do not spend polygons on:
+
+tiny product details;
+
+microscopic trim;
+
+lettering;
+
+screws;
+
+surface imperfections.
+
+Reuse identical shelf components where possible.
+
+Avoid excessive bevel segments.
+
+Avoid unnecessary subdivisions.
+
+Avoid hidden duplicate geometry.
+
+Be particularly careful with transparent glass geometry.
+
+⸻
+
+23. BLOCKOUT FIRST
+
+Do not immediately create the detailed model.
+
+First create:
+
+advanced_photo_blockout.blend
+
+The blockout should establish only:
+
+shop footprint;
+
+arcade relationship;
+
+entrance;
+
+shopfront angle/corner;
+
+primary display windows;
+
+interior dimensions;
+
+counter;
+
+major display cabinets.
+
+Then create four clay renders:
+
+VIEW A
+
+Straight-on view corresponding approximately to the main frontal
+reference photograph.
+
+VIEW B
+
+Oblique arcade view corresponding approximately to the photograph
+showing the circular ceiling light.
+
+VIEW C
+
+Looking through the entrance into the shop.
+
+VIEW D
+
+Interior/player-eye view looking back toward the shopfront.
+
+STOP AFTER THE BLOCKOUT AND PRESENT THESE VIEWS FOR REVIEW.
+
+Do not proceed automatically to detailed geometry.
+
+⸻
+
+24. SECOND GEOMETRY PASS
+
+Only after blockout approval, add:
+
+detailed black shopfront framing;
+
+mouldings;
+
+lower decorative panels;
+
+accurate glass placement;
+
+display-case frames;
+
+glass shelving;
+
+counter detailing;
+
+wall shelving;
+
+ceiling structure;
+
+entrance details;
+
+interaction anchors.
+
+Still do NOT texture the model.
+
+⸻
+
+25. FINAL VALIDATION
+
+Compare the final clay model against every reference photograph.
+
+Check:
+
+Shop width.
+
+Shop depth.
+
+Entrance width and position.
+
+Window proportions.
+
+Corner/wraparound geometry.
+
+Fascia height.
+
+Black frame thickness.
+
+Display-case depth.
+
+Cabinet heights.
+
+Counter position.
+
+Interior circulation.
+
+Arcade connection.
+
+Specifically look for the common failure mode where the asset becomes
+too chunky, rounded, simplified or toy-like.
+
+The references show relatively thin, elegant shopfront framing and large
+expanses of glass.
+
+Preserve that delicacy.
+
+⸻
+
+26. DELIVERABLES
+
+Deliver:
+
+advanced_photo_blockout.blend
+
+approved advanced_photo.blend
+
+advanced_photo.glb
+
+blockout clay renders
+
+final geometry clay renders
+
+Before GLB export:
+
+apply transforms;
+
+check normals;
+
+remove test objects;
+
+remove unused materials;
+
+remove unnecessary lights/cameras;
+
+verify scale;
+
+verify object names;
+
+verify the GLB imports correctly.
+
+⸻
+
+SUCCESS CRITERION
+
+The untextured clay model should already clearly read as Advanced Photo
+from the supplied references.
+
+Do not use textures, signs, products or logos to disguise inaccurate
+architecture.
+
+The model should feel like a small real photographic shop inside a
+Manchester arcade, not a generic game shop.

@@ -29,6 +29,7 @@ export class InputController {
   private isPointerLocked = false;
   private activePointerId: number | null = null;
   private overlayToggleQueued = false;
+  private recenterQueued = false;
 
   constructor(private readonly element: HTMLCanvasElement) {
     window.addEventListener('keydown', this.handleKeyDown);
@@ -85,6 +86,12 @@ export class InputController {
     return queued;
   }
 
+  consumeRecenterRequest(): boolean {
+    const queued = this.recenterQueued;
+    this.recenterQueued = false;
+    return queued;
+  }
+
   private isPressed(primary: string, alternate: string): boolean {
     return this.pressedKeys.has(primary) || this.pressedKeys.has(alternate);
   }
@@ -96,6 +103,10 @@ export class InputController {
 
     if (event.code === 'KeyH' && !event.repeat) {
       this.overlayToggleQueued = true;
+    }
+
+    if (event.code === 'KeyC' && !event.repeat) {
+      this.recenterQueued = true;
     }
 
     this.pressedKeys.add(event.code);

@@ -1,0 +1,590 @@
+TREE LIBRARY — 8 MODULAR PHOTOGRAPHIC TREE ASSETS Codex / Blender Asset
+Build Prompt Reference-led production assets for Zealot of Harperhey
+
+1.  ROLE AND GOAL
+
+Build a small hero library of eight distinct, production-ready tree
+assets in Blender based directly on the supplied reference photographs.
+
+These are not generic vegetation-pack trees.
+
+Each tree should preserve a particular observed silhouette, branching
+habit, trunk character, foliage density and relationship to artificial
+light from the photographs. Together they should create a recognisable
+tree vocabulary for Zealot of Harperhey.
+
+The references are the primary visual authority.
+
+The game’s trees should occupy the same visual territory as the rest of
+Zealot of Harperhey: somewhere between photographic realism and
+recognisably constructed game space. They should be convincing enough
+for cinematic screen recordings and close environmental compositions,
+but still practical for a browser-based Three.js world.
+
+The most important qualities are:
+
+-   distinctive silhouettes;
+-   believable branching;
+-   convincing bark;
+-   foliage with real depth;
+-   hanging and drooping forms;
+-   trees that respond beautifully to isolated streetlights;
+-   visible branch structure rather than foliage blobs;
+-   asymmetry and imperfections;
+-   strong night-time readability.
+
+Create each tree as an independent reusable GLB.
+
+2.  REQUIRED TREE SET
+
+Build approximately eight trees from the supplied references.
+
+TREE 01 — SILHOUETTE / TWISTED SPARSE TREE
+
+Reference: The photograph of the dark tree silhouette against the blue,
+orange and pink twilight sky.
+
+Characteristics: - highly graphic silhouette; - irregular, crooked
+central structure; - twisting exposed branches; - sparse clusters of
+long pointed leaves; - open negative spaces between branches; - slightly
+tropical or yucca-like visual rhythm without turning it into a fantasy
+tree; - strong black silhouette when backlit.
+
+This asset should be especially useful against dusk skies, rooftops and
+distant urban lighting.
+
+Do not fill the crown with excessive foliage.
+
+The strange branching silhouette is the asset.
+
+TREE 02 — LONG-HANGING / WEEPING TREE
+
+Reference: The photographed tree with long hanging branches and sparse
+foliage, illuminated at night beside grass and road.
+
+Characteristics: - trunk leaning slightly rather than perfectly
+vertical; - broad upper branching; - many thin descending branchlets; -
+long hanging strands; - sparse-to-medium leaf density; - visible
+structure through the canopy; - uneven, slightly melancholic
+silhouette; - foliage hanging low enough to interact visually with
+characters and street furniture.
+
+This should be one of the most important trees in the set.
+
+Preserve the long vertical droop of the branches.
+
+Do not replace the hanging structure with a rounded willow blob.
+
+TREE 03 — STREETLIGHT-ILLUMINATED BARE CANOPY
+
+Reference: The large tree glowing orange/red above the street and
+industrial frontage.
+
+Characteristics: - large spreading deciduous crown; - dense network of
+fine branches; - mostly bare or extremely sparse foliage; - broad
+asymmetrical canopy; - complex branching visible from a distance; -
+strong capacity to catch coloured streetlight; - trunk and branches
+should accept warm orange/red illumination dramatically.
+
+This tree should look ordinary in neutral light but uncanny when
+illuminated from below or from one side.
+
+The fine branch network is critical.
+
+TREE 04 — GNARLED / CONTORTED ORNAMENTAL TREE
+
+Reference: The close photograph of the small tree with heavily twisting,
+looping dark branches.
+
+Characteristics: - short, thick central trunk; - extremely contorted
+major branches; - branches loop, cross and bend back on themselves; -
+low spreading crown; - sparse fine foliage; - sculptural silhouette; -
+visible aged bark; - numerous irregular branch junctions; - substantial
+negative space between limbs.
+
+This is not a standard procedural tree.
+
+Model the major branching manually or with controlled curves so the
+contorted form is deliberate.
+
+It should feel almost drawn or calligraphic while remaining botanically
+plausible.
+
+TREE 05 — LIMINAL WOODLAND / STRAIGHT TRUNK TREE
+
+Reference: The night photograph looking through several pale-trunked
+trees toward housing and parked cars.
+
+Create one representative modular tree from this group.
+
+Characteristics: - tall relatively straight trunk; - pale grey-beige
+bark; - visible bark scars and irregular surface; - medium branching
+beginning above head height; - moderately dense green canopy; - useful
+for repeating in small groups; - strong vertical rhythm; - believable in
+neglected urban grassland.
+
+This tree needs enough individual asymmetry that several rotated copies
+do not immediately appear cloned.
+
+If useful, create 2 closely related trunk/crown variants within this
+asset family, while still treating the main deliverable as Tree 05.
+
+TREE 06 — LARGE ROUND CANOPY / CANAL TREE
+
+Reference: The large illuminated tree beside the canal.
+
+Characteristics: - substantial mature trunk; - broad crown; -
+approximately rounded overall mass but NOT a perfect sphere; - dense
+fine outer foliage; - visible major internal branches; - irregular
+left/right canopy weight; - mature urban tree scale; - strong
+illuminated crown at night; - convincing reflection silhouette when
+placed beside water.
+
+This should function as a landmark tree.
+
+It needs to remain recognisable at distance.
+
+TREE 07 — WEEPING WILLOW / LONG CURTAIN TREE
+
+Reference: The night street photograph with the large hanging
+willow-like tree behind the brick wall and railings.
+
+Characteristics: - broad crown; - extremely long pendant foliage; -
+curtain-like hanging branch systems; - many narrow vertical foliage
+strands; - dark interior canopy; - lower foliage descending toward the
+ground; - elegant but slightly oppressive silhouette; - capable of being
+lit selectively by a streetlight so individual hanging strands emerge
+from darkness.
+
+This is another priority asset.
+
+The hanging foliage must be spatial, layered and irregular.
+
+Do not create the canopy as a solid hemispherical mass with a fringe
+attached.
+
+TREE 08 — SOLITARY FIELD TREE
+
+Reference: The single mature tree photographed against a deep blue
+twilight sky and open landscape.
+
+Characteristics: - solitary mature deciduous tree; - strong central
+trunk; - broad umbrella-like crown; - dense foliage; - irregular crown
+edges; - clearly visible main branches beneath foliage; - slightly
+flatter underside and broad lateral reach; - iconic standalone
+silhouette; - suitable for isolated placement in grass, parkland or at
+the edge of the urban map.
+
+This should read immediately as a singular landmark when seen from far
+away.
+
+3.  GENERAL MODELLING PHILOSOPHY
+
+Do not generate eight variations of one procedural base tree.
+
+Each tree must have its own: - trunk proportions; - branch
+architecture; - crown silhouette; - foliage density; - asymmetry; -
+vertical/horizontal emphasis; - visual function.
+
+Major trunks and primary branches should be genuine geometry.
+
+Secondary branches should remain geometric where they materially affect
+silhouette or lighting.
+
+Fine twigs can transition to simplified geometry/cards where performance
+requires.
+
+The viewer should be able to look upward through the crown and see a
+plausible branching hierarchy.
+
+Avoid: - cylindrical trunks with foliage balls; - identical procedural
+branch angles; - perfect radial symmetry; - repeated Y-shaped
+branching; - unnaturally smooth trunks; - decorative fantasy-tree forms.
+
+4.  BARK AND TRUNK TEXTURE
+
+Bark quality is important because several trees will be strongly
+illuminated at night.
+
+Create tree-specific bark variation rather than applying one universal
+bark texture to all eight.
+
+Include where appropriate: - vertical fissures; - smooth pale bark; -
+peeling areas; - scars; - knots; - moss/lichen used sparingly; - old
+branch wounds; - rough root flare; - subtle colour variation; - dirt
+near ground level.
+
+Use geometry/normal detail to break the silhouette and surface response.
+
+The trunks must not look like smooth plastic tubes.
+
+At close range, streetlight should reveal real surface variation.
+
+5.  ROOT FLARE / GROUND CONTACT
+
+Every tree needs convincing ground contact.
+
+Include: - trunk widening toward the base; - irregular root flare; - a
+few visible surface roots where appropriate; - slight asymmetry; - no
+perfectly flat cylindrical termination.
+
+Do not permanently attach large terrain pieces.
+
+Small optional root/soil transition geometry is acceptable if it remains
+modular.
+
+6.  FOLIAGE SYSTEM
+
+Use a performant hybrid foliage system suitable for Three.js.
+
+Prefer: - several low-poly leaf or leaf-cluster meshes; - alpha-cutout
+cards where appropriate; - instanced clusters; - multiple cluster
+variants; - controlled random rotation; - controlled scale variation; -
+restrained colour variation.
+
+Do not model every leaf as unique high-poly geometry.
+
+Do not use one giant billboard for an entire canopy.
+
+The crown must retain convincing parallax from gameplay and cinematic
+camera positions.
+
+For hero trees, use enough layered foliage that the canopy has: -
+foreground leaves; - middle-depth clusters; - dark interior voids; -
+visible branches; - irregular edge detail.
+
+7.  HANGING FOLIAGE — CRITICAL
+
+For Tree 02 and especially Tree 07, the long hanging structure is a
+primary requirement.
+
+Construct hanging systems as multiple layered branch/foliage strands.
+
+Use: - curved secondary branches; - descending twig systems; - elongated
+leaf clusters; - varied strand lengths; - gaps between strands; -
+overlapping depth layers; - uneven density.
+
+Some strands should terminate higher. Others should fall much lower.
+
+They should move visually like curtains but never become a uniform
+curtain.
+
+The hanging branches should cast thin, complex shadows under
+streetlights.
+
+8.  NIGHT LIGHTING RESPONSE — CRITICAL
+
+These trees are being selected partly because of how trees appear under
+artificial illumination in the supplied photographs.
+
+The production materials must therefore work especially well at night.
+
+Do NOT bake streetlight colours into the albedo.
+
+The same tree should be capable of appearing: - almost black in
+silhouette; - pale green under cool-white light; - yellow-green under
+sodium/warm light; - orange or red under coloured urban lighting; -
+partially illuminated with the rest disappearing into darkness.
+
+Ensure bark and foliage roughness values react naturally to strong local
+lights.
+
+Leaves should not become uniformly emissive or fluorescent.
+
+Light should fragment across the canopy.
+
+9.  STREETLIGHT TESTS
+
+Create temporary validation setups for each tree.
+
+At minimum test:
+
+A. DARK SILHOUETTE Tree against twilight/deep-blue sky.
+
+B. SINGLE COOL STREETLIGHT One local light from above/side, leaving
+large sections dark.
+
+C. WARM STREETLIGHT Warm local illumination grazing bark and lower
+canopy.
+
+D. UPWARD / SIDE LIGHT Especially for Tree 03, reproduce the uncanny
+orange/red illumination seen in the reference.
+
+E. BACKLIGHT Test whether the branch and foliage silhouette remains
+legible.
+
+These lights are for validation only and should not be baked into the
+GLB.
+
+10. SHADOW QUALITY
+
+Trees should cast useful real-time shadows.
+
+Prioritise the shadows of: - major branches; - hanging branches; -
+canopy edge; - sparse leaf clusters; - trunk.
+
+Avoid turning every tiny leaf into an expensive shadow caster if
+unnecessary.
+
+For LOD0, retain enough foliage shadow casting to create the fragmented
+botanical shadow language visible throughout the project.
+
+For distant LODs, simplify aggressively.
+
+11. THE SPECTRES ARE ALL AROUND US / ZOH AESTHETIC
+
+These trees should support the visual philosophy of The Spectres Are All
+Around Us within Zealot of Harperhey.
+
+They are not simply environmental dressing.
+
+Trees can become: - isolated figures; - silhouettes; - illuminated
+objects; - screens for artificial light; - landmarks; - framing
+devices; - strange natural forms embedded within municipal architecture.
+
+At night, a single tree under one streetlight should be capable of
+becoming a complete composition.
+
+Preserve this photographic quality.
+
+The uncanniness should emerge from: - isolation; - scale; - darkness; -
+branch structure; - pools of light; - unexpected colour; - the contrast
+between vegetation and ordinary urban infrastructure.
+
+Do not add supernatural features to the trees.
+
+12. SCALE
+
+Use believable real-world scale.
+
+Approximate scale categories:
+
+Tree 01: medium, approximately 5–8 m. Tree 02: medium-large,
+approximately 8–12 m. Tree 03: large, approximately 12–18 m. Tree 04:
+small ornamental, approximately 3–5 m. Tree 05: medium-large,
+approximately 9–14 m. Tree 06: very large mature tree, approximately
+14–20 m. Tree 07: large willow-like tree, approximately 12–18 m. Tree
+08: large solitary mature tree, approximately 12–18 m.
+
+Exact dimensions should follow visual proportions in the references
+rather than rigidly matching these numbers.
+
+13. MATERIAL LIBRARY
+
+Use a concise glTF-compatible material system.
+
+Example:
+
+MAT_tree01_bark MAT_tree01_leaf
+
+MAT_tree02_bark MAT_tree02_leaf
+
+etc.
+
+Where two trees genuinely share similar leaf materials, reuse
+textures/material families where practical.
+
+However, do not sacrifice visible botanical distinction simply to
+minimise material count.
+
+Avoid unsupported Blender-only shader tricks.
+
+14. OBJECT STRUCTURE
+
+Recommended hierarchy for every tree:
+
+TREE_0X_ROOT TREE_0X_trunk TREE_0X_primary_branches
+TREE_0X_secondary_branches TREE_0X_foliage TREE_0X_fine_twigs_optional
+
+For hanging trees:
+
+TREE_02_ROOT TREE_02_trunk TREE_02_primary_branches
+TREE_02_hanging_branches TREE_02_hanging_foliage
+
+TREE_07_ROOT TREE_07_trunk TREE_07_primary_branches
+TREE_07_hanging_branches TREE_07_hanging_foliage
+
+Keep sensible object naming throughout.
+
+15. ORIGINS / TRANSFORMS
+
+For every tree: - origin at ground contact near trunk centre; - Z=0 at
+intended ground plane; - correct upright orientation; - apply scale and
+rotation; - clean transforms; - no arbitrary offsets; - consistent axis
+convention with the existing Zealot of Harperhey pipeline.
+
+Each tree must be independently placeable.
+
+16. WIND PREPARATION
+
+Where compatible with the established game pipeline, organise foliage so
+subtle wind animation can be added later.
+
+Do not build complex Blender simulations into the GLB.
+
+Instead, make the geometry/material organisation compatible with: -
+vertex-colour wind masks; - shader-driven foliage movement; - slight
+branch sway; - stronger movement toward fine hanging branch tips.
+
+Tree 02 and Tree 07 should be particularly suitable for gentle
+hanging-branch movement.
+
+Trunks and major branches should remain largely static.
+
+17. LOD STRATEGY
+
+Each tree should have practical LODs.
+
+LOD0 — HERO - full silhouette; - major and secondary branches; - layered
+foliage; - good close/medium-distance appearance; - cinematic use.
+
+LOD1 — GAMEPLAY - simplified secondary branches; - reduced foliage
+clusters; - preserved crown silhouette.
+
+LOD2 — DISTANT - strongly reduced branch network; - simplified foliage
+cards/clusters; - recognisable silhouette retained.
+
+LOD3 / IMPOSTOR OPTIONAL For very distant map views, provide an optional
+low-cost impostor/card solution if compatible with the existing
+pipeline.
+
+The distinctive silhouette of each tree must survive the LOD transition.
+
+18. PERFORMANCE
+
+These assets will be used in Three.js.
+
+Optimise intelligently.
+
+Requirements: - glTF 2.0 compatible; - sensible polygon counts; -
+repeated leaf meshes instanced during authoring; - atlas foliage
+textures where useful; - minimal transparent overdraw; - clean
+normals; - no unnecessary hidden geometry; - reasonable draw-call
+count; - sensible texture sizes; - no 8K textures unless specifically
+justified; - no geometry nodes dependency required at runtime; -
+apply/realise necessary geometry before export.
+
+The goal is not lowest possible polycount.
+
+The goal is the best visual return per rendering cost.
+
+Spend geometry on: - silhouette; - major branches; - trunk; - hanging
+forms; - nearby foliage layers.
+
+Save geometry on: - invisible internal leaves; - tiny twigs; - repeated
+detail that can be handled by texture/normal maps.
+
+19. VARIATION AND REUSE
+
+These eight trees should be reusable without obvious cloning.
+
+Support variation through: - rotation; - slight scale variation; -
+optional foliage material variation; - optional leaf-density toggles
+where practical.
+
+However, do not procedurally randomise the hero silhouettes beyond
+recognition.
+
+The photographed form of each tree is valuable.
+
+Preserve it.
+
+20. DO NOT DO
+
+Do not: - create eight generic SpeedTree-style variations; - make every
+crown round; - use identical bark across every tree; - make trunks
+perfectly straight unless the reference requires it; - hide all branch
+structure inside foliage; - overpopulate every branch with leaves; -
+make hanging trees into solid green domes; - bake night colours into
+textures; - bake one fixed lighting condition into the asset; - make
+leaves glossy plastic; - make trunks smooth plastic; - create enormous
+transparent foliage planes; - use excessive alpha overdraw; - merge all
+eight trees into one GLB; - attach streetlights, roads, walls or
+buildings to the tree assets; - beautify or regularise the photographed
+imperfections.
+
+21. VALIDATION RENDERS
+
+For every tree create:
+
+A. neutral daylight three-quarter view; B. side/profile view; C.
+silhouette against dusk sky; D. cool streetlight test; E. warm
+streetlight test; F. close bark test; G. branch-structure view with
+foliage visibility reduced if needed; H. LOD comparison.
+
+Additionally:
+
+Tree 02: show hanging branch depth and strand variation.
+
+Tree 03: show orange/red side-lit night version inspired by the
+reference.
+
+Tree 04: show the contorted branch network clearly.
+
+Tree 06: show full mature landmark silhouette.
+
+Tree 07: show long hanging foliage under a single streetlight.
+
+Tree 08: show solitary tree against deep-blue twilight sky.
+
+22. QUALITY CHECKLIST
+
+Before export verify:
+
+[ ] Eight genuinely different tree assets exist. [ ] Each asset
+corresponds to a supplied photographic reference. [ ] Each has a
+distinct silhouette. [ ] Trunks have real bark variation. [ ] Root flare
+prevents cylindrical ground contact. [ ] Major branches are real
+geometry. [ ] Branch hierarchy looks plausible. [ ] Tree 02 has
+convincing long descending branchlets. [ ] Tree 03 retains a dense
+visible bare-branch network. [ ] Tree 04 has strongly contorted
+sculptural branches. [ ] Tree 05 works in repeated small woodland
+groups. [ ] Tree 06 reads as a large mature landmark tree. [ ] Tree 07
+has deep layered curtain-like hanging foliage. [ ] Tree 08 reads clearly
+as a solitary field/park tree. [ ] Foliage has internal depth. [ ] Dark
+voids remain inside canopies. [ ] Trees can become near-black
+silhouettes. [ ] Trees respond convincingly to cool, warm and coloured
+artificial lights. [ ] No lighting colour is baked into albedo. [ ]
+Shadows remain fragmented and botanical. [ ] LODs preserve each tree’s
+distinctive silhouette. [ ] Assets perform appropriately in the Three.js
+test scene. [ ] Each GLB has a clean ground-level origin.
+
+23. EXPORT NAMES
+
+Export separately:
+
+ZOH_tree_01_twisted_silhouette.glb ZOH_tree_02_hanging_sparse.glb
+ZOH_tree_03_bare_streetlight_canopy.glb
+ZOH_tree_04_gnarled_contorted.glb ZOH_tree_05_liminal_woodland.glb
+ZOH_tree_06_large_canal_canopy.glb ZOH_tree_07_weeping_willow.glb
+ZOH_tree_08_solitary_field_tree.glb
+
+Also save the Blender source file containing all eight trees and the
+validation lighting setups.
+
+Do not include validation lights, cameras, background planes or terrain
+in the individual production GLBs unless required by the existing
+pipeline.
+
+24. FINAL PRIORITY ORDER
+
+When compromises are necessary, prioritise:
+
+1.  Distinctive photographed silhouette.
+2.  Major trunk and branch architecture.
+3.  Hanging branch behaviour on Trees 02 and 07.
+4.  Convincing night/streetlight response.
+5.  Bark texture and trunk character.
+6.  Layered foliage depth.
+7.  Strong shadows and negative spaces.
+8.  Three.js performance.
+9.  Fine botanical detail.
+
+The final library should not feel like “eight tree models.”
+
+It should feel like eight specific trees encountered and photographed in
+the world: strange, ordinary, isolated, illuminated, hanging, contorted,
+monumental or silhouetted.
+
+When placed throughout Zealot of Harperhey, they should help make the
+city feel observed rather than procedurally populated.

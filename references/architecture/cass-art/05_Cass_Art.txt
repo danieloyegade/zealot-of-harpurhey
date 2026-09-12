@@ -1,0 +1,952 @@
+CASS ART, NORTHERN QUARTER, MANCHESTER
+
+CASS ART, NORTHERN QUARTER, MANCHESTER
+
+Untextured Blender reconstruction for Zealot of Harperhey
+
+Create an accurate, game-ready Blender reconstruction of Cass Art in the
+Northern Quarter, Manchester, using ALL supplied reference photographs.
+
+This asset is for Zealot of Harperhey, a Three.js game.
+
+This task is GEOMETRY ONLY.
+
+Do not create final textures, decals, logos, window graphics, posters,
+product packaging or lighting yet.
+
+The goal is to reconstruct the shop exterior and enough of the interior
+architecture that the location is recognisable from its proportions and
+physical layout alone, even in neutral clay materials.
+
+⸻
+
+1.  CORE IDENTITY
+
+This Cass Art location has an important visual feature:
+
+The main shop fascia does NOT primarily say “Cass Art”.
+
+Instead, the long orange lettering across the dark grey facade reads:
+
+LET’S FILL THIS TOWN WITH ARTISTS
+
+This wording must be preserved in the later signage/texture pass.
+
+A smaller Cass Art logo/sign appears separately on the facade.
+
+For this geometry stage:
+
+do not model the lettering as final geometry;
+
+do not create final logo textures;
+
+create clean sign/decal surfaces and physical sign housings where
+required;
+
+preserve the exact physical placement and proportions needed for the
+later signage.
+
+⸻
+
+2.  USE ALL REFERENCES TOGETHER
+
+Study all supplied photographs before modelling.
+
+The references include:
+
+oblique street views;
+
+near-frontal shopfront views;
+
+close views of the long main window;
+
+views of the smaller projecting Cass Art sign;
+
+images showing the orange slogan placement;
+
+views showing the dark grey facade panels;
+
+views showing the internal shop shelving and lighting;
+
+views showing the relationship between the shopfront and the upper
+balcony/rail structure.
+
+Do not rely on a single photograph.
+
+Correct for perspective distortion and infer a coherent architectural
+layout.
+
+⸻
+
+3.  SCOPE
+
+Model:
+
+full Cass Art street frontage;
+
+main entrance;
+
+large display windows;
+
+dark grey facade panels;
+
+structural bays between windows;
+
+upper balcony / railing section immediately above;
+
+small projecting Cass Art sign housing;
+
+interior shop shell;
+
+major shelving runs;
+
+major display tables;
+
+counter area where visible;
+
+basic ceiling structure and light-track positions.
+
+Do not reconstruct unrelated neighbouring shops beyond what is necessary
+for clean boundaries.
+
+⸻
+
+4.  EXTERIOR MASSING
+
+The shopfront is long and relatively low.
+
+Establish:
+
+overall frontage width;
+
+ground-floor height;
+
+depth of facade;
+
+entrance position;
+
+window spacing;
+
+structural pier spacing;
+
+upper fascia band;
+
+relationship to balcony / upper structure.
+
+The facade should not be a single flat rectangle.
+
+Reconstruct the physical depth changes between:
+
+dark grey cladding panels;
+
+window frames;
+
+glazing;
+
+entrance recess;
+
+projecting sign;
+
+lower plinth.
+
+⸻
+
+5.  DARK GREY FACADE
+
+The frontage is clad in dark grey / charcoal architectural panels.
+
+Model the panel system as clean facade geometry.
+
+Include:
+
+major vertical panel divisions;
+
+major horizontal panel divisions;
+
+structural piers;
+
+panel depth where visibly recessed or projected;
+
+transitions around windows and doorways.
+
+Do not model microscopic seams or fasteners unless they materially
+affect the silhouette.
+
+Surface texture, stains and weathering will come later.
+
+⸻
+
+6.  MAIN ORANGE SLOGAN AREA
+
+The phrase:
+
+LET’S FILL THIS TOWN WITH ARTISTS
+
+is positioned high on the facade above the main shop windows.
+
+Create a dedicated object or clean decal surface:
+
+CASS_Slogan_DecalSurface
+
+Position it accurately based on the photographs.
+
+Preserve enough uninterrupted facade space for the entire phrase.
+
+Do not approximate it as a central logo.
+
+It should stretch horizontally across a substantial portion of the
+frontage.
+
+Later, the letters should be recreated as orange signage/lettering.
+
+⸻
+
+7.  SMALL CASS ART SIGN
+
+The smaller Cass Art sign is a distinct physical element.
+
+Model the sign housing / bracket / projecting box where visible.
+
+Create:
+
+CASS_LogoSign_Housing
+
+CASS_LogoSign_DecalSurface
+
+The later texture should reproduce:
+
+CASS ART
+
+EST. 1984
+
+Do not bake this into geometry yet.
+
+⸻
+
+8.  MAIN GLAZING
+
+The shop has large street-facing glass windows.
+
+Model:
+
+separate glass panels;
+
+surrounding metal frames;
+
+vertical mullions;
+
+horizontal divisions where visible;
+
+recessed glass position;
+
+lower base/plinth;
+
+doorway integration.
+
+Keep the glass as separate objects.
+
+Suggested:
+
+CASS_Glass_Main01
+
+CASS_Glass_Main02
+
+CASS_Glass_Main03
+
+CASS_Glass_Entrance
+
+Do not merge glass into the facade mesh.
+
+This is important for later transparency, reflections and night
+lighting.
+
+⸻
+
+9.  WINDOW DISPLAY AREAS
+
+The front windows contain artwork, display pieces and temporary graphics
+in the references.
+
+At this stage, DO NOT model or texture those specific display graphics.
+
+Instead create the physical architecture that supports them:
+
+display ledge;
+
+shallow internal display zone;
+
+backing areas;
+
+shelf edges;
+
+open floor behind glazing.
+
+Keep the windows visually deep enough that they do not feel like a
+poster pasted onto glass.
+
+⸻
+
+10. ENTRANCE
+
+Model the main entrance at realistic human scale.
+
+Include:
+
+doorway opening;
+
+door;
+
+door frame;
+
+glass panel;
+
+handle where significant;
+
+threshold;
+
+recessed depth;
+
+relationship to adjacent glazing.
+
+Keep the door as a separate object.
+
+Suggested:
+
+CASS_Entrance
+
+CASS_Door
+
+CASS_DoorFrame
+
+CASS_EntranceTriggerAnchor
+
+Add an Empty:
+
+CASS_EntranceTriggerAnchor
+
+for later Three.js interaction.
+
+⸻
+
+11. INTERIOR SCOPE
+
+Cass Art is intended to be an enterable shop.
+
+Build a simplified but real interior shell.
+
+Include:
+
+floor;
+
+ceiling;
+
+walls;
+
+major aisle layout;
+
+long wall shelving;
+
+central display tables;
+
+counter/service area where visible;
+
+circulation space.
+
+Do not attempt to model every product.
+
+⸻
+
+12. ART-SUPPLY SHELVING
+
+The shop interior is visually dense with art supplies.
+
+The architecture should support this density without embedding thousands
+of product objects into the main GLB.
+
+Model reusable shelving systems:
+
+tall wall shelving;
+
+mid-height shelving;
+
+flat paper/display racks;
+
+low central display units;
+
+long shelf runs.
+
+Use modular geometry.
+
+Suggested:
+
+CASS_Shelf_Wall_Module
+
+CASS_Shelf_Centre_Module
+
+CASS_PaperRack_Module
+
+CASS_DisplayTable_Module
+
+Do NOT model every sketchbook, pen, paint tube or canvas during this
+pass.
+
+⸻
+
+13. PAPER / CANVAS DISPLAY
+
+The references clearly show paper and art-material display zones near
+the windows.
+
+Model the physical racks and holders.
+
+Include:
+
+vertical rack geometry;
+
+angled or upright display planes where visible;
+
+shelf divisions;
+
+supports.
+
+The actual paper packaging and printed labels should be added later as
+props/textures.
+
+⸻
+
+14. COUNTER / SERVICE POINT
+
+If visible sufficiently in the references, model the main counter as a
+separate object.
+
+Approximate:
+
+height;
+
+depth;
+
+customer-facing side;
+
+staff-side space;
+
+surrounding shelves.
+
+Add:
+
+CASS_StaffAnchor
+
+CASS_CustomerInteractionAnchor
+
+for later game logic.
+
+⸻
+
+15. GAMEPLAY FUNCTION
+
+This Cass Art location may be used by the player to purchase or collect
+art materials.
+
+Therefore the geometry should support:
+
+player entry;
+
+browsing aisles;
+
+approaching shelves;
+
+reaching a counter;
+
+NPC interaction.
+
+Do not implement gameplay logic in Blender.
+
+Only make the spatial layout believable and navigable.
+
+⸻
+
+16. FUTURE SPRAY-PAINT / ART MECHANIC
+
+Preserve clear shelf and display surfaces that can later hold:
+
+spray paint;
+
+drawing materials;
+
+canvases;
+
+sketchbooks;
+
+brushes;
+
+paint.
+
+These should later exist as modular prop assets.
+
+Do not fuse them into the architecture.
+
+⸻
+
+17. CEILING
+
+The interior has a functional retail ceiling with visible lighting
+tracks and fixtures.
+
+Model:
+
+ceiling plane;
+
+major beams or service zones;
+
+lighting tracks;
+
+major fixture housings where they affect the look.
+
+Do not create final lights yet.
+
+Add simple anchors if useful:
+
+CASS_LightTrack_01
+
+CASS_LightTrack_02
+
+CASS_Light_Window
+
+⸻
+
+18. UPPER BALCONY / RAILING
+
+The exterior references show a substantial metal railing / balcony
+structure immediately above the storefront.
+
+Reconstruct this because it contributes strongly to the silhouette.
+
+Model:
+
+horizontal lower beam;
+
+metal railing/grid panels;
+
+vertical posts;
+
+upper rail;
+
+mounting relationship to building.
+
+Keep the geometry efficient.
+
+Do not model every tiny mesh opening at very high resolution.
+
+Use simplified grid geometry or later alpha material where appropriate.
+
+⸻
+
+19. NUMBERS / ADDRESS
+
+The frontage includes the street number:
+
+55–57
+
+where visible in the references.
+
+Do not model final lettering as geometry.
+
+Create:
+
+CASS_Address_DecalSurface
+
+in the correct position.
+
+⸻
+
+20. SECURITY / SMALL FIXTURES
+
+Model only physically significant fixtures.
+
+For example:
+
+projecting alarm box;
+
+major external lights;
+
+security camera only if clearly visible and silhouette-relevant;
+
+sign bracket.
+
+Do not spend time on tiny stickers or screws.
+
+⸻
+
+21. DO NOT MODEL YET
+
+Do not model:
+
+graffiti;
+
+stickers;
+
+posters;
+
+seasonal Christmas window graphics;
+
+cassette illustrations;
+
+popcorn artwork;
+
+temporary sale graphics;
+
+exact window paintings;
+
+price labels;
+
+art-supply packaging;
+
+brushes;
+
+pens;
+
+paint tubes;
+
+canvas branding;
+
+security stickers;
+
+pedestrians.
+
+These belong to later texture/prop passes.
+
+⸻
+
+22. IMPORTANT SIGNAGE RULE
+
+Preserve the physical structure needed for the slogan and logo, but do
+not let Codex reinterpret the signage.
+
+The later final version must preserve:
+
+LET’S FILL THIS TOWN WITH ARTISTS
+
+as the dominant exterior phrase.
+
+Do NOT replace it with:
+
+CASS ART
+
+as a large generic shop fascia.
+
+This specific wording is important to the location.
+
+⸻
+
+23. PLACEHOLDER MATERIAL REGIONS
+
+Use simple placeholder materials only for readability.
+
+Suggested:
+
+MAT_CASS_DarkFacade_PLACEHOLDER
+
+MAT_CASS_Glass_PLACEHOLDER
+
+MAT_CASS_Metal_PLACEHOLDER
+
+MAT_CASS_InteriorWall_PLACEHOLDER
+
+MAT_CASS_Floor_PLACEHOLDER
+
+MAT_CASS_Shelving_PLACEHOLDER
+
+MAT_CASS_Wood_PLACEHOLDER
+
+No final textures.
+
+No image textures.
+
+No procedural dirt.
+
+⸻
+
+24. REAL-WORLD SCALE
+
+Work at real-world scale.
+
+1 Blender unit = 1 metre
+
+Z = vertical
+
+Ground floor = Z 0
+
+Estimate scale using:
+
+standard entrance doors;
+
+people visible in references;
+
+shelving heights;
+
+window dimensions.
+
+Apply transforms before export.
+
+⸻
+
+25. OBJECT ORGANISATION
+
+Suggested hierarchy:
+
+CASS_ART_MASTER
+
+CASS_ExteriorShell
+
+CASS_FacadePanels
+
+CASS_Fascia
+
+CASS_SloganArea
+
+CASS_LogoSign
+
+CASS_Entrance
+
+CASS_Glass
+
+CASS_InteriorShell
+
+CASS_WallShelving
+
+CASS_CentreShelving
+
+CASS_PaperRacks
+
+CASS_Counter
+
+CASS_Ceiling
+
+CASS_BalconyRail
+
+CASS_InteractionAnchors
+
+Avoid default names such as Cube.021.
+
+⸻
+
+26. THREE.JS OPTIMISATION
+
+Use geometry for:
+
+facade depth;
+
+entrance;
+
+windows;
+
+mullions;
+
+balcony railing;
+
+shelving;
+
+counter;
+
+major ceiling elements.
+
+Use later textures/decals/props for:
+
+slogan lettering;
+
+Cass Art logo;
+
+temporary window graphics;
+
+graffiti;
+
+product packaging;
+
+price labels;
+
+printed signs;
+
+surface wear.
+
+Keep repeated shelving modular.
+
+Avoid excessive bevels.
+
+Avoid unnecessary subdivisions.
+
+Avoid dense geometry for hidden products.
+
+⸻
+
+27. BLOCKOUT FIRST
+
+First create:
+
+cass_art_blockout.blend
+
+The blockout should contain:
+
+overall facade;
+
+dark cladding mass;
+
+entrance;
+
+glazing;
+
+slogan/signage zones;
+
+upper railing;
+
+basic interior shell;
+
+major shelving runs;
+
+counter location.
+
+Do NOT build detailed products or fixtures yet.
+
+Produce clay renders:
+
+VIEW A
+
+Straight-on view corresponding approximately to the frontal reference.
+
+VIEW B
+
+Oblique street view corresponding to the long perspective reference.
+
+VIEW C
+
+Entrance looking inward.
+
+VIEW D
+
+Interior looking toward main glazing.
+
+VIEW E
+
+Elevated or oblique view showing the upper railing relationship.
+
+Then STOP and present the blockout for review.
+
+⸻
+
+28. SECOND GEOMETRY PASS
+
+After approval, add:
+
+accurate mullions;
+
+panel depth;
+
+projecting Cass Art sign housing;
+
+shelving modules;
+
+paper racks;
+
+counter;
+
+ceiling tracks;
+
+balcony railing refinement;
+
+interaction anchors.
+
+Still do not create final textures.
+
+⸻
+
+29. FINAL VALIDATION
+
+Compare the clay model to all references.
+
+Check:
+
+Overall frontage width.
+
+Ground-floor height.
+
+Entrance position.
+
+Window proportions.
+
+Structural pier spacing.
+
+Fascia height.
+
+Slogan placement area.
+
+Cass Art projecting sign location.
+
+Interior depth.
+
+Shelf height and spacing.
+
+Balcony rail dimensions.
+
+Player circulation.
+
+Avoid:
+
+overly thick window frames;
+
+generic shop proportions;
+
+oversized signage;
+
+toy-like shelves;
+
+overly rounded geometry;
+
+flat facade construction.
+
+The clay model should read as this specific Cass Art location, not as a
+generic art shop.
+
+⸻
+
+30. DELIVERABLES
+
+Deliver:
+
+cass_art_blockout.blend
+
+cass_art.blend
+
+cass_art.glb
+
+blockout clay renders
+
+final clay renders
+
+Before export:
+
+apply transforms;
+
+check normals;
+
+remove temporary objects;
+
+remove unused materials;
+
+confirm correct real-world scale;
+
+verify GLB import;
+
+preserve interaction anchors.
+
+⸻
+
+SUCCESS CRITERION
+
+Without textures, products, graffiti, logos or window art, the model
+should already be recognisable as the Northern Quarter Cass Art from its
+facade proportions, glazing, dark cladding, projecting sign structure,
+interior shelving and long shop layout.
+
+The later texture/signage pass must preserve the phrase:
+
+LET’S FILL THIS TOWN WITH ARTISTS
+
+as the defining exterior text.

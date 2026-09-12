@@ -13,6 +13,7 @@ export interface RenderDiagnostics {
   readonly renderScale: number;
   readonly textures: number;
   readonly geometries: number;
+  readonly materials: number;
   readonly programs: number;
   readonly qualityLevel: QualityLevel;
 }
@@ -23,6 +24,9 @@ export class DebugOverlay {
   private frameCount = 0;
   private framesPerSecond = 0;
   private frameTimeMilliseconds = 0;
+  private medianFrameTimeMilliseconds = 0;
+  private p95FrameTimeMilliseconds = 0;
+  private readonly recentFrameTimes: number[] = [];
 
   constructor() {
     this.element.className = 'debug-overlay';
@@ -42,24 +46,36 @@ export class DebugOverlay {
     this.elapsedTime += realFrameDelta;
     this.frameCount += 1;
     this.frameTimeMilliseconds = realFrameDelta * 1000;
+    if (realFrameDelta > 0 && realFrameDelta < 0.25) {
+      this.recentFrameTimes.push(this.frameTimeMilliseconds);
+      if (this.recentFrameTimes.length > 360) this.recentFrameTimes.shift();
+    }
 
     if (this.elapsedTime >= 0.5) {
       this.framesPerSecond = Math.round(this.frameCount / this.elapsedTime);
+      const sortedFrameTimes = [...this.recentFrameTimes].sort((a, b) => a - b);
+      const sampleAt = (proportion: number): number => sortedFrameTimes[
+        Math.min(sortedFrameTimes.length - 1, Math.floor(sortedFrameTimes.length * proportion))
+      ] ?? 0;
+      this.medianFrameTimeMilliseconds = sampleAt(0.5);
+      this.p95FrameTimeMilliseconds = sampleAt(0.95);
       this.elapsedTime = 0;
       this.frameCount = 0;
     }
 
     this.element.textContent = [
-      'ZEALOT OF HARPERHAY — DEVELOPMENT BUILD',
+      'ZEALOT OF HARPERHEY — DEVELOPMENT BUILD',
       '',
       `FPS: ${this.framesPerSecond}`,
       `Frame: ${this.frameTimeMilliseconds.toFixed(1)} ms`,
+      `Median / p95: ${this.medianFrameTimeMilliseconds.toFixed(1)} / ${this.p95FrameTimeMilliseconds.toFixed(1)} ms`,
       `Draw calls: ${diagnostics.drawCalls}`,
       `Triangles: ${diagnostics.triangles.toLocaleString()}`,
       `Lights: ${diagnostics.activePointLights} point + ${diagnostics.activeSpotLights} spot`,
       `Buffer: ${diagnostics.drawingBufferWidth} × ${diagnostics.drawingBufferHeight}`,
       `Pixel ratio: ${diagnostics.pixelRatio.toFixed(2)} (scale ${diagnostics.renderScale.toFixed(2)})`,
       `Textures / geometries: ${diagnostics.textures} / ${diagnostics.geometries}`,
+      `Scene materials: ${diagnostics.materials}`,
       `Programs: ${diagnostics.programs}`,
       `Quality: ${diagnostics.qualityLevel.toUpperCase()}`,
       '',

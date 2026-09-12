@@ -1,38 +1,66 @@
-# Harperhay bus shelter benchmark
+# North Road Preston bus shelter
 
-## Reference
+## Asset status
 
-The benchmark uses Daniel Oyegade's original photograph at `references/architecture/bus stop/Hires2.jpg` (1818 × 1456). The original is treated as immutable source material. Derived working crops are generated separately by `blender/scripts/createBusShelter.py`.
+The game uses the geometry-first North Road, Preston shelter and shopping
+trolley. This is the review-approved clay/material-ID pass: proportions,
+silhouette, hierarchy and transparent glazing are present; final decals, PBR
+materials and local light emission are deliberately deferred.
 
-## Photographic analysis
+The shelter and trolley are independent root hierarchies:
 
-The photograph is organised around a long, shallow shelter viewed almost frontally. A rounded dark roof caps a green-black metal frame. Four rear uprights divide large glass areas containing baked reflections of trees, houses, parked cars, grass, and warm street illumination. The left bay holds a Lancashire bus timetable. A chunky illuminated advertising housing closes the right end and produces a strong pink cast. A red horizontal perch rail cuts across the lower glazing. The central abandoned shopping trolley is the strongest foreground interruption and an essential part of the composition.
+- `PRESTON_BUS_SHELTER`
+- `PRESTON_SHOPPING_TROLLEY`
 
-Major colour regions are deep green-black metal, green/cyan glass, warm amber reflected architecture, bright pink advert light, the red rail, and silver-grey trolley metal. Apparent illumination comes from warm light above/front, green ambient light around the glass and grass, and the advert's pink lightbox.
+The combined game export retains the reference composition, but either root can
+be moved or removed without affecting the other. Standalone GLBs are also
+generated for both assets.
 
-## Geometry versus photography
+## Source material
 
-Geometry carries silhouette, parallax, and the objects that must read from changing viewpoints:
+- Photograph: `references/architecture/bus-stop/Hires2.jpg`
+- Reconstruction brief: `references/architecture/bus-stop/04_North_Road_Preston_Bus_Shelter.txt`
+- Generated concept review: `renders/bus-shelter/00-generated-concept-review.png`
 
-- Rounded/chunky roof
-- Sparse structural posts and horizontal frame rails
-- Rear and side glass planes
-- Timetable and advert housings
-- Red U-shaped rail and narrow perch
-- Economical trolley basket rim, implied basket bars, handle, lower frame, and four wheels
+The photograph is authoritative for proportions and placement only. Trees,
+houses, parked cars, grass, fencing, roads and warm illuminated background are
+environmental content and are not reproduced on the shelter. Rear and side
+panels are physically separate transparent glass surfaces.
 
-Photographic textures carry specific surface information that would be wasteful or sterile to remodel:
+## Generated source and runtime assets
 
-- Rear-glass reflections, local architecture, trees, cars, grain, and green colour cast
-- Original timetable typography and printed information
-- Original advert typography, pink halation, fading, and photographic imperfections
+`blender/scripts/createBusShelter.py` produces:
 
-The trolley basket uses a small number of low-sided rods rather than an alpha wire mask. At gameplay distance this preserves a dimensional silhouette and reads more reliably from oblique angles, while intentionally avoiding a literal model of every wire.
+- `blender/source/bus-shelter/preston-busstop-blockout.blend`
+- `blender/source/bus-shelter/preston-busstop.blend`
+- `blender/source/bus-shelter/preston-busstop-reference.blend`
+- `public/assets/models/bus-shelter/preston-bus-shelter.glb`
+- `public/assets/models/bus-shelter/preston-shopping-trolley.glb`
+- `public/assets/models/bus-shelter/preston-busstop-reference.glb`
+- four numbered review renders under `renders/bus-shelter/`
 
-## Working derivatives
+The game loads `preston-busstop-reference.glb`, which contains the independently
+parented trolley in the photographed position. `preston-bus-shelter.glb` and
+`preston-shopping-trolley.glb` are available for later independent placement.
 
-- `harperhay-bus-shelter-glass.jpg` — 512 × 256
-- `harperhay-bus-shelter-timetable.jpg` — 256 × 384
-- `harperhay-bus-shelter-advert.jpg` — 256 × 512
+## Geometry and material boundaries
 
-These intentionally modest JPEGs live under `blender/source/textures/` and retain photographic grain, colour casts, baked reflections, and halation. Blender embeds them in the exported GLB, so duplicate loose copies are not shipped from `public/`. The source photograph also remains outside `public/`.
+The asset includes slender rear and side framing, a shallow rounded roof,
+separate rear/left/right glass panels, the minimal orange-red resting rail,
+timetable and No Smoking backplates, blank decal surfaces, under-roof fixture
+geometry, and the projecting right-hand advert housing. The trolley has an open
+wire basket, tubular frame, handle, four independent caster roots, and a short
+chain.
+
+Placeholder material IDs are deliberately stable so the later pass can add:
+
+- dark aged painted metal;
+- transmissive, slightly dirty glass;
+- exact timetable, No Smoking and `3309 00 83` decals;
+- emissive advert artwork and physically derived reflections;
+- trolley metal, plastic, wear and grime.
+
+The old photographic prototype is retained beneath
+`blender/source/bus-shelter/legacy/` for comparison only. Its cropped working
+textures remain under `blender/source/textures/bus-shelter/` and are not used by
+the current runtime GLB.

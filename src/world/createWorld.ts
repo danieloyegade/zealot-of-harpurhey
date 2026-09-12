@@ -1,12 +1,12 @@
 import {
   BackSide,
+  Box3,
   BoxGeometry,
   CanvasTexture,
   CircleGeometry,
   Color,
   ConeGeometry,
   CylinderGeometry,
-  DodecahedronGeometry,
   DirectionalLight,
   Group,
   HemisphereLight,
@@ -43,7 +43,12 @@ import type { CollisionObstacle, CollisionWorld } from './collision';
 import { loadModel } from './loadModel';
 import { createDreamsBuilding } from './createDreamsBuilding';
 import {
+  addHeroStreetEnvironmentKit,
+  addParkEdgeEnvironmentKit,
+} from './createEnvironmentKit';
+import {
   BUS_STOPS,
+  FOOD_STANDS,
   FUTURE_EXITS,
   PARK,
   PAVEMENT_WIDTH,
@@ -73,9 +78,9 @@ const boxGeometryCache = new Map<string, BoxGeometry>();
 const cylinderGeometryCache = new Map<string, CylinderGeometry>();
 const circleGeometryCache = new Map<string, CircleGeometry>();
 const coneGeometryCache = new Map<string, ConeGeometry>();
-const dodecahedronGeometryCache = new Map<string, DodecahedronGeometry>();
 const standardColorMaterialCache = new Map<number, MeshStandardMaterial>();
 const basicColorMaterialCache = new Map<number, MeshBasicMaterial>();
+const BUS_SHELTER_SCALE = 1.3;
 
 function getBoxGeometry(
   width: number,
@@ -144,15 +149,6 @@ function getConeGeometry(
       openEnded,
     );
     coneGeometryCache.set(key, geometry);
-  }
-  return geometry;
-}
-
-function getDodecahedronGeometry(radius: number): DodecahedronGeometry {
-  let geometry = dodecahedronGeometryCache.get(`${radius}`);
-  if (!geometry) {
-    geometry = new DodecahedronGeometry(radius, 0);
-    dodecahedronGeometryCache.set(`${radius}`, geometry);
   }
   return geometry;
 }
@@ -317,6 +313,177 @@ function addCollisionFootprint(
   });
 }
 
+function addReneeInteriorCollision(
+  obstacles: CollisionObstacle[],
+  location: WorldLocation,
+): void {
+  const addLocalObstacle = (
+    name: string,
+    minX: number,
+    maxX: number,
+    minZ: number,
+    maxZ: number,
+  ): void => {
+    obstacles.push({
+      name: `Renee ${name}`,
+      minX: location.x + minX,
+      maxX: location.x + maxX,
+      minZ: location.z + minZ,
+      maxZ: location.z + maxZ,
+      height: location.height,
+    });
+  };
+
+  // The authored Blender frontage faces -Y, which imports as local +Z.
+  // Split the front wall around a generous 1.8 m entrance gap so the
+  // player's 0.38 m collision circle can cross without catching the jambs.
+  addLocalObstacle('left wall', -6.90, -6.62, -6.60, 6.60);
+  addLocalObstacle('right wall', 6.62, 6.90, -6.60, 6.60);
+  addLocalObstacle('rear wall', -6.90, 6.90, -6.60, -6.32);
+  addLocalObstacle('shopfront left', -6.90, -2.62, 6.20, 6.62);
+  addLocalObstacle('shopfront right', -0.82, 6.90, 6.20, 6.62);
+
+  // Hero fixtures and fixed seating remain solid once the player is inside.
+  addLocalObstacle('main bar', -5.64, 0.54, -4.22, -3.22);
+  addLocalObstacle('front column', -0.56, -0.14, 1.06, 1.54);
+  addLocalObstacle('middle column', -0.56, -0.14, -2.59, -2.11);
+  addLocalObstacle('right column', 4.64, 5.06, -1.09, -0.61);
+  addLocalObstacle('right banquette', 5.98, 6.70, -3.23, 3.93);
+  addLocalObstacle('front-left banquette', -6.10, -3.00, 5.58, 6.28);
+  addLocalObstacle('toilets volume', -6.63, -4.81, -6.46, -5.30);
+}
+
+function addCassArtInteriorCollision(
+  obstacles: CollisionObstacle[],
+  location: WorldLocation,
+): void {
+  const halfWidth = location.width / 2;
+  const halfDepth = location.depth / 2;
+  const wall = 0.22;
+  const frontZ = location.z - halfDepth;
+  const rearZ = location.z + halfDepth;
+  const scale = location.width / 18;
+  // The authored door is at local X +2.15. The north-facing placement rotates
+  // the asset 180 degrees, moving the entrance west of the plot centre.
+  const entranceX = location.x - 2.15 * scale;
+  const entranceHalfWidth = 0.82 * scale;
+
+  obstacles.push(
+    {
+      name: 'Cass Art west wall',
+      minX: location.x - halfWidth,
+      maxX: location.x - halfWidth + wall,
+      minZ: frontZ,
+      maxZ: rearZ,
+      height: location.height,
+    },
+    {
+      name: 'Cass Art east wall',
+      minX: location.x + halfWidth - wall,
+      maxX: location.x + halfWidth,
+      minZ: frontZ,
+      maxZ: rearZ,
+      height: location.height,
+    },
+    {
+      name: 'Cass Art rear wall',
+      minX: location.x - halfWidth,
+      maxX: location.x + halfWidth,
+      minZ: rearZ - wall,
+      maxZ: rearZ,
+      height: location.height,
+    },
+    {
+      name: 'Cass Art shopfront west',
+      minX: location.x - halfWidth,
+      maxX: entranceX - entranceHalfWidth,
+      minZ: frontZ,
+      maxZ: frontZ + 0.28,
+      height: location.height,
+    },
+    {
+      name: 'Cass Art shopfront east',
+      minX: entranceX + entranceHalfWidth,
+      maxX: location.x + halfWidth,
+      minZ: frontZ,
+      maxZ: frontZ + 0.28,
+      height: location.height,
+    },
+  );
+}
+
+function addCoralInteriorCollision(
+  obstacles: CollisionObstacle[],
+  location: WorldLocation,
+): void {
+  const westX = location.x - location.width / 2;
+  const eastX = location.x + location.width / 2;
+  const northZ = location.z - location.depth / 2;
+  const southZ = location.z + location.depth / 2;
+  const wall = 0.26;
+  // Coral's Blender frontage is 17.4 m long with the door at local X -1.55.
+  // After the east-facing quarter turn, that door lies north of plot centre.
+  const doorZ = location.z + 1.55;
+  const doorHalfWidth = 0.82;
+
+  obstacles.push(
+    {
+      name: 'Coral north wall',
+      minX: westX,
+      maxX: eastX,
+      minZ: northZ,
+      maxZ: northZ + wall,
+      height: location.height,
+    },
+    {
+      name: 'Coral south wall',
+      minX: westX,
+      maxX: eastX,
+      minZ: southZ - wall,
+      maxZ: southZ,
+      height: location.height,
+    },
+    {
+      name: 'Coral rear wall',
+      minX: westX,
+      maxX: westX + wall,
+      minZ: northZ,
+      maxZ: southZ,
+      height: location.height,
+    },
+    {
+      name: 'Coral shopfront north',
+      minX: eastX - 0.34,
+      maxX: eastX,
+      minZ: northZ,
+      maxZ: doorZ - doorHalfWidth,
+      height: location.height,
+    },
+    {
+      name: 'Coral shopfront south',
+      minX: eastX - 0.34,
+      maxX: eastX,
+      minZ: doorZ + doorHalfWidth,
+      maxZ: southZ,
+      height: location.height,
+    },
+  );
+
+  // Fixed betting terminals remain solid while preserving a clear route from
+  // the entrance to the rear information wall.
+  for (const [index, localX] of [-6.2, -3.7, 0.25, 2.75, 5.35].entries()) {
+    const centreZ = location.z - localX;
+    obstacles.push({
+      name: `Coral counter ${index + 1}`,
+      minX: location.x - 0.98,
+      maxX: location.x + 0.08,
+      minZ: centreZ - 0.88,
+      maxZ: centreZ + 0.88,
+      height: 1.1,
+    });
+  }
+}
+
 function markLoadFailure(fallback: Mesh, assetName: string): void {
   fallback.name = `${assetName} load error`;
   if (fallback.material instanceof MeshStandardMaterial) {
@@ -351,23 +518,840 @@ function applyPhotographicModelPolicy(model: Group): void {
   });
 }
 
+function applyBusShelterGeometryPolicy(model: Group): void {
+  const shelterRoot = model.getObjectByName('PRESTON_BUS_SHELTER');
+  if (shelterRoot) {
+    // The shelter root contains the frame, glazing, signage and bench. The
+    // trolley is a sibling root, so it deliberately remains at authored size.
+    shelterRoot.scale.multiplyScalar(BUS_SHELTER_SCALE);
+  }
+
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      const name = material.name.toLowerCase();
+      if (name.includes('busstop_glass')) {
+        material.transparent = true;
+        material.opacity = 0.24;
+        material.depthWrite = false;
+        material.roughness = 0.12;
+        material.metalness = 0.05;
+      } else {
+        // Preserve the geometry-pass material IDs and avoid accidental baked
+        // photographic maps while this version is under proportion review.
+        material.map = null;
+        material.emissiveMap = null;
+        material.roughness = Math.max(material.roughness, 0.38);
+      }
+    }
+  });
+}
+
+function applyNiceThingsBlockoutPolicy(model: Group): void {
+  applyPhotographicModelPolicy(model);
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      if (material.name === 'MAT_NT_Glass_PLACEHOLDER') {
+        material.transparent = true;
+        material.opacity = 0.16;
+        material.depthWrite = false;
+        material.roughness = 0.22;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.72);
+      }
+    }
+  });
+}
+
+function applyVillageBooksBlockoutPolicy(model: Group): void {
+  // Village Books is still at its geometry-review hold. Preserve the authored
+  // placeholder palette, disable accidental emissive treatment and configure
+  // only the documented shopfront/upper glazing for the runtime renderer.
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.map = null;
+      material.emissiveMap = null;
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+      if (material.name === 'MAT_VB_Glass_PLACEHOLDER') {
+        material.transparent = true;
+        material.opacity = 0.2;
+        material.depthWrite = false;
+        material.roughness = 0.18;
+        material.metalness = 0.04;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.58);
+      }
+    }
+  });
+}
+
+function applyDreamsModelPolicy(model: Group): void {
+  applyPhotographicModelPolicy(model);
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      if (material.name.includes('mat-dreams-photographic-front')) {
+        material.emissive.set(0xc7dce0);
+        material.emissiveMap = material.map;
+        material.emissiveIntensity = 0.09 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        material.roughness = 0.82;
+      } else if (material.name.includes('mat-dreams-photographic-shutters')) {
+        material.color.set(0xb0b2ad);
+        material.roughness = 0.93;
+      } else if (material.name.includes('mat-dreams-tube-light')) {
+        material.emissive.set(0xd9fff8);
+        material.emissiveIntensity = 1.25 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        material.roughness = 0.24;
+      } else if (material.name.includes('mat-dreams-lower-tube-light')) {
+        material.emissive.set(0x96cbd0);
+        material.emissiveIntensity = 0.72 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        material.roughness = 0.46;
+      } else if (material.name.includes('mat-dreams-side-brick')) {
+        material.color.set(0xc6a398);
+        material.emissive.set(0x35120c);
+        material.emissiveMap = material.map;
+        material.emissiveIntensity = 0.1;
+      } else if (material.name.includes('mat-dreams-handrail')) {
+        material.color.set(0xb8c0bd);
+        material.roughness = 0.4;
+        material.metalness = 0.56;
+      }
+    }
+  });
+}
+
+function applyGulliversModelPolicy(model: Group): void {
+  // This is the geometry-approval asset. Preserve its deliberately simple
+  // material-ID palette until the dedicated PBR texture pass is complete.
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.roughness = Math.max(material.roughness, 0.58);
+    }
+  });
+}
+
+function applyMcr1ModelPolicy(model: Group): void {
+  // MCR1 is intentionally still at geometry approval. Preserve the authored
+  // clay material IDs and do not substitute runtime textures or emissive signs.
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+      if (material.name.toLowerCase().includes('clay_glass')) {
+        material.transparent = true;
+        material.opacity = 0.34;
+        material.depthWrite = false;
+        material.roughness = 0.16;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.55);
+      }
+    }
+  });
+}
+
+function applyCassArtModelPolicy(model: Group): void {
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+      if (material.name === 'MAT_CASS_LightFixture_PLACEHOLDER') {
+        material.color.set(0xffe0a3);
+        material.emissive.set(0xffc56c);
+        material.emissiveIntensity = 2.2 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        material.roughness = 0.24;
+      } else if (material.name === 'MAT_CASS_InteriorWall_PLACEHOLDER') {
+        material.emissive.set(0x2c1a0d);
+        material.emissiveIntensity = 0.16 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        material.roughness = Math.max(material.roughness, 0.68);
+      } else if (material.name === 'MAT_CASS_Glass_PLACEHOLDER') {
+        material.transparent = true;
+        material.opacity = 0.20;
+        material.depthWrite = false;
+        material.roughness = 0.18;
+        material.metalness = 0.05;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.58);
+      }
+    }
+  });
+}
+
+function applyReneeBlockoutPolicy(model: Group): void {
+  // Renee is at the geometry approval gate. Preserve its authored material-ID
+  // palette and prevent the clay blockout from inheriting emissive treatment.
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+      if (material.name === 'MAT_REN_Glass_PLACEHOLDER') {
+        material.transparent = true;
+        material.opacity = 0.22;
+        material.depthWrite = false;
+        material.roughness = 0.28;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.58);
+      }
+    }
+  });
+}
+
+function applyTheHiveModelPolicy(model: Group): void {
+  // The Hive is currently a geometry-only asset. Preserve its authored
+  // material-region palette while configuring its layered transparent systems.
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.map = null;
+      material.emissiveMap = null;
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+      const name = material.name.toLowerCase();
+      if (name.includes('mat_glass_placeholder')) {
+        material.transparent = true;
+        material.opacity = 0.24;
+        material.depthWrite = false;
+        material.roughness = 0.2;
+        material.metalness = 0.04;
+      } else if (name.includes('mat_metalscreen_placeholder')) {
+        material.transparent = true;
+        material.opacity = 0.48;
+        material.depthWrite = false;
+        material.roughness = 0.46;
+        material.metalness = 0.32;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.58);
+      }
+    }
+  });
+}
+
+function applyComeThroughLabModelPolicy(model: Group): void {
+  // Come Through Lab is a geometry-only detail pass (no textures, decals or
+  // QR code yet). Keep its authored placeholder palette and only configure
+  // the glazing so the shopfront reads through the grilles.
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.map = null;
+      material.emissiveMap = null;
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+      if (material.name.toLowerCase().includes('mat_ctl_glass_placeholder')) {
+        material.transparent = true;
+        material.opacity = 0.55;
+        material.depthWrite = false;
+        material.roughness = 0.25;
+        material.metalness = 0.05;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.55);
+      }
+    }
+  });
+}
+
+function applyRealCameraModelPolicy(model: Group): void {
+  // Real Camera authors its own sandstone/shopfront palette rather than clay
+  // placeholders, so the colours are kept. Only the glazing and the interior
+  // fluorescents need runtime treatment so the shop reads through the windows.
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+      if (material.name === 'MAT_RC_Fluorescent') {
+        material.color.set(0xf2f6ff);
+        material.emissive.set(0xcfe2ff);
+        material.emissiveIntensity = 2.1 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        material.roughness = 0.3;
+      } else if (material.name === 'MAT_RC_ShopGlass') {
+        // The shopfront glazing stays readable: the lit interior behind it is
+        // the whole point of the display window.
+        material.transparent = true;
+        material.opacity = 0.26;
+        material.depthWrite = false;
+        material.roughness = 0.16;
+        material.metalness = 0.05;
+      } else if (material.name === 'MAT_RC_WindowGlass') {
+        material.transparent = true;
+        material.opacity = 0.42;
+        material.depthWrite = false;
+        material.roughness = 0.22;
+        material.metalness = 0.05;
+      } else if (material.name === 'MAT_RC_LensGlass') {
+        material.roughness = 0.14;
+        material.metalness = 0.35;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.55);
+      }
+    }
+  });
+}
+
+function applyCoralModelPolicy(model: Group): void {
+  const brick = createWorldMaterial('brick-soot-overhaul', {
+    repeatX: 2,
+    repeatY: 2,
+    tint: 0x8d6658,
+    emissive: 0x080d18,
+    emissiveIntensity: 0.045,
+    roughness: 0.95,
+  });
+  brick.name = 'Coral runtime soot-stained brick';
+  const concrete = createWorldMaterial('concrete-cracked-overhaul', {
+    repeatX: 2,
+    repeatY: 2,
+    tint: 0x8f8b82,
+    emissive: 0x0b111b,
+    emissiveIntensity: 0.035,
+    roughness: 0.94,
+  });
+  concrete.name = 'Coral runtime stained concrete';
+
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const sourceMaterials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    const runtimeMaterials = sourceMaterials.map((source) => {
+      if (!(source instanceof MeshStandardMaterial)) {
+        return source;
+      }
+      const name = source.name.toLowerCase();
+      if (name.includes('upper_brick') || name.endsWith('brick')) {
+        return brick;
+      }
+      if (
+        name.includes('concrete') ||
+        name.includes('repair_patch') ||
+        name.includes('stair_material')
+      ) {
+        return concrete;
+      }
+      if (name.includes('store_glass') || name.includes('door_glass')) {
+        source.color.set(0x8ab4c4);
+        source.transparent = true;
+        source.opacity = 0.43;
+        source.depthWrite = false;
+        source.roughness = 0.17;
+        source.metalness = 0.06;
+      } else if (name.includes('fluorescent')) {
+        source.color.set(0xc7f4ff);
+        source.emissive.set(0xa8eaff);
+        source.emissiveIntensity = 2.2 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        source.roughness = 0.2;
+      } else if (
+        name.includes('lamp_glow') ||
+        name.includes('upper_window_lit')
+      ) {
+        source.emissive.set(0xff7b1f);
+        source.emissiveIntensity = 1.7 * VISUAL_STYLE.lighting.emissiveMultiplier;
+      } else if (name.includes('terminal_glow')) {
+        source.emissive.set(0x79d9ff);
+        source.emissiveIntensity = 1.1 * VISUAL_STYLE.lighting.emissiveMultiplier;
+      } else if (name.includes('sign_blue')) {
+        source.color.set(0x0b3574);
+        source.emissive.set(0x071b42);
+        source.emissiveIntensity = 0.18 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        source.roughness = 0.62;
+      } else if (name.includes('sign_letters')) {
+        source.emissive.set(0xcfe8ff);
+        source.emissiveIntensity = 0.36 * VISUAL_STYLE.lighting.emissiveMultiplier;
+      } else if (name.includes('wet_road')) {
+        return createWorldMaterial('asphalt-wet-overhaul', {
+          repeatX: 4,
+          repeatY: 3,
+          roughness: 0.28,
+          metalness: 0.08,
+        });
+      } else if (name.includes('wet_pavement')) {
+        return createWorldMaterial('pavement-wet-overhaul', {
+          repeatX: 4,
+          repeatY: 2,
+          roughness: 0.45,
+        });
+      }
+      return source;
+    });
+    child.material = Array.isArray(child.material)
+      ? runtimeMaterials
+      : runtimeMaterials[0];
+  });
+}
+
+async function replaceCoralFallback(
+  root: Group,
+  fallback: Mesh,
+  location: WorldLocation,
+): Promise<void> {
+  try {
+    const [shop, bin, streetlight, bollard] = await Promise.all([
+      loadModel('assets/models/harperhey-coral-shop.glb'),
+      loadModel('assets/models/harperhey-coral-bin.glb'),
+      loadModel('assets/models/harperhey-coral-streetlight.glb'),
+      loadModel('assets/models/harperhey-coral-bollard.glb'),
+    ]);
+
+    applyCoralModelPolicy(shop);
+    applyCoralModelPolicy(bin);
+    applyCoralModelPolicy(streetlight);
+    applyCoralModelPolicy(bollard);
+
+    shop.name = 'Harperhey Coral finished hero asset';
+    shop.position.set(location.x, 0, location.z);
+    // The Blender façade faces +Z after glTF axis conversion. Rotate it to the
+    // east-facing west-side plot. Preserve the authored frontage and height;
+    // only deepen the building to meet the existing west terrace rear line.
+    shop.rotation.y = Math.PI / 2;
+    shop.scale.set(1, 1, 1.42);
+    root.add(shop);
+
+    bin.name = 'Coral matching pavement bin';
+    bin.position.set(location.x + 5.55, 0.04, location.z - 9.3);
+    bin.rotation.y = Math.PI / 2;
+    bin.scale.setScalar(0.9);
+    root.add(bin);
+
+    streetlight.name = 'Coral matching sodium streetlight';
+    streetlight.position.set(location.x + 6.15, 0, location.z - 10.6);
+    streetlight.rotation.y = Math.PI / 2;
+    streetlight.scale.setScalar(0.82);
+    root.add(streetlight);
+
+    for (const [index, zOffset] of [-7.2, 8.8].entries()) {
+      const placedBollard = index === 0 ? bollard : bollard.clone(true);
+      placedBollard.name = `Coral matching pavement bollard ${index + 1}`;
+      placedBollard.position.set(location.x + 5.7, 0, location.z + zOffset);
+      placedBollard.scale.setScalar(0.92);
+      root.add(placedBollard);
+    }
+
+    const coolShopLight = new PointLight(
+      VISUAL_STYLE.lighting.coldWhite,
+      2.25 * VISUAL_STYLE.lighting.emissiveMultiplier,
+      10,
+      2,
+    );
+    coolShopLight.name = 'Coral cool shopfront spill';
+    coolShopLight.position.set(location.x + 6.1, 2.55, location.z - 5.5);
+    root.add(coolShopLight);
+
+    const coolShopLightSouth = coolShopLight.clone();
+    coolShopLightSouth.name = 'Coral cool shopfront spill south';
+    coolShopLightSouth.intensity *= 0.82;
+    coolShopLightSouth.position.z = location.z + 5.5;
+    root.add(coolShopLightSouth);
+
+    root.remove(fallback);
+  } catch (error) {
+    markLoadFailure(fallback, 'Coral');
+    console.error(
+      '[World] Failed to load the Coral hero asset set. Showing the magenta fallback.',
+      error,
+    );
+  }
+}
+
 async function replaceFloristFallback(
   root: Group,
   fallback: Mesh,
   location: WorldLocation,
 ): Promise<void> {
   try {
-    const florist = await loadModel('assets/models/harperhay-florist.glb');
-    applyPhotographicModelPolicy(florist);
-    florist.name = 'Harperhay florist';
-    florist.position.set(location.x, 0, location.z);
-    florist.rotation.y = Math.PI / 2;
+    const florist = await loadModel(
+      'assets/models/nice-things-blockout.glb?v=geometry-approved-20260911',
+    );
+    applyNiceThingsBlockoutPolicy(florist);
+    florist.name = 'Nice Things geometry blockout';
+    // The authored asset includes Central Buildings to the left, while the
+    // canonical florist location remains centred on the 5.9 m shopfront.
+    florist.position.set(location.x - 2.8, 0, location.z);
     root.add(florist);
     root.remove(fallback);
   } catch (error) {
     markLoadFailure(fallback, 'Florist');
     console.error(
-      '[World] Failed to load harperhay-florist.glb. Showing the magenta fallback.',
+      '[World] Failed to load nice-things-blockout.glb. Showing the magenta fallback.',
+      error,
+    );
+  }
+}
+
+async function replaceDreamsFallback(
+  root: Group,
+  fallback: Group,
+  location: WorldLocation,
+): Promise<void> {
+  fallback.visible = false;
+  try {
+    const dreams = await loadModel(
+      'assets/models/harperhey-dreams-greybox.glb?v=geometry-approved-20260911',
+    );
+    applyDreamsModelPolicy(dreams);
+    dreams.name = 'Harperhey Dreams geometry-first hero asset';
+    dreams.position.set(location.x, 0, location.z);
+    dreams.rotation.y = location.front === 'north' ? Math.PI : 0;
+    root.add(dreams);
+    root.remove(fallback);
+  } catch (error) {
+    fallback.visible = true;
+    fallback.name = 'Dreams procedural fallback after GLB load error';
+    console.error(
+      '[World] Failed to load harperhey-dreams-greybox.glb. Showing the procedural fallback.',
+      error,
+    );
+  }
+}
+
+async function addGulliversModel(
+  root: Group,
+  location: WorldLocation,
+): Promise<void> {
+  try {
+    const gullivers = await loadModel(
+      'assets/models/harperhey-gullivers.glb?v=geometry-wip-20260911',
+    );
+    applyGulliversModelPolicy(gullivers);
+    gullivers.name = 'Gullivers geometry WIP — textures pending';
+    gullivers.position.set(location.x, 0, location.z);
+    // Blender front (-Y) imports facing +Z, aligning the Oldham Street
+    // frontage south beside Renee while retaining the full side return.
+    root.add(gullivers);
+  } catch (error) {
+    console.error(
+      '[World] Failed to load harperhey-gullivers.glb. No legacy fallback is retained.',
+      error,
+    );
+  }
+}
+
+async function addMcr1Model(
+  root: Group,
+  location: WorldLocation,
+): Promise<void> {
+  try {
+    const mcr1 = await loadModel(
+      'assets/models/harperhey-mcr1-geometry.glb?v=geometry-wip-20260911',
+    );
+    applyMcr1ModelPolicy(mcr1);
+    mcr1.name = 'MCR1 geometry WIP — textures pending';
+    // The Blender asset uses the real corner as its modelling origin rather
+    // than the plot centre. This offset centres its 11.7 m envelope immediately
+    // west of the Florist while keeping the main frontage south-facing.
+    mcr1.position.set(location.x - 1.45, 0, location.z);
+    root.add(mcr1);
+  } catch (error) {
+    console.error(
+      '[World] Failed to load harperhey-mcr1-geometry.glb. No legacy M1 fallback is retained.',
+      error,
+    );
+  }
+}
+
+async function replaceCassArtFallback(
+  root: Group,
+  fallback: Mesh,
+  location: WorldLocation,
+): Promise<void> {
+  try {
+    const cassArt = await loadModel(
+      'assets/models/cass_art.glb?v=geometry-wip-20260911',
+    );
+    applyCassArtModelPolicy(cassArt);
+    cassArt.name = 'Cass Art geometry WIP — textures pending';
+    const scale = location.width / 18;
+    // Blender -Y imports as Three.js +Z. Rotate the facade north and align its
+    // authored front plane with the north edge of the former Real Camera plot.
+    cassArt.position.set(location.x, 0, location.z - location.depth / 2);
+    cassArt.rotation.y = Math.PI;
+    cassArt.scale.setScalar(scale);
+    root.add(cassArt);
+    root.remove(fallback);
+  } catch (error) {
+    markLoadFailure(fallback, 'Cass Art');
+    console.error(
+      '[World] Failed to load cass_art.glb. Showing the magenta fallback.',
+      error,
+    );
+  }
+}
+
+async function replaceReneeFallback(
+  root: Group,
+  fallback: Mesh,
+  location: WorldLocation,
+): Promise<void> {
+  try {
+    const renee = await loadModel(
+      'assets/models/renee-blockout.glb?v=geometry-wip-20260911',
+    );
+    applyReneeBlockoutPolicy(renee);
+    renee.name = 'Renee geometry blockout — textures pending';
+    // Blender -Y becomes Three.js +Z, matching this south-facing plot. The
+    // plot centre is shifted north so the deeper model keeps the old frontage.
+    renee.position.set(location.x, 0, location.z);
+    root.add(renee);
+    root.remove(fallback);
+  } catch (error) {
+    markLoadFailure(fallback, 'Renee');
+    console.error(
+      '[World] Failed to load renee-blockout.glb. Showing the magenta fallback.',
+      error,
+    );
+  }
+}
+
+async function addTheHiveModel(
+  root: Group,
+  location: WorldLocation,
+): Promise<void> {
+  try {
+    const hive = await loadModel(
+      'assets/models/the_hive.glb?v=geometry-20260911',
+    );
+    applyTheHiveModelPolicy(hive);
+    hive.name = 'The Hive / Arts Council geometry asset';
+    // Blender's -Y frontage imports facing +Z. Rotate that frontage west and
+    // centre the authored metric envelope on the canonical Arts Council plot.
+    hive.rotation.y = -Math.PI / 2;
+    hive.updateMatrixWorld(true);
+    const bounds = new Box3().setFromObject(hive);
+    const centre = bounds.getCenter(new Vector3());
+    hive.position.x += location.x - centre.x;
+    hive.position.y -= bounds.min.y;
+    hive.position.z += location.z - centre.z;
+    root.add(hive);
+  } catch (error) {
+    console.error(
+      '[World] Failed to load the_hive.glb. No legacy Arts Council blockout is retained.',
+      error,
+    );
+  }
+}
+
+async function addComeThroughLabModel(
+  root: Group,
+  location: WorldLocation,
+): Promise<void> {
+  try {
+    const [lab, dropbox, props] = await Promise.all([
+      loadModel('assets/models/come_through_lab.glb?v=geometry-20260912'),
+      loadModel('assets/models/ctl_dropbox.glb?v=geometry-20260912'),
+      loadModel('assets/models/ctl_dropoff_props.glb?v=geometry-20260912'),
+    ]);
+    applyComeThroughLabModelPolicy(lab);
+    applyComeThroughLabModelPolicy(dropbox);
+    applyComeThroughLabModelPolicy(props);
+    lab.name = 'Come Through Lab geometry asset — textures pending';
+    dropbox.name = 'Come Through Lab drop box (independent hero prop)';
+    props.name = 'Come Through Lab supply holder + envelope + pencil';
+    // Blender's -Y frontage imports facing +Z. Rotate that frontage east, then
+    // sit the authored metric envelope on the plot with its shopfront flush to
+    // the plot's east edge so the door and drop-box wall meet the pavement.
+    // `width` is the east-west extent, matching addCollisionFootprint.
+    lab.rotation.y = Math.PI / 2;
+    lab.updateMatrixWorld(true);
+    const bounds = new Box3().setFromObject(lab);
+    const centre = bounds.getCenter(new Vector3());
+    lab.position.x += location.x + location.width / 2 - bounds.max.x;
+    lab.position.y -= bounds.min.y;
+    lab.position.z += location.z - centre.z;
+    root.add(lab);
+
+    // The drop box and supply holder were authored in the same Blender scene
+    // as the building and exported separately only so they stay independently
+    // placeable (never fused into the building mesh, per the brief's 24-hour
+    // drop-off requirement). Applying the identical rotation + position delta
+    // keeps them exactly where they were authored relative to the entrance.
+    for (const prop of [dropbox, props]) {
+      prop.rotation.y = Math.PI / 2;
+      prop.position.copy(lab.position);
+      root.add(prop);
+    }
+  } catch (error) {
+    console.error(
+      '[World] Failed to load the Come Through Lab hero asset set (building, drop box, supply holder).',
+      error,
+    );
+  }
+}
+
+async function replaceVillageBooksFallback(
+  root: Group,
+  fallback: Mesh,
+  location: WorldLocation,
+): Promise<void> {
+  try {
+    const villageBooks = await loadModel(
+      'assets/models/village-books-blockout.glb?v=geometry-wip-20260912',
+    );
+    applyVillageBooksBlockoutPolicy(villageBooks);
+    villageBooks.name = 'Village Books geometry blockout — detail pass pending';
+    // Blender's -Y Oldham Street frontage imports facing +Z. Rotate it east,
+    // then align the measured fascia projection to the canonical X = -34
+    // building line and centre its north-south envelope on the plot.
+    villageBooks.rotation.y = Math.PI / 2;
+    villageBooks.updateMatrixWorld(true);
+    const bounds = new Box3().setFromObject(villageBooks);
+    const centre = bounds.getCenter(new Vector3());
+    villageBooks.position.x += location.x + location.width / 2 - bounds.max.x;
+    villageBooks.position.y -= bounds.min.y;
+    villageBooks.position.z += location.z - centre.z;
+    root.add(villageBooks);
+    root.remove(fallback);
+  } catch (error) {
+    markLoadFailure(fallback, 'Village Books');
+    console.error(
+      '[World] Failed to load village-books-blockout.glb. Showing the magenta fallback.',
+      error,
+    );
+  }
+}
+
+async function addRealCameraModel(
+  root: Group,
+  location: WorldLocation,
+): Promise<void> {
+  try {
+    const realCamera = await loadModel(
+      'assets/models/real_camera.glb?v=geometry-20260912',
+    );
+    applyRealCameraModelPolicy(realCamera);
+    realCamera.name = 'Real Camera geometry asset — textures pending';
+    // Blender's -Y Dale Street frontage imports facing +Z. Rotate it to face
+    // north, then sit the authored metric envelope on the plot with the
+    // shopfront flush to the plot's north edge so it meets the pavement.
+    realCamera.rotation.y = Math.PI;
+    realCamera.updateMatrixWorld(true);
+    const bounds = new Box3().setFromObject(realCamera);
+    const centre = bounds.getCenter(new Vector3());
+    realCamera.position.x += location.x - centre.x;
+    realCamera.position.y -= bounds.min.y;
+    realCamera.position.z += location.z - location.depth / 2 - bounds.min.z;
+    root.add(realCamera);
+  } catch (error) {
+    console.error(
+      '[World] Failed to load real_camera.glb. No legacy Real Camera blockout is retained.',
       error,
     );
   }
@@ -452,7 +1436,7 @@ function addFacadeProjection(
 function createBlockoutBuildingMass(location: WorldLocation): Mesh {
   const frontTexture = location.id === 'dreams' || location.id === 'renae'
     ? 'brick-painted-overhaul'
-    : location.id === 'arts-council' || location.id === 'come-through-lab'
+    : location.id === 'arts-council'
       ? 'concrete-cracked-overhaul'
       : 'brick-soot-overhaul';
   const frontTint = location.id === 'dreams'
@@ -460,19 +1444,17 @@ function createBlockoutBuildingMass(location: WorldLocation): Mesh {
     : location.id === 'renae'
       ? 0x7c2847
       : 0xffffff;
-  const frontEmissive = ['renae', 'terrace'].includes(location.id)
+  const frontEmissive = location.id === 'renae'
     ? VISUAL_STYLE.lighting.magenta
-    : location.id === 'come-through-lab'
-      ? VISUAL_STYLE.lighting.fluorescent
-      : ['coral', 'advanced-photo', 'arts-council'].includes(location.id)
-        ? VISUAL_STYLE.lighting.coldWhite
-        : VISUAL_STYLE.lighting.sodium;
+    : ['coral', 'arts-council'].includes(location.id)
+      ? VISUAL_STYLE.lighting.coldWhite
+      : VISUAL_STYLE.lighting.sodium;
   const frontMaterial = createWorldMaterial(frontTexture, {
     repeatX: Math.max(2, Math.round(location.width / 4)),
     repeatY: Math.max(2, Math.round(location.height / 2)),
     tint: frontTint,
     emissive: frontEmissive,
-    emissiveIntensity: ['renae', 'coral', 'come-through-lab'].includes(location.id)
+    emissiveIntensity: ['renae', 'coral'].includes(location.id)
       ? 0.16
       : 0.1,
     roughness: 0.94,
@@ -515,7 +1497,7 @@ function createBlockoutBuildingMass(location: WorldLocation): Mesh {
 
 function addBlockoutFacade(root: Group, location: WorldLocation): void {
   const variant = location.id.length % 4;
-  const isWarm = ['dreams', 'renae', 'gullivers', 'vinyl-exchange'].includes(location.id);
+  const isWarm = ['dreams', 'renae', 'vinyl-exchange'].includes(location.id);
   const windowMaterial = createWorldMaterial('window-row-overhaul', {
     repeatX: Math.max(1, Math.round(location.width / 5)),
     repeatY: 1,
@@ -531,18 +1513,13 @@ function addBlockoutFacade(root: Group, location: WorldLocation): void {
   const locationStyle: Record<string, readonly [string, string, number]> = {
     dreams: ['#72283b', '#e7d4c6', VISUAL_STYLE.lighting.magenta],
     renae: ['#7e2348', '#f1ccd7', VISUAL_STYLE.lighting.magenta],
-    m1: ['#cdb33f', '#391e19', VISUAL_STYLE.lighting.sodium],
-    'advanced-photo': ['#214b86', '#e2e9e0', VISUAL_STYLE.lighting.coldWhite],
     coral: ['#183b74', '#eee6d5', VISUAL_STYLE.lighting.coldWhite],
     'eastern-bloc': ['#856b31', '#10151c', VISUAL_STYLE.lighting.sodium],
-    'village-books': ['#d5c8a7', '#7c231d', VISUAL_STYLE.lighting.sodium],
-    'come-through-lab': ['#1d2938', '#b6d6c9', VISUAL_STYLE.lighting.fluorescent],
-    gullivers: ['#403025', '#e9d3a2', VISUAL_STYLE.lighting.sodium],
-    terrace: ['#392547', '#d3cbe4', VISUAL_STYLE.lighting.magenta],
     'vinyl-exchange': ['#d3c6a0', '#a12f28', VISUAL_STYLE.lighting.sodium],
     'real-camera': ['#ddd1ae', '#8c2a22', VISUAL_STYLE.lighting.sodium],
     'spice-cabin': ['#8d2d29', '#f0d28c', VISUAL_STYLE.lighting.sodium],
     'off-licence': ['#302a25', '#ead7ac', VISUAL_STYLE.lighting.sodium],
+    'advanced-photo': ['#d4cbb2', '#20384b', VISUAL_STYLE.lighting.coldWhite],
     'arts-council': ['#d4c79d', '#191816', VISUAL_STYLE.lighting.coldWhite],
   };
   const fallbackStyles: readonly (readonly [string, string, number])[] = [
@@ -557,7 +1534,7 @@ function addBlockoutFacade(root: Group, location: WorldLocation): void {
     location.name,
     signBackground,
     signForeground,
-    ['dreams', 'renae', 'm1', 'arts-council'].includes(location.id) ? 0.24 : 0.11,
+    ['dreams', 'renae', 'arts-council'].includes(location.id) ? 0.24 : 0.11,
   );
 
   addFacadePanel(
@@ -687,7 +1664,7 @@ function addBlockoutFacade(root: Group, location: WorldLocation): void {
       variant % 2 === 0 ? 0.31 : -0.31,
     );
   }
-  if (['dreams', 'come-through-lab', 'eastern-bloc', 'arts-council'].includes(location.id)) {
+  if (['dreams', 'eastern-bloc', 'arts-council'].includes(location.id)) {
     addFacadePanel(
       root,
       location,
@@ -725,8 +1702,133 @@ function addBuildingLocation(
   location: WorldLocation,
 ): void {
   if (location.id === 'dreams') {
-    root.add(createDreamsBuilding(location));
+    const fallback = createDreamsBuilding(location);
+    fallback.rotation.y = location.front === 'north' ? Math.PI : 0;
+    root.add(fallback);
+    void replaceDreamsFallback(root, fallback, location);
     addCollisionFootprint(obstacles, location);
+    return;
+  }
+
+  if (location.id === 'gullivers') {
+    void addGulliversModel(root, location);
+    addCollisionFootprint(obstacles, location);
+    addDevelopmentLabel(
+      root,
+      `${location.name} · geometry WIP · textures pending`,
+      location.x,
+      location.height + 1.1,
+      location.z,
+    );
+    return;
+  }
+
+  if (location.id === 'mcr1') {
+    void addMcr1Model(root, location);
+    addCollisionFootprint(obstacles, location);
+    addDevelopmentLabel(
+      root,
+      `${location.name} · geometry WIP · textures pending`,
+      location.x,
+      location.height + 1.1,
+      location.z,
+    );
+    return;
+  }
+
+  if (location.id === 'renae') {
+    const fallback = createBlockoutBuildingMass(location);
+    fallback.position.set(location.x, location.height / 2, location.z);
+    fallback.name = 'Renee loading placeholder';
+    root.add(fallback);
+    void replaceReneeFallback(root, fallback, location);
+    addReneeInteriorCollision(obstacles, location);
+    addDevelopmentLabel(
+      root,
+      `${location.name} · geometry WIP · textures pending`,
+      location.x,
+      location.height + 1.1,
+      location.z,
+    );
+    return;
+  }
+
+  if (location.id === 'village-books') {
+    const fallback = createBlockoutBuildingMass(location);
+    fallback.position.set(location.x, location.height / 2, location.z);
+    fallback.name = 'Village Books loading placeholder';
+    root.add(fallback);
+    void replaceVillageBooksFallback(root, fallback, location);
+    // The blockout includes a visible closed door but no door animation or
+    // interaction system yet, so retain a solid measured collision footprint.
+    addCollisionFootprint(obstacles, location);
+    addDevelopmentLabel(
+      root,
+      `${location.name} · geometry blockout · detail pass pending`,
+      location.x,
+      location.height + 1.1,
+      location.z,
+    );
+    return;
+  }
+
+  if (location.id === 'come-through-lab') {
+    void addComeThroughLabModel(root, location);
+    addCollisionFootprint(obstacles, location);
+    addDevelopmentLabel(
+      root,
+      `${location.name} · geometry complete · textures pending`,
+      location.x,
+      location.height + 1.1,
+      location.z,
+    );
+    return;
+  }
+
+  if (location.id === 'real-camera') {
+    void addRealCameraModel(root, location);
+    // Solid footprint rather than an interior shell: the authored shop floor
+    // sits 0.82 m up a stair flight, and the player is pinned to y = 0 with
+    // XZ-only collision, so the interior cannot be entered without vertical
+    // support. The GLB already ships the entry/spawn anchors for when it can.
+    addCollisionFootprint(obstacles, location);
+    addDevelopmentLabel(
+      root,
+      `${location.name} · geometry WIP · textures pending`,
+      location.x,
+      location.height + 1.1,
+      location.z,
+    );
+    return;
+  }
+
+  if (location.id === 'arts-council') {
+    void addTheHiveModel(root, location);
+    addCollisionFootprint(obstacles, location);
+    addDevelopmentLabel(
+      root,
+      `${location.name} · geometry complete · textures pending`,
+      location.x,
+      location.height + 1.1,
+      location.z,
+    );
+    return;
+  }
+
+  if (location.id === 'cass-art') {
+    const fallback = createBlockoutBuildingMass(location);
+    fallback.position.set(location.x, location.height / 2, location.z);
+    fallback.name = 'Cass Art loading placeholder';
+    root.add(fallback);
+    void replaceCassArtFallback(root, fallback, location);
+    addCassArtInteriorCollision(obstacles, location);
+    addDevelopmentLabel(
+      root,
+      `${location.name} · geometry WIP · textures pending`,
+      location.x,
+      location.height + 1.1,
+      location.z,
+    );
     return;
   }
 
@@ -736,7 +1838,7 @@ function addBuildingLocation(
           location.width,
           location.height,
           location.depth,
-          location.color,
+          location.color ?? 0x555555,
         )
       : createBlockoutBuildingMass(location);
   building.position.set(location.x, location.height / 2, location.z);
@@ -745,10 +1847,16 @@ function addBuildingLocation(
       ? `${location.name} loading placeholder`
       : `${location.name} blockout`;
   root.add(building);
-  addCollisionFootprint(obstacles, location);
+  if (location.id === 'coral') {
+    addCoralInteriorCollision(obstacles, location);
+  } else {
+    addCollisionFootprint(obstacles, location);
+  }
 
   if (location.id === 'florist') {
     void replaceFloristFallback(root, building, location);
+  } else if (location.id === 'coral') {
+    void replaceCoralFallback(root, building, location);
   } else {
     addBlockoutFacade(root, location);
   }
@@ -779,11 +1887,12 @@ function createBusShelterFallback(): Group {
   const bench = new Mesh(getBoxGeometry(0.55, 0.12, 2.4), material);
   bench.position.set(-0.35, 0.55, 0);
   shelter.add(bench);
+  shelter.scale.setScalar(BUS_SHELTER_SCALE);
   return shelter;
 }
 
-function markShelterLoadFailure(fallback: Group): void {
-  fallback.name = 'Bus shelter load error';
+function markShelterLoadFailure(fallback: Group, assetName = 'Bus shelter'): void {
+  fallback.name = `${assetName} load error`;
   fallback.traverse((child) => {
     if (child instanceof Mesh && child.material instanceof MeshStandardMaterial) {
       child.material.color.set(0xff00c8);
@@ -798,9 +1907,9 @@ async function replaceBusShelterFallback(
 ): Promise<void> {
   try {
     const shelter = await loadModel(
-      'assets/models/harperhay-bus-shelter.glb',
+      'assets/models/bus-shelter/preston-busstop-reference.glb?v=geometry-pass-20260911',
     );
-    applyPhotographicModelPolicy(shelter);
+    applyBusShelterGeometryPolicy(shelter);
     shelter.name = fallback.name.replace(' loading placeholder', '');
     shelter.position.copy(fallback.position);
     shelter.rotation.copy(fallback.rotation);
@@ -809,10 +1918,109 @@ async function replaceBusShelterFallback(
   } catch (error) {
     markShelterLoadFailure(fallback);
     console.error(
-      '[World] Failed to load harperhay-bus-shelter.glb. Showing the magenta fallback.',
+      '[World] Failed to load the Preston bus-stop geometry asset. Showing the magenta fallback.',
       error,
     );
   }
+}
+
+function applyGreekGyrosPolicy(model: Group): void {
+  // The kiosk is a geometry-only asset: keep its authored placeholder palette
+  // and let the glass screen read as glass without inheriting emissive light.
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.map = null;
+      material.emissiveMap = null;
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+      if (material.name === 'MAT_GG_Glass_PLACEHOLDER') {
+        material.transparent = true;
+        material.opacity = 0.22;
+        material.depthWrite = false;
+        material.roughness = 0.14;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.42);
+      }
+    }
+  });
+}
+
+function createGreekGyrosFallback(): Group {
+  const stand = new Group();
+  stand.name = 'Greek Gyros loading placeholder';
+  const body = new MeshStandardMaterial({ color: 0x6a7076, roughness: 0.85 });
+  const fascia = new MeshStandardMaterial({ color: 0x21386d, roughness: 0.6 });
+
+  const shell = new Mesh(getBoxGeometry(6.4, 2.16, 2.6), body);
+  shell.position.set(0, 1.34, 0);
+  stand.add(shell);
+  const counter = new Mesh(getBoxGeometry(6.36, 0.06, 0.62), body);
+  counter.position.set(0, 1.25, 1.15);
+  stand.add(counter);
+  const sign = new Mesh(getBoxGeometry(6.72, 0.94, 0.38), fascia);
+  sign.position.set(0, 2.85, 1.49);
+  stand.add(sign);
+  return stand;
+}
+
+async function replaceGreekGyrosFallback(
+  root: Group,
+  fallback: Group,
+): Promise<void> {
+  try {
+    const stand = await loadModel(
+      'assets/models/greek_gyros.glb?v=geometry-pass-20260912',
+    );
+    applyGreekGyrosPolicy(stand);
+    stand.name = fallback.name.replace(' loading placeholder', '');
+    stand.position.copy(fallback.position);
+    stand.rotation.copy(fallback.rotation);
+    root.add(stand);
+    root.remove(fallback);
+  } catch (error) {
+    markShelterLoadFailure(fallback, 'Greek Gyros');
+    console.error(
+      '[World] Failed to load greek_gyros.glb. Showing the magenta fallback.',
+      error,
+    );
+  }
+}
+
+function addGreekGyros(
+  root: Group,
+  obstacles: CollisionObstacle[],
+  marker: WorldMarker,
+): void {
+  const fallback = createGreekGyrosFallback();
+  fallback.name = `${marker.name} loading placeholder`;
+  fallback.position.set(marker.x, 0, marker.z);
+  root.add(fallback);
+  void replaceGreekGyrosFallback(root, fallback);
+
+  obstacles.push({
+    name: marker.name,
+    minX: marker.x - 3.2,
+    // The side service step projects 0.56 m past the east wall; enclosing it
+    // keeps the player from clipping through the step rather than over it.
+    maxX: marker.x + 3.76,
+    minZ: marker.z - 1.3,
+    // The authored frontage faces +Z: stop the player at the counter lip and
+    // leave the projecting canopy overhead clear.
+    maxZ: marker.z + 1.5,
+    height: 3.6,
+  });
+  addDevelopmentLabel(root, marker.name, marker.x, 4.1, marker.z);
 }
 
 function addBusShelter(
@@ -830,11 +2038,13 @@ function addBusShelter(
 
   obstacles.push({
     name: marker.name,
-    minX: marker.x - 2.55,
-    maxX: marker.x + 2.55,
-    minZ: marker.z - 0.9,
-    maxZ: marker.z + 0.9,
-    height: 2.6,
+    minX: marker.x - 2.55 * BUS_SHELTER_SCALE,
+    maxX: marker.x + 2.55 * BUS_SHELTER_SCALE,
+    minZ: marker.z - 0.9 * BUS_SHELTER_SCALE,
+    // Both shelters face toward +Z after their -90° world rotation. Include
+    // the independently modelled trolley now positioned in front of the rail.
+    maxZ: marker.z + 1.85,
+    height: 2.6 * BUS_SHELTER_SCALE,
   });
   addDevelopmentLabel(root, marker.name, marker.x, 3.4, marker.z);
 }
@@ -925,77 +2135,7 @@ function addCentralPark(root: Group): void {
   fountainColumn.position.y = 1.02;
   root.add(fountainColumn);
 
-  const treeMaterial = createWorldMaterial('foliage-dark-overhaul', {
-    repeatX: 2,
-    repeatY: 2,
-    tint: 0x446a43,
-    roughness: 1,
-  });
-  const treeAmberMaterial = createWorldMaterial('foliage-dark-overhaul', {
-    repeatX: 2,
-    repeatY: 2,
-    tint: 0x6f7138,
-    emissive: 0x5a300b,
-    emissiveIntensity: 0.16,
-    roughness: 1,
-  });
-  const trunkMaterial = createWorldMaterial('tree-bark-temporary', {
-    repeatX: 2,
-    repeatY: 2,
-  });
-  for (const [index, [x, z]] of [
-    [-15, -10], [-8, -11], [9, -11], [15, -8],
-    [-17, -3], [17, -2], [-15, 9], [-8, 11],
-    [9, 10], [15, 8], [-4, -6], [5, 6],
-  ].entries()) {
-    const tree = new Group();
-    tree.name = 'Retro park tree';
-    tree.position.set(x, 0, z);
-    const trunk = new Mesh(getCylinderGeometry(0.14, 0.18, 1.6, 5), trunkMaterial);
-    trunk.position.y = 0.8;
-    tree.add(trunk);
-    const crownMaterial = index % 4 === 0 ? treeAmberMaterial : treeMaterial;
-    const crown = new Mesh(getDodecahedronGeometry(1.15), crownMaterial);
-    crown.position.set(index % 2 === 0 ? -0.18 : 0.16, 2.05, 0);
-    crown.scale.set(1.05, 1.25 + (index % 3) * 0.08, 0.92);
-    crown.rotation.y = index * 0.73;
-    tree.add(crown);
-    const upperCrown = new Mesh(getDodecahedronGeometry(0.78), crownMaterial);
-    upperCrown.position.set(index % 2 === 0 ? 0.28 : -0.25, 2.75, 0.08);
-    upperCrown.scale.set(1.1, 0.85, 0.9);
-    upperCrown.rotation.y = index * 0.41;
-    tree.add(upperCrown);
-    const sideCrown = new Mesh(getDodecahedronGeometry(0.68), crownMaterial);
-    sideCrown.position.set(index % 3 === 0 ? 0.78 : -0.68, 1.92, 0.16);
-    sideCrown.scale.set(1.18, 0.82, 1.02);
-    sideCrown.rotation.set(index * 0.13, index * 0.59, index * 0.07);
-    tree.add(sideCrown);
-    root.add(tree);
-  }
-
-  for (const [x, z, rotation] of [
-    [-12, -14, 0], [12, 14, Math.PI], [-19, 7, Math.PI / 2],
-  ] as const) {
-    const bench = new Group();
-    bench.name = 'Weathered park bench';
-    bench.position.set(x, 0, z);
-    bench.rotation.y = rotation;
-    const timber = createWorldMaterial('metal-oxidised-overhaul', {
-      tint: 0x754b30,
-      roughness: 0.96,
-    });
-    for (const offsetZ of [-0.16, 0.02, 0.2]) {
-      const slat = createBox(2.1, 0.11, 0.14, timber);
-      slat.position.set(0, 0.57, offsetZ);
-      bench.add(slat);
-    }
-    for (const offsetX of [-0.78, 0.78]) {
-      const leg = createBox(0.12, 0.56, 0.36, 0x24282a);
-      leg.position.set(offsetX, 0.28, 0.04);
-      bench.add(leg);
-    }
-    root.add(bench);
-  }
+  addParkEdgeEnvironmentKit(root);
 
   const playgroundReserve = addSurface(
     root,
@@ -1122,11 +2262,11 @@ function addRoadAndPavementLayout(root: Group): void {
   road('West perimeter road', -29.5, 0, ROAD_WIDTH, 66);
   road('East perimeter road', 29.5, 0, ROAD_WIDTH, 66);
   road('Outer North Road', 0, -44.2, 114, ROAD_WIDTH);
-  road('Outer South Road', 0, 48, 114, ROAD_WIDTH);
+  road('Outer South Road', 0, 59.5, 114, ROAD_WIDTH);
   road('Outer west street', -48, 0, ROAD_WIDTH, 96);
   road('Outer east street', 57, 0, ROAD_WIDTH, 96);
   road('North Road outward connection', 0, -55, ROAD_WIDTH, 16);
-  road('South Road outward connection', 0, 57, ROAD_WIDTH, 14);
+  road('South Road outward connection', 0, 69.625, ROAD_WIDTH, 12.75);
   road('West outward connection', -58, 25.5, 16, ROAD_WIDTH);
   road('East outward connection', 61, 0, 8, ROAD_WIDTH);
 
@@ -1138,17 +2278,19 @@ function addRoadAndPavementLayout(root: Group): void {
   pavement('South building pavement', 0, 31.1, 72, 3.6);
   pavement('West building pavement', -34.2, 0, 2, 66, true);
   pavement('East building pavement', 34.2, 0, 2, 66);
+  pavement('South Road shop frontage pavement', 0, 54.875, 72, 1.75, true);
+  pavement('South Road opposite pavement', 18.5, 64, 75, 1.5, true);
 
-  const northKerbMarkingMaterial = new MeshStandardMaterial({
+  const dreamsKerbMarkingMaterial = new MeshStandardMaterial({
     color: 0xb58a18,
     emissive: 0x2e1c02,
     emissiveIntensity: 0.12,
     roughness: 0.86,
   });
-  for (const z of [-29.02, -28.76]) {
-    const line = createBox(18, 0.025, 0.08, northKerbMarkingMaterial);
+  for (const z of [29.02, 28.76]) {
+    const line = createBox(18, 0.025, 0.08, dreamsKerbMarkingMaterial);
     line.name = 'Dreams worn double yellow kerb marking';
-    line.position.set(0, 0.028, z);
+    line.position.set(-3, 0.028, z);
     root.add(line);
   }
   addCrossing(root, 'South park crossing', 0, 25.5);
@@ -1157,7 +2299,7 @@ function addRoadAndPavementLayout(root: Group): void {
 
   addRoadAnnotation(root, 'N-025.5', -9, -25.5);
   addRoadAnnotation(root, 'X 29.5', 29.5, 8, Math.PI / 2);
-  addRoadAnnotation(root, 'Z +48', 17, 48);
+  addRoadAnnotation(root, 'Z +59.5', 17, 59.5);
 }
 
 function addCarPark(root: Group, location: WorldLocation): void {
@@ -1187,7 +2329,12 @@ function addCarPark(root: Group, location: WorldLocation): void {
   addDevelopmentLabel(root, location.name, location.x, 1.8, location.z);
 }
 
-function addBikeDock(root: Group, marker: WorldMarker): void {
+function addBikeDock(
+  root: Group,
+  obstacles: CollisionObstacle[],
+  marker: WorldMarker,
+): void {
+  addPropCollision(obstacles, marker.name, marker.x, marker.z, 2.38, 0.55, 0.7);
   const dock = new Group();
   dock.name = marker.name;
   dock.position.set(marker.x, 0, marker.z);
@@ -1200,82 +2347,14 @@ function addBikeDock(root: Group, marker: WorldMarker): void {
   addDevelopmentLabel(root, marker.name, marker.x, 1.8, marker.z);
 }
 
-function addStreetBin(root: Group, x: number, z: number, rotation = 0): void {
-  const bin = new Group();
-  bin.name = 'Weathered street bin';
-  bin.position.set(x, 0, z);
-  bin.rotation.y = rotation;
-  const body = createBox(
-    0.66,
-    1.04,
-    0.58,
-    createWorldMaterial('metal-oxidised-overhaul', {
-      tint: 0x344944,
-      roughness: 0.9,
-      metalness: 0.08,
-    }),
-  );
-  body.position.y = 0.52;
-  bin.add(body);
-  const opening = createBox(0.46, 0.17, 0.05, 0x080a0b);
-  opening.position.set(0, 0.72, 0.315);
-  bin.add(opening);
-  const lid = createBox(0.74, 0.11, 0.66, 0x20292a);
-  lid.position.y = 1.08;
-  bin.add(lid);
-  root.add(bin);
-}
-
-function addBollard(root: Group, x: number, z: number, tint = 0x23282b): void {
-  const bollard = new Mesh(
-    getCylinderGeometry(0.12, 0.15, 0.82, 7),
-    createWorldMaterial('metal-oxidised-overhaul', {
-      tint,
-      roughness: 0.86,
-      metalness: 0.14,
-    }),
-  );
-  bollard.name = 'Battered pavement bollard';
-  bollard.position.set(x, 0.41, z);
-  root.add(bollard);
-}
-
-function addRubbishBag(root: Group, x: number, z: number, scale = 1): void {
-  const bag = new Mesh(
-    getDodecahedronGeometry(0.38 * scale),
-    new MeshStandardMaterial({
-      color: 0x0b0c11,
-      roughness: 0.44,
-      metalness: 0.06,
-    }),
-  );
-  bag.name = 'Discarded rubbish bag';
-  bag.scale.set(1, 1.35, 0.8);
-  bag.position.set(x, 0.39 * scale, z);
-  bag.rotation.set(0.08, x * 0.31, -0.1);
-  root.add(bag);
-}
-
-function addDrainCover(root: Group, x: number, z: number, rotation = 0): void {
-  const cover = createBox(
-    0.52,
-    0.025,
-    1.05,
-    createWorldMaterial('metal-oxidised-overhaul', {
-      repeatX: 1,
-      repeatY: 2,
-      tint: 0x3e4546,
-      roughness: 0.52,
-      metalness: 0.32,
-    }),
-  );
-  cover.name = 'Wet iron drain cover';
-  cover.position.set(x, 0.045, z);
-  cover.rotation.y = rotation;
-  root.add(cover);
-}
-
-function addUtilityBox(root: Group, x: number, z: number, rotation = 0): void {
+function addUtilityBox(
+  root: Group,
+  obstacles: CollisionObstacle[],
+  x: number,
+  z: number,
+  rotation = 0,
+): void {
+  addPropCollision(obstacles, 'Utility cabinet', x, z, 1.08, 0.42, 1.42, rotation);
   const box = new Group();
   box.name = 'Stickered utility cabinet';
   box.position.set(x, 0, z);
@@ -1306,20 +2385,14 @@ function addUtilityBox(root: Group, x: number, z: number, rotation = 0): void {
   root.add(box);
 }
 
-function addPaperLitter(root: Group, x: number, z: number, rotation = 0): void {
-  const paper = createBox(
-    0.34,
-    0.012,
-    0.24,
-    new MeshStandardMaterial({ color: 0xbab39c, roughness: 1 }),
-  );
-  paper.name = 'Discarded paper litter';
-  paper.position.set(x, 0.055, z);
-  paper.rotation.y = rotation;
-  root.add(paper);
-}
-
-function addShoppingTrolley(root: Group, x: number, z: number, rotation = 0): void {
+function addShoppingTrolley(
+  root: Group,
+  obstacles: CollisionObstacle[],
+  x: number,
+  z: number,
+  rotation = 0,
+): void {
+  addPropCollision(obstacles, 'Abandoned trolley', x, z, 1.2, 1.1, 1.3, rotation);
   const trolley = new Group();
   trolley.name = 'Abandoned shopping trolley';
   trolley.position.set(x, 0, z);
@@ -1354,64 +2427,68 @@ function addShoppingTrolley(root: Group, x: number, z: number, rotation = 0): vo
   root.add(trolley);
 }
 
-function addStreetDressing(root: Group): void {
-  for (const [x, z, rotation] of [
-    [-11.9, 20.1, -0.08], [22.7, -19.8, 0.12], [-34.9, 8.8, Math.PI / 2],
-    [34.8, 21, -Math.PI / 2], [17.5, 31.1, Math.PI],
-  ] as const) {
-    addStreetBin(root, x, z, rotation);
-  }
-  for (const [x, z] of [
-    [-16.7, -19.7], [-14.9, -19.7], [18.5, -19.6], [20.2, -19.6],
-    [-34.6, -4], [-34.6, -1.9], [34.5, 13.2], [34.5, 15.1],
-    [-11.5, 31.2], [-9.7, 31.2], [21.8, 31.1],
-  ] as const) {
-    addBollard(root, x, z);
-  }
-  for (const [x, z, scale] of [
-    [-12.6, 20.4, 0.85], [-33.9, 18.8, 1], [35.1, 16.8, 0.9], [28.1, 31.1, 1.05],
-  ] as const) {
-    addRubbishBag(root, x, z, scale);
-  }
-  for (const [x, z, rotation] of [
-    [-5.7, 23.9, 0], [13.4, -23.1, 0], [-27.1, 10.5, Math.PI / 2],
-    [27, -7, Math.PI / 2], [6.8, 28.9, 0],
-  ] as const) {
-    addDrainCover(root, x, z, rotation);
-  }
-  addShoppingTrolley(root, -5.8, 20.2, 0.16);
-  addShoppingTrolley(root, 31.9, 20.9, -0.74);
-  addUtilityBox(root, -34.7, -11.7, Math.PI / 2);
-  addUtilityBox(root, 34.5, 6.4, -Math.PI / 2);
-  addUtilityBox(root, 25.6, 31.2, Math.PI);
-  for (const [x, z, rotation] of [
-    [-6.4, 20.8, 0.4], [-7.2, 21.7, -0.9], [-15.3, -19.1, 0.2],
-    [-31.4, 6.2, -0.5], [-29.1, 17.8, 1.2], [30.1, 19.5, -0.7],
-    [4.8, 29.1, 0.5], [12.1, 30.6, -0.2],
-  ] as const) {
-    addPaperLitter(root, x, z, rotation);
-  }
+// Street furniture blocks movement but must not drag the camera in; a rotated
+// prop is stored as the axis-aligned box that encloses its turned footprint.
+function addPropCollision(
+  obstacles: CollisionObstacle[],
+  name: string,
+  x: number,
+  z: number,
+  width: number,
+  depth: number,
+  height: number,
+  rotation = 0,
+): void {
+  const cos = Math.abs(Math.cos(rotation));
+  const sin = Math.abs(Math.sin(rotation));
+  const halfX = (width * cos + depth * sin) / 2;
+  const halfZ = (width * sin + depth * cos) / 2;
+
+  obstacles.push({
+    name,
+    minX: x - halfX,
+    maxX: x + halfX,
+    minZ: z - halfZ,
+    maxZ: z + halfZ,
+    height,
+    occludesCamera: false,
+  });
+}
+
+function addStreetDressing(root: Group, obstacles: CollisionObstacle[]): void {
+  addHeroStreetEnvironmentKit(root);
+  addShoppingTrolley(root, obstacles, 31.9, 20.9, -0.74);
+  addShoppingTrolley(root, obstacles, -7.1, -30.1, 0.22);
+  addUtilityBox(root, obstacles, -34.7, -11.7, Math.PI / 2);
+  addUtilityBox(root, obstacles, 34.5, 6.4, -Math.PI / 2);
+  addUtilityBox(root, obstacles, 25.6, 31.2, Math.PI);
+  addUtilityBox(root, obstacles, 8.15, -30.25, Math.PI);
 
   addReflectionPatch(root, 'Bus shelter magenta spill', -8.2, 22.2, 1.1, 4.8, VISUAL_STYLE.lighting.magenta, 0.3, -0.12);
   addReflectionPatch(root, 'Bus shelter green spill', -10.2, 21.4, 0.8, 3.1, VISUAL_STYLE.lighting.fluorescent, 0.2, 0.15);
-  addReflectionPatch(root, 'Dreams cool fascia spill', 0.2, -25.4, 2.1, 5.8, VISUAL_STYLE.lighting.coldWhite, 0.25, 0.03);
-  addReflectionPatch(root, 'Dreams broken secondary spill', -3.1, -26.3, 1.15, 4.3, 0x8fd8e6, 0.13, -0.07);
-  addReflectionPatch(root, 'Dreams broken east spill', 3.7, -25.8, 1.35, 4.8, 0xb9e2e8, 0.12, 0.08);
-  addReflectionPatch(root, 'Renae fascia spill', 16.5, -25.8, 1.2, 4.4, VISUAL_STYLE.lighting.magenta, 0.2, -0.1);
-  addReflectionPatch(root, 'M1 fascia spill', -30.3, 7, 4.8, 0.75, VISUAL_STYLE.lighting.sodium, 0.2, -0.04);
-  addReflectionPatch(root, 'Coral fascia spill', -30.1, 17.1, 4.4, 0.72, VISUAL_STYLE.lighting.coldWhite, 0.16, 0.06);
-  addReflectionPatch(root, 'Advanced Photo fascia spill', 30.3, 17.2, 4.6, 0.68, VISUAL_STYLE.lighting.coldWhite, 0.14, -0.04);
-  addReflectionPatch(root, 'Arts Council fascia spill', 30.2, 22.6, 4.1, 0.62, VISUAL_STYLE.lighting.sodium, 0.17, 0.08);
-  addReflectionPatch(root, 'Vinyl Exchange fascia spill', -18.7, 26.1, 0.75, 4.7, VISUAL_STYLE.lighting.sodium, 0.2, 0.04);
-  addReflectionPatch(root, 'Spice Cabin fascia spill', 10.3, 26.2, 0.82, 4.2, VISUAL_STYLE.lighting.magenta, 0.18, -0.08);
+  addReflectionPatch(root, 'Dreams cool fascia spill', -2.8, 25.6, 2.65, 5.8, VISUAL_STYLE.lighting.coldWhite, 0.36, -0.03);
+  addReflectionPatch(root, 'Dreams broken secondary spill', -6.1, 26.5, 1.75, 4.3, 0x8fd8e6, 0.22, 0.07);
+  addReflectionPatch(root, 'Dreams broken east spill', 0.7, 26, 1.85, 4.8, 0xb9e2e8, 0.2, -0.08);
+  addReflectionPatch(root, 'Dreams broad rough road wash', -2.6, 25.8, 8.2, 4.2, 0xaedbe2, 0.11, -0.02);
+  addReflectionPatch(root, 'Renee fascia spill', 16.5, -25.8, 1.2, 4.4, VISUAL_STYLE.lighting.magenta, 0.2, -0.1);
+  addReflectionPatch(root, 'Coral central fascia spill', -30.1, 17, 5.2, 1.05, VISUAL_STYLE.lighting.coldWhite, 0.17, 0.03);
+  addReflectionPatch(root, 'Coral north fascia spill', -30.4, 10.2, 4.5, 0.82, 0x9edff2, 0.13, -0.05);
+  addReflectionPatch(root, 'Coral south fascia spill', -30.4, 23.8, 4.5, 0.82, 0x9edff2, 0.13, 0.05);
+  addReflectionPatch(root, 'Arts Council fascia spill', 34, 20, 5.8, 0.82, VISUAL_STYLE.lighting.sodium, 0.17, 0.08);
+  addReflectionPatch(root, 'Vinyl Exchange fascia spill', -7, 57.6, 4.7, 0.75, VISUAL_STYLE.lighting.sodium, 0.2, 0.04);
+  addReflectionPatch(root, 'Spice Cabin fascia spill', 10.8, 57.2, 0.82, 4.2, VISUAL_STYLE.lighting.magenta, 0.18, -0.08);
+  addReflectionPatch(root, 'Off-Licence fascia spill', 22.5, 57.2, 0.82, 4.2, VISUAL_STYLE.lighting.sodium, 0.16, 0.06);
+  addReflectionPatch(root, 'Advanced Photo fascia spill', 10.5, 62, 3.8, 0.7, VISUAL_STYLE.lighting.coldWhite, 0.16, -0.04);
 }
 
 function addStreetlight(
   root: Group,
+  obstacles: CollisionObstacle[],
   x: number,
   z: number,
   color: number = VISUAL_STYLE.lighting.sodium,
 ): void {
+  addPropCollision(obstacles, 'Streetlight column', x, z, 0.3, 0.3, 4.2);
   const lamp = new Group();
   lamp.name = 'Public illumination streetlight';
   lamp.position.set(x, 0, z);
@@ -1610,6 +2687,7 @@ function addDevelopmentPickup(root: Group): (deltaTime: number) => void {
 
   const pickup = new Group();
   pickup.name = 'Dreamcast-style pickup prototype';
+  pickup.userData.developmentOverlay = true;
   pickup.position.set(5, 1, 10.5);
 
   const halo = new Mesh(
@@ -1641,6 +2719,7 @@ function addDevelopmentPickup(root: Group): (deltaTime: number) => void {
     createHaloMaterial(VISUAL_STYLE.lighting.magenta, 0.24),
   );
   pool.name = 'Pickup fake coloured pool';
+  pool.userData.developmentOverlay = true;
   pool.position.set(5, 0.04, 10.5);
   pool.rotation.x = -Math.PI / 2;
   root.add(pool);
@@ -1655,13 +2734,106 @@ function addDevelopmentPickup(root: Group): (deltaTime: number) => void {
 }
 
 function addHeroLocalLights(root: Group): PointLight[] {
-  const definitions = [
-    ['Bus Stop A hero light', -9, 2.35, 20.4, 0xb9ffe7, 8, 8],
-    ['Dreams hero light', 0, 4.5, -30.8, VISUAL_STYLE.lighting.coldWhite, 3, 10],
-    ['Renae hero light', 17, 2.5, -30.8, VISUAL_STYLE.lighting.magenta, 7, 9],
-    ['Florist hero light', -16, 2.7, -31, VISUAL_STYLE.lighting.sodium, 7.5, 9],
+  type HeroLightDefinition = readonly [
+    name: string,
+    x: number,
+    y: number,
+    z: number,
+    color: number,
+    intensity: number,
+    distance: number,
+  ];
+
+  const definitions: HeroLightDefinition[] = [
+    ['Bus Stop A hero light', 0, 2.35, 20.4, 0xb9ffe7, 8, 8],
+    ['Dreams hero light', -3, 4.5, 33.2, VISUAL_STYLE.lighting.coldWhite, 1.8, 10],
+    ['Renee hero light', 17, 2.5, -30.8, VISUAL_STYLE.lighting.magenta, 7, 9],
+    ['Florist hero light', -16.9, 2.7, -27, VISUAL_STYLE.lighting.sodium, 7.5, 9],
     ['Bus Stop B hero light', 0, 2.35, -49, 0xb9ffe7, 8, 8],
-  ] as const;
+  ];
+
+  const cassArt = WORLD_LOCATIONS.find((location) => location.id === 'cass-art');
+  if (cassArt) {
+    const scale = cassArt.width / 18;
+    const modelOriginZ = cassArt.z - cassArt.depth / 2;
+    const cassLightDefinitions = [
+      ['Cass Art window fill', 0, 0.65, 3.68, 7, 7],
+      ['Cass Art interior track west', -2.1, 5.75, 4.02, 9, 8],
+      ['Cass Art interior track east', 1.9, 5.75, 4.02, 9, 8],
+    ] as const;
+
+    // The model is rotated 180 degrees at runtime: authored +X becomes world
+    // -X, while authored interior depth (+Y) extends south in world +Z.
+    for (const [name, localX, localDepth, localHeight, intensity, distance] of cassLightDefinitions) {
+      definitions.push([
+        name,
+        cassArt.x - localX * scale,
+        localHeight * scale,
+        modelOriginZ + localDepth * scale,
+        0xffcf91,
+        intensity,
+        distance,
+      ]);
+    }
+  }
+
+  const comeThroughLab = WORLD_LOCATIONS.find(
+    (location) => location.id === 'come-through-lab',
+  );
+  if (comeThroughLab) {
+    // The plot now carries the authored parapet top (7.15 m = ground 3.50 +
+    // upper 3.40 + cap 0.25); sit the pair just under the cap and slightly
+    // proud of the frontage so the wash reaches both upper corners instead of
+    // only the flat wall. `width` is the east-west extent.
+    const parapetTop = comeThroughLab.height;
+    const frontPlaneX = comeThroughLab.x + comeThroughLab.width / 2;
+    for (const [suffix, offsetZ] of [
+      ['north', -4.6],
+      ['south', 4.6],
+    ] as const) {
+      definitions.push([
+        `Come Through Lab parapet corner ${suffix}`,
+        frontPlaneX + 0.4,
+        parapetTop - 0.25,
+        comeThroughLab.z + offsetZ,
+        VISUAL_STYLE.lighting.coldWhite,
+        3.2,
+        7,
+      ]);
+    }
+  }
+
+  const realCamera = WORLD_LOCATIONS.find(
+    (location) => location.id === 'real-camera',
+  );
+  if (realCamera) {
+    // The model is rotated 180 degrees and its frontage aligned to the plot's
+    // north edge, so an authored Blender point (bx, by, bz) lands at
+    // world x = -bx + (plot x - 0.275), y = bz, z = by + (front plane + 5.963).
+    const worldX = (authoredX: number) => realCamera.x - 0.275 - authoredX;
+    const worldZ = (authoredY: number) =>
+      realCamera.z - realCamera.depth / 2 + 5.963 + authoredY;
+    const realCameraLights = [
+      // Sodium wash on the hero shopfront, sitting proud of the facade so the
+      // awning, hanging sign and stone piers catch it rather than one flat wall.
+      ['Real Camera shopfront', 0.05, -6.4, 3.7, VISUAL_STYLE.lighting.sodium, 7, 10],
+      // Interior fluorescents read through the display glazing after dark.
+      ['Real Camera interior west', -4.55, -1.55, 3.3, VISUAL_STYLE.lighting.fluorescent, 5, 7],
+      ['Real Camera interior east', -0.2, -1.55, 3.3, VISUAL_STYLE.lighting.fluorescent, 5, 7],
+    ] as const;
+
+    for (const [name, authoredX, authoredY, height, color, intensity, distance] of realCameraLights) {
+      definitions.push([
+        name,
+        worldX(authoredX),
+        height,
+        worldZ(authoredY),
+        color,
+        intensity,
+        distance,
+      ]);
+    }
+  }
 
   return definitions.map(([name, x, y, z, color, intensity, distance]) => {
     const light = new PointLight(color, intensity, distance, 2);
@@ -1689,9 +2861,9 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
     root,
     'World ground',
     0,
-    0,
+    8,
     128,
-    124,
+    140,
     'concrete-cracked-overhaul',
     -0.12,
     5,
@@ -1712,9 +2884,12 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
 
   addBusShelter(root, obstacles, BUS_STOPS[0], -Math.PI / 2);
   addBusShelter(root, obstacles, BUS_STOPS[1], -Math.PI / 2);
-  addStreetDressing(root);
+  for (const marker of FOOD_STANDS) {
+    addGreekGyros(root, obstacles, marker);
+  }
+  addStreetDressing(root, obstacles);
   for (const marker of STERLING_BIKE_DOCKS) {
-    addBikeDock(root, marker);
+    addBikeDock(root, obstacles, marker);
   }
   for (const marker of FUTURE_EXITS) {
     addDevelopmentLabel(root, `${marker.name} →`, marker.x, 2.2, marker.z);
@@ -1731,14 +2906,18 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
     [-25, 10, VISUAL_STYLE.lighting.sodium],
     [25, -10, VISUAL_STYLE.lighting.fluorescent],
     [25, 10, VISUAL_STYLE.lighting.coldWhite],
-    [-12, -29, VISUAL_STYLE.lighting.sodium],
+    [-9.6, -20.5, VISUAL_STYLE.lighting.sodium],
     [12, -29, VISUAL_STYLE.lighting.magenta],
     [-12, 29, VISUAL_STYLE.lighting.sodium],
     [12, 29, VISUAL_STYLE.lighting.sodium],
     [-34, 7, VISUAL_STYLE.lighting.sodium],
     [34, 17, VISUAL_STYLE.lighting.coldWhite],
+    [-15, 55, VISUAL_STYLE.lighting.sodium],
+    [1, 55, VISUAL_STYLE.lighting.sodium],
+    [16.5, 55, VISUAL_STYLE.lighting.magenta],
+    [29, 55, VISUAL_STYLE.lighting.sodium],
   ] as const) {
-    addStreetlight(root, x, z, color);
+    addStreetlight(root, obstacles, x, z, color);
   }
 
   const heroLocalLights = addHeroLocalLights(root);

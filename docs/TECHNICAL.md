@@ -10,7 +10,7 @@
 - **Primary runtime 3D asset format:** `.glb` (binary glTF)
 - **Version control:** Git and GitHub
 - **Deployment:** static browser build
-- **Target public path:** `/zealot-of-harperhay/`
+- **Target public path:** `/zealot-of-harperhey/`
 - **Initial hosting:** GitHub Pages, through the existing website
 - **Possible later asset hosting:** Cloudflare R2, if asset volume or delivery requirements justify it
 - **Initial platform:** desktop browser MVP
@@ -23,6 +23,7 @@ Development-only references, source photography, `.blend` masters, and renders l
 - `main.ts` owns renderer and scene initialisation, raw render timing, and the fixed-step game loop.
 - `FixedStepClock` advances gameplay at 60 Hz with bounded catch-up and explicit extreme-gap resets.
 - `InputController` tracks keyboard movement, running, and click-drag camera input.
+- `AmbientAudio` layers the local street recording beneath the current ambient music track. Browser autoplay rules mean audio begins on the first key press or pointer interaction; `M` toggles music without muting the street layer.
 - `PlayerController` owns the primitive player representation, velocity, facing direction, movement state, and collision movement.
 - `ThirdPersonCamera` owns orbit angles, camera-relative movement direction, and smoothed following.
 - `createWorld` builds the canonical city layout, visual blockouts and its collision description.
@@ -41,16 +42,23 @@ Development-only references, source photography, `.blend` masters, and renders l
 - Walk: hold `Shift` while moving (running is the default pace)
 - Orbit camera: move the mouse after clicking to capture the pointer, or click and drag
 - Turn camera by keyboard: `Q` and `E` for yaw, `R` and `F` for pitch
+- Recentre camera behind the player: `C`
 - Zoom camera: mouse wheel, between **3.4** and **10.5** metres
 - Hide/show development labels and debug panel: `H`
-- Temporary walking speed: **2.4 metres per second**
-- Temporary running speed: **4.5 metres per second**
+- Production walking speed: **2.4 metres per second**
+- Production running speed: **4.5 metres per second**
+- Development walking speed: **3.12 metres per second** (30% faster)
+- Development running speed: **7.65 metres per second** (70% faster)
 
 Movement is calculated relative to the camera's horizontal facing direction. Velocity accelerates and decelerates smoothly to give the placeholder movement some weight. There is no jumping.
 
 The world is roughly 128 by 124 metres, so running is the default pace and `Shift` drops to a walk for close manoeuvring. Pointer lock is requested on click so the camera can be turned without repeated dragging; drag-to-orbit remains as the fallback when a browser refuses the lock.
 
-The camera keeps itself out of geometry: a segment test against the collision obstacles pulls it in front of anything it would otherwise sit inside, and the player figure is hidden once the camera is pulled closer than 1.7 metres so it cannot fill the screen. When the player is moving and has not orbited manually for 1.2 seconds, the camera eases back behind the direction of travel.
+The camera keeps itself out of geometry: a segment test against the collision obstacles pulls it in front of anything it would otherwise sit inside, and the player figure is hidden once the camera is pulled closer than 1.7 metres so it cannot fill the screen. Occlusion is applied as a hard constraint on the final camera position rather than a target to ease toward, so the camera pulls in immediately and eases back out only as the ordinary follow smoothing carries it there.
+
+The camera deliberately does **not** auto-align behind the direction of travel. Movement is camera-relative, so rotating the camera toward the direction of travel rotates the movement basis in turn; a strafing player is carried round in a circle that never converges, and when running forward the two are already aligned and the behaviour does nothing. Recentring is an explicit one-shot action on `C` instead.
+
+Street furniture — streetlight columns, utility cabinets, trolleys, bike docks — blocks movement but is marked `occludesCamera: false`, so the camera is never yanked in by a passing lamppost. Railings placed by the hero street environment kit are still walk-through.
 
 ## Performance and simulation policy
 
@@ -64,7 +72,7 @@ Development FPS is derived from raw frame time. The development overlay also rep
 
 The default desktop quality is **MEDIUM**. Use `?quality=low`, `?quality=medium`, or `?quality=high` during development and profiling. Full policy and measured Phase 1 results are documented in `PERFORMANCE.md` and `ENGINE_STABILISATION_REPORT.md`.
 
-Most environmental illumination in Zealot of Harpurhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights. The normal local-light budget is four on MEDIUM, with five available on HIGH and two on LOW. Streetlights do not use real-time spotlights.
+Most environmental illumination in Zealot of Harperhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights. The normal local-light budget is four on MEDIUM, with five available on HIGH and two on LOW. Streetlights do not use real-time spotlights.
 
 ### Camera
 
@@ -72,7 +80,7 @@ The prototype uses a 50-degree perspective camera placed 6.8 metres from the pla
 
 ### Collision
 
-The player is represented on the ground plane by a circle with a temporary radius of 0.38 metres. Buildings and the bus shelter use two-dimensional axis-aligned bounding boxes. Movement is resolved one horizontal axis at a time, allowing the player to slide along obstacles, and is clamped to the current playable blockout bounds. This intentionally small collision layer can later be replaced without changing the input or camera systems.
+The player is represented on the ground plane by a circle with a temporary radius of 0.38 metres. Buildings and the bus shelter use two-dimensional axis-aligned bounding boxes. Movement is resolved one horizontal axis at a time, allowing the player to slide along obstacles, and is clamped to the current playable blockout bounds. Before movement, any overlap caused by a changed level layout or development teleport is resolved toward the nearest valid obstacle edge so the player cannot remain trapped inside moved geometry. This intentionally small collision layer can later be replaced without changing the input or camera systems.
 
 ## Naming conventions
 
@@ -86,7 +94,7 @@ The player is represented on the ground plane by a circle with a temporary radiu
 
 ### Assets
 
-- Use lowercase `kebab-case` filenames, for example `harperhay-bus-stop.glb`.
+- Use lowercase `kebab-case` filenames, for example `harperhey-bus-stop.glb`.
 - Use ASCII letters, numbers, and hyphens only; do not use spaces.
 - Add a meaningful variant suffix where needed, for example `brick-wall-wet-albedo.jpg`.
 - Use conventional texture suffixes: `-albedo`, `-normal`, `-roughness`, `-metalness`, `-emissive`, and `-ao`.
@@ -113,9 +121,13 @@ From the project root, generate the bus shelter with:
 
 The script derives the project root from its own location and creates parent directories when necessary. It produces:
 
-- Editable master: `blender/source/harperhay-bus-shelter.blend`
-- Runtime model: `public/assets/models/harperhay-bus-shelter.glb`
-- Development preview: `renders/harperhay-bus-shelter-preview.png`
+- Blockout master: `blender/source/bus-shelter/preston-busstop-blockout.blend`
+- Detailed geometry master: `blender/source/bus-shelter/preston-busstop.blend`
+- Composed review scene: `blender/source/bus-shelter/preston-busstop-reference.blend`
+- Shelter-only runtime model: `public/assets/models/bus-shelter/preston-bus-shelter.glb`
+- Trolley-only runtime model: `public/assets/models/bus-shelter/preston-shopping-trolley.glb`
+- Composed game model: `public/assets/models/bus-shelter/preston-busstop-reference.glb`
+- Development reviews: `renders/bus-shelter/01-...png` through `04-...png`
 
 ### Scale, coordinates, and export
 
@@ -126,7 +138,7 @@ The script derives the project root from its own location and creates parent dir
 - Object names are descriptive lowercase kebab-case. Asset filenames use the project-wide lowercase kebab-case convention.
 - Runtime exports use binary glTF (`.glb`) with selected asset objects only and Y-up conversion enabled.
 
-Three.js loads runtime models with `GLTFLoader`. Model URLs are built from `import.meta.env.BASE_URL`, followed by the path beneath `public/`; this preserves both Vite development and deployment beneath `/zealot-of-harperhay/`.
+Three.js loads runtime models with `GLTFLoader`. Model URLs are built from `import.meta.env.BASE_URL`, followed by the path beneath `public/`; this preserves both Vite development and deployment beneath `/zealot-of-harperhey/`.
 
 `.blend` source files belong under `blender/source/` and are not copied into production builds. Runtime-ready GLBs belong under `public/assets/models/` and are copied into the static build. Preview renders remain under `renders/` and are development-only.
 

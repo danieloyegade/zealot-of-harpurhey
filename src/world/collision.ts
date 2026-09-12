@@ -1,5 +1,7 @@
 import { MathUtils, Vector3 } from 'three';
 
+const SEPARATION_EPSILON = 0.000001;
+
 export interface CollisionObstacle {
   readonly name: string;
   readonly minX: number;
@@ -7,6 +9,12 @@ export interface CollisionObstacle {
   readonly minZ: number;
   readonly maxZ: number;
   readonly height: number;
+  /**
+   * Whether the camera should pull in front of this obstacle. Street furniture
+   * blocks movement but is too thin to hide the player, and yanking the camera
+   * in for every passing lamppost reads as a glitch. Defaults to true.
+   */
+  readonly occludesCamera?: boolean;
 }
 
 export interface PlayableBounds {
@@ -21,46 +29,74 @@ export interface CollisionWorld {
   readonly obstacles: readonly CollisionObstacle[];
 }
 
-// Pushes the circle clear of any obstacle it currently overlaps, along the
-// shortest exit. Doubles as the recovery path: a player who somehow starts
-// inside geometry walks back out instead of being trapped there forever.
-function resolveObstaclePenetration(
+function separateCircleFromObstacle(
   position: Vector3,
   radius: number,
-  obstacles: readonly CollisionObstacle[],
+  obstacle: CollisionObstacle,
+): boolean {
+  const closestX = MathUtils.clamp(position.x, obstacle.minX, obstacle.maxX);
+  const closestZ = MathUtils.clamp(position.z, obstacle.minZ, obstacle.maxZ);
+  const offsetX = position.x - closestX;
+  const offsetZ = position.z - closestZ;
+  const distanceSquared = offsetX * offsetX + offsetZ * offsetZ;
+
+  if (distanceSquared >= radius * radius) {
+    return false;
+  }
+
+  const centreIsInside = position.x >= obstacle.minX
+    && position.x <= obstacle.maxX
+    && position.z >= obstacle.minZ
+    && position.z <= obstacle.maxZ;
+
+  if (centreIsInside) {
+    const candidates = [
+      { axis: 'x', displacement: obstacle.minX - radius - SEPARATION_EPSILON - position.x },
+      { axis: 'x', displacement: obstacle.maxX + radius + SEPARATION_EPSILON - position.x },
+      { axis: 'z', displacement: obstacle.minZ - radius - SEPARATION_EPSILON - position.z },
+      { axis: 'z', displacement: obstacle.maxZ + radius + SEPARATION_EPSILON - position.z },
+    ] as const;
+    const nearestExit = candidates.reduce((nearest, candidate) => (
+      Math.abs(candidate.displacement) < Math.abs(nearest.displacement)
+        ? candidate
+        : nearest
+    ));
+    position[nearestExit.axis] += nearestExit.displacement;
+    return true;
+  }
+
+  const distance = Math.sqrt(distanceSquared);
+  const separation = (radius - distance + SEPARATION_EPSILON) / distance;
+  position.x += offsetX * separation;
+  position.z += offsetZ * separation;
+  return true;
+}
+
+export function resolveCircleOverlaps(
+  position: Vector3,
+  radius: number,
+  world: CollisionWorld,
 ): void {
-  for (const obstacle of obstacles) {
-    const closestX = MathUtils.clamp(position.x, obstacle.minX, obstacle.maxX);
-    const closestZ = MathUtils.clamp(position.z, obstacle.minZ, obstacle.maxZ);
-    const offsetX = position.x - closestX;
-    const offsetZ = position.z - closestZ;
-    const distanceSquared = offsetX * offsetX + offsetZ * offsetZ;
+  const minX = world.bounds.minX + radius;
+  const maxX = world.bounds.maxX - radius;
+  const minZ = world.bounds.minZ + radius;
+  const maxZ = world.bounds.maxZ - radius;
+  const maximumPasses = Math.max(1, world.obstacles.length * 2);
 
-    if (distanceSquared >= radius * radius) {
-      continue;
+  position.x = MathUtils.clamp(position.x, minX, maxX);
+  position.z = MathUtils.clamp(position.z, minZ, maxZ);
+
+  for (let pass = 0; pass < maximumPasses; pass += 1) {
+    let foundOverlap = false;
+    for (const obstacle of world.obstacles) {
+      if (separateCircleFromObstacle(position, radius, obstacle)) {
+        position.x = MathUtils.clamp(position.x, minX, maxX);
+        position.z = MathUtils.clamp(position.z, minZ, maxZ);
+        foundOverlap = true;
+      }
     }
-
-    if (distanceSquared > 1e-8) {
-      const distance = Math.sqrt(distanceSquared);
-      position.x = closestX + (offsetX / distance) * radius;
-      position.z = closestZ + (offsetZ / distance) * radius;
-      continue;
-    }
-
-    const exitWest = position.x - obstacle.minX;
-    const exitEast = obstacle.maxX - position.x;
-    const exitNorth = position.z - obstacle.minZ;
-    const exitSouth = obstacle.maxZ - position.z;
-    const shortestExit = Math.min(exitWest, exitEast, exitNorth, exitSouth);
-
-    if (shortestExit === exitWest) {
-      position.x = obstacle.minX - radius;
-    } else if (shortestExit === exitEast) {
-      position.x = obstacle.maxX + radius;
-    } else if (shortestExit === exitNorth) {
-      position.z = obstacle.minZ - radius;
-    } else {
-      position.z = obstacle.maxZ + radius;
+    if (!foundOverlap) {
+      return;
     }
   }
 }
@@ -76,13 +112,13 @@ export function moveCircleWithCollisions(
   const minZ = world.bounds.minZ + radius;
   const maxZ = world.bounds.maxZ - radius;
 
+  // Apply the full movement, then let the shared overlap resolver push the
+  // circle back out. This resolves to exact contact rather than stopping a
+  // frame short, and slides along corners instead of cancelling a whole axis.
   position.x = MathUtils.clamp(position.x + movement.x, minX, maxX);
   position.z = MathUtils.clamp(position.z + movement.z, minZ, maxZ);
 
-  resolveObstaclePenetration(position, radius, world.obstacles);
-
-  position.x = MathUtils.clamp(position.x, minX, maxX);
-  position.z = MathUtils.clamp(position.z, minZ, maxZ);
+  resolveCircleOverlaps(position, radius, world);
 }
 
 // Fraction along origin->target at which the segment first enters an
@@ -100,6 +136,10 @@ export function findSegmentObstruction(
   let nearest = 1;
 
   for (const obstacle of world.obstacles) {
+    if (obstacle.occludesCamera === false) {
+      continue;
+    }
+
     const entry = findSegmentBoxEntry(
       origin,
       directionX,

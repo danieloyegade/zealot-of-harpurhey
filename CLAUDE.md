@@ -1,9 +1,3 @@
-# Working in this repo
+See `AGENTS.md` at the repo root — it applies equally to you. This project alternates between Codex and Claude Code, so the onboarding brief, the cross-tool sync protocol, and the project's current state are kept in one shared file rather than duplicated per tool.
 
-Before doing anything else, read `docs/STATUS.md` (at least the top entry)
-to see what's already in flight. Before ending your session, append an
-entry to it. Full protocol: `docs/AGENT_WORKFLOW.md`.
-
-This file mirrors `AGENTS.md` — the two exist only because Claude Code and
-Codex each auto-load a differently-named file. Keep them identical; put
-any actual protocol changes in `docs/AGENT_WORKFLOW.md`, not here.
+The short version: read `SYNC.md` and run `git log --oneline -20` / `git status` at the start of every session before trusting any memory of this project's state, and append a `SYNC.md` entry before ending a session. Full detail in `AGENTS.md`.

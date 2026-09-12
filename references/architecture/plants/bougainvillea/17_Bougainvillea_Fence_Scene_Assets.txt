@@ -1,0 +1,548 @@
+BOUGAINVILLEA FENCE SCENE — MODULAR ASSET SET Codex / Blender Asset
+Build Prompt Reference-led, reusable GLB assets for Zealot of Harperhey
+
+1.  ROLE AND GOAL
+
+You are building a modular set of production-ready Blender assets based
+closely on the supplied reference photograph.
+
+The reference image is the primary visual authority.
+
+This is NOT one merged scene asset. Build the principal elements as
+separate, independently placeable assets so they can later be assembled
+between two buildings in the game.
+
+Required separate assets:
+
+A. BGV_signpost_no_entry B. BGV_fence_bougainvillea C.
+BGV_background_tree D. BGV_ground_strip_optional
+
+The assets should work together to reproduce the visual character of the
+photograph, but each must have its own sensible origin, transforms,
+materials and exportability.
+
+The central visual idea is the contrast between ordinary municipal
+infrastructure and unexpectedly lush flowering vegetation: a grey
+traffic-sign pole, weathered timber fence, intense pink bougainvillea,
+dense dark-green foliage, and hard directional sunlight creating
+intricate botanical shadows.
+
+The finished result should occupy the established Zealot of Harperhey
+visual space between photographic reality and a game environment. It
+should be materially convincing and recognisably based on the photograph
+without becoming over-polished, plastic, decorative, or generically
+“pretty.”
+
+2.  REFERENCE INTERPRETATION
+
+Study the supplied photograph carefully.
+
+The composition contains: - a tall grey municipal pole; - a
+square-backed traffic sign mounted high on the pole; - the sign face
+contains a circular “No Entry” symbol; - a shallow circular lamp/light
+fitting immediately above the sign; - a tapered/thicker lower pole
+base; - a long vertical-board timber fence; - bougainvillea growing
+irregularly across and above the fence; - clusters of saturated pink
+flowers; - thin woody stems and climbing branches; - small-to-medium
+green leaves; - dense trees and shrubs behind the fence; - very dark
+foliage recesses; - strong sunlight from above/left; - complex leaf and
+flower shadows projected onto the timber; - a narrow rough ground strip
+beside the kerb.
+
+Do not turn this into a manicured garden.
+
+The vegetation should feel as though it has grown opportunistically
+through an ordinary urban boundary.
+
+3.  MODULAR ASSET STRUCTURE
+
+Keep the following systems separate.
+
+ASSET A — SIGNPOST / NO-ENTRY SIGN / LAMP One reusable object hierarchy
+containing: - municipal pole; - enlarged/tapered lower base; - square
+sign plate; - No Entry graphic; - upper circular lamp/light housing; -
+mounting hardware.
+
+ASSET B — FENCE + BOUGAINVILLEA One modular fence section with: - timber
+boards; - horizontal structural rails where needed; - climbing woody
+stems; - leaf clusters; - flower clusters; - foliage extending above and
+beyond the fence silhouette.
+
+The vegetation may be internally separated into sub-objects, but the
+complete fence/flower combination should be exportable as one convenient
+asset.
+
+ASSET C — BACKGROUND TREE A separate dense tree/large shrub asset
+designed to sit behind the fence and provide the deep green canopy
+visible in the reference.
+
+ASSET D — OPTIONAL GROUND STRIP A small modular strip containing the
+rough soil/pavement transition immediately below the fence, if useful.
+
+Do not merge the signpost into the fence. Do not merge the background
+tree into the bougainvillea. Do not permanently attach the ground to
+either building or fence.
+
+4.  ASSET A — MUNICIPAL SIGNPOST
+
+Reconstruct the pole closely from the photograph.
+
+The pole is tall, narrow and utilitarian, painted/desaturated grey.
+
+Important characteristics: - straight cylindrical main shaft; - slightly
+thicker/tapered lower housing or base; - subtle seams/joints in the
+lower section; - plausible metal thickness; - restrained roughness; -
+slight dirt and age variation; - no glossy chrome appearance.
+
+The pole should look like real painted or galvanised municipal street
+furniture.
+
+Use enough radial segments to produce a clean silhouette at normal
+gameplay distance without excessive geometry.
+
+5.  SIGN PLATE
+
+The sign plate is a vertically oriented square/near-square panel with
+softly rounded corners.
+
+The photograph is strongly affected by sunlight, so do not interpret the
+washed-out colours literally.
+
+Construct: - rigid metal sign plate; - rounded corners; - shallow real
+thickness; - rear mounting hardware/brackets; - front graphic as a clean
+texture/decal.
+
+The graphic should reproduce the recognisable No Entry road-sign
+design: - circular field; - horizontal rectangular bar; - simple
+high-contrast municipal graphic.
+
+Do not bake the extreme photographic overexposure into the texture.
+
+Instead, create a physically plausible sign material that can become
+bright under direct light.
+
+The sign should have: - mildly weathered reflective/painted surface; -
+subtle dirt; - faint surface ageing; - no exaggerated rust; - no
+perfectly pristine CGI finish.
+
+6.  UPPER LAMP / LIGHT FITTING
+
+Immediately above the sign is a shallow circular lamp/light housing.
+
+Model this as actual geometry.
+
+Pay attention to: - broad flattened circular/domed form; - short
+mounting connection to the pole; - underside/lens area; - slightly aged
+off-white/grey housing.
+
+It should cast and receive believable shadows.
+
+Do not model it as a floating disc.
+
+7.  ASSET B — TIMBER FENCE
+
+The fence is a critical material and lighting surface.
+
+Build a modular section of vertically arranged timber boards.
+
+The boards should not be one perfectly flat wall.
+
+Include: - individual plank divisions; - very subtle differences in
+depth and alignment; - narrow gaps between selected boards; - irregular
+top edges; - visible vertical wood grain; - occasional knots; - splits
+and surface checking used sparingly; - screw/nail details only where
+visible/useful; - plausible board thickness.
+
+The timber is aged grey-brown rather than fresh orange lumber.
+
+Material qualities: - predominantly matte; - sun-bleached vertical
+faces; - darker recesses/gaps; - subtle green/organic staining near
+ground level; - uneven weather exposure; - fine rough wood normal
+detail.
+
+Avoid: - glossy wood; - cartoon knots; - uniform procedural planks; -
+identical repeated boards; - exaggerated displacement.
+
+The fence needs enough geometric relief that directional sunlight
+produces narrow shadows along plank edges.
+
+8.  BOUGAINVILLEA — PRIMARY VEGETATION REQUIREMENT
+
+The flowering plant is the visual focus of this asset set.
+
+Do NOT make it as a generic spherical flowering bush.
+
+It must read as a climbing, sprawling bougainvillea-like plant growing
+across a fence.
+
+Its structure should contain three distinct scales:
+
+A. PRIMARY WOODY STRUCTURE - thin, dark woody stems; - irregular
+branching; - some long horizontal/diagonal stems; - stems that visibly
+trace across the timber fence; - occasional bare stretches; - branches
+that project away from the fence.
+
+B. LEAF STRUCTURE - relatively small green leaves; - leaves distributed
+in clusters along branches; - variable orientation; - non-uniform
+density; - some sparse areas where stems remain visible; - foliage
+projecting both in front of and above the fence.
+
+C. FLOWER / BRACT CLUSTERS - saturated pink to magenta clusters; -
+irregular clustered masses rather than individual evenly spaced
+flowers; - different cluster sizes; - some large dense flowering
+zones; - smaller isolated clusters further along the stems; - natural
+asymmetry.
+
+The photograph shows a major concentration of flowers around the
+upper-middle/left region, with branching growth spreading horizontally
+toward the right and smaller blooms appearing farther down and outward.
+
+Preserve that asymmetric rhythm.
+
+9.  FLOWER CONSTRUCTION
+
+The flowers must remain visually convincing without becoming
+prohibitively expensive for Three.js.
+
+Use a hybrid method: - a small library of low-poly bract/flower cluster
+meshes; - alpha-cutout cards where appropriate; - instancing for
+repeated cluster families; - controlled random rotation, scale and hue
+variation.
+
+Do not use one flat billboard for the entire flowering plant.
+
+At close-to-medium distance, clusters need enough layered depth to cast
+fragmented shadows and retain volume when viewed obliquely.
+
+Create approximately 5–10 distinct flower-cluster variants before
+instancing/variation so repetition is not obvious.
+
+The colour should be rich pink/magenta with variation between: - sunlit
+pale pink; - saturated mid pink; - deeper shadowed crimson/magenta.
+
+Do not make every flower identical in colour.
+
+10. LEAF CONSTRUCTION
+
+Leaves should similarly use efficient repeated geometry.
+
+Use: - several leaf/leaf-sprig variants; - alpha cutouts or low-poly
+leaves; - instancing; - varied orientation; - restrained scale
+variation.
+
+Leaf materials should have believable front/back behaviour where
+practical.
+
+Avoid perfectly opaque plastic leaves.
+
+Use subtle translucency/transmission or an efficient approximation if
+compatible with the existing Three.js pipeline, but prioritise
+performance and stable rendering.
+
+Leaves should have enough geometric separation to generate broken,
+recognisable botanical shadows.
+
+11. VEGETATION DEPTH
+
+The bougainvillea must not appear painted onto the fence.
+
+Create multiple depth layers: - stems close to the timber; - foliage
+2–10 cm forward; - major branches and flower clusters extending
+farther; - occasional stems extending above the fence; - a few branches
+reaching laterally beyond the main mass.
+
+The shadows and parallax created by this depth are essential.
+
+The fence should remain visible through the plant in many areas.
+
+Do not cover the entire fence uniformly.
+
+12. ASSET C — BACKGROUND TREE / DENSE FOLIAGE
+
+Create a separate background tree or large shrub mass.
+
+Its purpose is both architectural and tonal.
+
+In the reference, the foliage behind the fence creates a dense, dark
+green wall with pockets approaching near-black shadow. Sunlit leaves
+appear around the upper-left and upper-middle areas while the
+right/central recess becomes much darker.
+
+The tree should contain: - believable trunk/major branch support where
+visible; - broad irregular canopy; - layered leaf clusters; - variable
+leaf size/orientation; - non-spherical silhouette; - internal depth.
+
+Do not make a generic perfect ball-shaped game tree.
+
+The canopy should be suitable for positioning behind and above the
+fence, partly filling the gap between two future buildings.
+
+Create a dense enough silhouette that it can form a dark visual backdrop
+behind the pink flowers.
+
+13. SHADOWS — CRITICAL REQUIREMENT
+
+The shadow behaviour in the reference is one of the most important
+aspects of the scene.
+
+DO NOT bake the photograph’s shadows directly into the fence texture.
+
+The asset geometry must be capable of producing comparable shadows
+dynamically.
+
+The reference contains: - hard-to-medium edged directional sunlight; -
+leaf shadows projected across multiple timber boards; - thin branch
+shadows; - dense overlapping flower/leaf silhouettes; - bright patches
+alternating with deep shade; - large areas of the foliage falling into
+near-black shadow.
+
+The bougainvillea should therefore have enough separated geometry to
+create intricate projected shadows.
+
+Validate the scene using a strong directional/sun light from above and
+camera-left/front-left, adjusted to approximate the reference.
+
+The shadow pattern should feel fragmented, botanical and spatially
+layered.
+
+Do not fake the entire shadow with a single opacity decal.
+
+However, for performance, a supplementary low-cost shadow/decal solution
+may be created as an OPTIONAL distant LOD, provided the close version
+uses real geometry-driven shadows.
+
+14. LIGHTING VALIDATION
+
+Create a reference-comparison lighting setup in Blender for validation
+only.
+
+Target: - strong summer daylight; - high contrast; - bright upper-left
+illumination; - deep foliage shadows; - clear projected botanical
+shadows on the fence; - strong but plausible specular/reflective
+response from the road sign; - no flat studio lighting.
+
+The photograph has a slightly heightened, almost uncanny contrast.
+Preserve this feeling without baking a stylised grade into the material
+textures.
+
+The asset must still work under the game’s normal night lighting.
+
+Also create a second night validation render showing how the fence,
+flowers, tree and sign behave under a nearby streetlight.
+
+15. THE SPECTRES ARE ALL AROUND US / GAME AESTHETIC
+
+This scene is particularly important to the visual language of Zealot of
+Harperhey.
+
+The combination of: - municipal sign; - ordinary timber boundary; -
+aggressive artificial infrastructure; - luxuriant flowers; - deep
+shadow; - isolated pool of illumination; - banal urban space becoming
+unexpectedly beautiful
+
+fits the broader The Spectres Are All Around Us practice.
+
+Do not exaggerate this with fantasy objects.
+
+The uncanniness should emerge from accurate observation, framing,
+contrast and the strange coexistence of municipal infrastructure and
+organic growth.
+
+The final asset should be suitable for: - normal gameplay; - planimetric
+compositions; - scripted cinematic scenes; - screen-recorded film
+sequences; - daylight and nocturnal versions of the world.
+
+16. PLACEMENT BETWEEN BUILDINGS
+
+This fence scene will eventually occupy a gap between two buildings.
+
+Design accordingly.
+
+The fence should: - have a clean modular width; - be
+extendable/repeatable; - terminate cleanly at both ends; - tolerate
+partial occlusion by adjacent architecture; - have no permanently
+modelled buildings attached; - allow the tree canopy to rise behind the
+gap; - allow the bougainvillea silhouette to overlap the neighbouring
+building edges naturally.
+
+Provide at least: - one hero fence section based closely on the
+photograph; - one simpler extension section if useful; - optional
+left/right end modules if needed.
+
+Avoid obvious repetition when multiple fence sections are placed
+together.
+
+17. GROUND / KERB INTERACTION
+
+If building the optional ground strip, reproduce the rough transition
+visible in the reference: - narrow pavement edge; - kerb; - dark
+soil/moss near the fence; - small weeds; - rough granular
+asphalt/concrete; - minor organic debris.
+
+Keep weeds and debris as separate or efficiently instanced details where
+possible.
+
+The ground should not become the main asset.
+
+Its purpose is to make the fence feel physically rooted rather than
+floating.
+
+18. MATERIAL SET
+
+Use a concise glTF-compatible material library, approximately:
+
+MAT_sign_reflective_weathered MAT_sign_metal_back MAT_pole_grey_metal
+MAT_lamp_housing MAT_lamp_lens MAT_fence_aged_timber
+MAT_branch_dark_wood MAT_bougainvillea_leaf MAT_bougainvillea_flower
+MAT_tree_leaf MAT_tree_bark MAT_ground_rough_optional
+
+Avoid unnecessary material proliferation.
+
+19. OBJECT NAMING / HIERARCHY
+
+Recommended hierarchy:
+
+BGV_SIGNPOST_ROOT BGV_pole BGV_pole_base BGV_sign_plate BGV_sign_mounts
+BGV_lamp
+
+BGV_FENCE_FLOWERS_ROOT BGV_fence_boards BGV_fence_structure
+BGV_bougainvillea_primary_stems BGV_bougainvillea_secondary_stems
+BGV_bougainvillea_leaves BGV_bougainvillea_flowers
+
+BGV_TREE_ROOT BGV_tree_trunk BGV_tree_branches BGV_tree_foliage
+
+BGV_GROUND_ROOT BGV_ground BGV_weeds BGV_debris_optional
+
+20. ORIGINS AND MODULARITY
+
+Set sensible origins.
+
+Signpost: origin at ground centre of pole.
+
+Fence/flowers: origin at ground level on the rear/centre line of the
+fence module.
+
+Tree: origin at trunk/base ground contact.
+
+Ground: origin at one modular corner or centre according to the
+project’s established environment convention.
+
+Apply transforms before export.
+
+All major assets must be independently movable in Three.js.
+
+21. THREE.JS / GLB PERFORMANCE
+
+Build for practical real-time use.
+
+Requirements: - glTF 2.0 compatible materials; - efficient topology; -
+no unnecessary hidden faces; - clean normals; - applied transforms; -
+sensible texture resolutions; - texture atlases where useful; -
+instancing/repeated mesh strategy for leaves and flowers; - minimal
+transparent overdraw; - avoid extremely dense geometry for every leaf; -
+LODs for vegetation if useful.
+
+The hero version may be relatively detailed because this is a visually
+distinctive scene, but it must remain appropriate for a browser-based
+Three.js environment.
+
+Suggested LOD philosophy:
+
+LOD0: Full branch structure, layered leaves, layered flower clusters,
+real shadow casting.
+
+LOD1: Reduced leaf/flower geometry and simplified branches.
+
+LOD2: Cluster cards/impostor-style vegetation while preserving overall
+silhouette and colour distribution.
+
+The timber fence should remain geometric at all practical LODs.
+
+22. DO NOT DO
+
+Do not: - merge all assets into one object; - make the bougainvillea a
+generic flower bush; - make the tree a spherical game tree; - make the
+fence perfectly new; - use flat brown rectangles for the timber; - bake
+the hero shadows into the albedo; - make every flower identical; - make
+every leaf identical; - use excessive gloss; - create plastic-looking
+vegetation; - over-saturate the timber; - add fantasy embellishments; -
+over-clean the ground; - create an architectural-visualisation
+aesthetic; - simplify the signpost into an untextured cylinder and
+rectangle; - omit the small lamp above the sign.
+
+23. VALIDATION RENDERS
+
+Before final export, create:
+
+A. full assembled reference-style daylight composition; B. straight-on
+modular fence view; C. close-up of timber + climbing stems; D. close-up
+of flower clusters; E. close-up of signpost/sign/lamp; F. foliage-shadow
+test on fence; G. tree silhouette test; H. night/streetlight test; I.
+exploded/separated asset view showing that signpost, fence/flowers and
+tree are independent.
+
+The daylight assembled render should immediately recall the supplied
+photograph.
+
+24. QUALITY CHECKLIST
+
+Before export verify:
+
+[ ] Signpost is a separate asset. [ ] Fence + bougainvillea is a
+separate asset. [ ] Background tree is a separate asset. [ ] All assets
+have sensible origins. [ ] No Entry sign proportions match the
+reference. [ ] Small circular lamp above the sign is present. [ ] Pole
+includes the thicker lower base. [ ] Fence consists of real
+individual/relieved vertical boards. [ ] Timber is weathered grey-brown
+and not glossy. [ ] Bougainvillea has visible woody climbing stems. [ ]
+Plant growth is asymmetric. [ ] Main flower mass is concentrated rather
+than uniformly distributed. [ ] Pink flowers have several cluster
+variants. [ ] Leaves have varied orientation and depth. [ ] Vegetation
+projects far enough from the fence to create real shadows. [ ] Fence
+remains visible through the vegetation. [ ] Background tree is dense and
+irregular. [ ] Tree provides deep green/near-black recesses. [ ] Direct
+sunlight produces complex botanical shadows. [ ] Hero shadows are
+geometry-driven rather than painted onto the fence. [ ] Assets still
+work under night lighting. [ ] No obvious texture or vegetation
+repetition. [ ] GLBs import correctly into the Three.js test scene.
+
+25. EXPORT
+
+Export the assets separately as:
+
+BGV_signpost_no_entry.glb BGV_fence_bougainvillea.glb
+BGV_background_tree.glb BGV_ground_strip_optional.glb
+
+Also save the Blender source file with the complete assembled validation
+scene.
+
+Use the established Blender-to-Three.js export settings for Zealot of
+Harperhey.
+
+Do not include validation cameras/lights in individual production GLBs
+unless the existing pipeline specifically requires them.
+
+26. FINAL PRIORITY ORDER
+
+When compromises are necessary, prioritise:
+
+1.  Bougainvillea silhouette, branching structure and pink flower
+    distribution.
+2.  Real geometry-driven leaf/flower shadows across the fence.
+3.  Weathered timber fence texture and depth.
+4.  Accurate municipal signpost/sign/lamp silhouette.
+5.  Dense dark-green background tree and canopy depth.
+6.  Correct spatial separation between plant, fence and background
+    foliage.
+7.  Efficient Three.js performance.
+8.  Minor ground details.
+
+The finished scene should feel like an observed fragment of an ordinary
+North Manchester street that has become strangely theatrical through
+flowers, municipal infrastructure, sunlight and shadow.
+
+It should not look like a generic garden asset pack.
+
+It should look specific enough that, when assembled between two
+buildings in Zealot of Harperhey, it retains the photographic
+strangeness and beauty of the supplied reference image.

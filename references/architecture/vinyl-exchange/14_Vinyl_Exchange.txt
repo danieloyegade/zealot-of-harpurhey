@@ -1,0 +1,1272 @@
+VINYL EXCHANGE, OLDHAM STREET / DALE STREET, MANCHESTER
+
+Detailed untextured architectural reconstruction for Zealot of Harperhey
+
+Create an accurate, game-ready Blender reconstruction of Vinyl Exchange
+on the corner of Oldham Street and Dale Street, Manchester, using ALL
+supplied reference images.
+
+This asset is for Zealot of Harperhey, a Three.js game.
+
+This building must not be treated as a generic record shop.
+
+Its identity depends on the contrast between:
+
+-   the ornate historic upper facade;
+
+-   the curved/corner architecture;
+
+-   repeated arched windows;
+
+-   decorative stone columns and capitals;
+
+-   the modern grey Vinyl Exchange fascia;
+
+-   prominent red signage;
+
+-   aluminium/metal shopfront framing;
+
+-   vents and grille systems;
+
+-   shutters;
+
+-   the Oldham Street and Dale Street street-name plaques.
+
+This pass is primarily for GEOMETRY AND ARCHITECTURAL FORM.
+
+Do not create final textures, album-cover artwork, graffiti, dirt,
+stickers, final glass reflections or detailed shop stock yet.
+
+⸻
+
+1.  REFERENCE PRIORITY
+
+Use all supplied images together.
+
+The references include:
+
+-   full corner views;
+
+-   Oldham Street elevation;
+
+-   Dale Street elevation;
+
+-   low-angle views;
+
+-   signage close-ups;
+
+-   upper facade detail;
+
+-   shop entrance;
+
+-   side windows;
+
+-   corner shutter/grille;
+
+-   historical/older views of the storefront.
+
+Cross-reference the images rather than copying any single photograph
+literally.
+
+Do not reproduce wide-angle lens distortion as geometry.
+
+⸻
+
+2.  BUILDING IDENTITY
+
+The final untextured model should already be recognisable as Vinyl
+Exchange because of:
+
+-   corner massing;
+
+-   upper arches;
+
+-   ornate pilasters;
+
+-   distinctive projecting capitals;
+
+-   blue/dark window frames;
+
+-   grey ground-floor fascia;
+
+-   corner shop configuration;
+
+-   large fascia sign areas;
+
+-   metal vents;
+
+-   vertical ribbed shopfront panels;
+
+-   recessed entrances;
+
+-   street-name plaques.
+
+If it looks like a generic modern retail unit until textures are
+applied, the geometry is not detailed enough.
+
+⸻
+
+3.  MASTER STRUCTURE
+
+Create:
+
+VINYL_EXCHANGE_MASTER
+
+Suggested hierarchy:
+
+VE_BuildingShell
+
+VE_UpperFacade
+
+VE_Ornament
+
+VE_Windows
+
+VE_GroundFloor
+
+VE_Fascia
+
+VE_OldhamStreetFront
+
+VE_DaleStreetFront
+
+VE_Corner
+
+VE_Vents
+
+VE_Shutters
+
+VE_Grilles
+
+VE_Signage
+
+VE_Glass
+
+VE_InteriorShell
+
+VE_StreetPlaques
+
+VE_InteractionAnchors
+
+⸻
+
+4.  OVERALL MASSING
+
+Begin with the full corner volume.
+
+The building should clearly turn from Oldham Street into Dale Street.
+
+Preserve:
+
+-   the corner angle/curve;
+
+-   projecting corner bay;
+
+-   continuity of upper-storey arches around the corner;
+
+-   long Dale Street elevation;
+
+-   shorter Oldham Street-facing shop entrance elevation;
+
+-   real ground-floor shop depth.
+
+Do not build this as two unrelated flat facades meeting at a simple
+90-degree seam.
+
+⸻
+
+5.  HISTORIC UPPER FACADE
+
+THIS IS A HERO ARCHITECTURAL ELEMENT.
+
+The upper level has a repeating sequence of tall arched openings and
+decorative vertical stone elements.
+
+Model:
+
+-   real arch depth;
+
+-   thick window reveals;
+
+-   projecting arch mouldings;
+
+-   substantial vertical piers/pilasters;
+
+-   decorative capitals;
+
+-   horizontal decorative bands;
+
+-   recessed spandrel areas;
+
+-   corner projections.
+
+These must cast real shadows.
+
+⸻
+
+6.  ARCHES
+
+Do not use flat rectangular windows with arched textures.
+
+Each principal upper opening should have:
+
+-   genuine curved arch geometry;
+
+-   recessed glazing;
+
+-   surrounding moulded arch;
+
+-   correct spring point;
+
+-   consistent repetition.
+
+Create reusable modules where appropriate.
+
+Example:
+
+VE_ArchWindow_Module_A
+
+VE_ArchWindow_Corner_Module
+
+⸻
+
+7.  DECORATIVE CAPITALS
+
+The tops of the vertical facade piers contain distinctive
+clustered/floral ornament.
+
+This is important.
+
+Build simplified three-dimensional capitals that preserve:
+
+-   overall silhouette;
+
+-   downward hanging clustered forms;
+
+-   projection from wall;
+
+-   repeated rhythm.
+
+Do not model every tiny floral detail.
+
+Use a medium-detail reusable ornament module:
+
+VE_Capital_Module
+
+Fine carving can later be enhanced through normal maps.
+
+⸻
+
+8.  VERTICAL PILASTERS
+
+The upper facade is divided by tall projecting pilaster-like elements.
+
+Model:
+
+-   main central shaft;
+
+-   narrow applied cylindrical/half-round mouldings;
+
+-   small collar/band details;
+
+-   base transition;
+
+-   capital.
+
+These are extremely visible in the close references.
+
+⸻
+
+9.  DECORATIVE HORIZONTAL BAND
+
+Above/between the arches is a shallow decorative patterned band.
+
+Give this real relief where the profile is large enough to cast a
+shadow.
+
+Very fine pattern detail can be deferred to later texture/normal work.
+
+⸻
+
+10. UPPER WINDOWS
+
+The upper windows use dark blue/black frames.
+
+Model:
+
+-   recessed glazing;
+
+-   thick outer frame;
+
+-   central mullion;
+
+-   horizontal transom;
+
+-   curved upper glazing section where visible;
+
+-   corner-return windows.
+
+Keep glass separate.
+
+⸻
+
+11. CORNER WINDOWS
+
+Pay particular attention to the corner windows.
+
+They wrap around the building geometry and help establish the corner
+form.
+
+Do not flatten the corner into one rectangular window.
+
+Model the actual:
+
+-   front pane;
+
+-   angled/return pane;
+
+-   structural mullion.
+
+⸻
+
+12. GROUND-FLOOR COMMERCIAL FASCIA
+
+The modern grey fascia wraps around the corner underneath the historic
+upper facade.
+
+Model:
+
+-   broad grey fascia plane;
+
+-   real fascia thickness;
+
+-   corner return;
+
+-   underside;
+
+-   mounting/recess depth;
+
+-   transition to upper building.
+
+The fascia should feel like a later commercial intervention attached to
+an older building.
+
+⸻
+
+13. VINYL EXCHANGE MAIN SIGN
+
+SIGNAGE QUALITY IS CRITICAL.
+
+Above the main entrance is the large red:
+
+vinyl
+
+exchange
+
+lettering.
+
+Model the actual letters as separate low-depth 3D characters rather than
+only reserving a flat texture surface.
+
+The letters visibly project from the fascia and cast shadows.
+
+Suggested:
+
+VE_MainLogo_vinyl
+
+VE_MainLogo_exchange
+
+Approximate the real typeface closely.
+
+Preserve:
+
+-   lowercase styling;
+
+-   line break;
+
+-   heavy bold forms;
+
+-   red letter depth;
+
+-   spacing;
+
+-   alignment.
+
+⸻
+
+14. TAGLINE PANEL
+
+Below the main logo is the horizontal strip reading:
+
+Vinyl, CDs, DVDs bought, sold and exchanged
+
+Create:
+
+VE_TaglineSurface
+
+as a separate panel.
+
+Final typography can be added in the texture/signage pass.
+
+Its dimensions and position should be accurate now.
+
+⸻
+
+15. SIDE VINYL EXCHANGE SIGN
+
+On the corner/side fascia there is a black sign carrying the compact:
+
+vinyl exchange
+
+identity.
+
+Model:
+
+-   black projecting sign box/panel;
+
+-   actual thickness;
+
+-   correct corner placement.
+
+Create:
+
+VE_SideLogoSurface
+
+The later artwork should preserve the mixed red/white identity shown in
+the references.
+
+⸻
+
+16. OLDHAM STREET PLAQUE
+
+DO NOT OMIT THIS.
+
+Above the fascia on the Oldham Street side is the distinctive small
+ceramic street-name plaque:
+
+OLDHAM
+
+STREET
+
+It is visually important because it anchors the shop geographically
+within Manchester.
+
+Model it as a separate object:
+
+VE_Plaque_OldhamStreet
+
+Include:
+
+-   rectangular ceramic plate;
+
+-   slight thickness;
+
+-   small border/lip;
+
+-   wall mounting position.
+
+Preserve the hand-painted/blocky lettering appearance during the later
+texture pass.
+
+⸻
+
+17. DALE STREET PLAQUE
+
+On the corner/return facade is the corresponding:
+
+DALE
+
+STREET
+
+plaque.
+
+Create:
+
+VE_Plaque_DaleStreet
+
+It should match the Oldham Street plaque in scale and style.
+
+Both plaques must survive export as clearly identifiable objects.
+
+⸻
+
+18. PLAQUE POSITIONING
+
+Carefully use the references to position both plaques.
+
+They sit close to the transition between:
+
+-   ornate historic facade;
+
+-   modern grey shop fascia.
+
+Their placement should not be arbitrary.
+
+⸻
+
+19. OLDHAM STREET SHOPFRONT
+
+Reconstruct the main shop entrance/front.
+
+Include:
+
+-   large display glazing;
+
+-   narrow central/offset entrance;
+
+-   door;
+
+-   aluminium frames;
+
+-   side display panes;
+
+-   low sill/plinth;
+
+-   upper ventilation grille.
+
+The player may eventually enter, so create an actual door opening.
+
+⸻
+
+20. ENTRANCE
+
+Create:
+
+VE_MainEntrance
+
+VE_MainDoor
+
+VE_MainDoorGlass
+
+VE_MainDoorFrame
+
+VE_EntranceAnchor
+
+VE_InteriorSpawnAnchor
+
+Make the door independently movable.
+
+⸻
+
+21. SHOP WINDOW POSTER AREAS
+
+The windows contain many record sleeves/posters in the references.
+
+Do NOT build the individual record artwork in this pass.
+
+Create clean internal display surfaces:
+
+VE_Display_Left
+
+VE_Display_Right
+
+Later these can receive:
+
+-   album covers;
+
+-   gig posters;
+
+-   flyers;
+
+-   stickers.
+
+⸻
+
+22. INTERIOR DEPTH
+
+Build a simple interior shell behind the main shopfront.
+
+Include:
+
+-   floor;
+
+-   ceiling;
+
+-   rear wall;
+
+-   side walls;
+
+-   several metres of actual depth.
+
+Do not leave black void behind the glass.
+
+No detailed racks or records yet unless required for silhouette testing.
+
+⸻
+
+23. SIDE / DALE STREET WINDOWS
+
+The long Dale Street side has large glazed bays.
+
+Reconstruct their:
+
+-   dimensions;
+
+-   frame positions;
+
+-   sill height;
+
+-   vertical supports;
+
+-   relation to fascia.
+
+These should appear integrated into the same ground-floor retail shell.
+
+⸻
+
+24. LOWER WINDOW GRAPHIC AREA
+
+One side window has the distinctive curved graphic/pattern associated
+with Vinyl Exchange.
+
+Do not model the artwork as geometry.
+
+Create:
+
+VE_SideWindowGraphicSurface
+
+for later texturing.
+
+⸻
+
+25. VENTILATION GRILLES
+
+THE VENTS ARE IMPORTANT.
+
+Above the shop windows are long horizontal ventilation grilles.
+
+Model:
+
+-   recessed rectangular vent openings;
+
+-   horizontal louvre/slat structure;
+
+-   surrounding metal frame.
+
+Do not use only a flat dark rectangle.
+
+But keep the louvre count efficient.
+
+Use instanced/repeated slats or a simplified grille mesh.
+
+⸻
+
+26. VERTICAL RIBBED PANELS
+
+The shopfront has narrow vertical ribbed metal sections separating some
+windows/openings.
+
+Model their broad ribbed character.
+
+They should read correctly when viewed from pavement level.
+
+Do not model microscopic grooves.
+
+Suggested:
+
+VE_RibbedPanel_Module
+
+⸻
+
+27. CORNER SHUTTER / SECURITY GRILLE
+
+The corner contains a distinctive recessed opening with
+folding/accordion metal security grille.
+
+This should be preserved.
+
+Model:
+
+-   recessed corner opening;
+
+-   folding lattice gate;
+
+-   side guides;
+
+-   shutter/recess behind it where visible.
+
+Suggested:
+
+VE_CornerSecurityGate
+
+Keep it separate so it could later animate open/closed if useful.
+
+⸻
+
+28. ACCORDION GATE
+
+The folding gate has repeating X/diamond shapes.
+
+Do not create an absurdly dense mesh.
+
+Build one repeating gate cell/module and instance/array it.
+
+Preserve:
+
+-   recognisable lattice structure;
+
+-   depth;
+
+-   folded character.
+
+⸻
+
+29. CORNER RECESSED DOOR / PANEL
+
+Behind/adjacent to the corner grille is a pale green/grey recessed
+door/panel visible in several references.
+
+Include this as separate geometry.
+
+It helps the corner read correctly.
+
+⸻
+
+30. METAL FRAMES
+
+The ground-floor shopfront uses industrial aluminium/steel framing.
+
+Preserve:
+
+-   narrow vertical members;
+
+-   frame depth;
+
+-   sill channels;
+
+-   dark recesses.
+
+Avoid oversized chunky frames.
+
+⸻
+
+31. CABLES ABOVE FASCIA
+
+There are prominent black cables running along the upper edge of the
+modern fascia.
+
+Because they are visually noticeable in the references, include a
+simplified cable bundle:
+
+VE_CableBundle
+
+Do not model every wire individually.
+
+Use several curves with bevel depth.
+
+⸻
+
+32. STREET SIGNS AS LANDMARKS
+
+The Oldham Street and Dale Street plaques are not decorative filler.
+
+Treat them as landmark props.
+
+Their later materials should remain legible at close range.
+
+⸻
+
+33. UPPER BUILDING DETAIL
+
+Reconstruct enough of the upper building to show:
+
+-   repeating arches;
+
+-   vertical piers;
+
+-   corner bay;
+
+-   window rhythm;
+
+-   facade depth;
+
+-   storey divisions.
+
+Do not terminate the model immediately above the Vinyl Exchange fascia.
+
+⸻
+
+34. BUILDING FLOURISHES
+
+Preserve all major ornamental flourishes visible in the references:
+
+-   arched window surrounds;
+
+-   floral/cluster capitals;
+
+-   half-round applied mouldings;
+
+-   decorative bands;
+
+-   recessed floral surface panels;
+
+-   projecting sills;
+
+-   corner articulation.
+
+These are part of the architectural identity.
+
+⸻
+
+35. WHAT SHOULD BE GEOMETRY
+
+Must be geometry:
+
+-   major arches;
+
+-   capitals;
+
+-   pilasters;
+
+-   sill projections;
+
+-   facade recesses;
+
+-   fascia depth;
+
+-   vents;
+
+-   shutters;
+
+-   grille;
+
+-   3D main logo;
+
+-   street plaques;
+
+-   door/window frames.
+
+⸻
+
+36. WHAT SHOULD BE TEXTURE LATER
+
+Leave for future materials:
+
+-   fine plaster pattern;
+
+-   tiny carved motifs;
+
+-   stains;
+
+-   chipped paint;
+
+-   stickers;
+
+-   graffiti;
+
+-   album covers;
+
+-   posters;
+
+-   dirt;
+
+-   rust;
+
+-   fine scratches;
+
+-   shop typography other than the major projecting logo.
+
+⸻
+
+37. WINDOW GLASS
+
+Keep all glass separate.
+
+Suggested:
+
+VE_Glass_Upper
+
+VE_Glass_MainShop
+
+VE_Glass_DaleStreet
+
+VE_Glass_Door
+
+Do not bake photographed reflections into glass.
+
+⸻
+
+38. NIGHTTIME READINESS
+
+The shop should eventually work well at night.
+
+Prepare the geometry for:
+
+-   interior lighting;
+
+-   illuminated signage;
+
+-   reflective windows;
+
+-   light spill through entrance.
+
+Do not bake nighttime lighting now.
+
+⸻
+
+39. MATERIAL PLACEHOLDERS
+
+Use simple placeholders:
+
+MAT_VE_UpperStone_PLACEHOLDER
+
+MAT_VE_WindowFrames_PLACEHOLDER
+
+MAT_VE_GreyFascia_PLACEHOLDER
+
+MAT_VE_Metal_PLACEHOLDER
+
+MAT_VE_Glass_PLACEHOLDER
+
+MAT_VE_RedLogo_PLACEHOLDER
+
+MAT_VE_Plaque_PLACEHOLDER
+
+⸻
+
+40. REAL-WORLD SCALE
+
+1 Blender unit = 1 metre
+
+Z = vertical
+
+Use:
+
+-   door height;
+
+-   people in references;
+
+-   shop window height;
+
+-   pavement;
+
+-   traffic lights;
+
+as scale references.
+
+⸻
+
+41. CORNER SCALE
+
+Pay particular attention to the width of the corner transition.
+
+The shop is not just a straight facade.
+
+A lot of its recognisability comes from how:
+
+-   the fascia turns;
+
+-   the upper bay turns;
+
+-   the security grille occupies the corner;
+
+-   Dale Street and Oldham Street meet.
+
+⸻
+
+42. DO NOT MODEL STREET FURNITURE INTO THE BUILDING
+
+Do not permanently merge:
+
+-   traffic lights;
+
+-   pedestrian lights;
+
+-   lamp posts;
+
+-   bollards;
+
+-   cycle stands;
+
+-   road signs;
+
+-   people;
+
+-   bins.
+
+These belong to the environment.
+
+The street-name plaques attached to the building ARE part of this asset.
+
+⸻
+
+43. PERFORMANCE
+
+This is a hero building and can justify more geometry than background
+shops.
+
+Spend geometry on:
+
+-   arches;
+
+-   capitals;
+
+-   corner;
+
+-   shopfront;
+
+-   grilles;
+
+-   vents;
+
+-   signage.
+
+Save geometry on:
+
+-   invisible rear walls;
+
+-   fine stone texture;
+
+-   repeated microscopic grooves.
+
+⸻
+
+44. MODULAR ORNAMENT
+
+Build repeating elements once.
+
+Suggested:
+
+VE_Arch_Module
+
+VE_Capital_Module
+
+VE_Pilaster_Module
+
+VE_Window_Module
+
+VE_Vent_Module
+
+VE_RibbedPanel_Module
+
+This keeps the GLB efficient while preserving detail.
+
+⸻
+
+45. BLOCKOUT FIRST
+
+Create:
+
+vinyl_exchange_blockout.blend
+
+First model only:
+
+-   full corner massing;
+
+-   ground-floor shopfront;
+
+-   fascia;
+
+-   major upper arches;
+
+-   corner bay;
+
+-   entrances;
+
+-   major windows.
+
+Do NOT add fine ornament yet.
+
+Render:
+
+VIEW A
+
+Straight-on Oldham Street facade.
+
+VIEW B
+
+Three-quarter corner view matching the strongest supplied reference.
+
+VIEW C
+
+Straight-on Dale Street side.
+
+VIEW D
+
+Low-angle upper facade.
+
+VIEW E
+
+Close view of corner transition.
+
+Then STOP for review.
+
+⸻
+
+46. BLOCKOUT CHECK
+
+Validate:
+
+1.  Shop width.
+
+2.  Corner width.
+
+3.  Fascia height.
+
+4.  Entrance width.
+
+5.  Side-window proportions.
+
+6.  upper-floor height.
+
+7.  arch spacing.
+
+8.  corner bay depth.
+
+9.  building depth.
+
+10. Oldham/Dale relationship.
+
+Do not proceed if these are wrong.
+
+⸻
+
+47. SECOND PASS
+
+After approval, add:
+
+-   pilasters;
+
+-   capitals;
+
+-   moulded arches;
+
+-   decorative relief bands;
+
+-   vent slats;
+
+-   vertical ribbed panels;
+
+-   accordion gate;
+
+-   3D Vinyl Exchange letters;
+
+-   street plaques;
+
+-   cables;
+
+-   detailed frames.
+
+⸻
+
+48. SIGNAGE VALIDATION
+
+Before final export, closely compare the primary logo with the
+references.
+
+Check:
+
+-   logo size;
+
+-   letter depth;
+
+-   line spacing;
+
+-   placement;
+
+-   distance from fascia edge;
+
+-   tagline location.
+
+The Vinyl Exchange logo should be one of the first things a player
+recognises.
+
+⸻
+
+49. PLAQUE VALIDATION
+
+Confirm BOTH:
+
+OLDHAM STREET
+
+and
+
+DALE STREET
+
+plaques exist.
+
+Verify they are:
+
+-   correctly positioned;
+
+-   correctly scaled;
+
+-   individually named;
+
+-   not merged with the fascia.
+
+⸻
+
+50. EXPORT
+
+Deliver:
+
+vinyl_exchange_blockout.blend
+
+vinyl_exchange.blend
+
+vinyl_exchange.glb
+
+Optional separate exports:
+
+vinyl_exchange_security_gate.glb
+
+vinyl_exchange_signage.glb
+
+if useful.
+
+Before GLB export:
+
+-   apply transforms;
+
+-   check normals;
+
+-   remove reference planes;
+
+-   remove temporary cameras/lights;
+
+-   preserve object names;
+
+-   test reimport;
+
+-   verify glass materials;
+
+-   verify no accidental duplicate meshes.
+
+⸻
+
+SUCCESS CRITERION
+
+The untextured model should still unmistakably read as Vinyl Exchange at
+the Oldham Street / Dale Street corner.
+
+The historic architecture should feel genuinely dimensional.
+
+The player should be able to notice:
+
+-   the arched upper windows;
+
+-   carved capitals;
+
+-   facade mouldings;
+
+-   blue/dark frames;
+
+-   Oldham Street plaque;
+
+-   Dale Street plaque;
+
+-   grey commercial fascia;
+
+-   projecting red Vinyl Exchange letters;
+
+-   vents;
+
+-   ribbed panels;
+
+-   corner security grille;
+
+-   real corner geometry.
+
+Do not allow the upper building to become a flat decorative texture
+sitting above a generic shop.
