@@ -28,7 +28,11 @@ import {
   Vector3,
 } from 'three';
 import { BufferAttribute, BufferGeometry, Fog } from 'three';
-import { applyTextureProfile, VISUAL_STYLE } from '../rendering/visualStyle';
+import {
+  applyTextureProfile,
+  VISUAL_STYLE,
+  type QualityProfile,
+} from '../rendering/visualStyle';
 import {
   createGraffitiMaterial,
   createWeatheredSignMaterial,
@@ -62,6 +66,12 @@ import {
 export interface World {
   readonly root: Group;
   readonly collision: CollisionWorld;
+  /**
+   * Settles once every hero GLB has either loaded or failed. Used to hold the
+   * opening frame until buildings have stopped popping in over their
+   * procedural fallbacks.
+   */
+  readonly ready: Promise<void>;
   readonly update: (deltaTime: number, playerPosition: Vector3) => void;
   readonly getLightingStats: () => LightingStats;
   readonly setDevelopmentOverlaysVisible: (visible: boolean) => void;
@@ -1467,18 +1477,19 @@ function addBuildingLocation(
   root: Group,
   obstacles: CollisionObstacle[],
   location: WorldLocation,
+  pendingLoads: Promise<void>[],
 ): void {
   if (location.id === 'dreams') {
     const fallback = createDreamsBuilding(location);
     fallback.rotation.y = location.front === 'north' ? Math.PI : 0;
     root.add(fallback);
-    void replaceDreamsFallback(root, fallback, location);
+    pendingLoads.push(replaceDreamsFallback(root, fallback, location));
     addCollisionFootprint(obstacles, location);
     return;
   }
 
   if (location.id === 'gullivers') {
-    void addGulliversModel(root, location);
+    pendingLoads.push(addGulliversModel(root, location));
     addCollisionFootprint(obstacles, location);
     addDevelopmentLabel(
       root,
@@ -1491,7 +1502,7 @@ function addBuildingLocation(
   }
 
   if (location.id === 'mcr1') {
-    void addMcr1Model(root, location);
+    pendingLoads.push(addMcr1Model(root, location));
     addCollisionFootprint(obstacles, location);
     addDevelopmentLabel(
       root,
@@ -1508,7 +1519,7 @@ function addBuildingLocation(
     fallback.position.set(location.x, location.height / 2, location.z);
     fallback.name = 'Renee loading placeholder';
     root.add(fallback);
-    void replaceReneeFallback(root, fallback, location);
+    pendingLoads.push(replaceReneeFallback(root, fallback, location));
     addReneeInteriorCollision(obstacles, location);
     addDevelopmentLabel(
       root,
@@ -1521,7 +1532,7 @@ function addBuildingLocation(
   }
 
   if (location.id === 'arts-council') {
-    void addTheHiveModel(root, location);
+    pendingLoads.push(addTheHiveModel(root, location));
     addCollisionFootprint(obstacles, location);
     addDevelopmentLabel(
       root,
@@ -1538,7 +1549,7 @@ function addBuildingLocation(
     fallback.position.set(location.x, location.height / 2, location.z);
     fallback.name = 'Cass Art loading placeholder';
     root.add(fallback);
-    void replaceCassArtFallback(root, fallback, location);
+    pendingLoads.push(replaceCassArtFallback(root, fallback, location));
     addCassArtInteriorCollision(obstacles, location);
     addDevelopmentLabel(
       root,
@@ -1572,9 +1583,9 @@ function addBuildingLocation(
   }
 
   if (location.id === 'florist') {
-    void replaceFloristFallback(root, building, location);
+    pendingLoads.push(replaceFloristFallback(root, building, location));
   } else if (location.id === 'coral') {
-    void replaceCoralFallback(root, building, location);
+    pendingLoads.push(replaceCoralFallback(root, building, location));
   } else {
     addBlockoutFacade(root, location);
   }
@@ -1647,16 +1658,19 @@ function addBusShelter(
   obstacles: CollisionObstacle[],
   marker: WorldMarker,
   rotation: number,
+  pendingLoads: Promise<void>[],
 ): void {
   const fallback = createBusShelterFallback();
   fallback.name = `${marker.name} loading placeholder`;
   fallback.position.set(marker.x, 0, marker.z);
   fallback.rotation.y = rotation;
   root.add(fallback);
-  void replaceBusShelterFallback(root, fallback);
+  pendingLoads.push(replaceBusShelterFallback(root, fallback));
 
   obstacles.push({
     name: marker.name,
+    // Low enough that the camera flies over it rather than being shoved in.
+    height: 2.6 * BUS_SHELTER_SCALE,
     minX: marker.x - 2.55 * BUS_SHELTER_SCALE,
     maxX: marker.x + 2.55 * BUS_SHELTER_SCALE,
     minZ: marker.z - 0.9 * BUS_SHELTER_SCALE,
@@ -2302,6 +2316,98 @@ function addDevelopmentPickup(root: Group): (deltaTime: number) => void {
   };
 }
 
+/**
+ * Applies shadow casting/receiving across the procedurally built world in a
+ * single pass. GLB content already has these flags set by `loadModel` and the
+ * per-asset policies, so this only needs to reach the procedural meshes.
+ *
+ * Unlit graphics are deliberately excluded: additive light cones, fake ground
+ * pools, the sky dome, sprites and development overlays are painted
+ * illumination, not geometry, and casting from them would read as dirt.
+ */
+function applyShadowPolicy(root: Group): void {
+  root.traverse((child) => {
+    if (child.userData.developmentOverlay === true) {
+      return;
+    }
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+
+    const materials: Material[] = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    const isPaintedLight = materials.some(
+      (material) =>
+        material instanceof MeshBasicMaterial
+        || material instanceof ShaderMaterial
+        || material.transparent === true,
+    );
+
+    if (isPaintedLight) {
+      child.castShadow = false;
+      child.receiveShadow = false;
+      return;
+    }
+
+    child.castShadow = true;
+    child.receiveShadow = true;
+  });
+}
+
+/**
+ * Single shadow-casting directional moonlight. Its orthographic shadow camera
+ * tracks the player so a modest map still resolves architectural edges across
+ * a 128 m world.
+ */
+function createMoonlight(quality: QualityProfile): {
+  readonly light: DirectionalLight;
+  readonly follow: (playerPosition: Vector3) => void;
+} {
+  const light = new DirectionalLight(
+    VISUAL_STYLE.lighting.moonColor,
+    VISUAL_STYLE.lighting.moonIntensity,
+  );
+  light.name = 'Moonlight';
+
+  // Preserves the original (-8, 14, 10) direction exactly; only the distance
+  // along it changes, which a directional light does not see.
+  const direction = new Vector3(-8, 14, 10).normalize();
+  const offset = direction.multiplyScalar(VISUAL_STYLE.shadow.followDistance);
+  light.position.copy(offset);
+
+  const castsShadows =
+    VISUAL_STYLE.geometry.shadowsEnabled && quality.shadowMapSize > 0;
+
+  if (castsShadows) {
+    light.castShadow = true;
+    light.shadow.mapSize.setScalar(quality.shadowMapSize);
+    light.shadow.camera.near = VISUAL_STYLE.shadow.near;
+    light.shadow.camera.far = VISUAL_STYLE.shadow.far;
+    light.shadow.camera.left = -VISUAL_STYLE.shadow.extent;
+    light.shadow.camera.right = VISUAL_STYLE.shadow.extent;
+    light.shadow.camera.top = VISUAL_STYLE.shadow.extent;
+    light.shadow.camera.bottom = -VISUAL_STYLE.shadow.extent;
+    light.shadow.bias = VISUAL_STYLE.shadow.bias;
+    light.shadow.normalBias = VISUAL_STYLE.shadow.normalBias;
+    light.shadow.camera.updateProjectionMatrix();
+  }
+
+  const follow = (playerPosition: Vector3): void => {
+    if (!castsShadows) {
+      return;
+    }
+    light.target.position.set(playerPosition.x, 0, playerPosition.z);
+    light.position.set(
+      playerPosition.x + offset.x,
+      offset.y,
+      playerPosition.z + offset.z,
+    );
+  };
+
+  return { light, follow };
+}
+
 function addHeroLocalLights(root: Group): PointLight[] {
   const definitions = [
     ['Bus Stop A hero light', -9, 2.35, 20.4, 0xb9ffe7, 8, 8],
@@ -2321,7 +2427,9 @@ function addHeroLocalLights(root: Group): PointLight[] {
   });
 }
 
-export function createWorld(scene: Scene, maximumActiveLocalLights: number): World {
+export function createWorld(scene: Scene, quality: QualityProfile): World {
+  const maximumActiveLocalLights = quality.maximumActiveLocalLights;
+  const pendingLoads: Promise<void>[] = [];
   scene.background = new Color(VISUAL_STYLE.sky.color);
   scene.fog = new Fog(
     VISUAL_STYLE.fog.color,
@@ -2352,14 +2460,14 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
   const obstacles: CollisionObstacle[] = [];
   for (const location of WORLD_LOCATIONS) {
     if (location.kind === 'building') {
-      addBuildingLocation(root, obstacles, location);
+      addBuildingLocation(root, obstacles, location, pendingLoads);
     } else if (location.kind === 'car-park') {
       addCarPark(root, location);
     }
   }
 
-  addBusShelter(root, obstacles, BUS_STOPS[0], -Math.PI / 2);
-  addBusShelter(root, obstacles, BUS_STOPS[1], -Math.PI / 2);
+  addBusShelter(root, obstacles, BUS_STOPS[0], -Math.PI / 2, pendingLoads);
+  addBusShelter(root, obstacles, BUS_STOPS[1], -Math.PI / 2, pendingLoads);
   addStreetDressing(root);
   for (const marker of STERLING_BIKE_DOCKS) {
     addBikeDock(root, marker);
@@ -2416,12 +2524,13 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
       VISUAL_STYLE.lighting.ambientIntensity,
     ),
   );
-  const moonlight = new DirectionalLight(
-    VISUAL_STYLE.lighting.moonColor,
-    VISUAL_STYLE.lighting.moonIntensity,
-  );
-  moonlight.position.set(-8, 14, 10);
-  scene.add(moonlight);
+  const moonlight = createMoonlight(quality);
+  scene.add(moonlight.light);
+  // A directional light's shadow camera only respects its target once that
+  // target is part of the scene graph.
+  scene.add(moonlight.light.target);
+
+  applyShadowPolicy(root);
 
   return {
     root,
@@ -2429,9 +2538,11 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
       bounds: WORLD_BOUNDS,
       obstacles,
     },
+    ready: Promise.allSettled(pendingLoads).then(() => undefined),
     update: (deltaTime, playerPosition) => {
       updatePickup(deltaTime);
       updateHeroLocalLights(playerPosition);
+      moonlight.follow(playerPosition);
     },
     getLightingStats: () => ({
       activePointLights: heroLocalLights.filter((light) => light.visible).length,

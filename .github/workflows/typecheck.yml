@@ -1,0 +1,25 @@
+name: Typecheck and build
+
+# Host-agnostic on purpose: this only proves the project compiles and builds.
+# No deploy step — hosting is still an open decision (GitHub Pages vs
+# Cloudflare Pages), so whichever is chosen can add its own workflow later.
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      # `npm run build` is `tsc && vite build`, so this covers both.
+      - run: npm run build

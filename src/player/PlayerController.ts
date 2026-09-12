@@ -98,9 +98,11 @@ export class PlayerController {
     );
     this.position.y = 0;
 
-    this.frameMovement.subVectors(this.position, this.previousPosition);
-    if (this.frameMovement.lengthSq() > 0.000001) {
-      this.facingDirection.copy(this.frameMovement).normalize();
+    // Face where the player is steering, not where collision let them go.
+    // Deriving facing from the resolved movement made the figure turn to run
+    // along a wall it was pushed against, instead of facing into it.
+    if (isMoving) {
+      this.facingDirection.copy(this.movementDirection);
       const facingAngle = Math.atan2(
         -this.facingDirection.x,
         -this.facingDirection.z,
@@ -158,6 +160,14 @@ export class PlayerController {
     facingMarker.position.set(0, 1.08, -0.34);
     facingMarker.rotation.x = -Math.PI / 2;
     this.object.add(facingMarker);
+
+    // The player is the one figure the eye tracks, so it casts into the
+    // moonlight shadow map. The fake contact shadow below stays: it is the
+    // only grounding cue on quality profiles where shadows are disabled.
+    for (const part of [body, shoulders, head, facingMarker]) {
+      part.castShadow = true;
+      part.receiveShadow = true;
+    }
 
     const contactShadow = new Mesh(
       new CircleGeometry(0.48, 12),

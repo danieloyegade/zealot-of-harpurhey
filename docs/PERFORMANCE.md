@@ -28,15 +28,27 @@ Five genuine hero point lights remain in the scene: Dreams, Renae, the florist, 
 
 MEDIUM is the default desktop profile. It prioritises a stable 60 FPS on a typical Apple Silicon laptop over Retina-native pixel density.
 
-| Profile | Render scale | DPR cap | Maximum effective pixel ratio | Bloom | Active local-light budget |
-| --- | ---: | ---: | ---: | --- | ---: |
-| LOW | 0.65 | 1.00 | 0.65 | Off | 2 |
-| MEDIUM | 0.72 | 1.25 | 0.90 | On, strength 0.30 | 4 |
-| HIGH | 0.80 | 1.50 | 1.20 | On, strength 0.34 | 5 |
+| Profile | Render scale | DPR cap | Maximum effective pixel ratio | Bloom | Active local-light budget | MSAA | Shadow map |
+| --- | ---: | ---: | ---: | --- | ---: | ---: | ---: |
+| LOW | 0.65 | 1.00 | 0.65 | Off | 2 | Off | Off |
+| MEDIUM | 0.72 | 1.25 | 0.90 | On, strength 0.30 | 4 | 4× | 1024 |
+| HIGH | 0.80 | 1.50 | 1.20 | On, strength 0.34 | 5 | 4× | 2048 |
 
 Select a profile with `?quality=low`, `?quality=medium`, or `?quality=high`. An absent or invalid value resolves to MEDIUM.
 
 Bloom remains available where it materially supports emissive photographic highlights. LOW disables it. MEDIUM slightly reduces its strength. HIGH retains the previous strength while still respecting the five-light ceiling.
+
+## Anti-aliasing
+
+MSAA is configured on the composer's render target, not on the renderer. `WebGLRenderer`'s `antialias` option only multisamples the default framebuffer, which is never drawn to once every frame is composed through `EffectComposer` — so the flag it was previously set with produced no anti-aliasing at all. `createPostProcessing` now constructs the composer's target explicitly with `samples` from the quality profile, and the renderer is created with `antialias: false`.
+
+## Shadows
+
+Exactly one shadow caster exists: the directional moonlight. This does not change the lighting philosophy above — streetlights and shopfronts remain emissive/baked, and no local light casts.
+
+The moonlight's orthographic shadow camera follows the player rather than spanning the world, so a 1024–2048 map resolves architectural edges across a 128 m world. The light is positioned 90 m back along its own direction; because a directional light only depends on direction, this changes nothing about the lighting result but lifts the shadow camera above the 33 m Arts Council mass instead of clipping it against the near plane.
+
+Cast/receive flags are applied in one traversal (`applyShadowPolicy`) after the world is built. Unlit graphics — additive light cones, fake ground pools, the sky dome, sprites and development overlays — are excluded: they are painted illumination, not geometry, and casting from them reads as dirt. LOW disables shadow casting entirely.
 
 ## Geometry and material reuse
 

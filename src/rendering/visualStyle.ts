@@ -17,6 +17,17 @@ export interface QualityProfile {
   readonly bloomEnabled: boolean;
   readonly bloomStrength: number;
   readonly maximumActiveLocalLights: number;
+  /**
+   * Multisample count for the composer's render target. The renderer's own
+   * `antialias` flag only affects the default framebuffer, which is never
+   * drawn to once every frame goes through EffectComposer. Zero disables MSAA.
+   */
+  readonly msaaSamples: number;
+  /**
+   * Shadow map resolution for the single shadow-casting moonlight. Zero
+   * disables shadow casting entirely for the profile.
+   */
+  readonly shadowMapSize: number;
 }
 
 export const QUALITY_PROFILES: Record<QualityLevel, QualityProfile> = {
@@ -27,6 +38,8 @@ export const QUALITY_PROFILES: Record<QualityLevel, QualityProfile> = {
     bloomEnabled: false,
     bloomStrength: 0,
     maximumActiveLocalLights: 2,
+    msaaSamples: 0,
+    shadowMapSize: 0,
   },
   medium: {
     level: 'medium',
@@ -35,6 +48,8 @@ export const QUALITY_PROFILES: Record<QualityLevel, QualityProfile> = {
     bloomEnabled: true,
     bloomStrength: 0.3,
     maximumActiveLocalLights: 4,
+    msaaSamples: 4,
+    shadowMapSize: 1024,
   },
   high: {
     level: 'high',
@@ -43,6 +58,8 @@ export const QUALITY_PROFILES: Record<QualityLevel, QualityProfile> = {
     bloomEnabled: true,
     bloomStrength: 0.34,
     maximumActiveLocalLights: 5,
+    msaaSamples: 4,
+    shadowMapSize: 2048,
   },
 };
 
@@ -53,7 +70,10 @@ export const VISUAL_STYLE = {
     exposure: 1.34,
     saturation: 1.12,
     contrast: 1.05,
-    colorQuantizationLevels: 32,
+    // Zero disables quantisation. The 32-level banding was part of the
+    // abandoned Dreamcast-era target; smooth gradients serve the current
+    // "uncanny realism" direction. Dither and grain still carry the texture.
+    colorQuantizationLevels: 0,
     ditherStrength: 0.003,
     grainStrength: 0.042,
     vignetteStrength: 0.2,
@@ -90,8 +110,27 @@ export const VISUAL_STYLE = {
   },
   geometry: {
     facetedLighting: true,
-    shadowsEnabled: false,
-    shadowMapSize: 512,
+    shadowsEnabled: true,
+  },
+  /**
+   * A single shadow-casting directional moonlight. Its orthographic camera
+   * follows the player rather than spanning the whole 128 m world, so a modest
+   * map size still resolves architectural edges.
+   */
+  shadow: {
+    /**
+     * Distance the light is pushed back along its own direction. The lighting
+     * result is unchanged (a directional light only cares about direction) but
+     * the shadow camera then sits above even the 33 m Arts Council mass
+     * instead of clipping it against the near plane.
+     */
+    followDistance: 90,
+    /** Half-extent of the orthographic shadow camera, in metres. */
+    extent: 40,
+    near: 1,
+    far: 200,
+    bias: -0.0012,
+    normalBias: 0.05,
   },
   bloom: {
     radius: 0.32,

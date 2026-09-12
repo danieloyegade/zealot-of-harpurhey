@@ -16,11 +16,12 @@ Current rendering values:
 - Exposure: **1.34**
 - Saturation: **1.12**
 - Contrast: **1.05**
-- Colour quantisation: **32 levels per channel**
+- Colour quantisation: **disabled** (was 32 levels per channel)
 - Ordered-dither strength: **0.003**
 - Shadow-weighted film grain: **0.042**
 - Edge vignette strength: **0.20**
-- Shadows: disabled
+- Shadows: **one shadow-casting directional moonlight** (disabled on LOW)
+- Anti-aliasing: **4× MSAA** on the composer target (disabled on LOW)
 - Fog: cobalt `#07133b`, near **44 m**, far **108 m**
 - Bloom: strength **0.34**, radius **0.32**, threshold **0.88**
 
@@ -110,7 +111,9 @@ Park trees use five-sided trunks and clustered, textured, un-smoothed dodecahedr
 
 ## Post-processing limits
 
-The current composer applies restrained bloom, display conversion, saturation/contrast adjustment, 32-level colour quantisation, subtle 4 × 4 ordered dithering, shadow-weighted film grain and a restrained vignette. It deliberately excludes scanlines, CRT curvature, chromatic aberration, tape damage, vertex wobble and aggressive pixelation.
+The current composer applies restrained bloom, display conversion, saturation/contrast adjustment, subtle 4 × 4 ordered dithering, shadow-weighted film grain and a restrained vignette. It deliberately excludes scanlines, CRT curvature, chromatic aberration, tape damage, vertex wobble and aggressive pixelation.
+
+Colour quantisation is **off**. The 32-level banding belonged to the abandoned Dreamcast-era target; smooth gradients serve the current direction, and dither plus grain still carry the surface texture. The machinery remains in the grade shader — set `colorQuantizationLevels` above zero in `visualStyle.ts` to restore it.
 
 ## Street-level density
 

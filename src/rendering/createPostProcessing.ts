@@ -1,6 +1,8 @@
 import {
+  HalfFloatType,
   ShaderMaterial,
   Vector2,
+  WebGLRenderTarget,
   type PerspectiveCamera,
   type Scene,
   type WebGLRenderer,
@@ -23,7 +25,18 @@ export function createPostProcessing(
   camera: PerspectiveCamera,
   quality: QualityProfile,
 ): PostProcessingPipeline {
-  const composer = new EffectComposer(renderer);
+  // EffectComposer's own default target is created without `samples`, so the
+  // renderer's `antialias` flag buys nothing: the default framebuffer it
+  // multisamples is never drawn to. Supplying the target explicitly is the
+  // only way to get real MSAA on a composed frame.
+  const drawingBufferSize = renderer.getDrawingBufferSize(new Vector2());
+  const renderTarget = new WebGLRenderTarget(
+    drawingBufferSize.x,
+    drawingBufferSize.y,
+    { type: HalfFloatType, samples: quality.msaaSamples },
+  );
+
+  const composer = new EffectComposer(renderer, renderTarget);
   composer.addPass(new RenderPass(scene, camera));
 
   if (quality.bloomEnabled) {
@@ -118,8 +131,12 @@ export function createPostProcessing(
           color *= 1.0 - vignette * vignetteStrength;
           float dither = (orderedDither(gl_FragCoord.xy) / 15.0 - 0.5)
             * ditherStrength;
-          color = floor(clamp(color + dither, 0.0, 1.0)
-            * quantizationLevels) / quantizationLevels;
+          if (quantizationLevels > 0.0) {
+            color = floor(clamp(color + dither, 0.0, 1.0)
+              * quantizationLevels) / quantizationLevels;
+          } else {
+            color = clamp(color + dither, 0.0, 1.0);
+          }
           gl_FragColor = vec4(color, source.a);
         }
       `,

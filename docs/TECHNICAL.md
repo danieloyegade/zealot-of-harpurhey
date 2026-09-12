@@ -25,8 +25,10 @@ Development-only references, source photography, `.blend` masters, and renders l
 - `InputController` tracks keyboard movement, running, and click-drag camera input.
 - `PlayerController` owns the primitive player representation, velocity, facing direction, movement state, and collision movement.
 - `ThirdPersonCamera` owns orbit angles, camera-relative movement direction, and smoothed following.
-- `createWorld` builds the canonical city layout, visual blockouts and its collision description.
-- `collision.ts` isolates the lightweight collision routines from player and world rendering code.
+- `createWorld` builds the canonical city layout, visual blockouts and its collision description. It exposes a `ready` promise that settles once every hero GLB has loaded or failed.
+- `collision.ts` isolates the lightweight collision routines from player and world rendering code, including the ray/box cast the camera uses for occlusion.
+- `interaction/LocationAwareness.ts` tracks which authored location the player is standing at, measured against location footprints from `worldLayout.ts`. It owns no behaviour — it is the seam the delivery loop attaches to.
+- `ui/LocationLabel.ts` renders that acknowledgement as a restrained caption. `ui/LoadingVeil.ts` holds the opening frame until `world.ready` settles (or a 12-second timeout elapses, so a failed asset never leaves the player staring at black).
 - `visualStyle.ts` centralises LOW/MEDIUM/HIGH quality profiles, render scale, DPR policy, texture policy, palette, lighting and post-processing values.
 - `worldMaterials.ts` loads the small world texture pack and applies the photographic or graphic filtering profile.
 - `worldGraphics.ts` creates low-resolution weathered sign and graffiti materials at runtime.
@@ -40,6 +42,7 @@ Development-only references, source photography, `.blend` masters, and renders l
 - Move right: `D` or `Arrow Right`
 - Run: hold `Shift` or `Space` while moving
 - Orbit camera: click and drag with the primary mouse button
+- Zoom camera: scroll wheel (2.5 m – 12 m, default 6.8 m)
 - Hide/show development labels and debug panel: `H`
 - Production walking speed: **2.4 metres per second**
 - Production running speed: **4.5 metres per second**
@@ -47,6 +50,8 @@ Development-only references, source photography, `.blend` masters, and renders l
 - Development running speed: **7.65 metres per second** (70% faster)
 
 Movement is calculated relative to the camera's horizontal facing direction. Velocity accelerates and decelerates smoothly to give the placeholder movement some weight. There is no jumping.
+
+The figure faces the player's **input** direction, not the movement that collision resolution allowed. Deriving facing from the resolved delta made the character turn to run along a wall it was being pushed against.
 
 ## Performance and simulation policy
 
@@ -64,7 +69,9 @@ Most environmental illumination in Zealot of Harperhey is intentionally represen
 
 ### Camera
 
-The prototype uses a 50-degree perspective camera placed 6.8 metres from the player. Horizontal mouse orbit is unrestricted, while vertical pitch is clamped to a modest elevated range. Camera position follows the player using frame-rate-independent exponential smoothing. Pointer lock is not used.
+The prototype uses a 50-degree perspective camera placed 6.8 metres from the player by default, adjustable from 2.5 m to 12 m with the scroll wheel. Horizontal mouse orbit is unrestricted, while vertical pitch is clamped to a modest elevated range. Camera position follows the player using frame-rate-independent exponential smoothing. Pointer lock is not used.
+
+**Occlusion:** the camera probes from its orbit pivot toward its desired position against the same axis-aligned obstacle list the player collides with, and pulls in to the first hit. It snaps inward immediately so walls never clip through the frame, and eases back out so doorways and railings do not flick it around. Obstacles may declare a `height`; those that do (the bus shelters) can be flown over, while those that omit it are treated as infinitely tall columns, which is correct for buildings since they are all taller than the camera can climb.
 
 ### Collision
 
@@ -129,6 +136,17 @@ The script derives the project root from its own location and creates parent dir
 Three.js loads runtime models with `GLTFLoader`. Model URLs are built from `import.meta.env.BASE_URL`, followed by the path beneath `public/`; this preserves both Vite development and deployment beneath `/zealot-of-harperhey/`.
 
 `.blend` source files belong under `blender/source/` and are not copied into production builds. Runtime-ready GLBs belong under `public/assets/models/` and are copied into the static build. Preview renders remain under `renders/` and are development-only.
+
+**Only GLBs that code actually loads belong in `public/`.** Vite copies everything under `public/` verbatim into `dist/`, so an unreferenced export is downloaded by every player without ever being used. Superseded hero assets, component exports and not-yet-wired blockouts live in `blender/exports/unreferenced/` (see the README there) and move back in the same commit as the code that references them.
+
+Verify with:
+
+```sh
+comm -13 <(grep -rho "assets/models/[a-zA-Z0-9_/-]*\.glb" src/ | sort -u) \
+         <(cd public && find assets/models -name '*.glb' | sort)
+```
+
+Any output is an asset shipping to players for no reason.
 
 ## Prototype world textures
 

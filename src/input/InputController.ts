@@ -12,6 +12,13 @@ const MOVEMENT_KEYS = new Set([
   'Space',
 ]);
 
+/**
+ * Wheel deltas arrive in wildly different units across browsers and devices
+ * (pixels, lines, pages). Normalising to notches keeps zoom speed consistent.
+ */
+const WHEEL_PIXELS_PER_NOTCH = 100;
+const WHEEL_LINES_PER_NOTCH = 3;
+
 export class InputController {
   readonly orbitDelta = new Vector2();
 
@@ -21,6 +28,8 @@ export class InputController {
   private isDragging = false;
   private activePointerId: number | null = null;
   private overlayToggleQueued = false;
+  private pendingZoomNotches = 0;
+  private interactionQueued = false;
 
   constructor(private readonly element: HTMLCanvasElement) {
     window.addEventListener('keydown', this.handleKeyDown);
@@ -30,6 +39,7 @@ export class InputController {
     element.addEventListener('pointermove', this.handlePointerMove);
     element.addEventListener('pointerup', this.handlePointerUp);
     element.addEventListener('pointercancel', this.handlePointerUp);
+    element.addEventListener('wheel', this.handleWheel, { passive: false });
   }
 
   update(): void {
@@ -60,6 +70,25 @@ export class InputController {
     return queued;
   }
 
+  /** Positive notches pull the camera back, negative push it in. */
+  consumeZoomDelta(): number {
+    const pending = this.pendingZoomNotches;
+    this.pendingZoomNotches = 0;
+    return pending;
+  }
+
+  /**
+   * Seam for the delivery/interaction loop, which does not exist yet. Nothing
+   * consumes this so far, and no on-screen prompt advertises the key: the
+   * plumbing is here so the first interaction does not have to re-thread
+   * input, not because `E` currently does anything.
+   */
+  consumeInteraction(): boolean {
+    const queued = this.interactionQueued;
+    this.interactionQueued = false;
+    return queued;
+  }
+
   private isPressed(primary: string, alternate: string): boolean {
     return this.pressedKeys.has(primary) || this.pressedKeys.has(alternate);
   }
@@ -71,6 +100,10 @@ export class InputController {
 
     if (event.code === 'KeyH' && !event.repeat) {
       this.overlayToggleQueued = true;
+    }
+
+    if (event.code === 'KeyE' && !event.repeat) {
+      this.interactionQueued = true;
     }
 
     this.pressedKeys.add(event.code);
@@ -86,7 +119,20 @@ export class InputController {
 
   private readonly handleBlur = (): void => {
     this.pressedKeys.clear();
+    this.pendingZoomNotches = 0;
     this.endDrag();
+  };
+
+  private readonly handleWheel = (event: WheelEvent): void => {
+    event.preventDefault();
+
+    const scale = event.deltaMode === WheelEvent.DOM_DELTA_LINE
+      ? WHEEL_LINES_PER_NOTCH
+      : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+        ? 1
+        : WHEEL_PIXELS_PER_NOTCH;
+
+    this.pendingZoomNotches += event.deltaY / scale;
   };
 
   private readonly handlePointerDown = (event: PointerEvent): void => {

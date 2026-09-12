@@ -1,5 +1,7 @@
 import {
+  Cache,
   Mesh,
+  PCFShadowMap,
   PerspectiveCamera,
   Scene,
   SRGBColorSpace,
@@ -10,6 +12,7 @@ import {
 import { ThirdPersonCamera } from './camera/ThirdPersonCamera';
 import { FixedStepClock } from './core/FixedStepClock';
 import { InputController } from './input/InputController';
+import { LocationAwareness } from './interaction/LocationAwareness';
 import { PlayerController } from './player/PlayerController';
 import { createPostProcessing } from './rendering/createPostProcessing';
 import {
@@ -18,8 +21,14 @@ import {
   VISUAL_STYLE,
 } from './rendering/visualStyle';
 import { DebugOverlay } from './ui/DebugOverlay';
+import { LoadingVeil } from './ui/LoadingVeil';
+import { LocationLabel } from './ui/LocationLabel';
 import { createWorld } from './world/createWorld';
 import './style.css';
+
+// Shares decoded images between the many material variants that reuse one
+// texture file, instead of decoding the same PNG once per variant.
+Cache.enabled = true;
 
 const app = document.querySelector<HTMLDivElement>('#app');
 
@@ -28,12 +37,22 @@ if (!app) {
 }
 
 const scene = new Scene();
-const renderer = new WebGLRenderer({ antialias: true });
+// Anti-aliasing is configured on the composer's render target instead: the
+// default framebuffer this flag would multisample is never drawn to.
+const renderer = new WebGLRenderer({ antialias: false });
 const quality = resolveQualityProfile(window.location.search);
 applyInternalResolution(renderer, window.innerWidth, window.innerHeight, quality);
 renderer.outputColorSpace = SRGBColorSpace;
 renderer.toneMappingExposure = VISUAL_STYLE.render.exposure;
 renderer.info.autoReset = false;
+
+if (VISUAL_STYLE.geometry.shadowsEnabled && quality.shadowMapSize > 0) {
+  renderer.shadowMap.enabled = true;
+  // PCFSoftShadowMap is deprecated in three 0.185 and silently falls back to
+  // PCFShadowMap, so ask for it directly.
+  renderer.shadowMap.type = PCFShadowMap;
+}
+
 app.appendChild(renderer.domElement);
 
 const camera = new PerspectiveCamera(
@@ -43,10 +62,14 @@ const camera = new PerspectiveCamera(
   120,
 );
 
-const world = createWorld(scene, quality.maximumActiveLocalLights);
+const world = createWorld(scene, quality);
 const input = new InputController(renderer.domElement);
 const player = new PlayerController(world.collision);
 scene.add(player.object);
+
+const loadingVeil = new LoadingVeil();
+const locationLabel = new LocationLabel();
+const locationAwareness = new LocationAwareness();
 
 const requestedView = import.meta.env.DEV
   ? new URLSearchParams(window.location.search).get('view')
@@ -83,6 +106,7 @@ if (import.meta.env.DEV) {
 
 const thirdPersonCamera = new ThirdPersonCamera(
   camera,
+  world.collision,
   requestedView === 'dreams-target' ? 2.9 : 1.05,
 );
 thirdPersonCamera.setOrbit(requestedYaw, requestedPitch);
@@ -100,6 +124,18 @@ let sceneMaterialCount = 0;
 
 world.setDevelopmentOverlaysVisible(developmentOverlaysVisible);
 debugOverlay?.setVisible(developmentOverlaysVisible);
+
+/**
+ * Hold the opening frame until the hero models resolve, but never indefinitely:
+ * a stalled or failed asset must not leave the player staring at black.
+ */
+const LOADING_VEIL_TIMEOUT_MS = 12000;
+void Promise.race([
+  world.ready,
+  new Promise((resolve) => window.setTimeout(resolve, LOADING_VEIL_TIMEOUT_MS)),
+]).then(() => {
+  loadingVeil.dismiss();
+});
 
 window.setTimeout(() => {
   const materials = new Set();
@@ -139,6 +175,9 @@ function frame(timestamp: number): void {
   const simulationResult = simulationClock.advance(rawDelta, (fixedDelta) => {
     player.update(fixedDelta, input, cameraForward);
     world.update(fixedDelta, player.position);
+    if (locationAwareness.update(player.position)) {
+      locationLabel.render(locationAwareness.activeTarget);
+    }
     elapsedSeconds += fixedDelta;
   });
   const cameraDelta = simulationResult.resetAfterExtremeGap ? 0 : rawDelta;
@@ -162,7 +201,13 @@ function frame(timestamp: number): void {
     programs: renderer.info.programs?.length ?? 0,
     qualityLevel: quality.level,
   };
-  debugOverlay?.update(rawDelta, player.position, player.movementState, diagnostics);
+  debugOverlay?.update(
+    rawDelta,
+    player.position,
+    player.movementState,
+    diagnostics,
+    locationAwareness.activeTarget?.name ?? null,
+  );
 }
 
 requestAnimationFrame(frame);

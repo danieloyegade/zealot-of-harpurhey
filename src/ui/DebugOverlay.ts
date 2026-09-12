@@ -42,6 +42,7 @@ export class DebugOverlay {
     position: Vector3,
     movementState: MovementState,
     diagnostics: RenderDiagnostics,
+    activeLocationName: string | null = null,
   ): void {
     this.elapsedTime += realFrameDelta;
     this.frameCount += 1;
@@ -82,8 +83,10 @@ export class DebugOverlay {
       `Player X: ${position.x.toFixed(2)}`,
       `Player Z: ${position.z.toFixed(2)}`,
       `Walking / Running: ${movementState}`,
+      `At: ${activeLocationName ?? '—'}`,
       '',
       'H: hide development overlays',
+      'Scroll: zoom camera',
     ].join('\n');
   }
 }

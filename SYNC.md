@@ -23,6 +23,38 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-12 — Claude (4)
+**HEAD at session start:** `7c22c6c` (Update SYNC.md with full accounting of this session's push)
+**Did:** Audited the repo for high-impact/low-effort improvements, then implemented the agreed set on `claude/game-improvement-ideas-vkan3h`. Daniel decided two art questions during the session: **quantisation off** (explicitly moving away from Dreamcast toward photorealism) and **enable one shadow-casting moonlight**.
+
+- *Camera occlusion.* `ThirdPersonCamera` had no occlusion test at all, so it sat inside buildings constantly on tight streets. It now probes against the same AABB list the player collides with (`castAgainstObstacles` in `collision.ts`), snapping in and easing out. Split the orbit pivot from the look target so the probe ray and the camera's actual position are the same ray — this preserved the existing framing exactly, including the calibrated `?view=` dev positions.
+- *Camera zoom.* Scroll wheel, 2.5–12 m, wheel deltas normalised across `deltaMode` values.
+- *Player facing.* Was derived from post-collision movement, so sliding along a wall turned the figure along the wall. Now uses input direction.
+- *Anti-aliasing.* `WebGLRenderer({ antialias: true })` was doing nothing: the default framebuffer it multisamples is never drawn to once frames go through `EffectComposer`, whose auto-created target has no `samples`. Composer target is now explicit with 4× MSAA from the quality profile; renderer flag set to false.
+- *Quantisation.* `colorQuantizationLevels` → 0, shader branches on it. Machinery kept; one value restores it.
+- *Shadows.* One shadow-casting directional moonlight, ortho shadow camera following the player. The light is pushed 90 m back along its own direction so its shadow camera clears the 33 m Arts Council mass — lighting result is identical, a directional light only sees direction. `applyShadowPolicy` sets cast/receive in one traversal and excludes unlit graphics (additive cones, fake pools, sky, sprites, overlays). Player figure casts too; its fake contact circle stays for LOW.
+- *Payload.* 9 GLBs (~11 MB) were in `public/` but referenced by no code, so Vite shipped them to every player. Moved to `blender/exports/unreferenced/` with a README explaining each. **`dist` 29 MB → 18 MB.** Added the verification one-liner to `TECHNICAL.md`.
+- *Loading.* `createWorld` now returns `ready`; a black veil holds the opening frame until hero GLBs settle, with a 12 s timeout so a failed asset never leaves the player staring at black.
+- *Proximity/interaction scaffold.* `src/interaction/LocationAwareness.ts` + `src/ui/LocationLabel.ts`. Measures distance to location **footprints** (not centres) from existing `worldLayout` data, with hysteresis. Surfaces only authored names — **no invented copy**. Walk-through kinds (park, car park) are excluded: their footprints enclose the player, spawn included, so they need a region-entry rule instead.
+- *CI.* `.github/workflows/typecheck.yml` runs `npm run build` (= `tsc && vite build`). **No deploy step** — Daniel may go with Cloudflare Pages rather than GitHub Pages, so hosting stays an open decision.
+- Docs updated: `PERFORMANCE.md`, `VISUAL_LANGUAGE.md`, `TECHNICAL.md`, plus a status block on the stale `ART_DIRECTION.md` correcting only the three claims the code now contradicts (the wider rewrite is still Daniel's).
+
+**Verified:** typecheck + build clean. Ran the game in headless Chromium: walked the player from spawn to Bus Stop B (z 21 → −46.77) and the location label appeared correctly; shadows visibly render under the park trees at MEDIUM; no console errors. Also unit-checked the occlusion and proximity maths in Node (11 assertions: padded face distance, unobstructed ray, flying over a `height`-bearing obstacle vs. an infinite column, origin-inside-geometry ignored, hysteresis hold/release). Those checks were throwaway — **the project still has no test runner**.
+
+**Left uncommitted (if any):** None.
+**Flagged:**
+- `PCFSoftShadowMap` is deprecated in three 0.185 and silently falls back — using `PCFShadowMap` explicitly. Worth knowing before anyone "upgrades" it back.
+- **Draw calls are ~3130 at spawn** (268k triangles, 242 materials). That is the next real performance ceiling and is untouched by this session. `PERFORMANCE.md` already lists instancing as future work; this is the evidence for it.
+- **Tone mapping is off.** `renderer.toneMappingExposure = 1.34` is set but `renderer.toneMapping` never is, so it defaults to `NoToneMapping` and the exposure value is ignored — the grade shader applies exposure manually instead. For the photoreal direction this is probably the single highest-value next change (ACES/AgX via `OutputPass`), **but** exposure would then be applied twice: set the grade pass's `exposure` uniform to 1.0 in the same change. Deliberately not done here — it restyles the whole image and is Daniel's call.
+- Textures are still 6.2 MB of uncompressed PNG and GLBs have no Draco/meshopt. `gltf-transform optimize` + KTX2/WebP is the other half of the payload win and would cut VRAM as well as download.
+- `loadModel` sets `castShadow` on *every* mesh in a GLB, including glass and emissive parts. Pre-existing intent, now actually live since shadows are on. May want per-asset refinement.
+- `InputController.consumeInteraction()` (`E`) is plumbed but nothing consumes it and no prompt advertises it — an intentional seam, commented as such.
+
+**Next:** The delivery loop. `LocationAwareness` answers "where am I" from authored data; what's missing is a pickup→carry→deliver state machine and the authored copy, which is Daniel's to write. Audio remains the highest impact-per-effort item overall but needs field recordings, not code.
+**Open questions:**
+1. Tone mapping — enable ACES/AgX and move exposure onto the renderer? (See Flagged.)
+2. Should the park and car park acknowledge the player on *entry*, as regions, rather than by proximity?
+
 ## 2026-09-11 — Claude (3)
 **HEAD at session start:** `d4b6dff` (Add hero location Blender assets and expand world/environment systems)
 **Did:** Session was forked from the prior one mid-work — found the `harperhay`→`harperhey` rename described in the "Claude (2)" entry below staged/edited in the working tree but never actually committed (git log still ended at `d4b6dff`, no rename commit existed). Verified the renamed-file diffs (package.json, index.html, vite.config.ts, references/*, docs/*) were all the same consistent rename with no unrelated content, then committed and pushed it to `origin/main`. Committed two more untracked files as a separate commit: `.mcp.json` (Blender MCP server config — this project builds hero-location assets in Blender, so direct Blender control from here is in scope) and `docs/creative-constitution.md` (referenced by `AGENTS.md` §"Before generating any creative content" but was missing from the repo). Found a third, also-uncommitted batch (git status only shows the first ~2k chars in this session's tooling, so it was easy to miss): Blender blockout scripts + source `.blend` + renders for two new locations, **Come Through Lab** and **Real Camera**. Committed and pushed that too. All three pushed to `origin/main` (`ecd494c..e0dd77b`).

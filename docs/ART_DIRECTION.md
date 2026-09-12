@@ -1,11 +1,24 @@
 # Art Direction
 
+> **Status — partially stale.** `AGENTS.md` records that the visual target has
+> moved away from the Dreamcast-era look described below, toward "uncanny
+> realism suspended between the photographic and the obviously constructed".
+> That reconciliation is Daniel's to make; this note only corrects the points
+> that now contradict the code:
+>
+> - Colour quantisation is **off** (was 32 levels/channel).
+> - A single shadow-casting directional moonlight is **enabled**.
+> - 4× MSAA is enabled on the composer target.
+>
+> Everything else below is the older statement of intent, kept until the art
+> direction is rewritten rather than silently edited.
+
 ## Core principles
 
 - Project title: **Zealot of Harperhey**.
 - This is a browser-based 3D artwork and game.
 - The experience is desktop first and centred on third-person exploration.
-- Its visual language is Dreamcast-era urban 3D: it is **not** generic cyberpunk and **not** modern photorealistic PBR.
+- Its visual language was originally Dreamcast-era urban 3D; the current target is photographic realism that stays obviously constructed. It is **not** generic cyberpunk.
 - Daniel Oyegade's photography and filmmaking are primary influences.
 - *The Spectres Are All Around Us* is a primary influence.
 - Frames should be planimetric and carefully composed.

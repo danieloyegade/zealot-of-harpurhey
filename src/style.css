@@ -41,3 +41,57 @@ canvas.is-dragging {
   pointer-events: none;
   user-select: none;
 }
+
+/*
+ * Location acknowledgement. EB Garamond is the documented display face but is
+ * not yet in public/assets/fonts/, so the stack degrades to a system serif
+ * until the font asset lands.
+ */
+.location-label {
+  position: fixed;
+  bottom: 8vh;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+  opacity: 0;
+  transition: opacity 900ms ease-out;
+  pointer-events: none;
+  user-select: none;
+}
+
+.location-label.is-visible {
+  opacity: 1;
+}
+
+.location-label__name {
+  color: #e8cf62;
+  font-family: 'EB Garamond', Garamond, 'Times New Roman', serif;
+  font-size: clamp(19px, 2.5vw, 27px);
+  letter-spacing: 0.055em;
+  text-align: center;
+  text-shadow: 0 1px 10px rgb(0 0 0 / 85%);
+}
+
+.loading-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: #000;
+  opacity: 1;
+  transition: opacity 1400ms ease-in-out;
+  pointer-events: none;
+}
+
+.loading-veil.is-dismissed {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .location-label,
+  .loading-veil {
+    transition-duration: 1ms;
+  }
+}
