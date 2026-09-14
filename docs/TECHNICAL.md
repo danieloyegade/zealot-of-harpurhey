@@ -61,6 +61,8 @@ Development FPS is derived from raw frame time. The development overlay also rep
 
 The default desktop quality is **MEDIUM**. Use `?quality=low`, `?quality=medium`, or `?quality=high` during development and profiling. Full policy and measured Phase 1 results are documented in `PERFORMANCE.md` and `ENGINE_STABILISATION_REPORT.md`.
 
+Tone mapping defaults to **AgX**, applied by `OutputPass` in linear HDR after bloom and before the display grade. Use `?tonemap=agx`, `?tonemap=neutral`, `?tonemap=aces`, or `?tonemap=off` to compare curves; `off` reproduces the earlier uncurved image. Each curve has its own exposure in `VISUAL_STYLE.render.exposure`, calibrated so midtone brightness matches `off`, so a comparison shows highlight rolloff and colour rather than a brightness change. When a curve is active the grade pass's own exposure is 1, so exposure is never applied twice. Combine with `?view=<name>&quality=high&overlays=off` for repeatable comparisons.
+
 Most environmental illumination in Zealot of Harperhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights. The normal local-light budget is four on MEDIUM, with five available on HIGH and two on LOW. Streetlights do not use real-time spotlights.
 
 ### Camera
@@ -118,6 +120,8 @@ The script derives the project root from its own location and creates parent dir
 - Composed game model: `public/assets/models/bus-shelter/preston-busstop-reference.glb`
 - Development reviews: `renders/bus-shelter/01-...png` through `04-...png`
 
+The game loads the texture pass instead, built on the same geometry by `blender/scripts/createBusShelterTextured.py`: `public/assets/models/bus-shelter/preston-busstop-textured.glb`, configured at runtime by `src/world/busShelterMaterials.ts`. The pipeline, map conventions and rebuild command are in `docs/assets/bus-shelter.md`.
+
 ### Scale, coordinates, and export
 
 - One Blender unit represents one metre, with Blender's metric unit scale set to `1.0`.
@@ -142,3 +146,79 @@ node scripts/generateWorldTextures.mjs
 The script produces 128–512 pixel PNG runtime textures under `public/assets/textures/world-prototype/`. Most are procedural; the Dreams and Coral façade derivatives are reproducibly cropped and graded from the corresponding repository reference photographs. The originals are read-only inputs outside `public/` and are never modified. The filtering and resolution policies are documented in `VISUAL_LANGUAGE.md`.
 
 Generation currently expects macOS `sips` for procedural PPM-to-PNG conversion and `ffmpeg` on `PATH` for the two photographic crops. No npm package is required for either step.
+
+## Layered road textures
+
+Roads are built by `src/world/createRoadSurfaces.ts` from tiled asphalt, a world-space variation texture, a decal atlas and instanced ironwork. That comes to three draw calls for the entire network. Regenerate their textures separately from the world pack:
+
+```sh
+node scripts/generateRoadTextures.mjs
+```
+
+It writes PNGs directly (Node's `zlib`, no `sips` or `ffmpeg`) to `public/assets/textures/road/`. It reads the cell layout from `src/rendering/roadDecalAtlas.json`, the same file the runtime imports, so the two cannot drift apart. Pavements follow the same model in `src/world/createPavementSurfaces.ts`, with textures from `node scripts/generatePavementTextures.mjs`, written to `public/assets/textures/pavement/` from `src/rendering/pavementDecalAtlas.json`. Both generators share `scripts/lib/textureTools.mjs`, and both runtimes share `src/world/surfaceDecals.ts`. Road and pavement ironwork share one instanced mesh, so both networks together cost five draw calls. The layer model, placement rules and the photograph shot list for replacing procedural cells are in `ROAD_ATLAS.md`.
+
+## Character and garment pipeline
+
+Art-direction intent is in `ART_DIRECTION.md` under "Fashion as a Core Art-Direction Pillar".
+
+Three.js is the renderer, not the primary garment-authoring environment. Garment fidelity is established upstream in Blender:
+
+```
+reference photography
+→ character/body proportions
+→ garment modelling
+→ optional Blender cloth simulation
+→ baked/rest-state drape
+→ retopology
+→ skinning
+→ PBR material creation
+→ GLB export
+→ Three.js
+```
+
+Avoid real-time cloth simulation for standard NPC garments during the current production phase.
+
+Priorities, in order:
+
+1. silhouette
+2. proportions
+3. drape
+4. skinning
+5. material response
+6. texture resolution
+
+Use LODs/lower-detail variants for background NPCs where necessary. Characters follow the same scale and export conventions as other assets ("Scale, coordinates, and export" above). The current player is a primitive placeholder owned by `PlayerController`, and `src/npc/` is still an empty stub.
+
+## Vehicle architecture
+
+Design intent is in `ART_DIRECTION.md` under "Transport and Movement".
+
+Build vehicle systems in `src/vehicles/` (currently an empty stub) around reusable vehicle controllers. Initial priorities:
+
+- `BicycleController`
+- `BusRoute`
+- `BusController`
+- `BusStop`
+
+Buses initially use deterministic spline/node routes rather than general traffic AI. The initial network is **Harperhey ⇄ The Promised Land**: two buses circulate between two stops.
+
+Existing pieces to extend rather than duplicate:
+
+- `BUS_STOPS` in `src/world/worldLayout.ts` already defines Bus Stop A and Bus Stop B. Both are inside the current map, and neither is yet assigned to Harperhey or The Promised Land.
+- The Sterling hire bikes (`docs/assets/sterling-bike.md`) already expose articulated wheel, steering, crank and pedal nodes and a future `SD_InteractionAnchor`. A `BicycleController` should be able to drive that rig as well as the player's own bike.
+- Vehicles should advance on `FixedStepClock` like the player, so rendering performance never changes their speed.
+
+## Photographic lighting
+
+Photography/video lights can exist as normal world assets and, later, interactive lighting objects.
+
+Performance rule: **do not recreate the earlier problem of large numbers of independent dynamic lights.** The local-light budget in "Performance and simulation policy" above still applies. Where possible:
+
+- bake/static-light environmental tableaux
+- limit shadow-casting lights
+- use emissive geometry where illumination is not required
+- activate expensive lights contextually
+- use distance-based disabling/LOD
+- reuse light/stand assets
+
+Visible lighting apparatus is an art-direction feature, not justification for unrestricted dynamic lighting.

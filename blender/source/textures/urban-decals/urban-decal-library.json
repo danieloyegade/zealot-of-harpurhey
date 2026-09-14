@@ -1,0 +1,126 @@
+{
+  "image": "urban-decal-library.png",
+  "cell_origin": "bottom-left",
+  "entries": {
+    "torn_paper": {
+      "cell": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "kind": "paper",
+      "roughness": 0.86,
+      "thickness": 0.00012,
+      "opacity": 1.0
+    },
+    "shipping_label": {
+      "cell": [
+        256,
+        0,
+        256,
+        256
+      ],
+      "kind": "paper",
+      "roughness": 0.7,
+      "thickness": 0.00012,
+      "opacity": 1.0
+    },
+    "removed_sticker": {
+      "cell": [
+        512,
+        0,
+        256,
+        256
+      ],
+      "kind": "paper",
+      "roughness": 0.78,
+      "thickness": 0.0001,
+      "opacity": 1.0
+    },
+    "adhesive_residue": {
+      "cell": [
+        768,
+        0,
+        256,
+        256
+      ],
+      "kind": "residue",
+      "roughness": 0.72,
+      "thickness": 4e-05,
+      "opacity": 0.6
+    },
+    "faded_event_sticker": {
+      "cell": [
+        0,
+        256,
+        256,
+        256
+      ],
+      "kind": "paper",
+      "roughness": 0.6,
+      "thickness": 0.0001,
+      "opacity": 1.0
+    },
+    "marker_tag": {
+      "cell": [
+        256,
+        256,
+        256,
+        256
+      ],
+      "kind": "ink",
+      "roughness": 0.42,
+      "thickness": 2e-05,
+      "opacity": 1.0
+    },
+    "scratched_initials": {
+      "cell": [
+        512,
+        256,
+        256,
+        256
+      ],
+      "kind": "scratch",
+      "roughness": 0.8,
+      "thickness": 0.0,
+      "opacity": 1.0
+    },
+    "tape_residue": {
+      "cell": [
+        768,
+        256,
+        256,
+        256
+      ],
+      "kind": "tape",
+      "roughness": 0.55,
+      "thickness": 5e-05,
+      "opacity": 0.7
+    },
+    "round_sticker_remnant": {
+      "cell": [
+        0,
+        512,
+        256,
+        256
+      ],
+      "kind": "paper",
+      "roughness": 0.8,
+      "thickness": 0.0001,
+      "opacity": 1.0
+    },
+    "chewing_gum": {
+      "cell": [
+        256,
+        512,
+        256,
+        256
+      ],
+      "kind": "gum",
+      "roughness": 0.6,
+      "thickness": 0.0006,
+      "opacity": 1.0
+    }
+  }
+}

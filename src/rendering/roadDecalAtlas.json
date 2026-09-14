@@ -1,0 +1,28 @@
+{
+  "size": 1024,
+  "layers": ["repairs", "depressions", "cracks-seams-stains", "paint", "tyre", "gutter", "wet"],
+  "cells": {
+    "patch-rect-a": { "x": 0, "y": 0, "w": 256, "h": 256, "layer": 0, "label": "Fresh rectangular utility reinstatement with tar-sealed saw-cut edge" },
+    "patch-rect-b": { "x": 256, "y": 0, "w": 256, "h": 256, "layer": 0, "label": "Old, faded rectangular reinstatement with crumbling seal" },
+    "patch-irregular-a": { "x": 512, "y": 0, "w": 256, "h": 256, "layer": 0, "label": "Smooth black hand-laid resurfacing with ravelled sandy edge" },
+    "patch-irregular-b": { "x": 768, "y": 0, "w": 256, "h": 256, "layer": 0, "label": "Grey faded resurfaced area" },
+    "pothole-fill-a": { "x": 0, "y": 256, "w": 256, "h": 256, "layer": 1, "label": "Filled pothole, slightly sunken, loose stones around the lip" },
+    "pothole-fill-b": { "x": 256, "y": 256, "w": 256, "h": 256, "layer": 1, "label": "Shallow open pothole with exposed coarse aggregate" },
+    "crack-web": { "x": 512, "y": 256, "w": 256, "h": 256, "layer": 2, "label": "Branching surface cracking" },
+    "oil-stain": { "x": 768, "y": 256, "w": 256, "h": 256, "layer": 2, "label": "Oil and fluid drip staining" },
+    "wet-patch-a": { "x": 0, "y": 512, "w": 256, "h": 256, "layer": 6, "label": "Damp patch, low roughness, soft edge" },
+    "wet-patch-b": { "x": 256, "y": 512, "w": 256, "h": 256, "layer": 6, "label": "Broken shallow puddle islands" },
+    "zebra-stripe-a": { "x": 512, "y": 512, "w": 512, "h": 48, "layer": 3, "label": "Worn zebra crossing bar" },
+    "zebra-stripe-b": { "x": 512, "y": 560, "w": 512, "h": 48, "layer": 3, "label": "Heavily worn, tyre-darkened zebra crossing bar" },
+    "gutter-litter": { "x": 512, "y": 608, "w": 512, "h": 80, "layer": 5, "label": "Leaves, cigarette ends and silt against the kerb (v = 0 is the kerb side)" },
+    "crack-long": { "x": 512, "y": 688, "w": 512, "h": 80, "layer": 2, "label": "Long longitudinal crack with patchy tar overbanding" },
+    "trench": { "x": 0, "y": 768, "w": 1024, "h": 56, "layer": 0, "label": "Long trench reinstatement with sealed saw-cut edges" },
+    "gutter-grime-a": { "x": 0, "y": 824, "w": 1024, "h": 40, "layer": 5, "label": "Damp dark gutter sediment with moss staining (v = 0 is the kerb side)" },
+    "gutter-grime-b": { "x": 0, "y": 864, "w": 1024, "h": 40, "layer": 5, "label": "Dry sandy gutter silt and loose stones (v = 0 is the kerb side)" },
+    "tyre-stain": { "x": 0, "y": 904, "w": 1024, "h": 40, "layer": 4, "label": "Polished rubber wheel-path staining" },
+    "tar-seam": { "x": 0, "y": 944, "w": 1024, "h": 16, "layer": 2, "label": "Glossy tar overband along a paving joint" },
+    "line-white-a": { "x": 0, "y": 960, "w": 1024, "h": 20, "layer": 3, "label": "Worn white thermoplastic dash" },
+    "line-white-b": { "x": 0, "y": 980, "w": 1024, "h": 20, "layer": 3, "label": "Badly worn, partially missing white dash" },
+    "line-yellow": { "x": 0, "y": 1000, "w": 1024, "h": 24, "layer": 3, "label": "Cracked, dirty yellow line" }
+  }
+}

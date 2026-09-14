@@ -1,0 +1,23 @@
+{
+  "size": 1024,
+  "layers": ["repairs", "flags", "paving-units", "stains", "edges", "litter", "wet"],
+  "cells": {
+    "tarmac-patch-a": { "x": 0, "y": 0, "w": 256, "h": 256, "layer": 0, "label": "Flags lifted and reinstated in tarmac, sized to whole flags or a full-width service trench" },
+    "tarmac-patch-b": { "x": 256, "y": 0, "w": 256, "h": 256, "layer": 0, "label": "Irregular tarmac infill, including collars around lamp posts" },
+    "cracked-flag-a": { "x": 512, "y": 0, "w": 256, "h": 256, "layer": 1, "label": "One 600 mm flag with a running crack and a broken corner" },
+    "cracked-flag-b": { "x": 768, "y": 0, "w": 256, "h": 256, "layer": 1, "label": "One 600 mm flag shattered by vehicle overrun" },
+    "sunken-flag-wet": { "x": 0, "y": 256, "w": 256, "h": 256, "layer": 6, "label": "One sunken flag holding a film of water" },
+    "damp-patch": { "x": 256, "y": 256, "w": 256, "h": 256, "layer": 6, "label": "Soft damp darkening, lower roughness" },
+    "gum-scatter": { "x": 512, "y": 256, "w": 256, "h": 256, "layer": 3, "label": "Pale flattened chewing gum" },
+    "gum-old": { "x": 768, "y": 256, "w": 256, "h": 256, "layer": 3, "label": "Old blackened gum" },
+    "stain-spill": { "x": 0, "y": 512, "w": 256, "h": 256, "layer": 3, "label": "Drink or grease spill with splash dots" },
+    "bin-stain": { "x": 256, "y": 512, "w": 256, "h": 256, "layer": 3, "label": "Ring and leachate run where a bin stands" },
+    "moss-lichen": { "x": 512, "y": 512, "w": 256, "h": 256, "layer": 4, "label": "Moss clumps and pale lichen rosettes in shade" },
+    "tactile-red": { "x": 768, "y": 512, "w": 256, "h": 256, "layer": 2, "label": "Red blister tactile paving, 3 × 3 units of 400 mm, for controlled crossings" },
+    "kerb-stone": { "x": 0, "y": 768, "w": 1024, "h": 48, "layer": 2, "label": "Concrete kerb top face with joints (v = 0 is the road-side arris)" },
+    "wall-base": { "x": 0, "y": 816, "w": 1024, "h": 56, "layer": 4, "label": "Damp grime, algae and weed tufts against a building (v = 0 is the wall)" },
+    "verge-edge": { "x": 0, "y": 872, "w": 1024, "h": 56, "layer": 4, "label": "Soil and grass creeping over the edge (v = 0 is the verge)" },
+    "tyre-scuff": { "x": 0, "y": 928, "w": 512, "h": 48, "layer": 5, "label": "Rubber scuff from a car parked half on the pavement" },
+    "leaf-litter": { "x": 512, "y": 928, "w": 512, "h": 96, "layer": 5, "label": "Drifted leaves and mulch" }
+  }
+}

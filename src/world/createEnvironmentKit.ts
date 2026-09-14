@@ -12,6 +12,11 @@ import {
   type Material,
 } from 'three';
 import { createWorldMaterial } from '../rendering/worldMaterials';
+import {
+  circleObstacle,
+  orientedBoxObstacle,
+  type CollisionObstacle,
+} from './collision';
 
 interface InstanceTransform {
   readonly x: number;
@@ -68,7 +73,10 @@ const treePositions = [
 ] as const;
 
 /** Low-cost tree and bench variants shared by the park and later city blocks. */
-export function addParkEdgeEnvironmentKit(root: Group): void {
+export function addParkEdgeEnvironmentKit(
+  root: Group,
+  obstacles: CollisionObstacle[],
+): void {
   const trunkMaterial = createWorldMaterial('tree-bark-temporary', {
     repeatX: 2,
     repeatY: 2,
@@ -97,6 +105,10 @@ export function addParkEdgeEnvironmentKit(root: Group): void {
       rotationY: index * 0.47,
     })),
   );
+  // Crowns overhang the paths above head height; only the trunks are solid.
+  for (const [x, z] of treePositions) {
+    obstacles.push(circleObstacle('Park tree trunk', x, z, 0.2, 3));
+  }
 
   const crowns = treePositions.map(([x, z], index) => ({
     x: x + (index % 2 === 0 ? -0.18 : 0.16),
@@ -155,6 +167,8 @@ export function addParkEdgeEnvironmentKit(root: Group): void {
         scaleZ: 0.36,
       });
     }
+    // 2.1 m slats spanning three 0.14 m rails 0.18 m apart.
+    obstacles.push(orientedBoxObstacle('Park bench', x, z, 2.1, 0.5, rotationY, 0.63));
   }
   addInstances(root, 'Environment kit — instanced bench slats', unitBox, timber, slats);
   addInstances(root, 'Environment kit — instanced bench frames', unitBox,
@@ -170,21 +184,75 @@ export function addParkEdgeEnvironmentKit(root: Group): void {
     { x: 1.7, y: 0.021, z: 8.2, rotationY: -0.42, scaleX: 1.75, scaleY: 0.027, scaleZ: 0.82 },
   ]);
 
-  addInstances(root, 'Environment kit — park-edge shrub variants', unitCrown, foliage, [
+  const shrubs = [
     { x: -10.8, y: 0.48, z: 1.5, rotationY: 0.4, scaleX: 0.92, scaleY: 0.48, scaleZ: 0.68 },
     { x: 11.5, y: 0.42, z: -4.2, rotationY: -0.6, scaleX: 0.78, scaleY: 0.42, scaleZ: 0.86 },
     { x: -13.4, y: 0.37, z: -7.2, rotationY: 0.9, scaleX: 0.7, scaleY: 0.37, scaleZ: 0.62 },
-  ]);
+  ];
+  addInstances(root, 'Environment kit — park-edge shrub variants', unitCrown, foliage, shrubs);
+  for (const shrub of shrubs) {
+    // A unit dodecahedron's silhouette reaches about 0.85 of its circumradius.
+    const radius = Math.max(shrub.scaleX, shrub.scaleZ) * 0.85;
+    obstacles.push(circleObstacle('Park shrub', shrub.x, shrub.z, radius, shrub.y + shrub.scaleY));
+  }
+}
+
+/** Authored drain covers; exported so the road system can pool water at them. */
+export const HERO_STREET_DRAIN_COVERS: readonly InstanceTransform[] = [
+  { x: -5.7, y: 0.045, z: 23.9, scaleX: 0.52, scaleY: 0.025, scaleZ: 1.05 },
+  { x: 13.4, y: 0.045, z: -23.1, scaleX: 0.52, scaleY: 0.025, scaleZ: 1.05 },
+  { x: -6.5, y: 0.046, z: -28.2, rotationY: 0.04, scaleX: 0.48, scaleY: 0.026, scaleZ: 0.92 },
+  { x: 6.2, y: 0.046, z: -22.4, rotationY: Math.PI / 2, scaleX: 0.52, scaleY: 0.026, scaleZ: 1.05 },
+  { x: -27.1, y: 0.045, z: 10.5, rotationY: Math.PI / 2, scaleX: 0.52, scaleY: 0.025, scaleZ: 1.05 },
+  { x: 27, y: 0.045, z: -7, rotationY: Math.PI / 2, scaleX: 0.52, scaleY: 0.025, scaleZ: 1.05 },
+  { x: 6.8, y: 0.045, z: 28.9, scaleX: 0.52, scaleY: 0.025, scaleZ: 1.05 },
+];
+
+export interface RoadIronworkPlacement {
+  readonly x: number;
+  readonly z: number;
+  readonly rotationY: number;
+  readonly width: number;
+  readonly depth: number;
+}
+
+/** Flush gully grates and utility covers generated along the road network. */
+export function addRoadIronwork(
+  root: Group,
+  placements: readonly RoadIronworkPlacement[],
+): void {
+  if (placements.length === 0) {
+    return;
+  }
+  // Same options as the hero drain material, so the cached material is shared.
+  const ironwork = createWorldMaterial('street-detail-atlas', {
+    tint: 0x596063,
+    roughness: 0.56,
+    metalness: 0.28,
+  });
+  addInstances(root, 'Road kit — gutter gullies and utility covers', unitBox, ironwork,
+    placements.map((placement) => ({
+      x: placement.x,
+      y: 0.012,
+      z: placement.z,
+      rotationY: placement.rotationY,
+      scaleX: placement.width,
+      scaleY: 0.02,
+      scaleZ: placement.depth,
+    })));
 }
 
 /** Authored North Road clusters, batched by reusable asset type. */
-export function addHeroStreetEnvironmentKit(root: Group): void {
+export function addHeroStreetEnvironmentKit(
+  root: Group,
+  obstacles: CollisionObstacle[],
+): void {
   const metal = createWorldMaterial('metal-oxidised-overhaul', {
     tint: 0x30383a,
     roughness: 0.84,
     metalness: 0.18,
   });
-  addInstances(root, 'Environment kit — battered bollards', unitCylinder, metal, [
+  const bollards: InstanceTransform[] = [
     { x: -16.7, y: 0.41, z: -19.7, scaleX: 0.12, scaleY: 0.82, scaleZ: 0.12 },
     { x: -14.9, y: 0.41, z: -19.7, rotationZ: 0.04, scaleX: 0.12, scaleY: 0.82, scaleZ: 0.12 },
     { x: -7.8, y: 0.41, z: -30.1, scaleX: 0.13, scaleY: 0.82, scaleZ: 0.13 },
@@ -198,34 +266,21 @@ export function addHeroStreetEnvironmentKit(root: Group): void {
     { x: -11.5, y: 0.41, z: 31.2, scaleX: 0.12, scaleY: 0.82, scaleZ: 0.12 },
     { x: -9.7, y: 0.41, z: 31.2, scaleX: 0.12, scaleY: 0.82, scaleZ: 0.12 },
     { x: 21.8, y: 0.41, z: 31.1, scaleX: 0.12, scaleY: 0.82, scaleZ: 0.12 },
-  ]);
+  ];
+  addInstances(root, 'Environment kit — battered bollards', unitCylinder, metal, bollards);
+  for (const bollard of bollards) {
+    obstacles.push(circleObstacle('Bollard', bollard.x, bollard.z, bollard.scaleX ?? 0.12, 0.82));
+  }
 
   const drainMaterial = createWorldMaterial('street-detail-atlas', {
     tint: 0x596063,
     roughness: 0.56,
     metalness: 0.28,
   });
-  addInstances(root, 'Environment kit — wet drain and utility covers', unitBox, drainMaterial, [
-    { x: -5.7, y: 0.045, z: 23.9, scaleX: 0.52, scaleY: 0.025, scaleZ: 1.05 },
-    { x: 13.4, y: 0.045, z: -23.1, scaleX: 0.52, scaleY: 0.025, scaleZ: 1.05 },
-    { x: -6.5, y: 0.046, z: -28.2, rotationY: 0.04, scaleX: 0.48, scaleY: 0.026, scaleZ: 0.92 },
-    { x: 6.2, y: 0.046, z: -22.4, rotationY: Math.PI / 2, scaleX: 0.52, scaleY: 0.026, scaleZ: 1.05 },
-    { x: -27.1, y: 0.045, z: 10.5, rotationY: Math.PI / 2, scaleX: 0.52, scaleY: 0.025, scaleZ: 1.05 },
-    { x: 27, y: 0.045, z: -7, rotationY: Math.PI / 2, scaleX: 0.52, scaleY: 0.025, scaleZ: 1.05 },
-    { x: 6.8, y: 0.045, z: 28.9, scaleX: 0.52, scaleY: 0.025, scaleZ: 1.05 },
-  ]);
+  addInstances(root, 'Environment kit — wet drain and utility covers', unitBox, drainMaterial, HERO_STREET_DRAIN_COVERS);
 
-  const patchMaterial = createWorldMaterial('street-detail-atlas', {
-    tint: 0xa7abb3,
-    roughness: 0.72,
-    metalness: 0.05,
-  });
-  addInstances(root, 'Environment kit — North Road repairs and wet patches', unitBox, patchMaterial, [
-    { x: -7.8, y: 0.016, z: -25.3, rotationY: -0.16, scaleX: 4.2, scaleY: 0.018, scaleZ: 1.7 },
-    { x: 6.8, y: 0.017, z: -25.7, rotationY: 0.11, scaleX: 3.1, scaleY: 0.019, scaleZ: 1.35 },
-    { x: 11.5, y: 0.017, z: -27.4, rotationY: -0.08, scaleX: 1.8, scaleY: 0.019, scaleZ: 0.7 },
-    { x: -1.8, y: 0.018, z: -23.2, rotationY: 0.32, scaleX: 1.4, scaleY: 0.02, scaleZ: 0.58 },
-  ]);
+  // North Road's repairs and wet patches are now decals from the layered road
+  // system (createRoadSurfaces.ts), which keeps a repair cluster here.
 
   addInstances(root, 'Environment kit — North Road iron manholes', unitCircle, drainMaterial, [
     { x: -1.8, y: 0.052, z: -26.2, rotationX: -Math.PI / 2, rotationZ: 0.2, scaleX: 0.62, scaleY: 0.62, scaleZ: 0.62 },
@@ -274,6 +329,10 @@ export function addHeroStreetEnvironmentKit(root: Group): void {
   ] as const;
   addInstances(root, 'Environment kit — commercial bin bodies', unitBox, binBody,
     bins.map(([x, z, rotationY]) => ({ x, y: 0.52, z, rotationY, scaleX: 0.66, scaleY: 1.04, scaleZ: 0.58 })));
+  for (const [x, z, rotationY] of bins) {
+    // Sized to the lid, which overhangs the body.
+    obstacles.push(orientedBoxObstacle('Commercial bin', x, z, 0.74, 0.66, rotationY, 1.14));
+  }
   addInstances(root, 'Environment kit — commercial bin lids', unitBox,
     new MeshStandardMaterial({ color: 0x20292a, roughness: 0.88 }),
     bins.map(([x, z, rotationY]) => ({ x, y: 1.08, z, rotationY, scaleX: 0.74, scaleY: 0.11, scaleZ: 0.66 })));

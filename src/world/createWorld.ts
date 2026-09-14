@@ -11,9 +11,11 @@ import {
   Group,
   HemisphereLight,
   type Material,
+  Matrix4,
   Mesh,
   MeshBasicMaterial,
   MeshStandardMaterial,
+  Object3D,
   OctahedronGeometry,
   PointLight,
   Points,
@@ -28,6 +30,7 @@ import {
   Vector3,
 } from 'three';
 import { BufferAttribute, BufferGeometry, Fog } from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { applyTextureProfile, VISUAL_STYLE } from '../rendering/visualStyle';
 import {
   createGraffitiMaterial,
@@ -39,13 +42,26 @@ import {
   createWorldMaterial,
   type WorldTextureName,
 } from '../rendering/worldMaterials';
-import type { CollisionObstacle, CollisionWorld } from './collision';
+import {
+  circleObstacle,
+  orientedBoxObstacle,
+  type CollisionObstacle,
+  type CollisionWorld,
+} from './collision';
+import { createCollisionDebugOutlines } from './collisionDebug';
 import { loadModel } from './loadModel';
+import { LocalLightRegistry } from './localLighting';
+import { applyBusShelterTexturePolicy, applySpiceCabinTexturePolicy } from './busShelterMaterials';
 import { createDreamsBuilding } from './createDreamsBuilding';
 import {
   addHeroStreetEnvironmentKit,
   addParkEdgeEnvironmentKit,
+  addRoadIronwork,
+  HERO_STREET_DRAIN_COVERS,
 } from './createEnvironmentKit';
+import { addParkGround } from './createParkSurfaces';
+import { addPavementSurfaces, pavementTopAt, type PavementSpan } from './createPavementSurfaces';
+import { addRoadSurfaces, type RoadCrossing, type RoadSpan } from './createRoadSurfaces';
 import {
   BUS_STOPS,
   FOOD_STANDS,
@@ -56,6 +72,8 @@ import {
   STERLING_BIKE_DOCKS,
   WORLD_BOUNDS,
   WORLD_LOCATIONS,
+  type FoodStandMarker,
+  type SterlingStationMarker,
   type WorldLocation,
   type WorldMarker,
 } from './worldLayout';
@@ -71,6 +89,9 @@ export interface World {
 export interface LightingStats {
   readonly activePointLights: number;
   readonly activeSpotLights: number;
+  readonly registeredPointLights: number;
+  readonly activePointLightNames: readonly string[];
+  readonly activeLocalLightGroups: readonly string[];
   readonly maximumActiveLocalLights: number;
 }
 
@@ -81,6 +102,21 @@ const coneGeometryCache = new Map<string, ConeGeometry>();
 const standardColorMaterialCache = new Map<number, MeshStandardMaterial>();
 const basicColorMaterialCache = new Map<number, MeshBasicMaterial>();
 const BUS_SHELTER_SCALE = 1.3;
+
+function createManagedPointLight(
+  name: string,
+  x: number,
+  y: number,
+  z: number,
+  color: number,
+  intensity: number,
+  distance: number,
+): PointLight {
+  const light = new PointLight(color, intensity, distance, 2);
+  light.name = name;
+  light.position.set(x, y, z);
+  return light;
+}
 
 function getBoxGeometry(
   width: number,
@@ -309,6 +345,7 @@ function addCollisionFootprint(
     maxX: location.x + location.width / 2,
     minZ: location.z - location.depth / 2,
     maxZ: location.z + location.depth / 2,
+    height: location.height,
   });
 }
 
@@ -403,6 +440,44 @@ function addCassArtInteriorCollision(
       maxZ: frontZ + 0.28,
     },
   );
+}
+
+function addAdvancedPhotoInteriorCollision(
+  obstacles: CollisionObstacle[],
+  location: WorldLocation,
+): void {
+  const addLocalObstacle = (
+    name: string,
+    minX: number,
+    maxX: number,
+    minZ: number,
+    maxZ: number,
+  ): void => {
+    obstacles.push({
+      name: `Advanced Photo ${name}`,
+      minX: location.x + minX,
+      maxX: location.x + maxX,
+      minZ: location.z + minZ,
+      maxZ: location.z + maxZ,
+      height: location.height,
+    });
+  };
+
+  // Blender -Y imports as local +Z and the model is rotated 180 degrees to
+  // face north. Authored +X therefore becomes world -X, while authored +Y
+  // becomes world +Z. The fixed display volumes form the glazed boundaries;
+  // the east entrance remains open for the player's collision circle.
+  addLocalObstacle('east wall', 2.72, 2.90, -3.10, 3.10);
+  addLocalObstacle('rear wall', -2.90, 2.90, 2.92, 3.10);
+  addLocalObstacle('west rear wall', -2.90, -2.72, 0.82, 3.10);
+  addLocalObstacle('main display cabinet', -2.41, 1.25, -2.94, -2.22);
+  addLocalObstacle('return display cabinet', -2.74, -2.02, -2.40, 0.30);
+  addLocalObstacle('interior cabinet', 0.94, 2.50, 0.10, 0.60);
+  addLocalObstacle('customer counter', -1.88, 0.58, 1.33, 2.11);
+  addLocalObstacle('service partition', -2.80, -0.44, 2.62, 2.74);
+  // The arcade connector west of the shop stays walkable, but its far
+  // boundary wall (AP_ArcadeOppositeBoundary) is solid.
+  addLocalObstacle('arcade boundary wall', -6.30, -6.10, -3.80, 4.00);
 }
 
 function addCoralInteriorCollision(
@@ -514,34 +589,12 @@ function applyBusShelterGeometryPolicy(model: Group): void {
   }
 
   model.traverse((child) => {
-    if (!(child instanceof Mesh)) {
-      return;
-    }
-    child.castShadow = true;
-    child.receiveShadow = true;
-    const materials = Array.isArray(child.material)
-      ? child.material
-      : [child.material];
-    for (const material of materials) {
-      if (!(material instanceof MeshStandardMaterial)) {
-        continue;
-      }
-      const name = material.name.toLowerCase();
-      if (name.includes('busstop_glass')) {
-        material.transparent = true;
-        material.opacity = 0.24;
-        material.depthWrite = false;
-        material.roughness = 0.12;
-        material.metalness = 0.05;
-      } else {
-        // Preserve the geometry-pass material IDs and avoid accidental baked
-        // photographic maps while this version is under proportion review.
-        material.map = null;
-        material.emissiveMap = null;
-        material.roughness = Math.max(material.roughness, 0.38);
-      }
+    if (child instanceof Mesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
     }
   });
+  applyBusShelterTexturePolicy(model);
 }
 
 function applyNiceThingsBlockoutPolicy(model: Group): void {
@@ -600,6 +653,65 @@ function applyVillageBooksBlockoutPolicy(model: Group): void {
         material.metalness = 0.04;
       } else {
         material.roughness = Math.max(material.roughness, 0.58);
+      }
+    }
+  });
+}
+
+function applyAdvancedPhotoBlockoutPolicy(model: Group): void {
+  // Preserve the geometry-review palette. Runtime intervention is limited to
+  // transparent glazing, restrained emissive response for the bright
+  // interior and the arcade's photographed circular fixture, and dropping the
+  // arcade floor slice.
+  //
+  // That floor sits at y = 0 and reaches 3.6 m north of the shopfront, over
+  // the South Road pavement, the carriageway and the open ground to the west.
+  // It z-fought with those surfaces (white striping along the kerb) and read
+  // as a pale untextured slab, so the world's own surfaces are the ground here.
+  const arcadeFloors: Mesh[] = [];
+  model.traverse((child) => {
+    if (child instanceof Mesh && child.name.startsWith('AP_ArcadeFloor_')) {
+      arcadeFloors.push(child);
+    }
+  });
+  arcadeFloors.forEach((floor) => floor.removeFromParent());
+
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.map = null;
+      material.emissiveMap = null;
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+      if (material.name === 'MAT_AP_Glass_PLACEHOLDER') {
+        material.transparent = true;
+        material.opacity = 0.19;
+        material.depthWrite = false;
+        material.roughness = 0.16;
+        material.metalness = 0.04;
+      } else if (material.name === 'MAT_AP_InteriorWall_PLACEHOLDER') {
+        material.emissive.set(0x2a2419);
+        material.emissiveIntensity =
+          0.13 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        material.roughness = Math.max(material.roughness, 0.7);
+      } else if (material.name === 'MAT_AP_ReviewRing') {
+        material.color.set(0xffe7b7);
+        material.emissive.set(0xffc96f);
+        material.emissiveIntensity =
+          2.1 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        material.roughness = 0.25;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.55);
       }
     }
   });
@@ -990,6 +1102,7 @@ async function replaceCoralFallback(
   root: Group,
   fallback: Mesh,
   location: WorldLocation,
+  localLights: LocalLightRegistry,
 ): Promise<void> {
   try {
     const [shop, bin, streetlight, bollard] = await Promise.all([
@@ -1033,21 +1146,29 @@ async function replaceCoralFallback(
       root.add(placedBollard);
     }
 
-    const coolShopLight = new PointLight(
+    const coolShopLight = createManagedPointLight(
+      'Coral cool shopfront spill north',
+      location.x + 6.1,
+      2.55,
+      location.z - 5.5,
       VISUAL_STYLE.lighting.coldWhite,
       2.25 * VISUAL_STYLE.lighting.emissiveMultiplier,
       10,
-      2,
     );
-    coolShopLight.name = 'Coral cool shopfront spill';
-    coolShopLight.position.set(location.x + 6.1, 2.55, location.z - 5.5);
-    root.add(coolShopLight);
-
-    const coolShopLightSouth = coolShopLight.clone();
-    coolShopLightSouth.name = 'Coral cool shopfront spill south';
-    coolShopLightSouth.intensity *= 0.82;
-    coolShopLightSouth.position.z = location.z + 5.5;
-    root.add(coolShopLightSouth);
+    const coolShopLightSouth = createManagedPointLight(
+      'Coral cool shopfront spill south',
+      location.x + 6.1,
+      2.55,
+      location.z + 5.5,
+      VISUAL_STYLE.lighting.coldWhite,
+      2.25 * 0.82 * VISUAL_STYLE.lighting.emissiveMultiplier,
+      10,
+    );
+    localLights.register({
+      name: 'Coral shopfront pair',
+      lights: [coolShopLight, coolShopLightSouth],
+      priority: 1.05,
+    });
 
     root.remove(fallback);
   } catch (error) {
@@ -1239,6 +1360,7 @@ async function addTheHiveModel(
 async function addComeThroughLabModel(
   root: Group,
   location: WorldLocation,
+  localLights: LocalLightRegistry,
 ): Promise<void> {
   try {
     const [lab, dropbox, props] = await Promise.all([
@@ -1275,6 +1397,48 @@ async function addComeThroughLabModel(
       prop.position.copy(lab.position);
       root.add(prop);
     }
+
+    lab.updateWorldMatrix(true, true);
+    const wallFixture = lab.getObjectByName('CTL_WallFixture_AlarmBox');
+    const entranceAnchor = lab.getObjectByName('CTL_EntranceTriggerAnchor');
+    const dropBoxAnchor = dropbox.getObjectByName('CTL_DropBox_InteractAnchor');
+    let thresholdPosition = wallFixture?.getWorldPosition(new Vector3());
+
+    if (thresholdPosition) {
+      // The geometry pass has no authored luminaire. This restrained temporary
+      // cue sits just proud of the real wall fixture and classifies the door +
+      // 24-hour drop box; a final fixture must come from the asset pass.
+      thresholdPosition.x += 0.82;
+    } else if (entranceAnchor && dropBoxAnchor) {
+      thresholdPosition = entranceAnchor
+        .getWorldPosition(new Vector3())
+        .lerp(dropBoxAnchor.getWorldPosition(new Vector3()), 0.5);
+      thresholdPosition.y = 2.45;
+    }
+
+    if (thresholdPosition) {
+      localLights.register({
+        name: 'Come Through Lab threshold',
+        lights: [
+          createManagedPointLight(
+            'Come Through Lab entrance and drop-box cue',
+            thresholdPosition.x,
+            thresholdPosition.y,
+            thresholdPosition.z,
+            VISUAL_STYLE.lighting.coldWhite,
+            4.8,
+            6,
+          ),
+        ],
+        priority: 1.25,
+        selectionMode: 'location-relevance',
+        activationRadius: 13,
+      });
+    } else {
+      console.warn(
+        '[World] Come Through Lab has no usable threshold or wall-fixture anchor.',
+      );
+    }
   } catch (error) {
     console.error(
       '[World] Failed to load the Come Through Lab hero asset set (building, drop box, supply holder).',
@@ -1310,6 +1474,160 @@ async function replaceVillageBooksFallback(
     markLoadFailure(fallback, 'Village Books');
     console.error(
       '[World] Failed to load village-books-blockout.glb. Showing the magenta fallback.',
+      error,
+    );
+  }
+}
+
+async function replaceAdvancedPhotoFallback(
+  root: Group,
+  fallback: Mesh,
+  location: WorldLocation,
+): Promise<void> {
+  try {
+    const advancedPhoto = await loadModel(
+      'assets/models/advanced-photo-blockout.glb?v=geometry-wip-20260913',
+    );
+    applyAdvancedPhotoBlockoutPolicy(advancedPhoto);
+    advancedPhoto.name =
+      'Advanced Photo geometry blockout — detail pass pending';
+    // Blender's main -Y frontage imports facing +Z. Rotate it north and place
+    // the authored shop-body origin at the canonical location. Its short
+    // arcade connector deliberately extends west of the collision footprint.
+    advancedPhoto.rotation.y = Math.PI;
+    advancedPhoto.position.set(location.x, 0, location.z);
+    root.add(advancedPhoto);
+    root.remove(fallback);
+  } catch (error) {
+    markLoadFailure(fallback, 'Advanced Photo');
+    console.error(
+      '[World] Failed to load advanced-photo-blockout.glb. Showing the magenta fallback.',
+      error,
+    );
+  }
+}
+
+// The GLB is authored at real-world scale. The game's South Road placeholders
+// are larger (the Off-Licence is 11 × 10 × 7.6 m), so Spice Cabin is enlarged
+// to sit with its neighbour, as the bus shelter is at 1.3. Depth is matched
+// exactly to the Off-Licence's 10 m, because the asset's east party wall has no
+// exterior face and must stay covered; the 5% difference is not visible. Keep
+// worldLayout.ts's spice-cabin envelope equal to 6.2 × 7.0 × 5.1 m times these.
+const SPICE_CABIN_SCALE = 1.5;
+const SPICE_CABIN_DEPTH_SCALE = 10 / 7;
+
+// Bollards authored in spice-cabin.glb, as unscaled plot-local (x, z) after glTF
+// axis conversion. They stand on the pavement just off the building line.
+const SPICE_CABIN_BOLLARDS: readonly (readonly [number, number])[] = [
+  [-3.28, 4.5],
+  [-2.38, 4.42],
+  [-1.9, 4.58],
+  [0.55, 4.46],
+];
+
+function addSpiceCabinBollardCollision(
+  obstacles: CollisionObstacle[],
+  location: WorldLocation,
+): void {
+  const half = 0.08 * SPICE_CABIN_SCALE;
+  for (const [x, z] of SPICE_CABIN_BOLLARDS) {
+    const bollardX = location.x + x * SPICE_CABIN_SCALE;
+    const bollardZ = location.z + z * SPICE_CABIN_DEPTH_SCALE;
+    obstacles.push({
+      name: 'Spice Cabin bollard',
+      minX: bollardX - half,
+      maxX: bollardX + half,
+      minZ: bollardZ - half,
+      maxZ: bollardZ + half,
+      height: 0.9,
+      blocksCamera: false,
+    });
+  }
+}
+
+async function addSpiceCabinModel(
+  root: Group,
+  location: WorldLocation,
+  localLights: LocalLightRegistry,
+): Promise<void> {
+  try {
+    const spiceCabin = await loadModel('assets/models/spice-cabin.glb?v=textured-20260914');
+    applySpiceCabinTexturePolicy(spiceCabin);
+    spiceCabin.name = 'Spice Cabin finished hero asset';
+    // Blender's -Y shopfront imports facing +Z, which is this plot's South Road
+    // frontage, so no rotation. The authored origin is the footprint centre.
+    // Stand it at pavement height so its ground-contact decal clears the flags.
+    const s = SPICE_CABIN_SCALE;
+    const sd = SPICE_CABIN_DEPTH_SCALE;
+    const frontZ = location.z + location.depth / 2;
+    spiceCabin.scale.set(s, s, sd);
+    spiceCabin.position.set(
+      location.x,
+      pavementTopAt(PAVEMENTS, location.x, frontZ + 0.5) ?? 0,
+      location.z,
+    );
+    root.add(spiceCabin);
+
+    // The asset's colour only reads under its own practical light: the world is
+    // moonlit blue, and without the tube fittings and shop glow the brick,
+    // cream band and printed signs turn grey-blue. Lights hang off the GLB's
+    // authored anchors; sign washes stand clear of the wall to avoid hotspots.
+    // Offsets and ranges follow the model scale, and intensity follows its
+    // square so the inverse-square falloff lands the same light on the façade.
+    spiceCabin.updateMatrixWorld(true);
+    const anchorAt = (name: string, fallback: Vector3): Vector3 =>
+      spiceCabin.getObjectByName(name)?.getWorldPosition(new Vector3()) ?? fallback;
+    const warmTube = 0xffd9a0;
+    const intensityScale = VISUAL_STYLE.lighting.emissiveMultiplier * s * s;
+    const shopWindow = anchorAt('SPICE_LightAnchor_Window', new Vector3(location.x + 1.4 * s, 2.25 * s, frontZ - 0.6 * sd));
+    const frontSign = anchorAt('SPICE_LightAnchor_Sign', new Vector3(location.x, 3.5 * s, frontZ + 0.45 * sd));
+    const sideSign = anchorAt('SPICE_LightAnchor_SideSign', new Vector3(location.x - 3.7 * s, 4.0 * s, location.z - 0.3 * sd));
+    localLights.register({
+      name: 'Spice Cabin shopfront',
+      lights: [
+        createManagedPointLight(
+          'Spice Cabin warm interior spill',
+          shopWindow.x,
+          shopWindow.y,
+          shopWindow.z,
+          VISUAL_STYLE.lighting.sodium,
+          7 * intensityScale,
+          6 * s,
+        ),
+        createManagedPointLight(
+          'Spice Cabin front sign tube wash',
+          frontSign.x,
+          frontSign.y + 0.15 * s,
+          frontSign.z + 0.35 * sd,
+          warmTube,
+          4.5 * intensityScale,
+          5 * s,
+        ),
+      ],
+      priority: 1.2,
+      selectionMode: 'location-relevance',
+      activationRadius: 14 * s,
+    });
+    localLights.register({
+      name: 'Spice Cabin gable sign',
+      lights: [
+        createManagedPointLight(
+          'Spice Cabin gable sign tube wash',
+          sideSign.x - 0.2 * s,
+          sideSign.y - 0.2 * s,
+          sideSign.z,
+          warmTube,
+          4.5 * intensityScale,
+          5 * s,
+        ),
+      ],
+      priority: 1.1,
+      selectionMode: 'location-relevance',
+      activationRadius: 12 * s,
+    });
+  } catch (error) {
+    console.error(
+      '[World] Failed to load spice-cabin.glb. Only its collision footprint remains.',
       error,
     );
   }
@@ -1687,6 +2005,7 @@ function addBuildingLocation(
   root: Group,
   obstacles: CollisionObstacle[],
   location: WorldLocation,
+  localLights: LocalLightRegistry,
 ): void {
   if (location.id === 'dreams') {
     const fallback = createDreamsBuilding(location);
@@ -1694,6 +2013,19 @@ function addBuildingLocation(
     root.add(fallback);
     void replaceDreamsFallback(root, fallback, location);
     addCollisionFootprint(obstacles, location);
+    // The raised entrance landing, its access ramp and their railings stand
+    // 1.6 m proud of the façade (measured from the GLB at body height). The
+    // player has no vertical movement, so they are solid rather than climbable.
+    const frontZ = location.z - location.depth / 2;
+    obstacles.push({
+      name: 'Dreams entrance landing and ramp',
+      minX: location.x - 7.1,
+      maxX: location.x + 3.3,
+      minZ: frontZ - 1.65,
+      maxZ: frontZ,
+      height: 1.65,
+      blocksCamera: false,
+    });
     return;
   }
 
@@ -1713,6 +2045,16 @@ function addBuildingLocation(
   if (location.id === 'mcr1') {
     void addMcr1Model(root, location);
     addCollisionFootprint(obstacles, location);
+    // Stall risers, piers and portal jambs stand 0.9 m proud of the plot's
+    // south edge (measured from the GLB at body height).
+    obstacles.push({
+      name: 'MCR1 shopfront',
+      minX: location.x - location.width / 2,
+      maxX: location.x + location.width / 2,
+      minZ: location.z + location.depth / 2,
+      maxZ: location.z + location.depth / 2 + 0.9,
+      height: location.height,
+    });
     addDevelopmentLabel(
       root,
       `${location.name} · geometry WIP · textures pending`,
@@ -1760,7 +2102,7 @@ function addBuildingLocation(
   }
 
   if (location.id === 'come-through-lab') {
-    void addComeThroughLabModel(root, location);
+    void addComeThroughLabModel(root, location, localLights);
     addCollisionFootprint(obstacles, location);
     addDevelopmentLabel(
       root,
@@ -1769,6 +2111,16 @@ function addBuildingLocation(
       location.height + 1.1,
       location.z,
     );
+    return;
+  }
+
+  if (location.id === 'spice-cabin') {
+    void addSpiceCabinModel(root, location, localLights);
+    // The door stands open as photographed, but interiors are not yet walkable,
+    // so the measured envelope stays solid.
+    addCollisionFootprint(obstacles, location);
+    addSpiceCabinBollardCollision(obstacles, location);
+    addDevelopmentLabel(root, location.name, location.x, location.height + 1.1, location.z);
     return;
   }
 
@@ -1782,6 +2134,23 @@ function addBuildingLocation(
     addDevelopmentLabel(
       root,
       `${location.name} · geometry WIP · textures pending`,
+      location.x,
+      location.height + 1.1,
+      location.z,
+    );
+    return;
+  }
+
+  if (location.id === 'advanced-photo') {
+    const fallback = createBlockoutBuildingMass(location);
+    fallback.position.set(location.x, location.height / 2, location.z);
+    fallback.name = 'Advanced Photo loading placeholder';
+    root.add(fallback);
+    void replaceAdvancedPhotoFallback(root, fallback, location);
+    addAdvancedPhotoInteriorCollision(obstacles, location);
+    addDevelopmentLabel(
+      root,
+      `${location.name} · geometry blockout · detail pass pending`,
       location.x,
       location.height + 1.1,
       location.z,
@@ -1836,6 +2205,19 @@ function addBuildingLocation(
   root.add(building);
   if (location.id === 'coral') {
     addCoralInteriorCollision(obstacles, location);
+  } else if (location.id === 'florist') {
+    // The GLB sits 2.8 m west of the plot centre and includes the Central
+    // Buildings entry beside the shop, so the plot rectangle missed the model's
+    // west 3 m and ran 3.2 m past its façade over the pavement. This is the
+    // model's measured body-height extent instead.
+    obstacles.push({
+      name: location.name,
+      minX: location.x - 6.2,
+      maxX: location.x + 2.95,
+      minZ: location.z - 6.9,
+      maxZ: location.z + 0.52,
+      height: location.height,
+    });
   } else {
     addCollisionFootprint(obstacles, location);
   }
@@ -1843,7 +2225,7 @@ function addBuildingLocation(
   if (location.id === 'florist') {
     void replaceFloristFallback(root, building, location);
   } else if (location.id === 'coral') {
-    void replaceCoralFallback(root, building, location);
+    void replaceCoralFallback(root, building, location, localLights);
   } else {
     addBlockoutFacade(root, location);
   }
@@ -1888,15 +2270,26 @@ function markShelterLoadFailure(fallback: Group, assetName = 'Bus shelter'): voi
   });
 }
 
+let busShelterTemplate: Promise<Group> | undefined;
+
+// Both shelters clone one loaded model so the texture-pass maps are uploaded
+// to the GPU once rather than per shelter.
+function loadBusShelterTemplate(): Promise<Group> {
+  busShelterTemplate ??= loadModel(
+    'assets/models/bus-shelter/preston-busstop-textured.glb?v=texture-pass-20260913',
+  ).then((model) => {
+    applyBusShelterGeometryPolicy(model);
+    return model;
+  });
+  return busShelterTemplate;
+}
+
 async function replaceBusShelterFallback(
   root: Group,
   fallback: Group,
 ): Promise<void> {
   try {
-    const shelter = await loadModel(
-      'assets/models/bus-shelter/preston-busstop-reference.glb?v=geometry-pass-20260911',
-    );
-    applyBusShelterGeometryPolicy(shelter);
+    const shelter = (await loadBusShelterTemplate()).clone(true);
     shelter.name = fallback.name.replace(' loading placeholder', '');
     shelter.position.copy(fallback.position);
     shelter.rotation.copy(fallback.rotation);
@@ -1936,6 +2329,14 @@ function applyGreekGyrosPolicy(model: Group): void {
         material.opacity = 0.22;
         material.depthWrite = false;
         material.roughness = 0.14;
+      } else if (material.name === 'MAT_GG_FixtureLens_PLACEHOLDER') {
+        // The fixture geometry is authored even though the kiosk is awaiting
+        // its final texture pass. A restrained practical keeps the source of
+        // the counter light visible without making the whole shell emissive.
+        material.emissive.set(0xfff1d6);
+        material.emissiveIntensity =
+          1.15 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        material.roughness = 0.28;
       } else {
         material.roughness = Math.max(material.roughness, 0.42);
       }
@@ -1964,6 +2365,7 @@ function createGreekGyrosFallback(): Group {
 async function replaceGreekGyrosFallback(
   root: Group,
   fallback: Group,
+  localLights: LocalLightRegistry,
 ): Promise<void> {
   try {
     const stand = await loadModel(
@@ -1974,6 +2376,31 @@ async function replaceGreekGyrosFallback(
     stand.position.copy(fallback.position);
     stand.rotation.copy(fallback.rotation);
     root.add(stand);
+    stand.updateWorldMatrix(true, true);
+
+    const counterAnchor = stand.getObjectByName('GG_LightAnchor_Counter');
+    if (counterAnchor) {
+      const position = counterAnchor.getWorldPosition(new Vector3());
+      localLights.register({
+        name: 'Greek Gyros counter practical',
+        lights: [
+          createManagedPointLight(
+            'Greek Gyros counter spill',
+            position.x,
+            position.y,
+            position.z,
+            0xfff1d6,
+            6,
+            7,
+          ),
+        ],
+        priority: 1.3,
+        selectionMode: 'location-relevance',
+        activationRadius: 13,
+      });
+    } else {
+      console.warn('[World] Greek Gyros counter light anchor is missing.');
+    }
     root.remove(fallback);
   } catch (error) {
     markShelterLoadFailure(fallback, 'Greek Gyros');
@@ -1984,28 +2411,62 @@ async function replaceGreekGyrosFallback(
   }
 }
 
+/** Axis-aligned obstacle enclosing a local footprint after yaw `rotationY`. */
+function rotatedObstacle(
+  name: string,
+  x: number,
+  z: number,
+  rotationY: number,
+  minLocalX: number,
+  maxLocalX: number,
+  minLocalZ: number,
+  maxLocalZ: number,
+): CollisionObstacle {
+  const cos = Math.cos(rotationY);
+  const sin = Math.sin(rotationY);
+  const corners = [
+    [minLocalX, minLocalZ],
+    [maxLocalX, minLocalZ],
+    [minLocalX, maxLocalZ],
+    [maxLocalX, maxLocalZ],
+  ].map(([localX, localZ]) => [
+    x + localX * cos + localZ * sin,
+    z - localX * sin + localZ * cos,
+  ]);
+  const worldX = corners.map(([cornerX]) => cornerX);
+  const worldZ = corners.map(([, cornerZ]) => cornerZ);
+  return {
+    name,
+    minX: Math.min(...worldX),
+    maxX: Math.max(...worldX),
+    minZ: Math.min(...worldZ),
+    maxZ: Math.max(...worldZ),
+  };
+}
+
 function addGreekGyros(
   root: Group,
   obstacles: CollisionObstacle[],
-  marker: WorldMarker,
+  marker: FoodStandMarker,
+  localLights: LocalLightRegistry,
 ): void {
   const fallback = createGreekGyrosFallback();
   fallback.name = `${marker.name} loading placeholder`;
   fallback.position.set(marker.x, 0, marker.z);
+  fallback.rotation.y = marker.rotationY;
   root.add(fallback);
-  void replaceGreekGyrosFallback(root, fallback);
+  void replaceGreekGyrosFallback(root, fallback, localLights);
 
-  obstacles.push({
-    name: marker.name,
-    minX: marker.x - 3.2,
-    // The side service step projects 0.56 m past the east wall; enclosing it
-    // keeps the player from clipping through the step rather than over it.
-    maxX: marker.x + 3.76,
-    minZ: marker.z - 1.3,
-    // The authored frontage faces +Z: stop the player at the counter lip and
-    // leave the projecting canopy overhead clear.
-    maxZ: marker.z + 1.5,
-  });
+  // Local footprint: the side service step projects 0.56 m past the +X wall,
+  // so enclosing it keeps the player from clipping through the step. The
+  // authored frontage faces +Z; stopping at the counter lip leaves the
+  // projecting canopy overhead clear. Rotate the corners into world space.
+  obstacles.push(
+    {
+      ...rotatedObstacle(marker.name, marker.x, marker.z, marker.rotationY, -3.2, 3.76, -1.3, 1.5),
+      height: 3.4,
+    },
+  );
   addDevelopmentLabel(root, marker.name, marker.x, 4.1, marker.z);
 }
 
@@ -2017,7 +2478,9 @@ function addBusShelter(
 ): void {
   const fallback = createBusShelterFallback();
   fallback.name = `${marker.name} loading placeholder`;
-  fallback.position.set(marker.x, 0, marker.z);
+  // Stand on the flags: the uprights, rail legs and advert plinth are modelled
+  // 30 mm below their base, and the ground-contact decal sits just above it.
+  fallback.position.set(marker.x, pavementTopAt(PAVEMENTS, marker.x, marker.z) ?? 0, marker.z);
   fallback.rotation.y = rotation;
   root.add(fallback);
   void replaceBusShelterFallback(root, fallback);
@@ -2030,55 +2493,28 @@ function addBusShelter(
     // Both shelters face toward +Z after their -90° world rotation. Include
     // the independently modelled trolley now positioned in front of the rail.
     maxZ: marker.z + 1.85,
+    height: 3.3,
   });
   addDevelopmentLabel(root, marker.name, marker.x, 3.4, marker.z);
 }
 
-function addPathBetween(
-  root: Group,
-  name: string,
-  startX: number,
-  startZ: number,
-  endX: number,
-  endZ: number,
-  width: number,
-): void {
-  const deltaX = endX - startX;
-  const deltaZ = endZ - startZ;
-  const length = Math.hypot(deltaX, deltaZ);
-  const path = addEnvironmentSurface(
-    root,
-    name,
-    (startX + endX) / 2,
-    (startZ + endZ) / 2,
-    width,
-    length,
-    'pavement-weathered-overhaul',
-    0.01,
-    3,
-  );
-  path.rotation.y = Math.atan2(deltaX, deltaZ);
-}
-
-function addCentralPark(root: Group): void {
-  addEnvironmentSurface(
-    root,
-    'Central Park grass blockout',
-    PARK.x,
-    PARK.z,
-    PARK.width,
-    PARK.depth,
-    'grass-damp-overhaul',
-    -0.03,
-    5,
-  );
-
-  addEnvironmentSurface(root, 'Park path north', 0, -15.2, 42, 1.5, 'pavement-weathered-overhaul', 0.01, 3);
-  addEnvironmentSurface(root, 'Park path south', 0, 15.2, 42, 1.5, 'pavement-wet-overhaul', 0.01, 3);
-  addEnvironmentSurface(root, 'Park path west', -20.2, 0, 1.5, 30, 'pavement-wet-overhaul', 0.01, 3);
-  addEnvironmentSurface(root, 'Park path east', 20.2, 0, 1.5, 30, 'pavement-weathered-overhaul', 0.01, 3);
-  addPathBetween(root, 'Park diagonal NW-SE', -20, -15, 20, 15, 1.8);
-  addPathBetween(root, 'Park diagonal NE-SW', 20, -15, -20, 15, 1.8);
+function addCentralPark(root: Group, obstacles: CollisionObstacle[]): void {
+  // The grass runs to the inner edges of the park pavements (x ±23.15,
+  // z ±18.15), closing the strip of bare world ground that showed between.
+  addParkGround(root, {
+    x: PARK.x,
+    z: PARK.z,
+    width: 46.3,
+    depth: 36.3,
+    paths: [
+      { name: 'Park path north', startX: -21, startZ: -15.2, endX: 21, endZ: -15.2, width: 1.5 },
+      { name: 'Park path south', startX: -21, startZ: 15.2, endX: 21, endZ: 15.2, width: 1.5 },
+      { name: 'Park path west', startX: -20.2, startZ: -15, endX: -20.2, endZ: 15, width: 1.5 },
+      { name: 'Park path east', startX: 20.2, startZ: -15, endX: 20.2, endZ: 15, width: 1.5 },
+      { name: 'Park diagonal NW-SE', startX: -20, startZ: -15, endX: 20, endZ: 15, width: 1.8 },
+      { name: 'Park diagonal NE-SW', startX: 20, startZ: -15, endX: -20, endZ: 15, width: 1.8 },
+    ],
+  });
 
   const centre = new Mesh(
     getCylinderGeometry(2.4, 2.4, 0.18, 16),
@@ -2119,8 +2555,11 @@ function addCentralPark(root: Group): void {
   fountainColumn.name = 'Fountain centre column';
   fountainColumn.position.y = 1.02;
   root.add(fountainColumn);
+  // The basin rim is the solid edge. The 18 cm plinth around it stays
+  // walkable, like the similarly raised pavements.
+  obstacles.push(circleObstacle('Park fountain basin', 0, 0, 1.9, 1.65));
 
-  addParkEdgeEnvironmentKit(root);
+  addParkEdgeEnvironmentKit(root, obstacles);
 
   const playgroundReserve = addSurface(
     root,
@@ -2139,25 +2578,6 @@ function addCentralPark(root: Group): void {
   });
   addDevelopmentLabel(root, 'Future Playground', 12.5, 1.2, 3);
   addDevelopmentLabel(root, 'Central Park', 0, 2.2, 0);
-}
-
-function addCrossing(
-  root: Group,
-  name: string,
-  x: number,
-  z: number,
-  rotation = 0,
-): void {
-  const crossing = new Group();
-  crossing.name = name;
-  crossing.position.set(x, 0.015, z);
-  crossing.rotation.y = rotation;
-  for (let index = -2; index <= 2; index += 1) {
-    const stripe = createBox(0.45, 0.03, 4.8, 0xd3d0c4);
-    stripe.position.x = index * 0.9;
-    crossing.add(stripe);
-  }
-  root.add(crossing);
 }
 
 function addRoadAnnotation(
@@ -2201,86 +2621,110 @@ function addRoadAnnotation(
   root.add(marking);
 }
 
+const ROADS: readonly RoadSpan[] = [
+  { name: 'North perimeter road', x: 0, z: -25.5, width: 72, depth: ROAD_WIDTH },
+  { name: 'South perimeter road', x: 0, z: 25.5, width: 72, depth: ROAD_WIDTH },
+  { name: 'West perimeter road', x: -29.5, z: 0, width: ROAD_WIDTH, depth: 66 },
+  { name: 'East perimeter road', x: 29.5, z: 0, width: ROAD_WIDTH, depth: 66 },
+  { name: 'Outer North Road', x: 0, z: -44.2, width: 114, depth: ROAD_WIDTH },
+  { name: 'Outer South Road', x: 0, z: 59.5, width: 114, depth: ROAD_WIDTH },
+  { name: 'Outer west street', x: -48, z: 0, width: ROAD_WIDTH, depth: 96 },
+  { name: 'Outer east street', x: 57, z: 0, width: ROAD_WIDTH, depth: 96 },
+  { name: 'North Road outward connection', x: 0, z: -55, width: ROAD_WIDTH, depth: 16, centreLine: false },
+  { name: 'South Road outward connection', x: 0, z: 69.625, width: ROAD_WIDTH, depth: 12.75, centreLine: false },
+  { name: 'West outward connection', x: -58, z: 25.5, width: 16, depth: ROAD_WIDTH, centreLine: false },
+  { name: 'East outward connection', x: 61, z: 0, width: 8, depth: ROAD_WIDTH, centreLine: false },
+];
+
+const STREETLIGHTS = [
+  [-20, -19, VISUAL_STYLE.lighting.sodium],
+  [20, -19, VISUAL_STYLE.lighting.sodium],
+  [-18, 19, VISUAL_STYLE.lighting.sodium],
+  [-9, 19, VISUAL_STYLE.lighting.sodium],
+  [8, 19, VISUAL_STYLE.lighting.magenta],
+  [16, 19, VISUAL_STYLE.lighting.magenta],
+  [-25, -10, VISUAL_STYLE.lighting.coldWhite],
+  [-25, 10, VISUAL_STYLE.lighting.sodium],
+  [25, -10, VISUAL_STYLE.lighting.fluorescent],
+  [25, 10, VISUAL_STYLE.lighting.coldWhite],
+  [-9.6, -20.5, VISUAL_STYLE.lighting.sodium],
+  [12, -29, VISUAL_STYLE.lighting.magenta],
+  [-12, 29, VISUAL_STYLE.lighting.sodium],
+  [12, 29, VISUAL_STYLE.lighting.sodium],
+  [-34, 7, VISUAL_STYLE.lighting.sodium],
+  [34, 17, VISUAL_STYLE.lighting.coldWhite],
+  [-15, 55, VISUAL_STYLE.lighting.sodium],
+  [1, 55, VISUAL_STYLE.lighting.sodium],
+  [16.5, 55, VISUAL_STYLE.lighting.magenta],
+  [29, 55, VISUAL_STYLE.lighting.sodium],
+] as const;
+
+const CROSSINGS: readonly RoadCrossing[] = [
+  { name: 'South park crossing', x: 0, z: 25.5 },
+  { name: 'West park crossing', x: -29.5, z: 0, rotation: Math.PI / 2 },
+  { name: 'East park crossing', x: 29.5, z: 0, rotation: Math.PI / 2 },
+];
+
+// `back` is what the non-kerb edge meets; kerbs are found from ROADS.
+const PAVEMENTS: readonly PavementSpan[] = [
+  // The park north and south pavements run to the carriageway edge (z ±21.75).
+  // At 2.5 m deep they stopped 1.1 m short, so no kerb was detected and a strip
+  // of bare world ground, 8 cm lower, ran between pavement and road.
+  { name: 'Park north pavement', x: 0, z: -19.95, width: 49, depth: 3.6, back: 'verge', damp: true },
+  { name: 'Park south pavement', x: 0, z: 19.95, width: 49, depth: 3.6, back: 'verge' },
+  { name: 'Park west pavement', x: -24.4, z: 0, width: PAVEMENT_WIDTH, depth: 39, back: 'verge', damp: true },
+  { name: 'Park east pavement', x: 24.4, z: 0, width: PAVEMENT_WIDTH, depth: 39, back: 'verge' },
+  { name: 'North building pavement', x: 0, z: -31.1, width: 72, depth: 3.6, back: 'wall', damp: true },
+  { name: 'South building pavement', x: 0, z: 31.1, width: 72, depth: 3.6, back: 'wall' },
+  { name: 'West building pavement', x: -34.2, z: 0, width: 2, depth: 66, back: 'wall', damp: true },
+  { name: 'East building pavement', x: 34.2, z: 0, width: 2, depth: 66, back: 'wall' },
+  { name: 'South Road shop frontage pavement', x: 0, z: 54.875, width: 72, depth: 1.75, back: 'wall', damp: true },
+  { name: 'South Road opposite pavement', x: 18.5, z: 64, width: 75, depth: 1.5, back: 'wall', damp: true },
+];
+
 function addRoadAndPavementLayout(root: Group): void {
-  const road = (
-    name: string,
-    x: number,
-    z: number,
-    width: number,
-    depth: number,
-  ): void => {
-    addEnvironmentSurface(
-      root,
-      name,
-      x,
-      z,
-      width,
-      depth,
-      'asphalt-wet-overhaul',
-      -0.05,
-      4,
-    );
-  };
-  const pavement = (
-    name: string,
-    x: number,
-    z: number,
-    width: number,
-    depth: number,
-    damp = false,
-  ): void => {
-    addEnvironmentSurface(
-      root,
-      name,
-      x,
-      z,
-      width,
-      depth,
-      damp ? 'pavement-wet-overhaul' : 'pavement-weathered-overhaul',
-      -0.045,
-      3,
-    );
-  };
+  const streetlights = STREETLIGHTS.map(([x, z]) => ({ x, z }));
+  const shopEntrances = WORLD_LOCATIONS
+    .filter((location) => location.kind === 'building' && location.front)
+    .map((location) => {
+      switch (location.front) {
+        case 'south': return { x: location.x, z: location.z + location.depth / 2 };
+        case 'north': return { x: location.x, z: location.z - location.depth / 2 };
+        case 'east': return { x: location.x + location.width / 2, z: location.z };
+        default: return { x: location.x - location.width / 2, z: location.z };
+      }
+    });
 
-  road('North perimeter road', 0, -25.5, 72, ROAD_WIDTH);
-  road('South perimeter road', 0, 25.5, 72, ROAD_WIDTH);
-  road('West perimeter road', -29.5, 0, ROAD_WIDTH, 66);
-  road('East perimeter road', 29.5, 0, ROAD_WIDTH, 66);
-  road('Outer North Road', 0, -44.2, 114, ROAD_WIDTH);
-  road('Outer South Road', 0, 59.5, 114, ROAD_WIDTH);
-  road('Outer west street', -48, 0, ROAD_WIDTH, 96);
-  road('Outer east street', 57, 0, ROAD_WIDTH, 96);
-  road('North Road outward connection', 0, -55, ROAD_WIDTH, 16);
-  road('South Road outward connection', 0, 69.625, ROAD_WIDTH, 12.75);
-  road('West outward connection', -58, 25.5, 16, ROAD_WIDTH);
-  road('East outward connection', 61, 0, 8, ROAD_WIDTH);
-
-  pavement('Park north pavement', 0, -19.4, 49, PAVEMENT_WIDTH, true);
-  pavement('Park south pavement', 0, 19.4, 49, PAVEMENT_WIDTH);
-  pavement('Park west pavement', -24.4, 0, PAVEMENT_WIDTH, 39, true);
-  pavement('Park east pavement', 24.4, 0, PAVEMENT_WIDTH, 39);
-  pavement('North building pavement', 0, -31.1, 72, 3.6, true);
-  pavement('South building pavement', 0, 31.1, 72, 3.6);
-  pavement('West building pavement', -34.2, 0, 2, 66, true);
-  pavement('East building pavement', 34.2, 0, 2, 66);
-  pavement('South Road shop frontage pavement', 0, 54.875, 72, 1.75, true);
-  pavement('South Road opposite pavement', 18.5, 64, 75, 1.5, true);
-
-  const dreamsKerbMarkingMaterial = new MeshStandardMaterial({
-    color: 0xb58a18,
-    emissive: 0x2e1c02,
-    emissiveIntensity: 0.12,
-    roughness: 0.86,
+  const roadIronwork = addRoadSurfaces(root, {
+    roads: ROADS,
+    crossings: CROSSINGS,
+    kerbLines: [
+      { name: 'Dreams worn double yellow kerb marking', x: -3, z: 29.02, length: 18, axis: 'x' },
+      { name: 'Dreams worn double yellow kerb marking', x: -3, z: 28.76, length: 18, axis: 'x' },
+      { name: 'South Road frontage double yellow', x: -13, z: 55.98, length: 22, axis: 'x' },
+      { name: 'South Road frontage double yellow', x: -13, z: 56.24, length: 22, axis: 'x' },
+    ],
+    // Stretches dug up far more often than the rest: the North Road detail
+    // view, the Dreams frontage and South Road.
+    repairClusters: [
+      { x: 2, z: -25.5, radius: 10, count: 8 },
+      { x: -4, z: 25.8, radius: 9, count: 8 },
+      { x: -3, z: 59.5, radius: 11, count: 7 },
+    ],
+    streetlights,
+    drains: HERO_STREET_DRAIN_COVERS,
   });
-  for (const z of [29.02, 28.76]) {
-    const line = createBox(18, 0.025, 0.08, dreamsKerbMarkingMaterial);
-    line.name = 'Dreams worn double yellow kerb marking';
-    line.position.set(-3, 0.028, z);
-    root.add(line);
-  }
-  addCrossing(root, 'South park crossing', 0, 25.5);
-  addCrossing(root, 'West park crossing', -29.5, 0, Math.PI / 2);
-  addCrossing(root, 'East park crossing', 29.5, 0, Math.PI / 2);
+
+  const pavementIronwork = addPavementSurfaces(root, {
+    pavements: PAVEMENTS,
+    roads: ROADS,
+    crossings: CROSSINGS,
+    streetlights,
+    hotspots: [...BUS_STOPS, ...shopEntrances],
+  });
+
+  // Gullies, lane covers and footway covers share one instanced mesh.
+  addRoadIronwork(root, [...roadIronwork, ...pavementIronwork]);
 
   addRoadAnnotation(root, 'N-025.5', -9, -25.5);
   addRoadAnnotation(root, 'X 29.5', 29.5, 8, Math.PI / 2);
@@ -2314,20 +2758,244 @@ function addCarPark(root: Group, location: WorldLocation): void {
   addDevelopmentLabel(root, location.name, location.x, 1.8, location.z);
 }
 
-function addBikeDock(root: Group, marker: WorldMarker): void {
-  const dock = new Group();
-  dock.name = marker.name;
-  dock.position.set(marker.x, 0, marker.z);
-  for (let index = 0; index < 5; index += 1) {
-    const stand = createBox(0.18, 0.7, 0.55, 0xd2ad26);
-    stand.position.set((index - 2) * 0.55, 0.35, 0);
-    dock.add(stand);
+// Sterling bike nodes that must stay independently transformable for the later
+// riding state (wheels spin, front wheel steers, crank and pedals turn).
+const STERLING_ARTICULATED_NODES = new Set([
+  'SB_FrontWheel',
+  'SB_RearWheel',
+  'SB_SteeringRoot',
+  'SB_CrankRoot',
+  'SB_Pedal_Left',
+  'SB_Pedal_Right',
+  'SB_Basket',
+]);
+// Must match DOCK_SPACING in blender/scripts/createSterlingBikeBlockout.py.
+const STERLING_DOCK_SPACING = 0.94;
+// Top of the car park surface slab (0.1 m thick, centred at y = -0.02).
+const CAR_PARK_SURFACE_TOP = 0.03;
+
+let sterlingTemplates: Promise<{ bike: Group; dock: Group }> | undefined;
+
+function applySterlingBlockoutPolicy(model: Group): void {
+  // Geometry-review blockout: keep the authored placeholder palette, but stop
+  // lens and reflector placeholders reading as lit before the lighting pass.
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (material instanceof MeshStandardMaterial) {
+        material.emissive.set(0x000000);
+        material.emissiveIntensity = 0;
+        material.roughness = Math.max(material.roughness, 0.4);
+      }
+    }
+  });
+}
+
+function flipTriangleWinding(geometry: BufferGeometry): void {
+  for (const attribute of [geometry.getAttribute('position'), geometry.getAttribute('normal')]) {
+    for (let vertex = 0; vertex + 2 < attribute.count; vertex += 3) {
+      for (let component = 0; component < attribute.itemSize; component += 1) {
+        const second = attribute.getComponent(vertex + 1, component);
+        attribute.setComponent(vertex + 1, component, attribute.getComponent(vertex + 2, component));
+        attribute.setComponent(vertex + 2, component, second);
+      }
+    }
   }
-  root.add(dock);
+}
+
+function mergeSterlingStaticParts(model: Group): void {
+  // The blockout exports ~107 meshes per bike. Merge the meshes under each
+  // articulated node (or the root) by material so a bike costs a couple of
+  // dozen draw calls while its moving parts keep their authored pivots.
+  model.updateMatrixWorld(true);
+  const meshes: Mesh[] = [];
+  model.traverse((child) => {
+    if (child instanceof Mesh && !Array.isArray(child.material)) {
+      meshes.push(child);
+    }
+  });
+
+  const batches = new Map<Object3D, Map<Material, BufferGeometry[]>>();
+  const toOwner = new Matrix4();
+  for (const mesh of meshes) {
+    let owner: Object3D = model;
+    for (let ancestor = mesh.parent; ancestor && ancestor !== model; ancestor = ancestor.parent) {
+      if (STERLING_ARTICULATED_NODES.has(ancestor.name)) {
+        owner = ancestor;
+        break;
+      }
+    }
+    const geometry = mesh.geometry.index
+      ? mesh.geometry.toNonIndexed()
+      : mesh.geometry.clone();
+    // Untextured placeholders: position and normal are all that must agree
+    // for the geometries to merge.
+    for (const name of Object.keys(geometry.attributes)) {
+      if (name !== 'position' && name !== 'normal') {
+        geometry.deleteAttribute(name);
+      }
+    }
+    if (!geometry.getAttribute('normal')) {
+      geometry.computeVertexNormals();
+    }
+    toOwner.copy(owner.matrixWorld).invert().multiply(mesh.matrixWorld);
+    geometry.applyMatrix4(toOwner);
+    if (toOwner.determinant() < 0) {
+      flipTriangleWinding(geometry);
+    }
+    // Multi-material meshes were filtered out above.
+    const material = mesh.material as Material;
+    const byMaterial = batches.get(owner) ?? new Map<Material, BufferGeometry[]>();
+    batches.set(owner, byMaterial);
+    const geometries = byMaterial.get(material) ?? [];
+    byMaterial.set(material, geometries);
+    geometries.push(geometry);
+  }
+
+  for (const mesh of meshes) {
+    for (const child of [...mesh.children]) {
+      mesh.parent?.attach(child);
+    }
+    mesh.removeFromParent();
+  }
+
+  for (const [owner, byMaterial] of batches) {
+    for (const [material, geometries] of byMaterial) {
+      const merged = mergeGeometries(geometries);
+      for (const geometry of merged ? [merged] : geometries) {
+        const mesh = new Mesh(geometry, material);
+        mesh.name = `${owner.name} ${material.name}`;
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        owner.add(mesh);
+      }
+    }
+  }
+  model.updateMatrixWorld(true);
+}
+
+function loadSterlingTemplates(): Promise<{ bike: Group; dock: Group }> {
+  sterlingTemplates ??= Promise.all([
+    loadModel('assets/models/sterling-bike/sterling-bike-blockout.glb?v=geometry-blockout-20260913b'),
+    loadModel('assets/models/sterling-bike/sterling-dock-blockout.glb?v=geometry-blockout-20260913b'),
+  ]).then(([bike, dock]) => {
+    for (const model of [bike, dock]) {
+      applySterlingBlockoutPolicy(model);
+      mergeSterlingStaticParts(model);
+    }
+    return { bike, dock };
+  });
+  return sterlingTemplates;
+}
+
+/** Position of a named anchor in an unparented template's own coordinates. */
+function sterlingAnchorPosition(template: Group, name: string): Vector3 {
+  const anchor = template.getObjectByName(name);
+  if (!anchor) {
+    throw new Error(`Sterling Bikes asset is missing ${name}`);
+  }
+  return template.worldToLocal(anchor.getWorldPosition(new Vector3()));
+}
+
+function sterlingDockOffset(index: number, count: number): number {
+  return (index - (count - 1) / 2) * STERLING_DOCK_SPACING;
+}
+
+function createSterlingStationFallback(marker: SterlingStationMarker): Group {
+  const station = new Group();
+  station.name = `${marker.name} loading placeholder`;
+  marker.occupancy.forEach((_, index) => {
+    const stand = createBox(0.32, 1.0, 0.3, 0xd2ad26);
+    stand.position.set(0.15, 0.5, sterlingDockOffset(index, marker.occupancy.length));
+    station.add(stand);
+  });
+  return station;
+}
+
+async function replaceSterlingStationFallback(
+  root: Group,
+  fallback: Group,
+  marker: SterlingStationMarker,
+): Promise<void> {
+  try {
+    const { bike, dock } = await loadSterlingTemplates();
+    // Snap with the authored anchors rather than an eyeballed offset: the
+    // bike's SB_DockAnchor lands on the dock's SD_BikeDockAnchor, which puts
+    // the front tyre in the wheel channel.
+    const bikeOffset = sterlingAnchorPosition(dock, 'SD_BikeDockAnchor')
+      .sub(sterlingAnchorPosition(bike, 'SB_DockAnchor'));
+    const station = new Group();
+    station.name = `${marker.name} Sterling Bikes geometry blockout`;
+    station.position.copy(fallback.position);
+    station.rotation.copy(fallback.rotation);
+    marker.occupancy.forEach((occupied, index) => {
+      // Docks and bikes are separate clones so game code can take a bike out
+      // and leave a complete empty dock behind.
+      const dockInstance = dock.clone(true);
+      dockInstance.name = `${marker.name} dock ${index + 1}`;
+      dockInstance.position.set(0, 0, sterlingDockOffset(index, marker.occupancy.length));
+      station.add(dockInstance);
+      if (!occupied) {
+        return;
+      }
+      const bikeInstance = bike.clone(true);
+      bikeInstance.name = `${marker.name} bike ${index + 1}`;
+      bikeInstance.position.copy(dockInstance.position).add(bikeOffset);
+      bikeInstance.userData.sterlingDockIndex = index;
+      station.add(bikeInstance);
+    });
+    root.add(station);
+    root.remove(fallback);
+  } catch (error) {
+    markShelterLoadFailure(fallback, 'Sterling Bikes');
+    console.error(
+      '[World] Failed to load the Sterling Bikes blockout GLBs. Showing the magenta fallback.',
+      error,
+    );
+  }
+}
+
+function addSterlingStation(
+  root: Group,
+  obstacles: CollisionObstacle[],
+  marker: SterlingStationMarker,
+): void {
+  const fallback = createSterlingStationFallback(marker);
+  // Stand on the pavement flags where there are any; East is on the car park.
+  fallback.position.set(
+    marker.x,
+    pavementTopAt(PAVEMENTS, marker.x, marker.z) ?? CAR_PARK_SURFACE_TOP,
+    marker.z,
+  );
+  fallback.rotation.y = marker.rotationY;
+  root.add(fallback);
+  void replaceSterlingStationFallback(root, fallback, marker);
+
+  // Local footprint: from a docked bike's rear enclosure (-1.75 m) to the dock
+  // baseplate's front edge (+0.42 m), plus handlebar clearance past the end docks.
+  const halfLine = sterlingDockOffset(marker.occupancy.length - 1, marker.occupancy.length) + 0.35;
+  obstacles.push(
+    {
+      ...rotatedObstacle(marker.name, marker.x, marker.z, marker.rotationY, -1.75, 0.42, -halfLine, halfLine),
+      height: 1.3,
+      blocksCamera: false,
+    },
+  );
   addDevelopmentLabel(root, marker.name, marker.x, 1.8, marker.z);
 }
 
-function addUtilityBox(root: Group, x: number, z: number, rotation = 0): void {
+function addUtilityBox(
+  root: Group,
+  obstacles: CollisionObstacle[],
+  x: number,
+  z: number,
+  rotation = 0,
+): void {
   const box = new Group();
   box.name = 'Stickered utility cabinet';
   box.position.set(x, 0, z);
@@ -2356,9 +3024,16 @@ function addUtilityBox(root: Group, x: number, z: number, rotation = 0): void {
   posters.position.set(0, 0.75, 0.225);
   box.add(posters);
   root.add(box);
+  obstacles.push(orientedBoxObstacle(box.name, x, z, 1.08, 0.48, rotation, 1.42));
 }
 
-function addShoppingTrolley(root: Group, x: number, z: number, rotation = 0): void {
+function addShoppingTrolley(
+  root: Group,
+  obstacles: CollisionObstacle[],
+  x: number,
+  z: number,
+  rotation = 0,
+): void {
   const trolley = new Group();
   trolley.name = 'Abandoned shopping trolley';
   trolley.position.set(x, 0, z);
@@ -2391,19 +3066,24 @@ function addShoppingTrolley(root: Group, x: number, z: number, rotation = 0): vo
     trolley.add(wheel);
   }
   root.add(trolley);
+  // From the handle (local X -0.67) to the basket nose, across the 1.12 m frame.
+  obstacles.push(orientedBoxObstacle(trolley.name, x, z, 1.3, 1.12, rotation, 1.3));
 }
 
-function addStreetDressing(root: Group): void {
-  addHeroStreetEnvironmentKit(root);
-  addShoppingTrolley(root, 31.9, 20.9, -0.74);
-  addShoppingTrolley(root, -7.1, -30.1, 0.22);
-  addUtilityBox(root, -34.7, -11.7, Math.PI / 2);
-  addUtilityBox(root, 34.5, 6.4, -Math.PI / 2);
-  addUtilityBox(root, 25.6, 31.2, Math.PI);
-  addUtilityBox(root, 8.15, -30.25, Math.PI);
+function addStreetDressing(root: Group, obstacles: CollisionObstacle[]): void {
+  addHeroStreetEnvironmentKit(root, obstacles);
+  addShoppingTrolley(root, obstacles, 31.9, 20.9, -0.74);
+  addShoppingTrolley(root, obstacles, -7.1, -30.1, 0.22);
+  addUtilityBox(root, obstacles, -34.7, -11.7, Math.PI / 2);
+  addUtilityBox(root, obstacles, 34.5, 6.4, -Math.PI / 2);
+  addUtilityBox(root, obstacles, 25.6, 31.2, Math.PI);
+  addUtilityBox(root, obstacles, 8.15, -30.25, Math.PI);
 
-  addReflectionPatch(root, 'Bus shelter magenta spill', -8.2, 22.2, 1.1, 4.8, VISUAL_STYLE.lighting.magenta, 0.3, -0.12);
-  addReflectionPatch(root, 'Bus shelter green spill', -10.2, 21.4, 0.8, 3.1, VISUAL_STYLE.lighting.fluorescent, 0.2, 0.15);
+  // Offsets were authored with Bus Stop A at (-9, 20.4); anchoring them to the
+  // marker keeps the spill under the shelter when the stop moves.
+  const busStopA = BUS_STOPS[0];
+  addReflectionPatch(root, 'Bus shelter magenta spill', busStopA.x + 0.8, busStopA.z + 1.8, 1.1, 4.8, VISUAL_STYLE.lighting.magenta, 0.3, -0.12);
+  addReflectionPatch(root, 'Bus shelter green spill', busStopA.x - 1.2, busStopA.z + 1.0, 0.8, 3.1, VISUAL_STYLE.lighting.fluorescent, 0.2, 0.15);
   addReflectionPatch(root, 'Dreams cool fascia spill', -2.8, 25.6, 2.65, 5.8, VISUAL_STYLE.lighting.coldWhite, 0.36, -0.03);
   addReflectionPatch(root, 'Dreams broken secondary spill', -6.1, 26.5, 1.75, 4.3, 0x8fd8e6, 0.22, 0.07);
   addReflectionPatch(root, 'Dreams broken east spill', 0.7, 26, 1.85, 4.8, 0xb9e2e8, 0.2, -0.08);
@@ -2416,7 +3096,7 @@ function addStreetDressing(root: Group): void {
   addReflectionPatch(root, 'Vinyl Exchange fascia spill', -7, 57.6, 4.7, 0.75, VISUAL_STYLE.lighting.sodium, 0.2, 0.04);
   addReflectionPatch(root, 'Spice Cabin fascia spill', 10.8, 57.2, 0.82, 4.2, VISUAL_STYLE.lighting.magenta, 0.18, -0.08);
   addReflectionPatch(root, 'Off-Licence fascia spill', 22.5, 57.2, 0.82, 4.2, VISUAL_STYLE.lighting.sodium, 0.16, 0.06);
-  addReflectionPatch(root, 'Advanced Photo fascia spill', 10.5, 62, 3.8, 0.7, VISUAL_STYLE.lighting.coldWhite, 0.16, -0.04);
+  addReflectionPatch(root, 'Advanced Photo fascia spill', 12.1, 62, 3.8, 0.7, VISUAL_STYLE.lighting.coldWhite, 0.16, -0.04);
 }
 
 function addStreetlight(
@@ -2568,7 +3248,7 @@ function addStylizedSky(root: Group): void {
   root.add(brightStars);
 }
 
-function addNorthEstateBackdrop(root: Group): void {
+function addNorthEstateBackdrop(root: Group, obstacles: CollisionObstacle[]): void {
   const towerMaterial = createWorldMaterial('brick-soot-overhaul', {
     repeatX: 4,
     repeatY: 8,
@@ -2599,6 +3279,14 @@ function addNorthEstateBackdrop(root: Group): void {
     tower.name = `North road ${side} estate tower`;
     tower.position.set(x, height / 2, z);
     root.add(tower);
+    obstacles.push({
+      name: tower.name,
+      minX: x - width / 2,
+      maxX: x + width / 2,
+      minZ: z - 3,
+      maxZ: z + 3,
+      height,
+    });
 
     for (let floor = 0; floor < 7; floor += 1) {
       for (let column = 0; column < 4; column += 1) {
@@ -2669,7 +3357,7 @@ function addDevelopmentPickup(root: Group): (deltaTime: number) => void {
   };
 }
 
-function addHeroLocalLights(root: Group): PointLight[] {
+function addHeroLocalLights(localLights: LocalLightRegistry): void {
   type HeroLightDefinition = readonly [
     name: string,
     x: number,
@@ -2678,65 +3366,69 @@ function addHeroLocalLights(root: Group): PointLight[] {
     color: number,
     intensity: number,
     distance: number,
+    activationRadius: number,
+    priority?: number,
   ];
 
   const definitions: HeroLightDefinition[] = [
-    ['Bus Stop A hero light', 0, 2.35, 20.4, 0xb9ffe7, 8, 8],
-    ['Dreams hero light', -3, 4.5, 33.2, VISUAL_STYLE.lighting.coldWhite, 1.8, 10],
-    ['Renee hero light', 17, 2.5, -30.8, VISUAL_STYLE.lighting.magenta, 7, 9],
-    ['Florist hero light', -16.9, 2.7, -27, VISUAL_STYLE.lighting.sodium, 7.5, 9],
-    ['Bus Stop B hero light', 0, 2.35, -49, 0xb9ffe7, 8, 8],
+    ['Bus Stop A hero light', BUS_STOPS[0].x, 2.35, BUS_STOPS[0].z, 0xb9ffe7, 8, 8, 18, 1.1],
+    ['Dreams hero light', -3, 4.5, 33.2, VISUAL_STYLE.lighting.coldWhite, 1.8, 10, 16, 1.05],
+    ['Renee hero light', 17, 2.5, -30.8, VISUAL_STYLE.lighting.magenta, 7, 9, 15],
+    ['Florist hero light', -16.9, 2.7, -27, VISUAL_STYLE.lighting.sodium, 7.5, 9, 15],
+    ['Bus Stop B hero light', BUS_STOPS[1].x, 2.35, BUS_STOPS[1].z, 0xb9ffe7, 8, 8, 16, 1.1],
   ];
+
+  for (const [name, x, y, z, color, intensity, distance, activationRadius, priority] of definitions) {
+    localLights.register({
+      name,
+      lights: [
+        createManagedPointLight(name, x, y, z, color, intensity, distance),
+      ],
+      priority,
+      selectionMode: 'location-relevance',
+      activationRadius,
+    });
+  }
 
   const cassArt = WORLD_LOCATIONS.find((location) => location.id === 'cass-art');
   if (cassArt) {
     const scale = cassArt.width / 18;
     const modelOriginZ = cassArt.z - cassArt.depth / 2;
-    const cassLightDefinitions = [
-      ['Cass Art window fill', 0, 0.65, 3.68, 7, 7],
-      ['Cass Art interior track west', -2.1, 5.75, 4.02, 9, 8],
-      ['Cass Art interior track east', 1.9, 5.75, 4.02, 9, 8],
-    ] as const;
+    const cassLightAt = (
+      name: string,
+      localX: number,
+      localDepth: number,
+      localHeight: number,
+      intensity: number,
+      distance: number,
+    ) => createManagedPointLight(
+      name,
+      cassArt.x - localX * scale,
+      localHeight * scale,
+      modelOriginZ + localDepth * scale,
+      0xffcf91,
+      intensity,
+      distance,
+    );
 
     // The model is rotated 180 degrees at runtime: authored +X becomes world
     // -X, while authored interior depth (+Y) extends south in world +Z.
-    for (const [name, localX, localDepth, localHeight, intensity, distance] of cassLightDefinitions) {
-      definitions.push([
-        name,
-        cassArt.x - localX * scale,
-        localHeight * scale,
-        modelOriginZ + localDepth * scale,
-        0xffcf91,
-        intensity,
-        distance,
-      ]);
-    }
-  }
-
-  const comeThroughLab = WORLD_LOCATIONS.find(
-    (location) => location.id === 'come-through-lab',
-  );
-  if (comeThroughLab) {
-    // The plot now carries the authored parapet top (7.15 m = ground 3.50 +
-    // upper 3.40 + cap 0.25); sit the pair just under the cap and slightly
-    // proud of the frontage so the wash reaches both upper corners instead of
-    // only the flat wall. `width` is the east-west extent.
-    const parapetTop = comeThroughLab.height;
-    const frontPlaneX = comeThroughLab.x + comeThroughLab.width / 2;
-    for (const [suffix, offsetZ] of [
-      ['north', -4.6],
-      ['south', 4.6],
-    ] as const) {
-      definitions.push([
-        `Come Through Lab parapet corner ${suffix}`,
-        frontPlaneX + 0.4,
-        parapetTop - 0.25,
-        comeThroughLab.z + offsetZ,
-        VISUAL_STYLE.lighting.coldWhite,
-        3.2,
-        7,
-      ]);
-    }
+    localLights.register({
+      name: 'Cass Art window',
+      lights: [cassLightAt('Cass Art window fill', 0, 0.65, 3.68, 7, 7)],
+      priority: 1.1,
+      selectionMode: 'location-relevance',
+      activationRadius: 14,
+    });
+    localLights.register({
+      name: 'Cass Art ceiling-track pair',
+      lights: [
+        cassLightAt('Cass Art interior track east', -2.1, 5.75, 4.02, 9, 8),
+        cassLightAt('Cass Art interior track west', 1.9, 5.75, 4.02, 9, 8),
+      ],
+      selectionMode: 'location-relevance',
+      activationRadius: 14,
+    });
   }
 
   const realCamera = WORLD_LOCATIONS.find(
@@ -2749,36 +3441,143 @@ function addHeroLocalLights(root: Group): PointLight[] {
     const worldX = (authoredX: number) => realCamera.x - 0.275 - authoredX;
     const worldZ = (authoredY: number) =>
       realCamera.z - realCamera.depth / 2 + 5.963 + authoredY;
-    const realCameraLights = [
-      // Sodium wash on the hero shopfront, sitting proud of the facade so the
-      // awning, hanging sign and stone piers catch it rather than one flat wall.
-      ['Real Camera shopfront', 0.05, -6.4, 3.7, VISUAL_STYLE.lighting.sodium, 7, 10],
-      // Interior fluorescents read through the display glazing after dark.
-      ['Real Camera interior west', -4.55, -1.55, 3.3, VISUAL_STYLE.lighting.fluorescent, 5, 7],
-      ['Real Camera interior east', -0.2, -1.55, 3.3, VISUAL_STYLE.lighting.fluorescent, 5, 7],
-    ] as const;
+    const realCameraLightAt = (
+      name: string,
+      authoredX: number,
+      authoredY: number,
+      height: number,
+      color: number,
+      intensity: number,
+      distance: number,
+    ) => createManagedPointLight(
+      name,
+      worldX(authoredX),
+      height,
+      worldZ(authoredY),
+      color,
+      intensity,
+      distance,
+    );
 
-    for (const [name, authoredX, authoredY, height, color, intensity, distance] of realCameraLights) {
-      definitions.push([
-        name,
-        worldX(authoredX),
-        height,
-        worldZ(authoredY),
-        color,
-        intensity,
-        distance,
-      ]);
-    }
+    // Sodium wash on the hero shopfront, sitting proud of the facade so the
+    // awning, hanging sign and stone piers catch it rather than one flat wall.
+    localLights.register({
+      name: 'Real Camera shopfront',
+      lights: [realCameraLightAt('Real Camera shopfront', 0.05, -6.4, 3.7, VISUAL_STYLE.lighting.sodium, 7, 10)],
+      priority: 1.1,
+      selectionMode: 'location-relevance',
+      activationRadius: 16,
+    });
+    // The two interior fluorescents remain paired so LOW never lights one side
+    // of the display and leaves the other side accidentally black.
+    localLights.register({
+      name: 'Real Camera interior pair',
+      lights: [
+        realCameraLightAt('Real Camera interior west', -4.55, -1.55, 3.3, VISUAL_STYLE.lighting.fluorescent, 5, 7),
+        realCameraLightAt('Real Camera interior east', -0.2, -1.55, 3.3, VISUAL_STYLE.lighting.fluorescent, 5, 7),
+      ],
+      selectionMode: 'location-relevance',
+      activationRadius: 14,
+    });
   }
 
-  return definitions.map(([name, x, y, z, color, intensity, distance]) => {
-    const light = new PointLight(color, intensity, distance, 2);
-    light.name = name;
-    light.position.set(x, y, z);
-    light.visible = false;
-    root.add(light);
-    return light;
+  const advancedPhoto = WORLD_LOCATIONS.find(
+    (location) => location.id === 'advanced-photo',
+  );
+  if (advancedPhoto) {
+    // Authored points transformed by the 180-degree north-facing placement:
+    // world X = plot X - Blender X, world Z = plot Z + Blender Y.
+    localLights.register({
+      name: 'Advanced Photo interior',
+      lights: [
+        createManagedPointLight(
+          'Advanced Photo interior',
+          advancedPhoto.x,
+          2.45,
+          advancedPhoto.z + 0.15,
+          VISUAL_STYLE.lighting.fluorescent,
+          5.4,
+          7,
+        ),
+      ],
+      // Spice Cabin faces this shop across South Road and its three lights fill
+      // the MEDIUM budget alongside the arcade ring, which left the interior
+      // unlit from the road. 1.3 wins over the gable wash only when looking at
+      // Advanced Photo; from Spice Cabin's own pavement the selection is
+      // unchanged.
+      priority: 1.3,
+      selectionMode: 'location-relevance',
+      activationRadius: 13,
+    });
+    localLights.register({
+      name: 'Advanced Photo arcade ring',
+      lights: [
+        createManagedPointLight(
+          'Advanced Photo arcade ring',
+          advancedPhoto.x - 0.55,
+          3.35,
+          advancedPhoto.z - 4.88,
+          0xffd695,
+          4.2,
+          6,
+        ),
+      ],
+      priority: 1.1,
+      selectionMode: 'location-relevance',
+      activationRadius: 11,
+    });
+  }
+}
+
+function addPublicIlluminationResponse(
+  localLights: LocalLightRegistry,
+): (playerPosition: Vector3) => void {
+  const light = createManagedPointLight(
+    'Nearest public streetlight response',
+    STREETLIGHTS[0][0],
+    3.85,
+    STREETLIGHTS[0][1],
+    STREETLIGHTS[0][2],
+    VISUAL_STYLE.lighting.streetLightIntensity,
+    VISUAL_STYLE.lighting.streetLightDistance,
+  );
+  let proximityScale = 0;
+  localLights.register({
+    name: 'Public illumination pool',
+    lights: [light],
+    priority: 1.7,
+    activationRadius: 4,
+    intensityScale: () => proximityScale,
   });
+
+  return (playerPosition: Vector3): void => {
+    let nearest: (typeof STREETLIGHTS)[number] = STREETLIGHTS[0];
+    let nearestDistanceSquared = Number.POSITIVE_INFINITY;
+    for (const candidate of STREETLIGHTS) {
+      const deltaX = candidate[0] - playerPosition.x;
+      const deltaZ = candidate[1] - playerPosition.z;
+      const distanceSquared = deltaX * deltaX + deltaZ * deltaZ;
+      if (distanceSquared < nearestDistanceSquared) {
+        nearest = candidate;
+        nearestDistanceSquared = distanceSquared;
+      }
+    }
+
+    light.position.set(nearest[0], 3.85, nearest[1]);
+    light.color.setHex(nearest[2]);
+
+    // The point response is full across the painted 2.45 m pool, then falls to
+    // zero before the surrounding darkness. The graphic cone/pool remains the
+    // compositional layer; this proxy merely lets it affect real materials.
+    const distance = Math.sqrt(nearestDistanceSquared);
+    const fadeStart = 2.55;
+    const fadeEnd = 4;
+    const fade = Math.max(
+      0,
+      Math.min(1, (fadeEnd - distance) / (fadeEnd - fadeStart)),
+    );
+    proximityScale = fade * fade * (3 - 2 * fade);
+  };
 }
 
 export function createWorld(scene: Scene, maximumActiveLocalLights: number): World {
@@ -2791,6 +3590,10 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
   const root = new Group();
   root.name = 'Canonical city layout Map v0.3';
   scene.add(root);
+  const localLights = new LocalLightRegistry(
+    root,
+    maximumActiveLocalLights,
+  );
   addStylizedSky(root);
 
   addEnvironmentSurface(
@@ -2805,14 +3608,14 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
     5,
   );
   addRoadAndPavementLayout(root);
-  addCentralPark(root);
-  addNorthEstateBackdrop(root);
+  const obstacles: CollisionObstacle[] = [];
+  addCentralPark(root, obstacles);
+  addNorthEstateBackdrop(root, obstacles);
   const updatePickup = addDevelopmentPickup(root);
 
-  const obstacles: CollisionObstacle[] = [];
   for (const location of WORLD_LOCATIONS) {
     if (location.kind === 'building') {
-      addBuildingLocation(root, obstacles, location);
+      addBuildingLocation(root, obstacles, location, localLights);
     } else if (location.kind === 'car-park') {
       addCarPark(root, location);
     }
@@ -2821,56 +3624,27 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
   addBusShelter(root, obstacles, BUS_STOPS[0], -Math.PI / 2);
   addBusShelter(root, obstacles, BUS_STOPS[1], -Math.PI / 2);
   for (const marker of FOOD_STANDS) {
-    addGreekGyros(root, obstacles, marker);
+    addGreekGyros(root, obstacles, marker, localLights);
   }
-  addStreetDressing(root);
+  addStreetDressing(root, obstacles);
   for (const marker of STERLING_BIKE_DOCKS) {
-    addBikeDock(root, marker);
+    addSterlingStation(root, obstacles, marker);
   }
   for (const marker of FUTURE_EXITS) {
     addDevelopmentLabel(root, `${marker.name} →`, marker.x, 2.2, marker.z);
   }
 
-  for (const [x, z, color] of [
-    [-20, -19, VISUAL_STYLE.lighting.sodium],
-    [20, -19, VISUAL_STYLE.lighting.sodium],
-    [-18, 19, VISUAL_STYLE.lighting.sodium],
-    [-9, 19, VISUAL_STYLE.lighting.sodium],
-    [8, 19, VISUAL_STYLE.lighting.magenta],
-    [16, 19, VISUAL_STYLE.lighting.magenta],
-    [-25, -10, VISUAL_STYLE.lighting.coldWhite],
-    [-25, 10, VISUAL_STYLE.lighting.sodium],
-    [25, -10, VISUAL_STYLE.lighting.fluorescent],
-    [25, 10, VISUAL_STYLE.lighting.coldWhite],
-    [-9.6, -20.5, VISUAL_STYLE.lighting.sodium],
-    [12, -29, VISUAL_STYLE.lighting.magenta],
-    [-12, 29, VISUAL_STYLE.lighting.sodium],
-    [12, 29, VISUAL_STYLE.lighting.sodium],
-    [-34, 7, VISUAL_STYLE.lighting.sodium],
-    [34, 17, VISUAL_STYLE.lighting.coldWhite],
-    [-15, 55, VISUAL_STYLE.lighting.sodium],
-    [1, 55, VISUAL_STYLE.lighting.sodium],
-    [16.5, 55, VISUAL_STYLE.lighting.magenta],
-    [29, 55, VISUAL_STYLE.lighting.sodium],
-  ] as const) {
+  for (const [x, z, color] of STREETLIGHTS) {
     addStreetlight(root, x, z, color);
+    obstacles.push(circleObstacle('Streetlight pole', x, z, 0.12, 4.3));
   }
 
-  const heroLocalLights = addHeroLocalLights(root);
-  const nearestLightDistances = heroLocalLights.map((light) => ({
-    light,
-    distanceSquared: 0,
-  }));
+  if (import.meta.env.DEV) {
+    root.add(createCollisionDebugOutlines(obstacles));
+  }
 
-  const updateHeroLocalLights = (playerPosition: Vector3): void => {
-    for (const candidate of nearestLightDistances) {
-      candidate.distanceSquared = candidate.light.position.distanceToSquared(playerPosition);
-    }
-    nearestLightDistances.sort((a, b) => a.distanceSquared - b.distanceSquared);
-    for (let index = 0; index < nearestLightDistances.length; index += 1) {
-      nearestLightDistances[index].light.visible = index < maximumActiveLocalLights;
-    }
-  };
+  addHeroLocalLights(localLights);
+  const updatePublicIllumination = addPublicIlluminationResponse(localLights);
 
   scene.add(
     new HemisphereLight(
@@ -2894,12 +3668,12 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
     },
     update: (deltaTime, playerPosition) => {
       updatePickup(deltaTime);
-      updateHeroLocalLights(playerPosition);
+      updatePublicIllumination(playerPosition);
+      localLights.update(deltaTime, playerPosition);
     },
     getLightingStats: () => ({
-      activePointLights: heroLocalLights.filter((light) => light.visible).length,
+      ...localLights.getStats(),
       activeSpotLights: 0,
-      maximumActiveLocalLights,
     }),
     setDevelopmentOverlaysVisible: (visible: boolean) => {
       root.traverse((child) => {

@@ -16,7 +16,7 @@ import { createPostProcessing } from './rendering/createPostProcessing';
 import {
   applyInternalResolution,
   resolveQualityProfile,
-  VISUAL_STYLE,
+  resolveToneMapping,
 } from './rendering/visualStyle';
 import { DebugOverlay } from './ui/DebugOverlay';
 import { createWorld } from './world/createWorld';
@@ -31,9 +31,11 @@ if (!app) {
 const scene = new Scene();
 const renderer = new WebGLRenderer({ antialias: true });
 const quality = resolveQualityProfile(window.location.search);
+const toneMapping = resolveToneMapping(window.location.search);
 applyInternalResolution(renderer, window.innerWidth, window.innerHeight, quality);
 renderer.outputColorSpace = SRGBColorSpace;
-renderer.toneMappingExposure = VISUAL_STYLE.render.exposure;
+renderer.toneMapping = toneMapping.curve;
+renderer.toneMappingExposure = toneMapping.exposure;
 renderer.info.autoReset = false;
 app.appendChild(renderer.domElement);
 
@@ -59,7 +61,7 @@ let requestedPitch = 0.31;
 if (import.meta.env.DEV) {
   const developmentViews: Record<string, readonly [number, number, number?, number?]> = {
     'park-florist': [-13.9, -18],
-    'greek-gyros': [14, -15.2, 0, 0.2],
+    'greek-gyros': [16, 10.8, -Math.PI / 2, 0.2],
     'come-through-lab': [-26, -15, Math.PI / 2, 0.2],
     'village-books': [-27, -3.5, Math.PI / 2, 0.16],
     'bus-shelter': [0, 27],
@@ -69,6 +71,8 @@ if (import.meta.env.DEV) {
     'north-road': [-17, -25.2, -Math.PI / 2, 0.24],
     'park-to-dreams': [-3, 18, Math.PI, 0.2],
     'street-detail': [6.4, -27.2, 0.42, 0.16],
+    'public-light-pool': [-20, -18.2, 0, 0.18],
+    'between-light-pools': [-14.8, -19.7, 0, 0.18],
     'west-street': [-29.5, 25],
     'west-shops': [-29.5, 7],
     'east-shops': [29.5, 19],
@@ -76,6 +80,12 @@ if (import.meta.env.DEV) {
     'south-road': [0, 53.5, Math.PI, 0.24],
     'real-camera': [-11.5, 58, Math.PI, 0.06],
     'real-camera-corner': [-26, 58.5, 2.3, 0.06],
+    'advanced-photo': [11.8, 59.4, Math.PI, 0.12],
+    'spice-cabin': [12.35, 57.6, 0, 0.03],
+    'spice-cabin-close': [11.0, 56.4, 0, 0.06],
+    'spice-cabin-gable': [4.6, 57.2, -0.36, 0.1],
+    'sterling-south': [-16.6, 19.6, Math.PI / 2 - 0.35, 0.16],
+    'sterling-east': [42.6, -4.4, Math.PI / 2 + 0.35, 0.16],
     pickup: [5, 16.5],
   };
   const requestedPosition = requestedView
@@ -92,17 +102,36 @@ if (import.meta.env.DEV) {
 const thirdPersonCamera = new ThirdPersonCamera(
   camera,
   requestedView === 'dreams-target' ? 2.9 : 1.05,
+  world.collision,
 );
 thirdPersonCamera.setOrbit(requestedYaw, requestedPitch);
 thirdPersonCamera.snapTo(player.position);
-const postProcessing = createPostProcessing(renderer, scene, camera, quality);
+const postProcessing = createPostProcessing(
+  renderer,
+  scene,
+  camera,
+  quality,
+  toneMapping,
+);
 
 const debugOverlay = import.meta.env.DEV ? new DebugOverlay() : null;
+if (import.meta.env.DEV) {
+  // Console access for look-development experiments (lighting, materials).
+  (window as unknown as { zealot: unknown }).zealot = {
+    scene,
+    renderer,
+    camera,
+    player,
+    collision: world.collision,
+  };
+}
+
 const timer = new Timer();
 timer.connect(document);
 const simulationClock = new FixedStepClock();
 const cameraForward = new Vector3();
-let developmentOverlaysVisible = new URLSearchParams(window.location.search).get('overlays') !== 'off';
+// Hidden by default; H toggles them, and ?overlays=on starts with them shown.
+let developmentOverlaysVisible = new URLSearchParams(window.location.search).get('overlays') === 'on';
 let elapsedSeconds = 0;
 let sceneMaterialCount = 0;
 
@@ -150,7 +179,7 @@ function frame(timestamp: number): void {
     elapsedSeconds += fixedDelta;
   });
   const cameraDelta = simulationResult.resetAfterExtremeGap ? 0 : rawDelta;
-  thirdPersonCamera.update(cameraDelta, input, player.position);
+  thirdPersonCamera.update(cameraDelta, input, player);
 
   renderer.info.reset();
   postProcessing.render(elapsedSeconds);
@@ -160,6 +189,9 @@ function frame(timestamp: number): void {
     triangles: renderer.info.render.triangles,
     activePointLights: lighting.activePointLights,
     activeSpotLights: lighting.activeSpotLights,
+    registeredPointLights: lighting.registeredPointLights,
+    maximumActiveLocalLights: lighting.maximumActiveLocalLights,
+    activeLocalLightGroups: lighting.activeLocalLightGroups,
     drawingBufferWidth: renderer.domElement.width,
     drawingBufferHeight: renderer.domElement.height,
     pixelRatio: renderer.getPixelRatio(),

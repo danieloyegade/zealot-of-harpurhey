@@ -33,6 +33,9 @@ autosave/
 __pycache__/
 *.py[cod]
 
+# Local git worktrees
+.worktrees/
+
 # Large development-only source media
 references/raw/
 renders/source/

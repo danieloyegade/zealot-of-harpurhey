@@ -1,4 +1,5 @@
 import {
+  NoToneMapping,
   ShaderMaterial,
   Vector2,
   type PerspectiveCamera,
@@ -10,7 +11,11 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { VISUAL_STYLE, type QualityProfile } from './visualStyle';
+import {
+  VISUAL_STYLE,
+  type QualityProfile,
+  type ToneMappingProfile,
+} from './visualStyle';
 
 export interface PostProcessingPipeline {
   readonly render: (elapsedSeconds?: number) => void;
@@ -22,6 +27,7 @@ export function createPostProcessing(
   scene: Scene,
   camera: PerspectiveCamera,
   quality: QualityProfile,
+  toneMapping: ToneMappingProfile,
 ): PostProcessingPipeline {
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
@@ -43,7 +49,11 @@ export function createPostProcessing(
     new ShaderMaterial({
       uniforms: {
         tDiffuse: { value: null },
-        exposure: { value: VISUAL_STYLE.render.exposure },
+        // With a curve active, OutputPass has already applied exposure in
+        // linear HDR; applying it here as well would expose twice.
+        exposure: {
+          value: toneMapping.curve === NoToneMapping ? toneMapping.exposure : 1,
+        },
         saturation: { value: VISUAL_STYLE.render.saturation },
         contrast: { value: VISUAL_STYLE.render.contrast },
         quantizationLevels: {

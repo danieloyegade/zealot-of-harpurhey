@@ -39,15 +39,15 @@ Coordinates are plot centres. Footprints are X width × Z depth.
 | Car Park | (43, 0) | 20 × 14 m | Open surface between upper and lower east plots |
 | Arts Council / The Hive | (47, 20) | 20.4 × 44.3 m | Geometry asset centred on the east-side plot with its Lever Street frontage facing west |
 | Eastern Bloc | (20, 69.75) | 10 × 10 m | North-facing unit touching the east side of Advanced Photo across South Road |
-| Spice Cabin | (10.5, 49) | 11 × 10 m | South-facing takeaway on the recessed South Road frontage |
+| Spice Cabin | (12.35, 49) | 9.3 × 10 m | Finished textured end unit at 1.5× authored scale (depth matched to the Off-Licence) to sit with the Off-Licence; east party wall covered by it, west gable and its sign face the open gap toward Vinyl Exchange |
 | Off-Licence | (22.5, 49) | 11 × 10 m | South-facing South Road atmospheric/interior location |
 | Real Camera | (-11.5, 69.75) | 14 × 10 m | North-facing unit opposite Vinyl Exchange and west of Advanced Photo; offset to keep the South Road exit open |
-| Advanced Photo | (10.5, 69.75) | 9 × 10 m | North-facing unit across South Road, directly opposite Spice Cabin |
+| Advanced Photo | (12.1, 67.85) | 5.8 × 6.2 m | Enterable north-facing geometry blockout; old frontage line retained and east wall attached to Eastern Bloc |
 | Central Park | (0, 0) | 44 × 34 m | Geographic anchor and cross-district shortcut |
 
 ## Roads, routes and exits
 
-Inner north and south roads run east-west at Z -25.5 and Z 25.5. Inner west and east roads run north-south at X -29.5 and X 29.5. Most named building rows sit between this park-facing ring and the outer boundary streets at north Z -44.2, south Z 59.5, west X -48 and east X 57. Cass Art is approximately 30 percent larger than its first integration and nearly matches the Blender asset's authored scale. Its west edge clears the West perimeter road and its east edge meets Dreams cleanly; Dreams has shifted east to preserve that boundary. Vinyl Exchange remains on the south-facing frontage behind Dreams. Real Camera faces Vinyl Exchange from the opposite side of South Road. Advanced Photo remains opposite Spice Cabin, with Eastern Bloc directly beside and touching its east wall. South Road has pavement on both shopfront sides and the north frontage has its own streetlights. The park has perimeter paths and two diagonal crossings so it is a usable pedestrian shortcut rather than an inaccessible island. Cheap primitive trees and benches establish scale without becoming final scenery, and a marked 8 × 6 m area at (12.5, 3) reserves space for the future playground.
+Inner north and south roads run east-west at Z -25.5 and Z 25.5. Inner west and east roads run north-south at X -29.5 and X 29.5. Most named building rows sit between this park-facing ring and the outer boundary streets at north Z -44.2, south Z 59.5, west X -48 and east X 57. Cass Art is approximately 30 percent larger than its first integration and nearly matches the Blender asset's authored scale. Its west edge clears the West perimeter road and its east edge meets Dreams cleanly; Dreams has shifted east to preserve that boundary. Vinyl Exchange remains on the south-facing frontage behind Dreams. Real Camera faces Vinyl Exchange from the opposite side of South Road. Advanced Photo remains opposite Spice Cabin and keeps the old placeholder's Z = 64.75 frontage plane; its smaller authored footprint shifts east so its wall still meets Eastern Bloc. The included arcade connector extends west toward the South Road exit without closing it. South Road has pavement on both shopfront sides and the north frontage has its own streetlights. The park has perimeter paths and two diagonal crossings so it is a usable pedestrian shortcut rather than an inaccessible island. Cheap primitive trees and benches establish scale without becoming final scenery, and a marked 8 × 6 m area at (12.5, 3) reserves space for the future playground.
 
 Outward future-area markers are:
 
@@ -58,20 +58,22 @@ Outward future-area markers are:
 
 The Arts Council remains directly south-east of the car park. The former procedural blockout has been removed and replaced by the metric The Hive GLB. Its Lever Street entrance faces west, while the collision footprint follows the full 20.4 × 44.3 m architectural envelope.
 
-Advanced Photo is now active as a compact South Road shop opposite Spice Cabin. Real Camera sits west of the South Road exit and opposite Vinyl Exchange, while Advanced Photo sits east of the exit, forming a small photographic-retail cluster without closing the future route.
+Advanced Photo now uses its authored corner-shop GLB rather than the old box and remains opposite Spice Cabin. Real Camera sits west of the South Road exit and opposite Vinyl Exchange, while Advanced Photo sits east of the exit, forming a small photographic-retail cluster without closing the future route. Advanced Photo collision follows its walls, fixed display cabinets, counter and service partition, leaving the photographed open door and compact customer route enterable.
 
 ## Player and transport infrastructure
 
 - Player start: (0, 3.5), just south of and facing the Central Park fountain
-- Bus Stop A: (0, 20.4), centred on the South park zebra crossing
+- Bus Stop A: (0, 20.0), centred on the South park zebra crossing and on the 3.6 m park south pavement
 - Bus Stop B: (0, -49), on outer North Road
-- Sterling Bikes South dock: (-24, 26)
-- Sterling Bikes East dock: (27, 4), near the car park
-- Greek Gyros food stand: (14, -19.35), on the park's north pavement opposite Renee
+- Sterling Bikes South station: (-20.5, 21.2), three docks on the park south pavement, all occupied
+- Sterling Bikes East station: (38.5, -6.3), three docks in the car park's open northern bay, two occupied
+- Greek Gyros food stand: (20.6, 10.5), just inside the park's east edge opposite the Arts Council
 
-Both bus stops instance the geometry-first North Road, Preston shelter and its independently parented shopping trolley. The glass is truly transparent and contains no baked background photography. The bike docks are development blockout markers only; no bicycle gameplay is implemented.
+Both bus stops instance the textured North Road, Preston shelter and its independently parented shopping trolley. Each stands at the surface height of the pavement under its marker (`pavementTopAt`), with uprights, rail legs and the advert plinth set 30 mm into the flags. The park north and south pavements are 3.6 m deep so they meet the carriageway kerb; Bus Stop A's roof front edge is 0.63 m from that kerb. Bus Stop B currently stands in the North Road outward-connection carriageway, where there is no pavement. The glass is truly transparent and contains no baked background photography.
 
-The Greek Gyros kiosk is a standalone placeable prop rather than a named plot, declared in `FOOD_STANDS` alongside the other markers. It backs onto North Road with its authored serving frontage facing +Z into the park, so the queue forms on the park side and the stand reads across the road from Renee's frontage. It sits west of the existing bollard pair and streetlight at x = 18.5-20. Its collision box is 6.4 m wide by 2.6 m deep, extended 0.56 m east to enclose the side service step, and stops the player at the counter lip while leaving the projecting canopy overhead clear. The asset is untextured geometry: the fascia carries no wordmark or flags and nothing glows yet, though the GLB ships four light anchors for that pass.
+The Sterling Bikes stations instance the blockout bike and dock GLBs (`docs/assets/sterling-bike.md`) from `STERLING_BIKE_DOCKS`. Each marker is the centre of its dock line, with a yaw for the bike-forward axis and a per-dock occupancy list. Bikes snap onto docks through the authored `SB_DockAnchor`/`SD_BikeDockAnchor` pair, and empty docks stay complete. The earlier markers, (-24, 26) and (27, 4), stood in the South and East perimeter carriageways. South now stands on the park south pavement, bikes pointing south into docks whose baseplates stop 0.14 m short of the kerb, leaving about 1.35 m of footway along the park verge. East stands in the car park's northern bay (Z -7 to -4.2), bikes pointing north into docks lined up east-west. The rest of the car park lies inside the Arts Council footprint (Z ≥ -2.15), where a first placement put the docks under the colonnade. One collision box per station covers the bikes and docks. No hire, return or riding gameplay is implemented. Development views: `?view=sterling-south` and `?view=sterling-east`.
+
+The Greek Gyros kiosk is a standalone placeable prop rather than a named plot, declared in `FOOD_STANDS` alongside the other markers. It stands just inside the park's east edge with its back flush to X = 22, rotated so the authored serving frontage faces west into the park. The queue forms on the east park path, and the stand reads across Lever Street from the Arts Council entrance (world Z ≈ 15.3). Its footprint runs Z 7.3–14.26, stopping short of the south path and clear of the trees at (17, -2) and (15, 8). Its collision box is 6.4 m wide by 2.6 m deep, extended 0.56 m south to enclose the side service step, rotated with the stand, and stops the player at the counter lip while leaving the projecting canopy overhead clear. The asset is untextured geometry: the fascia carries no wordmark or flags and nothing glows yet, though the GLB ships four light anchors for that pass.
 
 ## Implementation boundaries
 

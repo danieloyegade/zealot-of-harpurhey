@@ -1,14 +1,26 @@
 import {
+  ACESFilmicToneMapping,
+  AgXToneMapping,
   LinearFilter,
   LinearMipmapLinearFilter,
   NearestFilter,
   NearestMipmapNearestFilter,
+  NeutralToneMapping,
+  NoToneMapping,
   type Texture,
+  type ToneMapping,
   type WebGLRenderer,
 } from 'three';
 
 export type TextureProfile = 'PHOTO_ENVIRONMENT' | 'RETRO_GRAPHIC';
 export type QualityLevel = 'low' | 'medium' | 'high';
+export type ToneMappingName = 'off' | 'agx' | 'neutral' | 'aces';
+
+export interface ToneMappingProfile {
+  readonly name: ToneMappingName;
+  readonly curve: ToneMapping;
+  readonly exposure: number;
+}
 
 export interface QualityProfile {
   readonly level: QualityLevel;
@@ -50,7 +62,19 @@ export const DEFAULT_QUALITY_LEVEL: QualityLevel = 'medium';
 
 export const VISUAL_STYLE = {
   render: {
-    exposure: 1.34,
+    toneMapping: 'agx',
+    // Curves receive exposure in linear HDR through OutputPass. `off` keeps the
+    // pre-tone-mapping look: a display-referred gain applied by the grade pass.
+    // Curve values were calibrated so their interquartile display luminance
+    // matches `off` across the dreams-angle, west-shops, park-to-dreams and
+    // bus-shelter views, so switching compares highlight rolloff and colour
+    // rather than overall brightness.
+    exposure: {
+      off: 1.34,
+      agx: 1.7,
+      neutral: 3.3,
+      aces: 3.2,
+    },
     saturation: 1.12,
     contrast: 1.05,
     colorQuantizationLevels: 32,
@@ -84,8 +108,11 @@ export const VISUAL_STYLE = {
     fluorescent: 0x70ff9b,
     magenta: 0xff3a9c,
     coldWhite: 0xc4dcff,
-    streetLightIntensity: 30,
-    streetLightDistance: 14,
+    // One budgeted proxy follows the nearest painted public-light pool. These
+    // values are deliberately local: they should select a figure, not wash an
+    // entire street or revive the old one-real-light-per-lamp system.
+    streetLightIntensity: 18,
+    streetLightDistance: 7,
     emissiveMultiplier: 1.15,
   },
   geometry: {
@@ -119,6 +146,26 @@ export function resolveQualityProfile(search: string): QualityProfile {
     return QUALITY_PROFILES[requested];
   }
   return QUALITY_PROFILES[DEFAULT_QUALITY_LEVEL];
+}
+
+const TONE_MAPPING_CURVES: Record<ToneMappingName, ToneMapping> = {
+  off: NoToneMapping,
+  agx: AgXToneMapping,
+  neutral: NeutralToneMapping,
+  aces: ACESFilmicToneMapping,
+};
+
+export function resolveToneMapping(search: string): ToneMappingProfile {
+  const requested = new URLSearchParams(search).get('tonemap')?.toLowerCase();
+  const name =
+    requested !== undefined && requested in TONE_MAPPING_CURVES
+      ? (requested as ToneMappingName)
+      : VISUAL_STYLE.render.toneMapping;
+  return {
+    name,
+    curve: TONE_MAPPING_CURVES[name],
+    exposure: VISUAL_STYLE.render.exposure[name],
+  };
 }
 
 export function applyTextureProfile(

@@ -1,0 +1,91 @@
+{
+  "glb": "public/assets/models/pallets/pallet_worn_brown.glb",
+  "size_mb": 1.73,
+  "objects": [
+    [
+      "pallet-worn-brown",
+      "MESH"
+    ]
+  ],
+  "meshes": [
+    {
+      "name": "pallet-worn-brown",
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "dimensions_m": [
+        1.2064,
+        0.8047,
+        0.1496
+      ],
+      "min_z": 0.0,
+      "centre_xy": [
+        -0.0005,
+        0.0012
+      ],
+      "triangles": 5322,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "loose_verts": 0,
+      "degenerate_faces": 0,
+      "zero_normals": 0,
+      "materials": [
+        {
+          "name": "MAT_Pallet_WornBrown",
+          "expected": "MAT_Pallet_WornBrown",
+          "images": [
+            [
+              "pallet-worn-brown-basecolor",
+              [
+                2048,
+                2048
+              ],
+              true
+            ],
+            [
+              "pallet-worn-brown-orm",
+              [
+                2048,
+                2048
+              ],
+              true
+            ],
+            [
+              "pallet-worn-brown-normal",
+              [
+                2048,
+                2048
+              ],
+              true
+            ],
+            [
+              "pallet-worn-brown-orm",
+              [
+                2048,
+                2048
+              ],
+              true
+            ]
+          ],
+          "roughness_textured": true,
+          "metallic_textured": true,
+          "base_textured": true,
+          "normal_strength": 1.0
+        }
+      ]
+    }
+  ]
+}

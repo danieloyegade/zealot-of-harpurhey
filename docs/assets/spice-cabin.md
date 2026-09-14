@@ -1,86 +1,257 @@
 # Spice Cabin
 
-A reference-led, textured reconstruction of the Spice Cabin takeaway end unit,
-built from the photographs and production brief in
-`references/architecture/spice-cabin/`. It preserves the observed tan commercial
-brick, rounded faux-log lower cladding, photographed sign identity, blue framing,
-cream end pier, recessed glazing/door, black bollards, upper conduit and simplified
-anti-climb silhouette rather than generalising the location into a generic takeaway.
+A reference-led reconstruction of the Spice Cabin takeaway end unit, built from
+the photographs and production brief in
+`references/architecture/buildings/spice-cabin/` (moved from
+`references/architecture/spice-cabin/` on 2026-09-14).
+
+Rebuilt on 2026-09-14 (Claude). The first pass (2026-09-12) had a skewed photo
+crop as its sign, flat untiled-looking brick with no normal map, and striped
+cylinders for the cladding; it failed the brief's own revision triggers.
+
+## Reading the references
+
+- **Photo 1** (`7cf7a339-….jpg`) is the **gable**, not the front: tan brick
+  above, dragfaced brown brick below, the cream pier's return at its right edge,
+  a newer sign with the phone number and a pale tube on stand-offs above it.
+- **Photos 2 and 4** show the shopfront with the older sign: no phone number,
+  reds faded towards pink.
+- The LED window sign reads "ΓPIED CHICKEN" in both front photographs because of
+  dead LEDs. The asset keeps the fault.
 
 ## Deliverables
 
-- Rebuild script: `blender/scripts/createSpiceCabin.py`
+- Build script: `blender/scripts/createSpiceCabin.py`
+- Geometry: `blender/scripts/spiceCabinGeometry.py`
+- Sign, LED and interior artwork: `blender/scripts/spiceCabinArtwork.py`
 - Editable master: `blender/source/spice-cabin.blend`
-- Generated texture sources: `blender/source/textures/spice-cabin/`
-- Three.js runtime model: `public/assets/models/spice-cabin.glb`
-- Six validation renders: `renders/spice-cabin/`
+- Generated maps: `blender/source/textures/spice-cabin/`
+- Runtime model: `public/assets/models/spice-cabin.glb`
+- Validation renders: `renders/spice-cabin/01`–`11`
 
-Regenerate everything from the repository root with:
+Rebuild from the repository root (about 10 minutes cold; `--bake-cache` reuses
+bakes while geometry and UVs are unchanged, `--stage textures|renders` runs one
+half, `--only 04,05` re-renders selected views):
 
-```sh
-/Applications/Blender.app/Contents/MacOS/Blender \
-  --background \
-  --python blender/scripts/createSpiceCabin.py
+```bash
+/Applications/Blender.app/Contents/MacOS/Blender --background --factory-startup --python blender/scripts/createSpiceCabin.py -- --bake-cache /tmp/spice-cabin-bake
 ```
 
-The script creates deterministic brick and timber albedo/roughness textures and a
-sign derivative cropped from the supplied `spice-cabin-manchester.jpg`. Reference
-photographs are read-only inputs. Runtime textures are embedded in the GLB.
+## Scale, orientation and dimensions
 
-## Scale and orientation
+- One Blender unit is one metre, Z up, ground at Z = 0.
+- Origin at the centre of a 6.2 × 7.0 m footprint.
+- Shopfront faces **-Y**, gable faces **-X**. The +X side is the party wall with the
+  neighbouring unit and has no exterior face.
+- Heights are photographic estimates scaled from the ~2.0 m door opening and
+  75 mm brick courses:
 
-- Nominal facade: **6.80 m wide × 1.10 m deep × 4.25 m high**, with the security
-  silhouette extending above the masonry.
-- One Blender unit is one metre; ground is `Z = 0`.
-- The frontage faces local **-Y**, consistent with the current food-stand and hero
-  frontage authoring convention.
-- The asset is a modular building-edge facade, not an invented parade or street.
-- Dimensions are inferred from photography and standard door/bollard sizes, not a
-  survey.
+| Element | Z (m) |
+| --- | --- |
+| Concrete upstand | 0–0.10 |
+| Loglap cladding (13 boards) | 0.10–1.12 |
+| Glazing | 1.12–1.95 |
+| Timber head | 1.95–2.02 |
+| Blue fascia | 2.02–2.48 |
+| Front sign | 2.52–3.56 |
+| Cream band | 3.62–4.02 |
+| Parapet brick | 4.02–4.76 |
+| Green coping | 4.76–4.84 |
+| Rotary anti-climb bar | 4.97 |
+
+- Gable sign: 4.60 × 1.00 m at Z 2.62–3.62.
+- Gable brick changes from brown to buff at the course nearest 3.35 m.
 
 ## Runtime structure
 
-The master separates the logical groups requested by the brief:
-`SPICE_structure`, `SPICE_brick_wall`, `SPICE_cream_pier`, `SPICE_sign`,
-`SPICE_blue_fascia`, `SPICE_window_frames`, `SPICE_glass`, `SPICE_door`,
-`SPICE_log_cladding`, `SPICE_bollards`, `SPICE_security_wire`, `SPICE_pipework`,
-`SPICE_alarm_fixtures`, `SPICE_interior_cards`, and `SPICE_anchors`.
+Hierarchy: `SPICE_CABIN` → group empties → meshes. The groups are:
 
-The rounded timber is genuine low-segment relief with a continuous backing layer,
-not a striped flat panel. Brick relief remains texture-led for runtime efficiency.
-The anti-climb assembly uses sparse curve geometry to preserve the roof silhouette
-without modelling dense concertina wire.
+- `SPICE_structure`
+- `SPICE_brick_wall`
+- `SPICE_cream_pier`
+- `SPICE_sign`
+- `SPICE_blue_fascia`
+- `SPICE_window_frames`
+- `SPICE_glass`
+- `SPICE_door`
+- `SPICE_log_cladding`
+- `SPICE_bollards`
+- `SPICE_security_wire`
+- `SPICE_pipework`
+- `SPICE_alarm_fixtures`
+- `SPICE_interior_cards`
+- `SPICE_ground_contact`
+- `SPICE_anchors`
 
-Review pavement, railing and the 1.78 m scale witness live in
-`SPICE_review_only` and are excluded from the GLB, as are all validation cameras
-and lights.
+Notes on geometry:
 
-## Materials and lighting
+- **Loglap boards** have a genuine convex, lipped profile. Brick relief is
+  texture-led.
+- **Anti-climb:** each rotor is three offset five-vane stars of closed
+  tetrahedra, merged per run.
+- **Door:** stands open inward, as photographed.
+- **No hidden faces:** wall tops under the coping and the party wall are never
+  built.
 
-The concise glTF-compatible material set includes aged tan brick, weathered log
-cladding, the photographed sign, weathered blue framing, cream concrete, dark
-pipe/bollard metal, security metal, shopfront glass, interior cards, warm interior
-suggestion and a restrained red window-sign treatment. The two authored surface
-sets use separate albedo and roughness maps.
+Anchors (no lights are exported):
 
-The GLB contains no real-time lights. Three authored light anchors allow the game
-to join the existing nearest-hero-light policy later:
-
+- `SPICE_EntranceAnchor`
+- `SPICE_DeliveryAnchor`
 - `SPICE_LightAnchor_Window`
 - `SPICE_LightAnchor_Door`
 - `SPICE_LightAnchor_Sign`
+- `SPICE_LightAnchor_SideSign`
+- `SPICE_LightAnchor_LEDSign`
 
-Two interaction anchors are also exported: `SPICE_EntranceAnchor` and
-`SPICE_DeliveryAnchor`.
+The review stage is excluded from the GLB. It contains pavement, kerb, road,
+grass, the galvanised railing, a white concrete bollard, the neighbour's edge
+and a 1.78 m scale figure.
 
-## Validation and placement status
+## Texture pass
 
-The build script checks the identifying meshes and anchors, applies transforms,
-and reports approximately **2,820 triangles** across **66 runtime mesh objects**.
-The six required renders cover neutral daylight, grazing daylight, restrained night
-lighting, brick close-up, rounded timber close-up and a straight-on elevation.
+Every textured material gets a unique, density-consistent UV atlas, so brick
+and timber cannot tile. The pass then:
 
-The asset has not been placed in `worldLayout.ts` and has no runtime collision box
-yet. Placement should be decided against actual neighbouring GLB bounds rather than
-nominal plot centres; a single facade-envelope box will be sufficient unless the
-bollards are made separately collidable.
+1. Bakes world position, normal, object id, AO and convexity
+   (`surfaceWeathering.bake_buffers`). The brick and blue bakes are upsampled
+   2×, which is exact on their planar faces.
+2. Authors each surface in world space:
+   - **Brick:** stretcher bond on real 225 × 75 mm modules. Per-brick colour
+     comes from buff and brown palettes, with kiln flashing, speckle and
+     dragface. Joint widths vary, mortar is recessed 6.5 mm, and faces carry
+     pores, tilt and chipped arrises.
+   - **Loglap timber:** grain follows each piece (vertical on mullions, jambs
+     and the door), with per-board colour, knots and checks.
+3. Adds weathering from causes rather than grunge:
+   - coping run-off and rust bleed from bracket fixings;
+   - drip lines under the gable sign;
+   - splash zone, algae and salts at the wall foot;
+   - flaking and scuffs on the pier;
+   - sun-chalked coping and band top;
+   - chips and hand wear on the blue posts;
+   - sun-silvered sills and board tops;
+   - a white bumper-paint smear on one bollard;
+   - galvanising bloom;
+   - glass film, squeegee arcs, palm prints and sticker residue by the door;
+   - an analytic ground-contact decal: wall-base grime, bollard rust rings,
+     damp at the downpipe shoe, sparse gum and cigarette ends.
+4. Sets the signs in Marker Felt Wide through the bus shelter's `PrintCanvas`,
+   at letter positions measured on a perspective-rectified copy of photo 1.
+   Outlines, drop shadows, the chilli, the flame, the printed round-log
+   background and the sawn log-end cut-outs are drawn in numpy. Nothing is
+   copied from the photographs. The front sign is aged harder (pink reds, paler
+   wood).
+5. Draws dot-matrix LEDs for the window sign, including its dead LEDs.
+   Menu boards and fridge contents are illegible by design, so no copy is
+   invented.
+
+Materials (glTF, WebP textures, single-sided):
+
+| Material | Contents |
+| --- | --- |
+| `MAT_brick_aged_tan` | Base 4096, normal 2048, ORM 1024 (≈1.7 mm/texel) |
+| `MAT_cream_painted_concrete` | Pier, band, coping, boarding, plinth, tubes, alarm, CCTV |
+| `MAT_blue_painted_frame` | Fascia and posts |
+| `MAT_log_cladding_weathered` | Boards, sills, head, mullions, jambs, door leaf |
+| `MAT_dark_metal` | Bollards, downpipe, hopper, anti-climb, galvanised brackets and clips, threshold, counter top, LED case (merges the brief's black-bollard, dark-pipe and security-metal materials) |
+| `MAT_sign_printed_wood` | alphaMode MASK for the log-end cut-outs |
+| `MAT_glass_shopfront` | alphaMode BLEND, dark film |
+| `MAT_interior_dark` | Interior surfaces |
+| `MAT_emissive_signage` | LED sign, fridge front, menu boards, ceiling panels, tube diffusers |
+| `MAT_ground_contact` | alphaMode BLEND |
+| `MAT_roof_felt` | Untextured |
+
+ORM packing is glTF standard. Opaque base-colour alpha is 1; no wetness mask is
+stored, unlike the bus shelter.
+
+## Validation
+
+The build checks the identifying meshes, anchors and UVs.
+
+Measured on 2026-09-14:
+
+- 98 meshes, 12,508 triangles, 11 materials.
+- GLB ≈7.8 MB, of which images are 6.7 MB and brick is ≈4.1 MB.
+- Materials are single-sided.
+
+**Texture budget:** this exceeds `docs/VISUAL_LANGUAGE.md`'s budget (512 px
+landmark façades, 1024 maximum when justified). The brief's top priorities are
+brick and timber at close player range, so the atlases were sized for that.
+
+To export a budget-compliant variant, lower the base/normal/ORM sizes in
+`ATLASES` and `sign_maps`; the authored surfaces are resolution-independent.
+Which variant the game uses is an open question for Daniel.
+
+Renders:
+
+1. neutral overcast
+2. grazing daylight along the shopfront
+3. night with interior, sign-tube and LED practicals
+4. brick close-up at the gable sign (raked)
+5. loglap close-up (raked)
+6. straight-on elevation
+7. gable sign in sun (photo 1 match)
+8. photo 4 viewpoint match
+9. gameplay-camera distance at night
+10. roof edge and services
+11. shopfront junctions
+
+Renders 1, 7 and 8 are the comparisons to make against the photographs.
+
+## In the game
+
+`createWorld.ts` `addSpiceCabinModel` loads the full textured GLB into the
+`spice-cabin` plot.
+
+**Scale:** in the game it is enlarged by `SPICE_CABIN_SCALE` = 1.5 in width and
+height, so it sits with the neighbouring Off-Licence (11 × 10 × 7.6 m), as the
+bus shelter runs at 1.3. Depth uses `SPICE_CABIN_DEPTH_SCALE` = 10/7 to match
+the Off-Licence's 10 m exactly. At 1.5 the open party wall would show a
+0.57 m strip behind its neighbour; the 5% horizontal squeeze on the gable is not
+visible.
+
+The GLB itself stays at real-world scale. The plot is `finished` at the scaled
+9.3 × 10 × 7.65 m envelope, centred on (12.35, 49).
+
+If either factor changes, update the `worldLayout.ts` envelope to match. Bollard
+collision, light offsets, light ranges and activation radii follow the
+constants. Light intensity follows the square of the main scale.
+
+The ground-contact decal's outer edge now reaches about 1 m past the kerb onto
+the carriageway.
+
+Placement and collision:
+
+- **Orientation:** the asset's -Y shopfront already faces the plot's south
+  frontage after glTF conversion, so there is no rotation.
+- **Building line:** the shopfront sits on the Z = 54 South Road line.
+- **Party wall:** the east side, which has no exterior face, is flush with the
+  Off-Licence placeholder at X = 17. Anything moved there must still cover it.
+- **Height:** the model stands at `pavementTopAt` height, so the ground-contact
+  decal clears the pavement flags.
+- **Collision:** one solid footprint (interiors are not walkable yet) plus four
+  16 cm bollard boxes.
+
+Materials and light:
+
+- `applySpiceCabinTexturePolicy` in `busShelterMaterials.ts` shares the bus
+  shelter's texture-pass runtime policy. It applies photographic texture
+  filtering and the painted night-street environment map. Shop glass gets the
+  premultiplied glass shader, and the ground decal gets polygon-offset blending.
+- Emissives: the shared `MAT_emissive_signage` is held to 0.35 ×
+  `emissiveMultiplier`, so the menu boxes, fridge and ceiling panels glow
+  without blooming out behind the glass. The LED window sign and the tube
+  diffusers get a full-strength clone.
+- Lights: the world is moonlit blue, so without practical light the brick,
+  cream band and printed signs read grey-blue. The blue-grey in-game look
+  matches a Blender render under the game's hemisphere and moon. Two
+  `location-relevance` installations hang off the GLB's anchors:
+  - **Shopfront** (radius 14): the sodium interior spill at
+    `SPICE_LightAnchor_Window`, plus a warm tube wash in front of
+    `SPICE_LightAnchor_Sign`.
+  - **Gable sign** (radius 12): a warm tube wash at `SPICE_LightAnchor_SideSign`.
+
+  The shopfront installation uses two point lights of the per-quality budget,
+  and the gable sign one.
+
+Development views: `?view=spice-cabin` (front) and `?view=spice-cabin-gable`.

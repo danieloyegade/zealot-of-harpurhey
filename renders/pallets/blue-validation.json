@@ -1,0 +1,91 @@
+{
+  "glb": "public/assets/models/pallets/pallet_worn_blue.glb",
+  "size_mb": 1.79,
+  "objects": [
+    [
+      "pallet-worn-blue",
+      "MESH"
+    ]
+  ],
+  "meshes": [
+    {
+      "name": "pallet-worn-blue",
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "dimensions_m": [
+        1.2122,
+        1.0057,
+        0.149
+      ],
+      "min_z": 0.0,
+      "centre_xy": [
+        0.0007,
+        -0.0007
+      ],
+      "triangles": 7162,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "loose_verts": 0,
+      "degenerate_faces": 0,
+      "zero_normals": 0,
+      "materials": [
+        {
+          "name": "MAT_Pallet_WornBlue",
+          "expected": "MAT_Pallet_WornBlue",
+          "images": [
+            [
+              "pallet-worn-blue-basecolor",
+              [
+                2048,
+                2048
+              ],
+              true
+            ],
+            [
+              "pallet-worn-blue-orm",
+              [
+                2048,
+                2048
+              ],
+              true
+            ],
+            [
+              "pallet-worn-blue-normal",
+              [
+                2048,
+                2048
+              ],
+              true
+            ],
+            [
+              "pallet-worn-blue-orm",
+              [
+                2048,
+                2048
+              ],
+              true
+            ]
+          ],
+          "roughness_textured": true,
+          "metallic_textured": true,
+          "base_textured": true,
+          "normal_strength": 1.0
+        }
+      ]
+    }
+  ]
+}

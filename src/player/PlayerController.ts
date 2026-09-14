@@ -59,6 +59,64 @@ const WALKING_SPEED = 2.4;
 const RUNNING_SPEED = 4.5;
 const DEVELOPMENT_WALKING_SPEED_MULTIPLIER = 1.3;
 const DEVELOPMENT_RUNNING_SPEED_MULTIPLIER = 1.7;
+const PLAYER_INDIRECT_VISIBILITY_GAIN = 1.55;
+const PLAYER_VISIBILITY_SHADER_KEY = 'player-indirect-visibility-v1';
+
+function needsPlayerVisibilityLift(material: MeshStandardMaterial): boolean {
+  const name = material.name;
+  return (
+    (name.startsWith('PC_Denim_') && name !== 'PC_Denim_Hardware') ||
+    (name.startsWith('PC_Leather_') && name !== 'PC_Leather_Hardware') ||
+    name === 'PC_Hair_Cornrow'
+  );
+}
+
+/**
+ * Preserve the authored near-black clothing while lifting only its indirect
+ * response. Direct sodium/fluorescent/cold light remains untouched, so public
+ * pools still change the character rather than a self-lit emissive floor doing
+ * the work everywhere.
+ */
+function applyPlayerVisibilityPolicy(character: Group): void {
+  const configured = new Set<MeshStandardMaterial>();
+
+  character.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+
+    for (const material of materials) {
+      if (
+        !(material instanceof MeshStandardMaterial) ||
+        configured.has(material) ||
+        !needsPlayerVisibilityLift(material)
+      ) {
+        continue;
+      }
+
+      configured.add(material);
+      const previousOnBeforeCompile = material.onBeforeCompile;
+      const previousProgramCacheKey = material.customProgramCacheKey();
+      material.onBeforeCompile = (shader, renderer) => {
+        previousOnBeforeCompile.call(material, shader, renderer);
+        const anchor = '#include <lights_fragment_end>';
+        if (!shader.fragmentShader.includes(anchor)) {
+          return;
+        }
+        shader.fragmentShader = shader.fragmentShader.replace(
+          anchor,
+          `${anchor}\nreflectedLight.indirectDiffuse *= ${PLAYER_INDIRECT_VISIBILITY_GAIN.toFixed(2)};`,
+        );
+      };
+      material.customProgramCacheKey = () =>
+        `${previousProgramCacheKey}|${PLAYER_VISIBILITY_SHADER_KEY}`;
+      material.needsUpdate = true;
+    }
+  });
+}
 
 export class PlayerController {
   readonly object = new Group();
@@ -142,6 +200,7 @@ export class PlayerController {
 
     this.previousPosition.copy(this.position);
     this.frameMovement.copy(this.velocity).multiplyScalar(deltaTime);
+    const intendedDistanceSquared = this.frameMovement.lengthSq();
     moveCircleWithCollisions(
       this.position,
       this.frameMovement,
@@ -151,6 +210,11 @@ export class PlayerController {
     this.position.y = 0;
 
     this.frameMovement.subVectors(this.position, this.previousPosition);
+    // Discard the velocity a wall absorbed, so pressing into one and turning
+    // away does not carry stale momentum back into the slide.
+    if (deltaTime > 0 && this.frameMovement.lengthSq() < intendedDistanceSquared) {
+      this.velocity.copy(this.frameMovement).divideScalar(deltaTime);
+    }
     if (this.frameMovement.lengthSq() > 0.000001) {
       this.facingDirection.copy(this.frameMovement).normalize();
       const facingAngle = Math.atan2(
@@ -178,6 +242,7 @@ export class PlayerController {
       const character = await loadModel(
         'assets/models/player-character-rigged.glb',
       );
+      applyPlayerVisibilityPolicy(character);
       character.name = 'Player character asset';
       this.characterVisual = character;
       this.object.add(character);

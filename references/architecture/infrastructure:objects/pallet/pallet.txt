@@ -1,0 +1,281 @@
+CLAUDE CODE / BLENDER ASSET BRIEF
+ZEALOT OF HARPERHAY — TWO WORN WOODEN PALLETS
+
+OBJECTIVE
+Create TWO separate, production-ready Blender assets and export each as its own .glb for use in the Three.js game Zealot of Harperhay:
+
+1. pallet_worn_brown.glb — an unpainted/brown timber shipping pallet, old and heavily used.
+2. pallet_worn_blue.glb — a blue-painted timber shipping pallet, old and heavily used, based closely on the supplied blue pallet reference photographs.
+
+These are environmental props, not pristine product visualisations. They should feel like real pallets found behind shops, in alleys, loading bays and service yards in Manchester: industrial, handled repeatedly, left outside, scraped by forklifts, dirty, damp and imperfect.
+
+REFERENCE IMAGES
+Inspect all five supplied pallet photographs before modelling:
+- /mnt/data/def.jpeg
+- /mnt/data/2020-Blog-800x500-Jan-CHEP.jpg
+- /mnt/data/pallet_original1.jpg
+- /mnt/data/images(9).jpeg
+- /mnt/data/wooden-pallet.jpg
+
+Use the references primarily for:
+- construction and proportions
+- board thickness
+- gaps between top boards
+- block/stringer construction
+- edge wear
+- blue paint colour variation
+- exposed timber beneath chipped paint
+- dirt accumulation
+- nail positions
+- scratches and abrasions
+- roughness variation
+- the overall heavily-used industrial character
+
+Do NOT simply project one photograph over the whole asset. Build proper UVs and materials.
+
+ART DIRECTION
+The game is moving toward an uncanny midpoint between photographic realism and a game-like constructed world. Therefore, these props should be convincing at close/medium distance without becoming excessively high-poly.
+
+Avoid:
+- clean procedural-looking wood
+- perfectly straight pristine edges
+- uniform blue paint
+- smooth plastic surfaces
+- identical duplicated boards
+- exaggerated cartoon damage
+- perfectly symmetrical dirt
+- generic “wood grain” stretched across multiple boards
+- excessive geometry that will not affect the silhouette
+
+The biggest priority is MATERIAL AND SURFACE FIDELITY.
+
+GEOMETRY
+Model believable UK/European-style wooden shipping pallets. Approximately 1200 x 800 mm is an appropriate real-world starting footprint, but use the references as the visual authority.
+
+Construct the pallet from separate believable wooden components rather than one monolithic box:
+- top deck boards
+- supporting boards/stringers
+- blocks
+- bottom deck boards
+
+Maintain real gaps between boards.
+
+Boards should NOT all be exact clones. Introduce restrained variation:
+- tiny width/thickness differences
+- subtle bowing or unevenness where appropriate
+- slightly battered corners
+- small chips/notches along selected edges
+- minor dents
+- occasional splintered areas
+
+Keep damage plausible. The pallet still needs to read as structurally usable.
+
+Use small bevels on exposed timber edges so highlights catch naturally. Do not leave razor-sharp CG edges.
+
+Add visible nail heads/fasteners in plausible construction positions. These may use inexpensive geometry or another efficient method, but they should catch light and contribute to realism.
+
+BROWN PALLET — MATERIAL
+This must look like aged, unfinished timber rather than “brown coloured material.”
+
+Create a physically plausible PBR wood surface with:
+- visible longitudinal wood grain
+- grain direction correctly aligned PER BOARD
+- variation between individual planks
+- pale raw timber in fresher abrasions
+- greyed/weathered areas
+- darker ingrained dirt
+- subtle water staining
+- darkened board ends/end grain
+- compressed/scuffed areas
+- occasional tiny dark marks around nails
+- rough fibres and shallow scratches
+
+The timber should contain several related brown/grey/tan values rather than a single base colour.
+
+Important: randomise or offset texture coordinates per plank so repeated boards do not reveal obvious texture repetition.
+
+BLUE PALLET — MATERIAL
+This is the hero variation and should be particularly close to the references.
+
+The pallet was originally painted a strong industrial blue, but the paint is now substantially weathered.
+
+The blue surface MUST show layered material history:
+BLUE PAINT → ABRASION/CHIPPING → EXPOSED WOOD → DIRT/WEATHERING.
+
+Do not make a blue wood texture by simply tinting the brown pallet.
+
+Required characteristics:
+- saturated industrial blue remaining in protected areas
+- faded/desaturated blue across exposed upper surfaces
+- large irregular rubbed areas where paint has worn thin
+- smaller chips revealing tan/brown timber
+- especially strong wear on corners and board edges
+- scratches running with and across the grain
+- dirty dark areas in recesses and around fasteners
+- subtle black/brown grime
+- slight green/grey environmental staining in a few places if natural
+- paint caught more strongly in lower/protected areas
+- varied roughness between remaining paint, bare wood and dirt
+- visible wood grain continuing beneath/through worn paint
+
+Look carefully at the supplied photographs: some top boards have broad pale exposed strips and patches, while other areas retain much stronger blue. Reproduce this kind of irregular, history-driven distribution rather than generic noise.
+
+TEXTURE AUTHORING
+Prioritise texture quality over polygon density.
+
+Use a Principled BSDF/PBR workflow suitable for glTF/GLB:
+- Base Color
+- Roughness
+- Normal
+- optional AO contribution where appropriate
+
+Do not rely on Blender-only shader tricks that disappear during GLB export. Bake procedural effects to image textures if necessary.
+
+Target 2K texture maps for each pallet/material set unless a strong technical reason justifies otherwise. Keep texture memory sensible for a browser-based Three.js game.
+
+If practical, pack maps efficiently for glTF.
+
+NORMAL / MICRODETAIL
+Use normal detail for:
+- shallow wood grain
+- fine scratches
+- small dents
+- chipped paint transitions
+- subtle rough fibres
+
+Do NOT fake major silhouette damage only with a normal map. Conversely, do not model every scratch.
+
+ROUGHNESS
+This is crucial.
+
+The object must NOT have one uniform roughness value.
+
+Brown pallet:
+- generally very rough/matte
+- slightly different roughness on compressed/worn patches
+- dirt and damp staining can subtly alter response
+
+Blue pallet:
+- old paint is mostly matte
+- exposed wood is strongly rough
+- heavily rubbed/compressed paint can have slightly smoother patches
+- dirt/recesses should vary subtly
+
+There should be no broad glossy/plastic sheen.
+
+UV REQUIREMENTS
+Create clean, non-overlapping UVs suitable for baked PBR textures.
+Maintain appropriate texel density.
+Orient wood grain correctly for every board.
+Avoid obvious seams on the most visible upper surfaces.
+Do not allow a single continuous grain pattern to unrealistically cross separate pieces of timber.
+
+REALISM / IMPERFECTION PASS
+After the basic asset is finished, deliberately perform a second pass asking:
+“What makes this still look computer-generated?”
+
+Correct:
+- overly even spacing
+- perfect edges
+- repeated texture patches
+- identical wear
+- perfectly uniform colour
+- pristine undersides
+- insufficient dirt around joins
+- lack of contact grime
+- unnaturally clean nails
+- excessive symmetry
+
+Wear should be causally distributed:
+- corners: collisions/chipping
+- upper deck: foot/load abrasion and weather exposure
+- fork openings/lower edges: forklift impacts and grime
+- board joins: dirt accumulation
+- nail heads: local darkening/rust staining where appropriate
+- underside: dirt, but less sun bleaching than the top
+
+OPTIMISATION
+These assets are for Three.js and must be efficient.
+
+Aim for a sensible environmental-prop budget, roughly:
+- ~3,000–8,000 triangles per pallet preferred
+- go slightly higher only if clearly justified by silhouette/detail
+- avoid hidden unnecessary geometry
+- remove unseen/internal faces where safe
+- use texture detail instead of geometry for microdamage
+
+Each pallet should be ONE practical scene asset when exported, while retaining sensible internal mesh/material organisation in the .blend if useful.
+
+TRANSFORMS / ORIGIN
+Before export:
+- real-world scale
+- Z-up in Blender
+- apply transforms
+- scale = 1,1,1
+- rotation clean
+- origin centred horizontally at ground/contact level
+- pallet rests exactly on Z=0
+- sensible forward orientation
+- no accidental floating geometry
+
+GLB EXPORT
+Export separately:
+- pallet_worn_brown.glb
+- pallet_worn_blue.glb
+
+Requirements:
+- glTF 2.0 binary (.glb)
+- embed required textures
+- materials must survive export correctly
+- no external texture dependency
+- no cameras
+- no lights
+- no unnecessary collections/objects
+- no unsupported shader nodes required at runtime
+
+Also save the editable Blender source:
+- pallet_worn_brown.blend
+- pallet_worn_blue.blend
+or one clearly organised source .blend containing both, if that is substantially cleaner.
+
+VALIDATION
+After exporting, REIMPORT each GLB into a clean Blender scene and inspect it.
+
+Verify:
+- dimensions
+- transforms
+- UVs
+- normals
+- material assignment
+- texture embedding
+- roughness
+- normal strength
+- no missing maps
+- no unsupported material behaviour
+- no obvious z-fighting
+- no floating nails
+- no texture stretching
+- no obvious repeated wood grain
+- correct ground placement
+
+If possible, also test the GLBs in a basic glTF/Three.js viewer.
+
+FINAL RENDER / QA
+Produce neutral preview renders of each completed pallet:
+1. three-quarter upper view
+2. lower three-quarter view showing construction/fork openings
+3. close-up crop showing texture, edge wear, nails and chipped paint
+
+Use neutral lighting that reveals roughness and surface detail rather than dramatic lighting that conceals problems.
+
+SUCCESS CRITERIA
+At first glance:
+- one reads unmistakably as an old, raw brown timber pallet
+- one reads unmistakably as an old, repeatedly-used BLUE painted pallet
+
+At close range:
+- the player sees wood grain, dirt, scratches, nail detail, chipped edges, paint loss and roughness variation rather than a clean CG box with a colour applied.
+
+The BLUE pallet in particular should feel as though it has spent years being handled, stacked, scraped and left outdoors. Its blue paint should tell that history.
+
+Do not stop at “technically correct.” Continue the texture/material pass until neither asset looks plasticky, Lego-like, freshly manufactured or procedurally uniform.

@@ -7,6 +7,9 @@ export interface RenderDiagnostics {
   readonly triangles: number;
   readonly activePointLights: number;
   readonly activeSpotLights: number;
+  readonly registeredPointLights: number;
+  readonly maximumActiveLocalLights: number;
+  readonly activeLocalLightGroups: readonly string[];
   readonly drawingBufferWidth: number;
   readonly drawingBufferHeight: number;
   readonly pixelRatio: number;
@@ -71,7 +74,8 @@ export class DebugOverlay {
       `Median / p95: ${this.medianFrameTimeMilliseconds.toFixed(1)} / ${this.p95FrameTimeMilliseconds.toFixed(1)} ms`,
       `Draw calls: ${diagnostics.drawCalls}`,
       `Triangles: ${diagnostics.triangles.toLocaleString()}`,
-      `Lights: ${diagnostics.activePointLights} point + ${diagnostics.activeSpotLights} spot`,
+      `Lights: ${diagnostics.activePointLights} / ${diagnostics.maximumActiveLocalLights} local point (${diagnostics.registeredPointLights} registered) + ${diagnostics.activeSpotLights} spot`,
+      `Active light groups: ${diagnostics.activeLocalLightGroups.join(', ') || 'none'}`,
       `Buffer: ${diagnostics.drawingBufferWidth} × ${diagnostics.drawingBufferHeight}`,
       `Pixel ratio: ${diagnostics.pixelRatio.toFixed(2)} (scale ${diagnostics.renderScale.toFixed(2)})`,
       `Textures / geometries: ${diagnostics.textures} / ${diagnostics.geometries}`,

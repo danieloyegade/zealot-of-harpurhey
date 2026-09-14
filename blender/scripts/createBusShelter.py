@@ -186,8 +186,9 @@ def build_shelter(mats):
 
     rear_x = -0.70
     post_ys = (-2.37, -0.79, 0.79, 2.37)
+    # Uprights run 30 mm below ground so they read as set into the pavement.
     for index, y in enumerate(post_ys, 1):
-        add_box(f"BUSSTOP_Frame_RearUpright_{index:02d}", (0.085, 0.085, 2.30), (rear_x, y, 1.15), mats["dark"], frame, bevel=0.008)
+        add_box(f"BUSSTOP_Frame_RearUpright_{index:02d}", (0.085, 0.085, 2.33), (rear_x, y, 1.135), mats["dark"], frame, bevel=0.008)
     for z, height in ((2.25, 0.085), (1.03, 0.075), (0.28, 0.12)):
         add_box(f"BUSSTOP_Frame_RearRail_{int(z * 100):03d}", (0.085, 4.82, height), (rear_x, 0, z), mats["dark"], frame, bevel=0.006)
 
@@ -196,19 +197,20 @@ def build_shelter(mats):
         add_plane_yz(f"BUSSTOP_Glass_Rear{index:02d}", rear_x + 0.006, y_range, (0.34, 2.20), mats["glass"], glass_rear)
 
     # Narrow left return, with its own front upright and rails.
-    add_box("BUSSTOP_Frame_LeftFrontUpright", (0.085, 0.085, 2.30), (0.70, -2.37, 1.15), mats["dark"], frame, bevel=0.008)
+    add_box("BUSSTOP_Frame_LeftFrontUpright", (0.085, 0.085, 2.33), (0.70, -2.37, 1.135), mats["dark"], frame, bevel=0.008)
     add_box("BUSSTOP_Frame_LeftBottomRail", (1.42, 0.085, 0.11), (0, -2.37, 0.28), mats["dark"], frame)
     add_box("BUSSTOP_Frame_LeftTopRail", (1.42, 0.085, 0.08), (0, -2.37, 2.24), mats["dark"], frame)
     add_plane_xz("BUSSTOP_Glass_Left", -2.37, (-0.65, 0.65), (0.34, 2.20), mats["glass"], glass_left)
 
     # Right return glazing remains distinct behind the projecting lightbox.
-    add_box("BUSSTOP_Frame_RightFrontUpright", (0.085, 0.085, 2.30), (0.70, 2.37, 1.15), mats["dark"], frame, bevel=0.008)
+    add_box("BUSSTOP_Frame_RightFrontUpright", (0.085, 0.085, 2.33), (0.70, 2.37, 1.135), mats["dark"], frame, bevel=0.008)
     add_plane_xz("BUSSTOP_Glass_Right", 2.37, (-0.65, 0.65), (0.34, 2.20), mats["glass"], glass_right)
 
     # The photograph has a resting rail, not a conventional seat.
     add_cylinder_between("BUSSTOP_BenchRail_Horizontal", (0.34, -1.62, 0.76), (0.34, 0.70, 0.76), 0.041, mats["rail"], bench, 10)
-    add_cylinder_between("BUSSTOP_BenchRail_LeftLeg", (0.34, -1.62, 0.05), (0.34, -1.62, 0.76), 0.041, mats["rail"], bench, 10)
-    add_cylinder_between("BUSSTOP_BenchRail_RightLeg", (0.34, 0.70, 0.05), (0.34, 0.70, 0.76), 0.041, mats["rail"], bench, 10)
+    # The legs are set into the pavement, as in the photograph.
+    add_cylinder_between("BUSSTOP_BenchRail_LeftLeg", (0.34, -1.62, -0.03), (0.34, -1.62, 0.76), 0.041, mats["rail"], bench, 10)
+    add_cylinder_between("BUSSTOP_BenchRail_RightLeg", (0.34, 0.70, -0.03), (0.34, 0.70, 0.76), 0.041, mats["rail"], bench, 10)
     add_box("BUSSTOP_Bench_Perch", (0.22, 2.12, 0.075), (-0.46, -0.42, 0.68), mats["dark"], bench, bevel=0.018)
 
     # Separate physical signage backplates and future decal surfaces.
@@ -218,6 +220,8 @@ def build_shelter(mats):
     add_plane_yz("BUSSTOP_NoSmoking_DecalSurface", -0.568, (-2.16, -1.94), (1.84, 2.10), mats["sign"], signage)
 
     add_box("BUSSTOP_AdvertHousing_Outer", (1.55, 0.28, 2.12), (0.02, 2.47, 1.28), mats["dark"], advert, bevel=0.065)
+    # The photographed unit stands on a narrower steel plinth set into the pavement.
+    add_box("BUSSTOP_AdvertHousing_Plinth", (1.22, 0.18, 0.28), (0.01, 2.47, 0.11), mats["dark"], advert, bevel=0.012)
     add_box("BUSSTOP_AdvertGlass", (1.37, 0.035, 1.88), (0.06, 2.315, 1.30), mats["glass"], advert, bevel=0.025)
     add_plane_xz("BUSSTOP_Advert_DecalSurface", 2.293, (-0.57, 0.66), (0.44, 2.16), mats["advert"], advert)
     add_empty("BUSSTOP_AdvertLightAnchor", advert, (0.04, 2.24, 1.30))

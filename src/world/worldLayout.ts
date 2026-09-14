@@ -59,30 +59,62 @@ export const WORLD_LOCATIONS: readonly WorldLocation[] = [
   { id: 'arts-council', name: 'Arts Council', kind: 'building', status: 'geometry-wip', front: 'west', x: 47, z: 20, width: 20.4, depth: 44.3, height: 33.12, color: 0x4c4548 },
 
   { id: 'eastern-bloc', name: 'Eastern Bloc', kind: 'building', status: 'placeholder', front: 'north', x: 20, z: 69.75, width: 10, depth: 10, height: 7.8, color: 0x454b50 },
-  { id: 'spice-cabin', name: 'Spice Cabin', kind: 'building', status: 'placeholder', front: 'south', x: 10.5, z: 49, width: 11, depth: 10, height: 6.8, color: 0x54493f },
+  // The 6.2 × 7.0 × 5.1 m GLB at SPICE_CABIN_SCALE (1.5) with its depth matched
+  // to the Off-Licence (10 m), sized to sit with it. Its east party wall (which
+  // has no exterior face) is covered by the Off-Licence at X = 17, and its
+  // shopfront stays on the Z = 54 building line.
+  { id: 'spice-cabin', name: 'Spice Cabin', kind: 'building', status: 'finished', front: 'south', x: 12.35, z: 49, width: 9.3, depth: 10, height: 7.65, color: 0x54493f },
   { id: 'off-licence', name: 'Off-Licence', kind: 'building', status: 'placeholder', front: 'south', x: 22.5, z: 49, width: 11, depth: 10, height: 7.6, color: 0x4e4247 },
   { id: 'real-camera', name: 'Real Camera', kind: 'building', status: 'geometry-wip', front: 'north', x: -11.5, z: 69.75, width: 15.93, depth: 11.36, height: 14.76, color: 0x414a52 },
-  { id: 'advanced-photo', name: 'Advanced Photo', kind: 'building', status: 'placeholder', front: 'north', x: 10.5, z: 69.75, width: 9, depth: 10, height: 7, color: 0x3e4b53 },
+  // The authored shop body is 5.8 × 6.2 m. Its centre preserves the old
+  // placeholder's north frontage plane at Z = 64.75, while its east wall
+  // remains attached to Eastern Bloc at X = 15. The GLB's surrounding arcade
+  // connector extends outside this collision footprint toward the west.
+  { id: 'advanced-photo', name: 'Advanced Photo', kind: 'building', status: 'geometry-wip', front: 'north', x: 12.1, z: 67.85, width: 5.8, depth: 6.2, height: 3.55, color: 0x3e4b53 },
 
   { id: 'central-park', name: 'Central Park', kind: 'park', status: 'placeholder', x: PARK.x, z: PARK.z, width: PARK.width, depth: PARK.depth, height: 0, color: 0x263d2b },
 ] as const;
 
 export const BUS_STOPS: readonly WorldMarker[] = [
-  { id: 'bus-stop-a', name: 'Bus Stop A', x: 0, z: 20.4 },
+  // Centred on the 3.6 m park south pavement: the whole footprint stays on the
+  // flags and the roof's front edge is 0.63 m back from the kerb.
+  { id: 'bus-stop-a', name: 'Bus Stop A', x: 0, z: 20.0 },
   { id: 'bus-stop-b', name: 'Bus Stop B', x: 0, z: -49 },
 ] as const;
 
-// Street-food stands: placeable props rather than plots. Greek Gyros sits on
-// the park's north pavement directly opposite Renee, backing onto North Road
-// with its serving frontage and queue facing into the park. It is set west of
-// the existing bollard pair and streetlight at x = 18.5-20.
-export const FOOD_STANDS: readonly WorldMarker[] = [
-  { id: 'greek-gyros', name: 'Greek Gyros', x: 14, z: -19.35 },
+export interface FoodStandMarker extends WorldMarker {
+  /** Yaw applied to the authored +Z serving frontage. */
+  readonly rotationY: number;
+}
+
+// Street-food stands: placeable props rather than plots. Greek Gyros sits just
+// inside the park's east edge, across Lever Street from the Arts Council
+// entrance (world Z ≈ 15.3). Its back is flush with the park edge at X = 22 and
+// its serving frontage faces west into the park, over the east path. The
+// footprint stops short of the south path at Z = 14.45.
+export const FOOD_STANDS: readonly FoodStandMarker[] = [
+  { id: 'greek-gyros', name: 'Greek Gyros', x: 20.6, z: 10.5, rotationY: -Math.PI / 2 },
 ] as const;
 
-export const STERLING_BIKE_DOCKS: readonly WorldMarker[] = [
-  { id: 'sterling-bikes-east', name: 'Sterling Bikes East', x: 27, z: 4 },
-  { id: 'sterling-bikes-south', name: 'Sterling Bikes South', x: -24, z: 26 },
+export interface SterlingStationMarker extends WorldMarker {
+  /** Yaw applied to the authored +X bike-forward axis; docks line up along local Z. */
+  readonly rotationY: number;
+  /** One entry per dock, in order along local Z. `false` leaves that dock empty. */
+  readonly occupancy: readonly boolean[];
+}
+
+// Sterling Bikes docking stations. Each marker is the centre of the dock line.
+// The earlier markers (27, 4) and (-24, 26) stood in the East and South
+// perimeter carriageways. South now sits on the 3.6 m park south pavement:
+// the dock baseplates stop 0.14 m short of the kerb, the bikes point south into
+// them, and about 1.35 m of footway stays clear along the park verge. East
+// sits in the car park's northern bay, the only open part of it (the Arts
+// Council footprint covers Z >= -2.15). Docks line up east-west at Z = -6.3,
+// bikes point north into them, rear wheels stopping 0.35 m short of the bay
+// marker at Z = -4.2, with one dock left empty.
+export const STERLING_BIKE_DOCKS: readonly SterlingStationMarker[] = [
+  { id: 'sterling-bikes-east', name: 'Sterling Bikes East', x: 38.5, z: -6.3, rotationY: Math.PI / 2, occupancy: [true, true, false] },
+  { id: 'sterling-bikes-south', name: 'Sterling Bikes South', x: -20.5, z: 21.2, rotationY: -Math.PI / 2, occupancy: [true, true, true] },
 ] as const;
 
 export const FUTURE_EXITS: readonly WorldMarker[] = [

@@ -1,0 +1,142 @@
+NORTH ROAD PRESTON BUS SHELTER — TEXTURE PASS
+Codex / Blender Texture Brief
+Zealot of Harperhey
+
+(Supplied by Daniel on 2026-09-13 with a ten-panel reference board: metal
+frame, glass panel, roof/canopy, red bench rail, poster/advert, pavement,
+road surface, interior roof light, sticker/graffiti decal sheet, base/ground
+contact. The board itself was attached in conversation only and is not stored
+in the repository.)
+
+1. OBJECTIVE
+Material and texture pass on the approved shelter. Do not remodel unless a very
+small change is necessary for textures to read. Move away from the clean,
+synthetic "3D model" look toward convincing British street infrastructure that
+has spent years outdoors in Northern England: rain, traffic pollution, dust,
+leaning, fingerprints, stickers, scratches, condensation, road grime, sun,
+cleaning, vandalism, wet/dry cycles. Used, not ruined. Textures lean toward
+photorealism; do not make them retro, low-resolution or cartoonish.
+
+2. MACRO / MESO / MICRO
+Every major material needs large tonal/weather variation, meso scratches,
+streaks, patches, fingerprints and joint grime, and micro grain/roughness. No
+single procedural noise over everything; materials age differently.
+
+3. GLASS (CRITICAL)
+Not perfect CG glass. Faint road film and grey/brown grime; rain streaks;
+dried water marks; fingerprints at hand height; palm smears; cleaning streaks;
+fine and isolated larger scratches; grime concentrated on bottom edges and
+where glass meets the frame; subtle transparency and roughness variation.
+Centres of exposed panels relatively clean, edges and corners dirtier.
+Occasional sticker remnants (adhesive residue, cleaner rectangles, torn paper)
+without covering every surface. Imperfect night reflections that vary from
+almost invisible to strongly reflective with viewing angle.
+
+4. GLASS WATER
+Wet-condition compatibility: streaks, droplets, thin wet patches, dried mineral
+marks. Optional wetness mask/parameter to move between dry and rain. Never
+permanently soaking.
+
+5. METAL FRAME
+Powder-coated municipal steel/aluminium, not plastic: orange peel, fine
+scratches, colour inconsistency, edge wear, joint and bolt grime, rain streaks,
+slight oxidation, fingerprints. Wear follows interaction: entrances, hand
+height, lower frame, panel connections, exposed corners; less on protected
+upper surfaces.
+
+6. PAINTED METAL
+Distinguish paint from metal beneath with colour, roughness and normal, small
+justified exposed-metal regions. Restrained chipping — municipal, not derelict.
+
+7. LOWER-LEVEL ROAD GRIME (VERY IMPORTANT)
+Bottom 30-50 cm substantially dirtier: splashback, darkened grime, muddy
+residue, aggregate particles, salt/dust, splash patterns, irregular build-up,
+increasing toward ground via world-space/painted masks. Not a uniform gradient.
+
+8. ROOF / CANOPY
+Rain staining, water channels, atmospheric dirt, darker drainage paths, very
+sparse bird dirt, algae/moss hints in damp seams, grime at edges and drainage
+points. Upward surfaces dirtier than protected verticals. Underside cleaner
+with insects/dust, subtle staining, grime around fixtures.
+
+9. BOLTS AND FASTENERS
+Different roughness from frame, scratches, recess dirt, occasional mild
+oxidation, contact shadows, small variation between bolts.
+
+10. ADVERTISING / INFORMATION PANELS
+Paper/fabric texture, fading, creases, dirt, colour degradation, print grain,
+imperfect edges. Behind glass: glass and print visually distinct layers, glass
+reflections over the print.
+
+11. STICKERS AND EPHEMERA
+Small reusable decal library: torn sticker, shipping-label fragment, partially
+removed sticker, adhesive rectangle, faded event sticker, small marker tag,
+scratched initials, tape residue. Subtle; evidence of use, not a graffiti prop.
+
+12. SEATING
+Own material history: polished high-contact areas, scratches, grime in corners,
+scuffs, dirt underneath; top wears differently from underside.
+
+13. PAVEMENT CONTACT (ESSENTIAL)
+Darker damp, dirt, grime around mounting plates, plausible moss/algae, rust
+staining, trapped dust, splashback. It must not look placed on the pavement.
+
+14. ROUGHNESS OVER COLOUR
+Realism carried mostly by roughness: fingerprints, dried rain (+ subtle normal),
+skin oil (smoother), road grime (rougher/darker), scratches (roughness +
+normal), wet (much lower), clean vs dirty glass. Detail must survive
+monochromatic night light.
+
+15. NORMAL DETAIL
+Physically plausible, subtle normals for powder coat, scratches, glass residue,
+paint, paper, ground-contact dirt. No carved-looking scratches.
+
+16. RESOLUTION
+2K-4K for primary shelter materials where justified; 512-1K decal atlas; no
+4K for bolts; efficient atlases.
+
+17. UVS
+Consistent texel density, no stretching, no mirrored dirt, logical seams,
+unique space for major weathering, efficient packing, no repeated grime across
+glass panels.
+
+18. PBR MAPS
+BaseColor, Normal, Roughness, Metallic, AO; ORM for GLB where appropriate;
+alpha/transmission for glass; nothing that fails to translate to glTF/Three.js.
+
+19. NIGHT APPEARANCE
+Test cool LED, warm streetlight, shopfront spill, near darkness, wet pavement,
+headlights, strong side light, backlight. Hard side light is most important:
+scratches, prints, rain marks, dirty glass, powder coat and grime appear, then
+disappear as the angle changes.
+
+20. WET NIGHT VARIANT
+Optional wetness system: selective metal roughness drop, stronger glass
+streaking, darker lower surfaces and contact dirt, stronger reflections, water
+mostly on horizontal surfaces, sheltered undersides drier. Respect gravity and
+shelter; never lower roughness globally.
+
+21. PERFORMANCE
+Three.js. No dozens of transparent overlays, no dynamic lights, no unnecessary
+geometry, no stacked expensive materials, no huge textures everywhere. Prefer
+good UVs, high-quality PBR, decals, roughness variation, normals and masks.
+
+22. DO NOT MAKE IT "GAME DIRTY"
+No enormous scratches, blackened corners, uniform edge wear, random rust or
+grunge everywhere. Weathering must say why it exists: rain moves down, water
+collects horizontally, hands touch predictable places, spray comes up, dirt
+gathers in recesses, sun affects exposed faces, cleaning leaves streaks.
+
+23. PHOTOGRAPHIC TARGET
+Something Daniel could have photographed for Public Illumination Studies.
+Under direct streetlight briefly theatrical — bright glass, hard metal
+highlights, deep shadow, visible grime — without stylising the object.
+
+24. FINAL VALIDATION
+Renders: 01 neutral daylight, 02 overcast daylight, 03 clean night, 04 hard LED
+streetlight, 05 warm streetlight, 06 wet night, 07 close-up glass, 08 close-up
+frame, 09 close-up lower grime, 10 grazing-light material test, 11 gameplay
+camera distance, 12 extreme close-up.
+Check: CG glass? plastic metal? motivated dirt? roughness visible under grazing
+light? shelter meets pavement? detectable repetition? convincing from the
+gameplay camera? Revise before export if any answer exposes the asset.

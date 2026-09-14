@@ -23,6 +23,504 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-14 — Claude (commit and push of the shared batch)
+**HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates)
+**Did:** Daniel asked to push everything so work can continue in the cloud. Committed the entire uncommitted working tree described in the entries below to `main` and pushed it.
+- Added `.worktrees/` to `.gitignore`, so the local `codex/tone-mapping` worktree is not committed. That branch is already on origin.
+- The `references/architecture/` deletions are Daniel's reorganisation into `buildings/` and `infrastructure:objects/`, committed as-is.
+- The 57 MB `blender/source/textures/cc0/` library is included; its open question below still stands.
+**Left uncommitted (if any):** Nothing.
+**Flagged:** The broken reference paths in `createDreams.py`, `createFlorist.py` and `scripts/generateWorldTextures.mjs` (see the Spice Cabin entry) are still unfixed.
+**Next:** Continue from `main` in the cloud.
+**Open questions:** None new.
+
+---
+
+## 2026-09-14 — Claude (Advanced Photo ground and lighting fix)
+**HEAD at session start:** `4562e6d`, with the documented uncommitted batch present.
+**Did:** Daniel reported lighting and ground problems around Advanced Photo. I confirmed both in-game with a debug camera patch (browser only, not committed). Two runtime changes, both in `src/world/createWorld.ts`:
+- **Ground:** the blockout GLB's `AP_ArcadeFloor_Front` and `AP_ArcadeFloor_Return` sit at y = 0. They reach 3.6 m north of the shopfront (world z 61.17–64.77), over the 1.5 m South Road pavement and about 2 m of carriageway, plus open ground to the west. They z-fought with the road and pavement (white striping along the kerb) and read as a pale untextured slab. `applyAdvancedPhotoBlockoutPolicy` now removes those two meshes, so the world's own surfaces are the ground. The GLB is untouched.
+- **Lighting:** on MEDIUM (4 local lights), from the road the arcade ring plus Spice Cabin's three lights (directly across South Road) filled the budget. The "Advanced Photo interior" light never switched on. Its priority is now 1.3. A simulation against the real light positions showed that it now displaces only the Spice Cabin gable wash, and only from mid-road views of Advanced Photo. At Spice Cabin's pavement and gable side, and on LOW, the selection is unchanged. Verified in-game: interior, ring and Spice shopfront are on at `?view=advanced-photo`.
+- `tsc --noEmit` passes.
+**Left uncommitted (if any):** The two edits above plus this entry, alongside the pre-existing shared working tree, which I did not modify.
+**Flagged:**
+- The arcade **ceiling** slab still overhangs the pavement and ~2 m of carriageway. `AP_ArcadeOppositeBoundary` stands as a free 3.6 m wall on open ground west of the shop. The ring fixture and its light hang over the road. This is the St Ann's Arcade context from the review export sitting on an open street. Removing it would lose the ring fixture's mounting, so it is a placement or scope call rather than a quick fix.
+- A single 404 appeared in the console, but the request had already dropped out of the network buffer. `advanced-photo-blockout.glb` loads 200.
+**Next:** Daniel to decide how the arcade context should meet the street (see open question).
+**Open questions:** Should Advanced Photo keep the arcade ceiling, ring and opposite wall in the open-street placement? The options are to trim them in Blender to the pavement edge, to move the plot so the arcade has its own passage, or to drop the context entirely.
+
+---
+
+## 2026-09-14 — Claude (Spice Cabin rebuild)
+**HEAD at session start:** `4562e6d`, with the documented uncommitted batch present.
+**Did:** Daniel re-sent the Spice Cabin brief and photos. The 2026-09-12 Codex asset failed the brief's own revision triggers:
+- the sign was a skewed photo crop showing roof and brick;
+- the brick was flat and visibly tiling, with no normal map;
+- the cladding was striped cylinders.
+
+I rebuilt it at the same output paths:
+- **Scripts:** `createSpiceCabin.py` (rewritten) plus the new `spiceCabinGeometry.py` and `spiceCabinArtwork.py`.
+- **Master:** `blender/source/spice-cabin.blend`.
+- **Maps:** under `blender/source/textures/spice-cabin/`.
+- **Model:** `public/assets/models/spice-cabin.glb`.
+- **Renders:** `renders/spice-cabin/01`–`11`.
+- **Doc:** `docs/assets/spice-cabin.md` (rewritten).
+
+What changed in the asset:
+- **Reading the photos:** photo 1 (`7cf7a339…`) is the gable, with a newer sign carrying the phone number and brown brick below buff. The asset now includes that return wall. The front sign is the older, pink-faded one.
+- **Geometry:** re-proportioned from the ~2.0 m door. It has loglap boards (13 per bay), mullions, blue posts, the fascia, cream pier and band, green coping, rotary anti-climb on galvanised brackets, the hopper and swan-neck downpipe, tube fittings, alarm, CCTV, four bollards, an open door and an economical interior.
+- **Texturing:** reuses the bus-shelter method (`surfaceWeathering` bakes, world-space weathering from causes) with unique atlases, so nothing tiles. Brick is per-brick with recessed mortar at ~1.7 mm per texel.
+- **Signs:** Marker Felt Wide at letter positions measured on a perspective-rectified photo 1. Chilli, flame, printed logs and log-end cut-outs are drawn in numpy.
+- **LED sign:** keeps its photographed dead LEDs ("ΓPIED CHICKEN").
+
+Measured result: 98 meshes, 12,508 triangles, 11 materials, GLB ≈7.8 MB (images 6.7 MB, brick alone ≈4.1 MB). The sign exports as MASK, glass and ground decal as BLEND, all single-sided. Seven anchors exist under one `SPICE_CABIN` root. `EXT_texture_webp` and `KHR_materials_emissive_strength` are used.
+**Left uncommitted (if any):** All of the above, alongside the pre-existing shared working tree, which I did not modify.
+**Flagged:**
+- **Texture budget conflict:** `VISUAL_LANGUAGE.md` caps landmark façades at 512 px (1024 "only when justified"). This GLB uses a 4096 brick base, 2048 normals, and 2048 sign/paint/timber/metal maps, because the brief makes close-range brick and timber its top priorities. The pipeline can export a budget variant by lowering the `ATLASES` sizes. Daniel needs to decide.
+- **Disk:** only ~1.4–2.2 GB free. I deleted my 760 MB scratch bake cache.
+- **References moved:** Daniel reorganised `references/architecture/` into `buildings/` and `infrastructure:objects/` during the session (the colons are Finder slashes). The Spice Cabin doc and scripts now point at the new path. Three rebuilds now **break** because they read photos from old paths:
+- `createDreams.py` (`SOURCE_PHOTO`);
+- `createFlorist.py` (`REFERENCE_PATH`);
+- `scripts/generateWorldTextures.mjs` (Dreams/Coral inputs).
+
+Several other asset docs and script docstrings merely cite old paths.
+- **Another session:** `createWorld.ts` was being edited concurrently (line numbers shifted), so I stayed out of it.
+**In the game (Daniel: "put it into the game with textures"):**
+- **Layout:** in `worldLayout.ts`, `spice-cabin` is now `finished` at the measured 6.2 × 7.0 × 5.1 m envelope, centred (13.9, 50.5). Its shopfront is on the Z = 54 South Road building line. The east party wall (no exterior face) is flush with the Off-Licence placeholder at X = 17, and the gable sign faces the open gap west.
+- **Loading:** `createWorld.ts` `addSpiceCabinModel` loads the full textured GLB with no rotation (-Y already imports facing +Z = south). It stands the model at `pavementTopAt` height and registers one warm managed light at the GLB's `SPICE_LightAnchor_Window`. Collision is a solid footprint plus four bollard boxes.
+- **Materials:** `busShelterMaterials.ts` factors the shelter's per-material runtime policy into a shared `applyTexturePassPolicy`. Bus-shelter behaviour is unchanged. `applySpiceCabinTexturePolicy` adds photo filtering, the night environment map, the premultiplied glass, the ground-contact offset, and interior emissives at 0.35×, because they bloomed out behind the glass.
+- **Dev views:** `?view=spice-cabin` and `?view=spice-cabin-gable` in `main.ts`.
+- **Docs:** `WORLD_LAYOUT.md` and `docs/assets/spice-cabin.md` are updated.
+- **Verified:** `tsc --noEmit` passes, the GLB loads (200) in the dev server, and both views were screenshotted.
+
+**Look fix (Daniel: "spice cabin in game does not look like the render"):**
+- **Diagnosis:** a Blender render under the game's own lighting (hemisphere `0x304e9b` at 0.72, moon `0x8aa3d8` at 1.28, AgX exposure 1.7) reproduces the grey-blue in-game look. The asset imported correctly; the validation renders had warm practical lights the game did not.
+- **Real bug, fixed:** the shared texture-pass policy configured materials once per mesh. `MAT_emissive_signage` spans 10 meshes, so its emissive was multiplied 10× (2.5 → 0.0003), leaving the LED sign and tube lights dark. Each material is now configured once; per-mesh shadow and render-order settings still apply per mesh. The bus shelter is unaffected (one mesh per emissive material).
+- **Lights:** the single weak window light (≈1.8) is replaced by two managed `location-relevance` installations at the GLB anchors: interior spill plus front-sign tube wash, and a gable-sign tube wash.
+- **Emissives:** the LED sign and tube diffusers get a full-strength material clone; interior practicals stay at 0.35×.
+- **Measured live:** LED and tubes 2.875 emissive, menu boards 1.006; all three lights present at their anchors.
+- **Dev hook:** `main.ts` now exposes `window.zealot = { scene, renderer, camera }` in dev builds only, plus a `?view=spice-cabin-close` teleport.
+- **Scaled up (Daniel: "closer in size to the off license next to it"):** `SPICE_CABIN_SCALE` = 1.5 (width and height) and `SPICE_CABIN_DEPTH_SCALE` = 10/7 in `createWorld.ts`, applied at runtime; the GLB is unchanged at real-world scale.
+  - Depth is matched to the Off-Licence's 10 m. A uniform 1.5 left 0.57 m of the open party wall visible behind it; that was measured live before the fix.
+  - The `worldLayout.ts` envelope is now 9.3 × 10 × 7.65 m at (12.35, 49), with the party wall covered at X = 17 and the shopfront on Z = 54.
+  - Bollard collision, light offsets, light ranges and activation radii scale with the constant; light intensity scales with its square.
+  - Dev views are updated.
+  - Doors, bollards and signs are now 1.5× human scale against the 1.78 m player.
+- **Browser-pane caveat:** the Claude Browser pane was not on screen, so `document.visibilityState` was `hidden`. The game `Timer` did not advance, so no managed light in the world faded in (0 of 21 active). Screenshots from a hidden pane under-report every local light. Final visual confirmation of the lights was not possible from this session.
+
+**Next:** A final Blender rebuild (darker glass film, 0.5→0.62) was still running at hand-off, slowed by a concurrent `createPallets.py` job. When it finishes it overwrites the GLB and renders with the same structure. If it failed, re-run `createSpiceCabin.py`.
+**Open questions:**
+- Keep the high-resolution maps for this hero, or export to the `VISUAL_LANGUAGE.md` budget?
+- Anything moved into the Off-Licence plot must keep covering Spice Cabin's open party wall. Should a brick party face be added to the asset instead?
+
+---
+
+## 2026-09-14 — Claude (free texture recommendations)
+**HEAD at session start:** `4562e6d`, with the documented uncommitted batch present.
+**Did:** Daniel asked which free online textures would most improve the game, then asked me to download useful ones.
+- Chose 20 CC0 materials plus one night HDRI from Poly Haven and ambientCG, picked visually from thumbnail contact sheets.
+- Downloaded 1k JPGs (albedo, OpenGL normal, roughness, AO or opacity) into a new staging library, `blender/source/textures/cc0/` (57 MB). The library covers:
+  - brick, render and painted brick;
+  - two roller shutters, corrugated iron and rusty painted metal;
+  - cracked asphalt for the car park, and plane-tree bark;
+  - two leak-streak decals;
+  - garment fabrics: two denims, black leather, herringbone wool, cotton jersey, knit and corduroy;
+  - `cobblestone_street_night` as a reflection-only env map.
+- Each folder's credits and intended use are in `blender/source/textures/cc0/README.md`.
+- All files were verified as valid JPEG/HDR.
+**Left uncommitted (if any):** The new `blender/source/textures/cc0/` library and this entry. Nothing is wired into code yet.
+**Flagged:**
+- The library is staged outside `public/` on purpose, so unused textures don't ship in the Vite build.
+- Downscale to the `VISUAL_LANGUAGE.md` budget (256–512 px) when integrating.
+- The 57 MB is not git-ignored, so it would be committed as-is.
+- Disk now has about 3 GB free.
+- Avoid non-CC0 sites (e.g. Textures.com): their terms restrict redistributing raw textures in a public web build.
+**Next:** Integrate in impact order:
+1. brick/render/shutters on the generic blockout buildings;
+2. car-park asphalt;
+3. leak decals;
+4. the HDRI as a PMREM env map for PBR materials.
+Fabrics wait for the player-character garment rebuild.
+**Open questions:** Should the 1k masters be committed, or kept local and only the downscaled runtime derivatives committed?
+
+---
+
+## 2026-09-14 — Codex (tone-mapping review)
+**HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates), with the substantial documented uncommitted batch present.
+**Did:** Read-only review of the current tone-mapping implementation and prior calibration evidence. AgX at linear exposure 1.70 remains a sound working default: it fixes hard practical-light clipping and fits the photographic direction better than the old uncurved output. No rendering values or code were changed.
+**Left uncommitted (if any):** This entry only, alongside the pre-existing shared working tree.
+**Flagged:** The weaker part is now downstream of tone mapping: 32-level RGB quantisation and the display-grade contrast toe can erase AgX's smoother shadow/highlight separation. AgX also pales the brightest cyan/green practicals; source/emissive tuning is preferable to abandoning highlight rolloff or raising global exposure.
+**Next:** Keep AgX as the baseline through the local-lighting pass, then compare quantisation off/32/64 and a protected contrast toe at fixed views before declaring the look final.
+**Open questions:** Whether the remaining quantised texture is still intentional under the newer photographic direction.
+
+
+## 2026-09-14 — Claude (Advanced Photo in-game check)
+**HEAD at session start:** `4562e6d`, with the full uncommitted batch described in the entries below.
+**Did:** Daniel asked to put Advanced Photo into the game. Found it is already integrated in the uncommitted tree; no code changed.
+- `createWorld.ts` loads `advanced-photo-blockout.glb` at `(12.1, 67.85)`, rotated 180°, with interior collision, glass/emissive policy, and two hero-light candidates.
+- Dev view: `?view=advanced-photo`.
+- Verified: `tsc --noEmit` passes, the GLB returns 200, and there are no console errors.
+**Left uncommitted (if any):** This entry only.
+**Flagged:**
+- No in-game screenshot was captured. The in-app Browser pane stayed hidden, so rendering was throttled and the canvas read black.
+- A headless Chrome capture failed with ENOSPC: the Mac's data volume is full, with about 320 MB free.
+- Free disk space before more Blender renders or builds.
+**Next:** After space is freed, visually confirm `?view=advanced-photo`, then do the brief §24 detail pass if Daniel approves the blockout.
+**Open questions:** Is the blockout approved to stay in-game as-is, or should the detail pass come first?
+
+---
+
+## 2026-09-14 — Claude (fashion / transport direction docs)
+**HEAD at session start:** `4562e6d`, with the full uncommitted batch described in the entries below.
+**Did:** Daniel supplied new art-direction and technical additions. Docs only; no code or assets changed.
+- **`docs/ART_DIRECTION.md`:** appended these sections:
+  - fashion as a core pillar and the clothing quality target;
+  - the Zealot Lookbook from Daniel's fashion photography;
+  - player character fashion and the curated NPC wardrobe;
+  - photography equipment in the world, photographic tableaux, and light as a possible interaction;
+  - transport: the Harperhey ⇄ The Promised Land bus, the bicycle system, bikes as cultural objects, and fashion as social worldbuilding.
+- **Reconciliation note:** added at the top of `ART_DIRECTION.md`. The original Dreamcast/"not PBR" core principles conflict with the new PBR garment pipeline, so I flagged the conflict rather than rewriting Daniel's older text.
+- **`docs/TECHNICAL.md`:** appended "Character and garment pipeline", "Vehicle architecture" and "Photographic lighting". These cross-reference the existing `BUS_STOPS`, the Sterling bike rig, `FixedStepClock` and the local-light budget, so future systems extend what exists.
+- **`AGENTS.md`:** narrowed the "ART_DIRECTION is stale" caveat to the two old sections.
+- **Spelling:** Daniel's text used "Harperhay". I normalised it to canonical "Harperhey".
+**Left uncommitted (if any):** The three doc edits above, alongside the existing batch. The other session's uncommitted TECHNICAL.md additions (tone mapping, textured bus shelter, road textures) are untouched.
+**Flagged:** `ART_DIRECTION.md`'s "Core principles" and "Rendering restraint" still need Daniel's reconciliation with the current direction.
+**Next:** Likely first implementation is `src/vehicles/` `BusRoute`/`BusController` on a fixed spline between the two existing stops, then `BicycleController`. Both need a vehicle asset first, per asset-first.
+**Open questions:**
+- Are the existing Bus Stop A/B the Harperhey and The Promised Land stops, or is The Promised Land a new location beyond the current map?
+- Is the player's bike a separate authored bicycle, or does the player start on a Sterling hire bike?
+
+---
+
+## 2026-09-13 — Claude (Sterling Bikes in game)
+**HEAD at session start:** `4562e6d`, with the full uncommitted surface/bus-shelter batch.
+**Did:** Daniel asked to put the Sterling Bikes in the game. I took that as the go-ahead past the blockout review hold in `docs/assets/sterling-bike.md`.
+- **Export:** new `blender/scripts/exportSterlingBikeBlockout.py` opens the saved blockout `.blend`, with no re-render and no save. It exports the two masters separately to `public/assets/models/sterling-bike/sterling-{bike,dock}-blockout.glb`. The reference-station instances are not exported, so the game controls occupancy.
+- **Pivot bug:** the blockout's descriptive `pivot` custom property ("rear axle") becomes glTF extras. three r185's GLTFLoader reads `userData.pivot` as a GLTFExporter pivot container, which gave NaN matrices, so the wheels, steering, crank and basket vanished. The export renames it to `pivot_note` in memory.
+- **`createWorld.ts`:**
+  - `addBikeDock`'s yellow boxes are replaced by `addSterlingStation`: templates load once, and each bike's ~107 meshes merge by material under its nearest articulated node, so the brief's riding contract survives.
+  - Bikes snap to docks via `SB_DockAnchor` → `SD_BikeDockAnchor`, and empty docks stay complete.
+  - Each station gets one rotated collision box. The Greek Gyros corner rotation moved into a shared `rotatedObstacle` helper.
+- **Layout:** `STERLING_BIKE_DOCKS` is now `SterlingStationMarker` (yaw + per-dock occupancy).
+  - The old markers stood in the South and East perimeter carriageways.
+  - South is now (-20.5, 21.2) on the park south pavement, all three docks occupied.
+  - East is (38.5, -6.3) in the car park's northern bay, two of three occupied.
+  - My first East spot, inside the car park, turned out to be under the Arts Council colonnade: its footprint covers the car park from Z -2.15.
+- **Dev views** `?view=sterling-south` / `?view=sterling-east` added. Docs updated: `docs/assets/sterling-bike.md`, `docs/WORLD_LAYOUT.md`.
+- **Verified in the Browser pane:** both stations render with the bikes docked, and a fresh tab has no console errors.
+**Left uncommitted (if any):** All of the above, alongside the existing batch.
+**Flagged:** `tsc --noEmit` currently fails on three unused variables in `src/world/createPavementSurfaces.ts` (`concrete`, `concreteRoughness`, `concreteNormal`). That file was modified at 21:38, after my last edit, by a concurrent session. Nothing I changed is involved. The overall scene is ~3,000 draw calls at the south view, which predates this work.
+**Next:** Hire/return interaction at `SD_InteractionAnchor`, or the brief's second geometry pass. The final `sterling_bike.glb`/`sterling_dock.glb` would replace the `-blockout` GLBs in `loadSterlingTemplates`.
+**Open questions:** None on placement: Daniel approved both station positions. Open: Daniel reports "a few random loose spikes without hubs dotted around the map". They're unlocated so far, and the checks so far rule out the Sterling bikes:
+- every Sterling mesh sits within 2.5 m of its station, and each wheel's spokes, rim, hub and tyre share its axle centre;
+- no other GLB carries `pivot` extras;
+- every tree trunk has a crown, and bollards are normal size;
+- no procedural surface has stray vertical or NaN triangles;
+- no loading placeholder is left over.
+
+The Browser pane was hidden, so no visual survey was possible.
+
+---
+
+## 2026-09-13 — Claude (photo-scanned ground textures)
+**HEAD at session start:** `4562e6d` (same session as "surface texture status review" below)
+**Did:** At Daniel's request, put photo-scanned stand-in textures on the road, pavement, grass and park paths. With his approval, downloaded 12 Poly Haven CC0 1k JPGs into `public/assets/textures/photo/`. Scans, credits and tuning are in `docs/ROAD_ATLAS.md` under "Photo-scanned stand-ins".
+- **Road** (`createRoadSurfaces.ts`):
+  - `clean_asphalt` replaces the generated tile, which goes from 4 m to 2.1 m;
+  - albedo gain 0.55 so existing decals still sit right, roughness lifted to about 0.8;
+  - a second rotated sample, blended by the mid drift, hides the repeat.
+- **Pavement** (`createPavementSurfaces.ts`):
+  - the 600 mm flag grid, joints and chips stay generated, because decals snap to them;
+  - each flag reads its own offset into `concrete_floor_worn_001`, using `textureGrad` so mips don't break at joints;
+  - photo roughness and normal are blended in, and per-flag tone contrast is softened (the "dark flags look like holes" issue).
+- **Grass and park paths** (new `createParkSurfaces.ts`):
+  - world-projected `leafy_grass`, tinted toward damp green;
+  - `sparse_grass` as bald patches from world drift, plus trodden margins along every path (segment distance in the shader);
+  - paths are now `clean_asphalt` tarmac.
+  - Grass widened to 46.3 × 36.3 m so it meets the park pavements, closing the bare-ground strip. `addPathBetween` is removed; `addCentralPark` now calls `addParkGround`.
+- `loadSurfaceTexture` gains an `extension` option (`png` default).
+- Updated `docs/VISUAL_LANGUAGE.md`.
+**Verified:**
+- `npx tsc --noEmit` exit 0 under Node 22.
+- On this session's Vite server, all 12 photo maps load (200/304) and the console has no errors.
+- Screenshots at `?view=bus-shelter` and `?view=park-to-dreams` show the new materials compiling and rendering. The grass is continuous, with no blocky squares, and the paths read as tarmac.
+**Not verified:** Close-ups (`street-detail`, `park-florist`) and tone at other views. The Browser pane went hidden, so screenshots timed out. Tone gains were set from measured average albedo, not tuned by eye.
+**Left uncommitted (if any):** All of the above.
+**Flagged:**
+- `createWorld.ts` was being edited concurrently (Sterling Bikes integration, probably Codex). My changes there are the `addParkGround` import and the `addCentralPark` body only.
+- The generated `road-asphalt-*.png` are now unused but kept for easy revert.
+- Car park and GLB `wet_road` surfaces still use `asphalt-wet-overhaul`.
+- The confetti reflection patches on the zebra remain.
+**Next:** Daniel checks the park and street views and judges grass tint, trodden-margin width and road brightness. The constants are next to each loader.
+**Open questions:** Keep tarmac park paths, or return them to flags?
+
+---
+
+## 2026-09-13 — Claude (surface texture status review)
+**HEAD at session start:** `4562e6d`, with the full uncommitted surface/bus-shelter batch.
+**Did:** Read-only review of the road, pavement and grass textures and of Codex's "ground-surface texture review" entry. No code or assets changed. For once the Browser pane composited, so there are real in-game captures (`?view=bus-shelter`, `park-to-dreams`, `park-florist`).
+**Left uncommitted (if any):** This entry only.
+**Flagged:**
+- **Codex's texture work is the review entry only.** The layered roads and pavements and the bus shelter texture pass were Claude sessions.
+- **Grass is the weakest surface in game.** `grass-damp-overhaul` comes from `generateWorldTextures.mjs`, whose noise uses `Math.floor(x / 9)`-style cells with no interpolation, so it reads as pixel-art squares. It has no roughness or normal map.
+- **In game:**
+  - the additive `reflection-broken-overhaul` patches read as confetti over the South park zebra;
+  - the pavement `moss-lichen` blobs repeat visibly;
+  - some per-flag dark tones look like missing flags.
+- **Bus shelter:** the validation stage still uses the old `pavement-weathered-overhaul`/`asphalt-wet-overhaul`, not the new flag and asphalt textures. `preston-bus-shelter-textured.glb` (1.8 MB) is not loaded by anything.
+**Next:** Daniel decides the priority; the recommendation is a layered grass pass first.
+**Open questions:** Kerb upstand (still open from the roads session).
+
+---
+
+## 2026-09-13 — Claude (localhost hang fix)
+**HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates)
+**Did:** Daniel couldn't open the game on localhost. Vite was serving fine, but the page froze the tab's main thread during world construction.
+- Cause: the `strip()` loop in `src/world/createPavementSurfaces.ts` stepped by `pieceLength - overlap`. With `overlap` 0.4 (wall-base/verge strips), any short final piece converged on a 0.4 m remainder and advanced by 0 forever, pushing decals without end.
+- Fix: break once a piece reaches the interval end. Verified in the browser pane: the page loads, the canvas renders, no console errors. `tsc --noEmit` is clean.
+- Development overlays (debug HUD + in-world dev overlays) now start **hidden**; H toggles them. `?overlays=on` starts with them shown (`?overlays=off` still works, it's just the default now). Change is in `src/main.ts`.
+**Left uncommitted (if any):** The one-line fix sits alongside the rest of the uncommitted surface/bus-shelter batch.
+**Flagged:** Two Vite servers were already running from this folder (5173 and 5174), bound to IPv6 `::1` only, so `http://127.0.0.1:5173` doesn't connect. Use `http://localhost:5173/zealot-of-harperhey/`. Road strip loops in `createRoadSurfaces.ts` use overlaps smaller than their loop margins, so they terminate. If anyone raises those overlaps, add the same guard.
+**Next:** None from this fix.
+**Open questions:** None.
+
+---
+
+## 2026-09-13 — Claude (bus shelter grounding)
+**HEAD at session start:** `4562e6d` (same session as "bus shelter texture pass" below)
+**Did:** Daniel asked for the shelter to sit correctly in the pavement. Every fix addresses something that was measurably off:
+- **The shelter floated or sank.** It was placed at y = 0, but pavements are at 12 mm plus a per-index stagger, which buried the ground-contact decal. The front half also stood over a strip of bare world ground at −0.07.
+  - New `pavementTopAt(pavements, x, z)` in `createPavementSurfaces.ts` mirrors the pavement height rule.
+  - `addBusShelter` stands each shelter on the pavement under its marker, or on y = 0 when there is none.
+- **The park pavements stopped 1.1 m short of the road.** This predates the layered-pavement work: `HEAD` has the same 19.4 / 2.5 m spans.
+  - As a result no kerb was detected, and a trench of bare ground ran along 49 m on both sides of the park.
+  - The park north and south pavements are now 3.6 m deep, centred at z ±19.95, and meet the carriageway at ±21.75.
+- **Bus Stop A moved from z 20.4 to 20.0**, so its whole footprint is on the flags and the roof front is 0.63 m from the kerb. Its hero lights now read `BUS_STOPS` rather than duplicating coordinates.
+- **Floating parts of the model (`createBusShelter.py`):**
+  - rail legs started 50 mm above ground, and now go 30 mm below;
+  - uprights now extend 30 mm below ground;
+  - the advert housing floated 220 mm up, and now has `BUSSTOP_AdvertHousing_Plinth` under it, as photographed in `Hires2.jpg`.
+- **Ground-contact decal:** added a damp patch and a grit heap at the plinth.
+- **Rebuilt** the geometry outputs, the textures and GLB, and the validation renders, including a new `13-ground-contact` view.
+- **Docs:** `docs/assets/bus-shelter.md` and `docs/WORLD_LAYOUT.md` updated.
+**Verified:**
+- `npx tsc --noEmit` and `npm run build` pass.
+- Renders 04, 09 and 13 show the rail legs, uprights and plinth meeting the ground, with visible contact grime at the plinth.
+**Checked in game, at dev-view distance only:** once the "localhost hang fix" entry above landed, `http://localhost:5173/zealot-of-harperhey/?view=bus-shelter` rendered.
+- Flags run continuously from Bus Stop A to the kerb, and the shelter stands on them.
+- The console shows only the Electron sandbox message.
+- I could not walk the player closer, because synthetic key presses don't move it. Foot contact is judged from renders 09 and 13.
+**Left uncommitted (if any):** All of the above.
+**Flagged:**
+- **Bus Stop B (0, −49)** stands inside the North Road outward-connection carriageway, where there is no pavement. `WORLD_LAYOUT.md` documents it "on outer North Road". Its placement was not changed.
+- The park pavements' park-side edge still leaves a 1.15 m strip of bare world ground before the grass at z ±17. It was not part of this request.
+**Next:** Daniel checks `?view=bus-shelter` in game.
+**Open questions:** Where should Bus Stop B go: onto a new North Road pavement, or somewhere with existing flags?
+
+---
+
+## 2026-09-13 — Claude (bus shelter texture pass)
+**HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates)
+**Did:** Material and texture pass for the approved North Road shelter, from Daniel's brief (`references/architecture/bus-stop/05_North_Road_Preston_Bus_Shelter_Texture_Brief.txt`).
+- New `blender/scripts/createBusShelterTextured.py`, with `surfaceWeathering.py` (bake and weathering toolkit) and `busShelterArtwork.py` (signage and decal artwork).
+  - Geometry is unchanged apart from a timetable acrylic cover and a ground-contact decal.
+  - Each atlas bakes position, normal, object id, AO and convexity. Weathering is authored from physical causes: roof shelter, road spray, hand heights, recesses, cleaning arcs.
+  - Exports `preston-busstop-textured.glb` (about 2 MB, WebP) and the brief's 12 validation renders to `renders/bus-shelter-texture-pass/`.
+- Reusable urban decal library in `blender/source/textures/urban-decals/`.
+- Runtime `src/world/busShelterMaterials.ts`:
+  - premultiplied glass, so reflections are not dimmed by the glass's alpha;
+  - a painted night-street environment map;
+  - wet weather via `setBusShelterWetness(0–1)` or `?wet=`.
+  - `createWorld.ts` loads the GLB once and clones it for both stops.
+- Fixed the Bus Stop A magenta/green spill patches flagged in the Codex lighting audit. They are now offsets from `BUS_STOPS[0]`, keeping their original placement relative to the stop, instead of fixed coordinates left over from x = −9.
+- Docs: a texture-pass section in `docs/assets/bus-shelter.md` and a pointer in `docs/TECHNICAL.md`.
+**Verified:**
+- `npx tsc --noEmit` clean under Node 22.
+- The Blender pipeline runs end to end. A `--bake-cache` rebuild takes about 2 minutes; a cold run about 12.
+- Reviewed all 12 renders and iterated on what failed:
+  - glass invisible → fixed with a validation shader matching the runtime blend;
+  - normal relief too strong;
+  - a graphic palm print;
+  - dashed scribble lines;
+  - close-up rigs occluded by the roof and advert housing.
+- Ground contact is still weak. An isolated top-down render proved the decal renders with the authored foot rings, drip lines and debris line. After strengthening it, render 09 shows only faint darkening at the feet, and render 04 barely any.
+**Not verified:** The in-game look. The Browser pane stayed hidden all session, so no frames composited and no screenshot was possible. On load, the console showed only the Electron sandbox message, no game errors.
+**Left uncommitted (if any):** Everything above. Other sessions' uncommitted work is untouched.
+**Flagged:**
+- Frame texels are 2.8 mm, glass 2.1 mm. Render 12 (extreme close-up) goes soft. 4K frame maps would cost about 200 MB of GPU memory, so were not used.
+- The trolley keeps its placeholder materials; it was outside the brief.
+- The render stage alone swaps in a validation glass shader and dithers the ground decal. Exported materials stay plain glTF Principled.
+- `docs/TECHNICAL.md` still says "Detected version: Blender 3.0.0"; the installed build is 5.x.
+**Next:** Daniel plays `?view=bus-shelter` (also with `&wet=1`) and reviews the renders.
+**Open questions:** Is the weathering level right for "used rather than ruined"? Should the trolley get a matching pass?
+
+---
+
+## 2026-09-13 — Codex (ground-surface texture review)
+**HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates), with the layered-road/pavement and other documented work still uncommitted.
+**Did:** Reviewed the current road, pavement and grass texture assets, PBR maps, generators, runtime material/shader setup, placement data, and existing hero-street renders. No game code or visual assets changed. The layered road/pavement architecture is a strong base; the remaining weaknesses are chiefly procedural source imagery, flat surface transitions/kerbs, and the older single-tile grass system.
+**Left uncommitted (if any):** Only this handoff entry. All pre-existing working-tree changes were preserved.
+**Flagged:** The live local preview loaded, but browser screenshot capture repeatedly stalled, so the newest uncommitted layered pavement/road pass was assessed from its generated maps and source rather than a reliable new in-game capture. Existing hero-street renders clearly confirm the grass repetition and flat park-edge problem, but predate the latest layered road/pavement pass.
+**Next:** Highest-value visual pass: replace the procedural base road/pavement cells with calibrated local photographic sources, then give grass an equivalent multi-scale layered material and authored wear/edge masks. Add real kerb/verge transition geometry before increasing texture resolution indiscriminately.
+**Open questions:** None.
+
+---
+
+## 2026-09-13 — Codex (lighting audit)
+**HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates); the shared working tree already contained the Advanced Photo, Sterling Bikes, camera-follow, AgX, bus-shelter texture, layered-road/pavement, and Greek Gyros move work recorded below.
+**Did:**
+- Added `docs/LIGHTING_AUDIT.md`, a detailed source-, layout-, asset-brief-, and visual-evidence-based evaluation of the current nocturnal lighting. No game lighting or runtime behaviour was changed.
+- Main verdict: the overall scene is not too dark and global exposure/ambient/fog should stay; the player, functional thresholds, and physical response inside painted streetlight pools need more selective light.
+- Quantified the current 15-candidate selector and found that all four MEDIUM candidates at player start, Greek Gyros, Village Books, The Hive/car park, and South Road centre are outside their own ranges. Identified Come Through Lab's door/drop box at the attenuation edge of its 7 m parapet light.
+**Left uncommitted (if any):** New `docs/LIGHTING_AUDIT.md` and this SYNC entry. All pre-existing shared-tree changes and untracked assets remain untouched.
+**Flagged:**
+- The 20 public-light pools/cones are additive imagery only and do not illuminate the rider or nearby standard materials, so the streetlight does not yet “select” the figure.
+- Bus Stop A moved to `x = 0`, but its legacy magenta/green spill remains around `x = -8` to `-10`.
+- Greek Gyros' four authored light anchors are not read; runtime strips all emissive response despite the brief requiring a bright white interior, illuminated fascia, and counter spill.
+- Coral adds two permanent point lights outside the shared selector and overlay, making effective LOW/MEDIUM/HIGH totals 4/6/7 rather than the reported 2/4/5 after the asset loads. The performance and visual-language docs still describe the older light set; `VISUAL_LANGUAGE.md` also still says streetlights have spotlights.
+- The post-grade's 1.05 contrast toe, 1/32 RGB steps, and shadow-weighted grain can erase the small value differences in the near-black player materials; test this only after local lighting is corrected.
+**Next:** If Daniel approves the report direction, first centralise light ownership/diagnostics and make selection contribution-aware; then add a subtle player-specific visibility response plus one budgeted nearby public-lamp response; then fix Bus Stop A, Come Through Lab, and Greek Gyros using their authored transforms/anchors. Capture the fixed LOW/MEDIUM/HIGH view matrix before tuning the post stack.
+**Open questions:** Should the next implementation pass include the full selector/character/public-light architecture, or start with the lower-risk Bus Stop A, Come Through Lab, Greek Gyros, and Coral corrections for visual approval?
+
+---
+
+## 2026-09-13 — Claude (gyros move)
+**HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates), with the layered-roads work below still uncommitted.
+**Did:** At Daniel's direction, moved Greek Gyros from the park's north pavement (14, -19.35) to just inside the park's east edge, opposite the Arts Council: (20.6, 10.5).
+- Rotated −π/2 so the serving frontage faces west into the park. The back is flush with the park edge at X = 22.
+- The Hive entrance works out to world Z ≈ 15.3 (Blender X −4.7 on the recentred GLB). The stand's footprint (Z 7.3–14.26) stops short of the south path and clears the (17, −2) and (15, 8) trees.
+- `FOOD_STANDS` now uses a new `FoodStandMarker` type with `rotationY`.
+- `addGreekGyros` rotates the fallback (the GLB copies that rotation) and computes the collision AABB from rotated local corners.
+- Updated the `?view=greek-gyros` dev view and `docs/WORLD_LAYOUT.md`.
+**Verified:** `npx tsc --noEmit` clean. `?view=greek-gyros` shows the kiosk facing into the park with the Hive across the road, no console errors.
+**Left uncommitted (if any):** These edits, mixed into the same files as the uncommitted layered-roads work below.
+**Flagged:** The stand's counter-side collision covers the southern ~7 m of the east park path (Z 7.3–14.26). The grass around it is walkable, but the path visibly ends at the kiosk.
+**Next:** None.
+**Open questions:** Is blocking that end of the east path acceptable, or should the path be shortened or rerouted around the kiosk?
+
+---
+
+## 2026-09-13 — Claude (layered pavements)
+**HEAD at session start:** `4562e6d` (same session as "layered roads" below)
+**Did:** Daniel asked for the road treatment on the pavements.
+- **New `src/world/createPavementSurfaces.ts`:** replaces the 10 pavement boxes, which used `pavement-weathered/wet-overhaul` at `tileSize` 3.
+  - Merged planes of 600 mm half-bond concrete flags, rows counted from the kerb edge (auto-detected: road within 0.3 m). `onBeforeCompile` rebuilds the flag grid for per-flag tone, roughness and replacement-slab variation, plus world drift.
+  - One decal mesh from a new 1024 px atlas (`src/rendering/pavementDecalAtlas.json`): tarmac reinstatements (flag-snapped blocks, footway trenches, infill, lamp collars), flag-snapped cracked and sunken flags, kerb stones, red tactile paving at both ends of each zebra, gum and spills (dense at `BUS_STOPS` and every `WORLD_LOCATIONS` entrance), bin stains, wall-base grime or verge creep by `back`, moss and lichen, leaves, half-on-kerb parking scuffs, damp.
+  - Footway covers are batched into the road ironwork instanced mesh.
+- **Shared code extracted, no parallel copies:**
+  - `src/world/surfaceDecals.ts` (texture cache, seeded random, intervals, decal geometry and material).
+  - `scripts/lib/textureTools.mjs` (PNG, noise, stroke masks, atlas writer), done by a scripted extraction. Road textures are **byte-identical** before and after (md5 of all 7 PNGs).
+- **Road and world changes:**
+  - `addRoadSurfaces` now returns its ironwork; `createWorld.ts` calls `addRoadIronwork` once with road and pavement placements.
+  - `createWorld.ts` has new `CROSSINGS` and `PAVEMENTS` data arrays.
+- **Heights:** pavements at 12 mm plus 0.5 mm per index (above road decals at 8 mm, fixes the old corner z-fighting); decals 4 mm above, below the player contact shadow at 25 mm.
+- **Docs:** pavement sections in `docs/ROAD_ATLAS.md`, `docs/TECHNICAL.md`, `docs/VISUAL_LANGUAGE.md`.
+**Verified:**
+- `npx tsc --noEmit` clean, `npm run build` passes (existing chunk warning only), `git diff --check` clean.
+- Fresh-tab console has no errors. Atlas and flag tile inspected as images, and `cracked-flag-b` wedge shading was toned down after review.
+- **Not visually verified in game:** the Browser pane was hidden for this part, so screenshots timed out. Positions of kerb stones, tactile paving and hotspot gum are unconfirmed by eye.
+**Left uncommitted (if any):** All of the above, plus the earlier road work. Not asked to commit.
+**Flagged:**
+- Pavements are still flush (the kerb upstand question below is still open); kerb stones are surface-only.
+- The west and east building pavements cross the perimeter-road junction stubs (a pre-existing layout oddity). Treatments are clipped there, but the plain flag plane still covers that road.
+- Park paths still use the old textures.
+**Next:** Daniel checks `?view=bus-shelter` (tactile paving, Bus Stop A gum), `?view=dreams-angle`, `?view=west-shops` and `?view=south-road`.
+**Open questions:** Same kerb upstand question as below.
+
+---
+
+## 2026-09-13 — Claude (layered roads)
+**HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates)
+**Did:** At Daniel's direction, replaced the "flat plane + one asphalt tile" roads with a layered surface system: texture and decal information instead of geometry.
+- Before: 12 road boxes, each sampling `asphalt-wet-overhaul` with its own repeat. That tile had repairs baked in, so they recurred every 4 m, and the whole road was glossy (roughness 0.54, metalness 0.12). Crossings were plain boxes and there were no centre lines.
+- New `src/world/createRoadSurfaces.ts`, in three draw calls for the whole network:
+  - **Road planes:** merged, world-space UVs, one material with tiled asphalt albedo, roughness and a subtle normal map. `onBeforeCompile` adds world-space tone, warm/cool and roughness drift from `road-variation.png` at ~67 m and ~19 m scales, so the tile stops showing. Coplanar junction overlaps sample identical texels, so they don't z-fight.
+  - **Decal mesh:** one merged transparent mesh from a 1024 px atlas (albedo+alpha, roughness, normal; vertex RGBA for per-decal tint and fade), drawn in layer order. Seeded from road names, it places repairs (rect patches, trenches along and across, irregular resurfacing, potholes), cracks, tar seams, oil, worn UK centre dashes (4 m / 5 m), wheel-path staining, gutter grime and litter, and local wet patches at gutters, gullies, drains, potholes and near streetlights. Kerb grime and markings stop at junctions; full-width trenches interrupt the centre line. Three authored repair clusters: North Road detail view, Dreams frontage, South Road.
+  - **Instanced ironwork:** gully grates every 20–28 m at the kerb plus lane utility covers, via the new `addRoadIronwork` in `createEnvironmentKit.ts`, which shares the drain material.
+- Existing zebra bars (same layout, so still aligned with Bus Stop A at x=0) and Dreams double yellows are now worn paint decals. Added a South Road frontage double-yellow run.
+- Removed the boxed "North Road repairs and wet patches" instances (superseded by the decal cluster) and the `addCrossing` helper.
+- In `createWorld.ts`, road rectangles are now the `ROADS` data array and the streetlight list is hoisted to `STREETLIGHTS` (same values), both feeding the road layout. Drain covers are exported as `HERO_STREET_DRAIN_COVERS`.
+- New `scripts/generateRoadTextures.mjs`, kept separate from the world pack so it doesn't re-encode those PNGs. It writes PNGs with Node `zlib` (no sips/ffmpeg) to `public/assets/textures/road/` and reads the atlas layout from `src/rendering/roadDecalAtlas.json`, which the runtime also imports. Added `resolveJsonModule` to `tsconfig.json`.
+- Docs: new `docs/ROAD_ATLAS.md` (layer model, placement rules, cell contract, photo shot list), plus road sections in `docs/TECHNICAL.md` and `docs/VISUAL_LANGUAGE.md`.
+**Verified:**
+- `npx tsc --noEmit` clean; `npm run build` passes (existing >500 kB chunk warning only); `git diff --check` clean.
+- All 7 road textures load 200. No new console errors; only stale HMR errors from mid-edit reloads.
+- Screenshots at `bus-shelter`, `dreams-angle`, `street-detail` and `south-road`. The first tuning pass was too heavy (shattered zebra bars, near-black fills, an empty `crack-long` cell), so I retuned and regenerated. Final pass: worn zebra bars with tyre tracks, dashes stopping at the crossing, dirty broken yellows, subtle repairs.
+- Draw calls not A/B-measured: this removes ~30 meshes/instances (12 roads, 15 bars, 2 lines, 1 instanced group) and adds 3. I didn't stash to get a baseline because the tree holds other sessions' work.
+**Left uncommitted (if any):** Everything above. Not committed — not asked. Concurrent Advanced Photo, camera-follow and tone-mapping work in the same files (`createWorld.ts`, docs) was left intact.
+**Flagged:**
+- **All road textures are procedural stand-ins,** not photographs. The asset-first rule wants Daniel's "Zealot Road Atlas" photos; `docs/ROAD_ATLAS.md` has the shot list and cell contract. There is no automated photo-to-cell step yet.
+- **Pavements are still flush with the road** (no kerb upstand or channel). This is the biggest remaining edge-realism gap, but it touches traversal.
+- **Streetlights have no real lights,** so wet decals' low roughness only catches moon, hemisphere and nearby hero point lights. The additive pools still do most of the "light on wet road" work.
+- The pre-existing additive `reflection-broken-overhaul` spill patches near Dreams and the bus shelter read as confetti over the new asphalt. Consider toning them down now that roughness carries wetness.
+- The car park and GLB `wet_road` surfaces still use `asphalt-wet-overhaul`.
+**Next:** Daniel reviews in game (`?view=bus-shelter`, `?view=dreams-angle`, `?view=street-detail`) and shoots the road atlas. First photographic replacements with the most impact: base asphalt tile, rectangular patch, gutter grime, white/yellow line.
+**Open questions:** Should kerbs become a real upstand (visual-only, or stepped for the player), or stay flush?
+
+---
+
+## 2026-09-13 — Claude
+**HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates)
+**Did:** Reviewed tone-mapping status, then at Daniel's request made **AgX the default curve** on `main`.
+- Before this, `main` had no tone mapping: `toneMappingExposure = 1.34` did nothing, and the grade pass applied 1.34 to already-sRGB values. The earlier switch `17e3b34` lives on `codex/tone-mapping`, stacked on the unmerged `625474d`.
+- Re-implemented that switch directly on `main` rather than merging, since the branch also carries camera changes that conflict with the uncommitted `ThirdPersonCamera.ts` follow work.
+  - `visualStyle.ts`: new `resolveToneMapping` returning `{ name, curve, exposure }`. `VISUAL_STYLE.render.toneMapping = 'agx'`, and `render.exposure` is now a per-curve map.
+  - `main.ts` sets `renderer.toneMapping` and exposure from that profile.
+  - `createPostProcessing.ts` takes the profile and sets the grade exposure to 1 when a curve is active.
+  - `?tonemap=off|agx|neutral|aces` still works; `off` reproduces the old image exactly.
+- **Calibrated exposures** by measuring canvas luminance: the mean of the middle 50% of pixels matched against `off`, across dreams-angle, west-shops, park-to-dreams and bus-shelter at MEDIUM.
+  - AgX **1.7** (per view 1.62–1.93), Neutral **3.3**, ACES **3.2**.
+  - This corrects my earlier "curves start a stop darker" claim: true for Neutral and ACES, but AgX lifts midtones and only needed about 1.27×.
+- Updated `docs/TECHNICAL.md` and `docs/VISUAL_LANGUAGE.md`.
+**Verified:** Typecheck and `npm run build` clean under Node 22.22.3 (only the existing >500 kB chunk warning), no console errors, default page reports curve 6 (AgX) at exposure 1.7. Temporary `window.__toneCalibration*` handles used for measurement were removed.
+**Left uncommitted (if any):** `src/rendering/visualStyle.ts`, `src/rendering/createPostProcessing.ts`, `src/main.ts` (three small hunks alongside the other session's camera change), both docs, and this entry.
+**Flagged:**
+- At matched midtones, AgX removes clipping (bus shelter 0.41% → 0%) with similar overall saturation. But bright-pixel chroma drops about 18%: the bus-shelter light core goes from cyan-green to near-white and the glass reads greyer. The bus shelter is the style benchmark, so Daniel should judge this in game.
+- Neutral keeps the highlight colour (bright chroma 96.7 vs 78.5 uncurved) but clips more.
+- The grade values (saturation 1.12, contrast 1.05), the emissive intensities and bloom were *not* retuned.
+- `main` still has 32-level quantisation (the "off" decision lives only on the unmerged branch), which can band AgX's softer gradients.
+- The Browser pane was hidden during this session, which stalls `requestAnimationFrame`. Measurement worked by rendering a frame and reading the canvas in the same task.
+**Next:** Daniel playtests the default and compares with `?tonemap=off` and `?tonemap=neutral` at `?view=bus-shelter`. If practicals feel too pale, first try raising emissive intensity on hero signs and lights before touching global saturation.
+**Open questions:** Is AgX's paler highlight on the bus shelter acceptable, or should Neutral be the default instead?
+
+---
+
+## 2026-09-13 — Codex
+**HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates)
+**Did:** Built the first-pass Sterling Bikes geometry blockout from `references/architecture/sterling-bikes/11_Sterling_Bikes.txt` and all seven supplied HEIC photographs, stopping at the mandatory section 48 review hold. Added reproducible `blender/scripts/createSterlingBikeBlockout.py`, editable `blender/source/sterling-bike/sterling_bike_blockout.blend`, seven review renders A–G in `renders/sterling-bike-blockout/`, and `docs/assets/sterling-bike.md`. The asset contains a complete reusable 1.31 m-wheelbase step-through e-bike, a separate reusable dock, and a three-dock/three-bike station made from linked collection instances. Preserved independent front/rear wheel, steering, crank, pedal, basket and light transforms; paired `SB_DockAnchor`/`SD_BikeDockAnchor`; added the player interaction anchor; and parented all six station instances beneath one reference-station root. Built-in validation checks the required objects, axle/anchor transforms, shared source collections and station hierarchy. Visually inspected all renders, then corrected A–D accidentally showing the co-located dock master and corrected E to isolate a single docked module. Final G visibly proves the middle bike can disappear while its complete dock remains.
+**Left uncommitted (if any):** The Sterling script, blockout `.blend`, seven renders, asset documentation and this entry remain uncommitted alongside pre-existing Advanced Photo, camera and world work, which was preserved.
+**Flagged:** Dimensions are photographic estimates, not surveyed. This is deliberately a placeholder-material geometry blockout: no final branding, decals, wear, textures, lights, LODs, detailed second pass, runtime GLBs or Three.js integration were produced. The script emits a harmless Blender 5.2 deprecation warning for `Material.use_nodes`.
+**Next:** Daniel should review A–G, especially the step-through/battery silhouette, rear-shroud proportion, open basket, dock engagement and 0.94 m station spacing. Approval unlocks section 49's detailed geometry pass and subsequent runtime exports.
+**Open questions:** Is the blockout silhouette and dock/station spacing approved for the second geometry pass?
+
+## 2026-09-12 — Codex
+**HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates)
+**Did:** Built the first-pass Advanced Photo geometry blockout from all six supplied photographs and `references/architecture/advanced-photo/03_Advanced_Photo.txt`, stopping at the mandatory section 23 review hold. Added a reproducible Blender script, editable `.blend`, runtime comparison GLB, four specified clay renders, and asset documentation. The inferred 5.80 × 6.20 × 3.55 m corner unit has perpendicular main/return glazing, a real 1.10 m open glazed entrance, deep display volumes with shelves, compact enterable interior, counter/staff zone, wall cabinetry, and a short L-shaped arcade connector with the circular ceiling fixture. Inspected the renders, caught and fixed an initially opaque door-slab construction, and regenerated the set with a genuine framed glass leaf.
+**Left uncommitted (if any):** `blender/scripts/createAdvancedPhotoBlockout.py`, `blender/source/advanced_photo_blockout.blend`, `public/assets/models/advanced-photo-blockout.glb`, four files under `renders/advanced-photo-blockout/`, `docs/assets/advanced-photo.md`, and this entry. Concurrent Sterling Bikes and camera-follow work in the shared tree were preserved untouched.
+**Flagged:** Dimensions are photographic estimates, not surveyed. This remains the brief's blockout stage: detailed shopfront mouldings/panels, refined cabinet construction, hardware, ceiling detail, gameplay/light anchors, final `advanced_photo.blend`, and final `advanced_photo.glb` are deliberately absent pending review. The blockout GLB includes the short arcade connector context but is not integrated into the Three.js world.
+**Next:** Daniel should review the four Advanced Photo renders, especially the 5.80 × 6.20 m footprint, entrance/window rhythm, return-display length, display depth, and counter circulation. If approved, proceed with section 24's detailed geometry pass.
+**Open questions:** Is the compact corner plan and the length of the +X arcade-return display close enough to approve for the detailed geometry pass?
+
+## 2026-09-12 — Claude
+**HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates)
+**Did:**
+- Daniel reported still having to turn the camera continuously while moving, believing it fixed. Cause: the fix (auto-follow, in `9e2d778` "Make movement and camera easier to play") only exists on the unmerged cloud branch `origin/claude/engineer-communication-workflow-uex7id`; `main` never had any auto-follow. The "Cloud sync" session's merge plan for that branch and `origin/claude/game-improvement-ideas-vkan3h` is still awaiting Daniel's answer.
+- Ported only the auto-follow into `main` rather than merging either branch: `ThirdPersonCamera.update` now takes the player (`CameraTarget`: position, facing, movement state) and eases yaw behind the direction of travel while moving, suppressed for 1.2 s after a mouse orbit.
+- Deviation from the branch version: the pull is scaled by how far the travel heads away from the camera (`max(0, cos)`), so strafing (A/D) and backing up (S) no longer swing the view. The branch version would make holding A run in circles and S flip the controls, since movement is camera-relative.
+- Verified: `npx tsc --noEmit` clean; in the dev server, holding D strafed with the view unchanged, holding W+D swung the camera behind travel; no console errors.
+**Left uncommitted (if any):** `src/camera/ThirdPersonCamera.ts`, `src/main.ts`, this entry, and the Codex entry below (it was already uncommitted at session start).
+**Flagged:** Both cloud branches are still unmerged and each rewrites `ThirdPersonCamera.ts`, so this change will conflict with either one if merged later. Other features on them (camera occlusion, pointer lock, Q/E keyboard turning, wheel zoom, collision sliding) are still absent from `main`.
+**Next:** Daniel to playtest the follow feel (`AUTO_FOLLOW_RESPONSIVENESS` = 2.4).
+**Open questions:** Should the remaining cloud-branch camera/collision work be merged, or cherry-picked piecemeal like this?
+
+## 2026-09-12 — Codex
+**HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates)
+**Did:** Verified the repository handoff and git state after receiving the Sterling Bikes reference files. The request text ended after “My request for Codex:” with no task specified, so no code, asset, or creative-content work was inferred or performed.
+**Left uncommitted (if any):** This handoff entry only.
+**Flagged:** None.
+**Next:** Await the intended task for the supplied Sterling Bikes brief and photographs.
+**Open questions:** What should be produced or changed from these references?
+
 ## 2026-09-12 — Codex
 **HEAD at session start:** `7c22c6c` (Update SYNC.md with full accounting of this session's push)
 **Did:** At Daniel's request, collected the entire shared working tree into one repository update for commit and push, including all accumulated Blender scripts/source files, GLBs, review renders, character references, audio, world/gameplay integration, documentation, and `.claude/launch.json`. Verified the combined state with `git diff --check` and a successful production build.
