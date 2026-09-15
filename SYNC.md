@@ -23,6 +23,22 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-15 — Claude (local dev server startup)
+**HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references)
+**Did:** Daniel asked to start the game locally. No code or asset changes — startup and verification only.
+- `npm install` (node_modules was absent in this fresh clone; 27 packages, 0 vulnerabilities, lockfile unchanged).
+- `npm run dev` serves at `http://localhost:5173/zealot-of-harperhey/` — note the Vite `base` path, the bare root 404s.
+- Verified in headless Chromium: page loads, canvas renders the night park/fountain scene with surrounding street, title `Zealot of Harperhey`, **zero console errors and zero page errors**. `KeyW` advances the player, so traversal is live.
+**Left uncommitted (if any):** None — only this SYNC entry.
+**Flagged:**
+- Headless verification ran on SwiftShader (no GPU in the cloud container) at ~3 fps. That is a software-rendering artefact, **not** a performance regression — don't read it as one or "optimise" against it.
+- Two audio requests abort in headless: `Ambient music/Y2Mate.is - Popcorn.mp3` (16 MB) and `Foley/Street Sounds/manny-final.wav` (101 MB). Both files exist on disk; the aborts are headless autoplay policy cancelling large media streams. Worth noting separately that a 101 MB uncompressed wav is a real load-time cost for an eventual web deploy — compressing the foley bed is a genuine task, just not a bug.
+- `package.json` name, Vite `base`, and most asset paths still use `harperhey` while the repo directory/remote is `zealot-of-harpurhey`. Unchanged from previous sessions; only matters if a deploy path assumes the directory name.
+**Next:** Unblocked for gameplay work. The standing recommendation from earlier entries still holds — the first data-driven delivery/interaction scaffold against an already-finished location — and the Come Through Lab blockout still has no GLB export.
+**Open questions:** None.
+
+---
+
 ## 2026-09-14 — Claude (commit and push of the shared batch)
 **HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates)
 **Did:** Daniel asked to push everything so work can continue in the cloud. Committed the entire uncommitted working tree described in the entries below to `main` and pushed it.
