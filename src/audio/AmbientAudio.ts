@@ -1,13 +1,10 @@
+import { assetUrl } from '../core/assetUrl';
+
 const MUSIC_VOLUME = 0.07;
 const STREET_SOUNDS_VOLUME = 0.38;
 
-function runtimeAssetUrl(path: string): string {
-  const encodedPath = path.split('/').map(encodeURIComponent).join('/');
-  return `${import.meta.env.BASE_URL}assets/audio/${encodedPath}`;
-}
-
 function createLoopingTrack(path: string, volume: number): HTMLAudioElement {
-  const track = new Audio(runtimeAssetUrl(path));
+  const track = new Audio(assetUrl(`assets/audio/${path}`));
   track.loop = true;
   track.preload = 'metadata';
   track.volume = volume;

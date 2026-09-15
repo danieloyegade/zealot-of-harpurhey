@@ -11,6 +11,7 @@ import {
   type Texture,
 } from 'three';
 import { applyTextureProfile, VISUAL_STYLE } from '../rendering/visualStyle';
+import { assetUrl } from '../core/assetUrl';
 
 /*
  * Shared machinery for layered ground surfaces (roads, pavements): texture
@@ -76,7 +77,7 @@ export function loadSurfaceTexture(
   if (cached) {
     return cached;
   }
-  const texture = loader.load(`${import.meta.env.BASE_URL}assets/textures/${path}.${extension}`);
+  const texture = loader.load(assetUrl(`assets/textures/${path}.${extension}`));
   texture.name = path;
   texture.colorSpace = color ? SRGBColorSpace : NoColorSpace;
   texture.wrapS = repeat ? RepeatWrapping : ClampToEdgeWrapping;

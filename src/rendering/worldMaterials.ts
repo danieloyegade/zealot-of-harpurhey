@@ -10,6 +10,7 @@ import {
   type Material,
 } from 'three';
 import { applyTextureProfile, VISUAL_STYLE, type TextureProfile } from './visualStyle';
+import { assetUrl } from '../core/assetUrl';
 
 export type WorldTextureName =
   | 'asphalt-dark-temporary'
@@ -67,7 +68,7 @@ export interface WorldMaterialOptions {
 }
 
 function textureUrl(name: WorldTextureName): string {
-  return `${import.meta.env.BASE_URL}assets/textures/world-prototype/${name}.png`;
+  return assetUrl(`assets/textures/world-prototype/${name}.png`);
 }
 
 export function createWorldMaterial(

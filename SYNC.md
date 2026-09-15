@@ -23,6 +23,22 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-15 — Claude (asset-URL helper)
+**HEAD at session start:** `6cf84b9` (Record cloud-session workflow constraints in SYNC.md)
+**Did:** Added `src/core/assetUrl.ts` as the single seam between asset paths in game code and the URLs they are fetched from. First step toward serving assets from Cloudflare R2 instead of `public/`, but it is a no-op refactor on its own and is worth having under any host.
+- Four call sites each built asset URLs by hand from `import.meta.env.BASE_URL` and now go through `assetUrl()`: `world/loadModel.ts`, `world/surfaceDecals.ts`, `rendering/worldMaterials.ts`, `audio/AmbientAudio.ts`.
+- Behaviour is unchanged by default. Setting `VITE_ASSET_BASE_URL` at build time repoints every runtime asset at another origin without touching a call site. Documented in a new `.env.example`.
+- **The trap here:** 18 model paths carry `?v=` cache-busting suffixes (`spice-cabin.glb?v=textured-20260914`). Encoding the whole path — the obvious implementation — turns `?` into `%3F` and 404s every versioned model. Meanwhile 8 audio files *need* encoding (spaces, and a fullwidth `＂` in one filename), which is why `AmbientAudio` was the only call site encoding anything. `encodeAssetPath` splits the query/hash suffix off before encoding segments. Don't "simplify" it back.
+**Verified:** `tsc --noEmit` clean. Built both ways. Drove the built app in headless Chromium: 69 asset responses, 0 failures, all 23 query-string GLBs at 200, both space-containing audio files at 206. Then re-ran with assets served from a *separate CORS-enabled origin* — 67 assets cross-origin, 0 failures, identical render. The R2 seam is proven, not just typechecked.
+**Left uncommitted (if any):** Nothing.
+**Flagged:**
+- The cross-origin run confirms the bucket will need permissive CORS including `Range` in allowed headers, or audio streaming breaks. Missing CORS fails as *models silently not appearing*, not as a visible error — budget debugging time for this when R2 is wired up.
+- **Answering the open 404 question from the 2026-09-14 Advanced Photo entry:** the single unexplained console 404 is `/favicon.ico`. The project has no favicon and `index.html` declares none, so Chromium requests it and gets a 404. Harmless, pre-existing, unrelated to any asset work.
+**Next:** Remaining steps toward Pages + R2, in order: compress `manny-final.wav` (97.1 MiB uncompressed, streamed as a `loop` ambient bed, and the only file over Cloudflare Pages' 25 MiB per-file cap); then `base: '/'` in `vite.config.ts` once off GitHub Pages' subpath; then an asset sync script and the bucket itself. See the 2026-09-15 workflow entry below for the wider technical-debt list — the broken `references/architecture/` paths in `createDreams.py`, `createFlorist.py` and `generateWorldTextures.mjs` are still unfixed.
+**Open questions:** When assets move to R2, do `blender/source/` and `renders/` stay in git as the archival record of how each asset evolved, with only the published `public/assets` copies living in the bucket? That split is what I would recommend, but the assets substantially *are* the work here, so it is Daniel's call rather than a default.
+
+---
+
 ## 2026-09-15 — Claude (cloud workflow orientation, no code changes)
 **HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references)
 **Did:** Daniel asked how the push/see-the-changes loop works when running in the cloud rather than locally. No project code or assets changed. Findings worth recording for whoever picks up next:
