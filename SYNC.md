@@ -23,6 +23,24 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-15 — Claude (cloud workflow orientation, no code changes)
+**HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references)
+**Did:** Daniel asked how the push/see-the-changes loop works when running in the cloud rather than locally. No project code or assets changed. Findings worth recording for whoever picks up next:
+- A cloud session is a **fresh clone into an ephemeral container**, with no access to Daniel's Mac. Uncommitted work does **not** survive the session — the long-lived dirty working tree pattern used throughout the entries below is local-only and will silently lose work in the cloud. Commit and push, every time.
+- Cloud sessions push to an assigned branch (this one: `claude/local-cloud-workflow-h6ivy0`), not to `main`. Branch was identical to `origin/main` at session start. Merging is Daniel's call.
+- Work must be pushed **before** a cloud session starts, or the cloud is working from stale code.
+**Flagged:**
+- **No Blender in the cloud.** No `blender` binary, and the Blender MCP addon port (9876) is refused — the addon lives in Daniel's local Blender. The asset-first pipeline (build → render review views → export GLB) cannot run in a cloud session. Cloud work should be Three.js/TS, world data, docs, and scripts; Blender Python can be *written* here but must be *run* locally.
+- No `.github/workflows` exists, so a push builds and deploys nothing. `vite.config.ts` `base: '/zealot-of-harperhey/'` implies a Pages-style subpath deploy configured outside this repo.
+- Repo is heavy for an ephemeral container: 1.1 GB `.git`, 263 MB `public/assets`, 192 MB `renders`, no LFS. Large new binary batches pushed from the cloud will be slow.
+- The GitHub repo is still named `zealot-of-harpurhey` while everything in-tree is `harperhey`. This is one of the "external references to the old path" the 2026-09-11 rename entry predicted, and the cloud clone path inherits the old spelling.
+- `.claude/launch.json` hardcodes a local nvm node path; inert in the cloud, harmless.
+**Left uncommitted (if any):** Nothing — this entry is the only change.
+**Next:** If this is worth more than a standup note, promote it to `docs/CLOUD_WORKFLOW.md`; it is currently only recorded here.
+**Open questions:** Should cloud sessions default to opening a PR for review, or push the branch and let Daniel merge locally? And where does the Pages-style deploy actually live, given no workflow exists in this repo?
+
+---
+
 ## 2026-09-14 — Claude (commit and push of the shared batch)
 **HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates)
 **Did:** Daniel asked to push everything so work can continue in the cloud. Committed the entire uncommitted working tree described in the entries below to `main` and pushed it.
