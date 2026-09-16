@@ -311,3 +311,12 @@ export function applySpiceCabinTexturePolicy(model: Group): void {
     child.material = practical;
   });
 }
+
+/**
+ * Worn pallets (docs/assets/pallets.md): one opaque textured material each, with
+ * base-colour alpha 1, so they take only the shared photographic filtering and
+ * night-street environment.
+ */
+export function applyPalletTexturePolicy(model: Group): void {
+  applyTexturePassPolicy(model, () => 'plain');
+}

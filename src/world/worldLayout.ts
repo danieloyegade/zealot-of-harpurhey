@@ -54,7 +54,10 @@ export const WORLD_LOCATIONS: readonly WorldLocation[] = [
   { id: 'cass-art', name: 'Cass Art', kind: 'building', status: 'geometry-wip', front: 'north', x: -16.6, z: 39, width: 18.2, depth: 11.93, height: 6.19, color: 0x303538 },
 
   { id: 'gullivers', name: "Gulliver's Pub", kind: 'building', status: 'geometry-wip', front: 'south', x: 27.9, z: -40, width: 8, depth: 16.6, height: 12.2 },
-  { id: 'vinyl-exchange', name: 'Vinyl Exchange', kind: 'building', status: 'placeholder', front: 'south', x: -7, z: 49, width: 12, depth: 10, height: 8.2, color: 0x4b4541 },
+  // Authored body footprint: the Oldham Street frontage faces south on Z = 54,
+  // while the perpendicular Dale Street return faces east into the open gap.
+  // Fascia, piers and cornice project by up to about 0.5 m beyond this envelope.
+  { id: 'vinyl-exchange', name: 'Vinyl Exchange', kind: 'building', status: 'geometry-wip', front: 'south', x: -7, z: 48.43, width: 7.44, depth: 11.14, height: 14.45, color: 0x4b4541 },
   { id: 'car-park', name: 'Car Park', kind: 'car-park', status: 'placeholder', x: 43, z: 0, width: 20, depth: 14, height: 0, color: 0x292c31 },
   { id: 'arts-council', name: 'Arts Council', kind: 'building', status: 'geometry-wip', front: 'west', x: 47, z: 20, width: 20.4, depth: 44.3, height: 33.12, color: 0x4c4548 },
 
@@ -115,6 +118,20 @@ export interface SterlingStationMarker extends WorldMarker {
 export const STERLING_BIKE_DOCKS: readonly SterlingStationMarker[] = [
   { id: 'sterling-bikes-east', name: 'Sterling Bikes East', x: 38.5, z: -6.3, rotationY: Math.PI / 2, occupancy: [true, true, false] },
   { id: 'sterling-bikes-south', name: 'Sterling Bikes South', x: -20.5, z: 21.2, rotationY: -Math.PI / 2, occupancy: [true, true, true] },
+] as const;
+
+export interface PalletStackMarker extends WorldMarker {
+  /** Yaw applied to both pallets; the brown pallet keeps its small relative twist. */
+  readonly rotationY: number;
+}
+
+// Matching blue-under-brown stacks used as ordinary service-area dressing.
+// They stay off pavements and entrances: beside the Florist, in the gap north
+// of Coral, and along the Arts Council edge of the open car-park bay.
+export const PALLET_STACKS: readonly PalletStackMarker[] = [
+  { id: 'florist-side-pallets', name: 'Florist east-side pallet stack', x: -12.8, z: -35, rotationY: Math.PI / 2 },
+  { id: 'coral-north-pallets', name: 'Coral north pallet stack', x: -38.5, z: 4.35, rotationY: 0 },
+  { id: 'arts-council-pallets', name: 'Arts Council car-park pallet stack', x: 48, z: -3.4, rotationY: 0 },
 ] as const;
 
 export const FUTURE_EXITS: readonly WorldMarker[] = [

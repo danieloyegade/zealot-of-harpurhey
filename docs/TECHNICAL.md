@@ -63,15 +63,27 @@ The default desktop quality is **MEDIUM**. Use `?quality=low`, `?quality=medium`
 
 Tone mapping defaults to **AgX**, applied by `OutputPass` in linear HDR after bloom and before the display grade. Use `?tonemap=agx`, `?tonemap=neutral`, `?tonemap=aces`, or `?tonemap=off` to compare curves; `off` reproduces the earlier uncurved image. Each curve has its own exposure in `VISUAL_STYLE.render.exposure`, calibrated so midtone brightness matches `off`, so a comparison shows highlight rolloff and colour rather than a brightness change. When a curve is active the grade pass's own exposure is 1, so exposure is never applied twice. Combine with `?view=<name>&quality=high&overlays=off` for repeatable comparisons.
 
-Most environmental illumination in Zealot of Harperhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights. The normal local-light budget is four on MEDIUM, with five available on HIGH and two on LOW. Streetlights do not use real-time spotlights.
+Most environmental illumination in Zealot of Harperhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights. The normal local-light budget is four on MEDIUM, with five available on HIGH and two on LOW. `LocalLightRegistry` owns the real-time local point lights, keeps multi-light fixtures atomic, includes asset-loaded shop lights in the same budget, and uses one moving public-light proxy for the current streetlight pool. Streetlights do not use real-time spotlights.
 
 ### Camera
 
 The prototype uses a 50-degree perspective camera placed 6.8 metres from the player. Horizontal mouse orbit is unrestricted, while vertical pitch is clamped to a modest elevated range. Camera position follows the player using frame-rate-independent exponential smoothing. Pointer lock is not used.
 
+The camera collides with the same obstacle set as the player. Each frame a 0.3-metre sphere is cast from the orbit pivot (1.15 metres above the player's feet) to the smoothed follow position, and the boom is shortened to the first hit, so orbiting beside or inside a building never puts the lens inside a wall. Pulling in is immediate; extending back out eases over roughly half a second. Obstacles are extruded from the ground to their `height`, so the camera can look over anything lower than it. Thin street furniture sets `blocksCamera: false`, so poles and bollards passing behind the player do not make the camera pump.
+
 ### Collision
 
-The player is represented on the ground plane by a circle with a temporary radius of 0.38 metres. Buildings and the bus shelter use two-dimensional axis-aligned bounding boxes. Movement is resolved one horizontal axis at a time, allowing the player to slide along obstacles, and is clamped to the current playable blockout bounds. Before movement, any overlap caused by a changed level layout or development teleport is resolved toward the nearest valid obstacle edge so the player cannot remain trapped inside moved geometry. This intentionally small collision layer can later be replaced without changing the input or camera systems.
+The player is represented on the ground plane by a circle with a temporary radius of 0.38 metres. There is no vertical movement, so anything the player cannot walk under is a two-dimensional footprint in `src/world/collision.ts`:
+
+- **Axis-aligned boxes:** building plots and hand-authored interior walls.
+- **Oriented boxes:** benches, bins, utility cabinets and trolleys.
+- **Circles:** the fountain basin, tree trunks, shrubs, bollards and streetlight poles.
+
+Props register their footprint where they are placed (`createEnvironmentKit.ts` and `createWorld.ts`), from the same placement data as their meshes, so the two cannot drift apart.
+
+Movement is advanced in slices no longer than half the player's radius. After each slice the circle is pushed back out along the contact normals, which removes only the part of the motion driving into a surface: the player slides along walls and around round obstacles, and cannot step through thin walls. A slice that cannot be resolved, such as a gap narrower than the player, is undone. When a wall absorbs part of a step, the player's velocity is reduced to match, so no stale momentum remains. Movement is clamped to the playable bounds. Before movement, any overlap caused by a changed level layout or development teleport is resolved toward the nearest valid edge, so the player cannot remain trapped inside moved geometry.
+
+Building footprints come from `worldLayout.ts` plots. Where a GLB's solid body-height geometry (0.25–1.7 metres, which excludes canopies the player can walk under) differs from its plot, `createWorld.ts` adds or replaces footprints with measured values. Current cases are Nice Things, the Dreams entrance landing and ramp, the MCR1 shopfront and the Advanced Photo arcade wall. Re-measure when an asset or its placement changes. In development builds, H (or `?overlays=on`) draws every footprint through the scene: magenta outlines also stop the camera, and cyan ones stop only the player.
 
 ## Naming conventions
 

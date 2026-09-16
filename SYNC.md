@@ -23,6 +23,421 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-16 — Claude (commit + push of working tree)
+**HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references)
+**Did:** On Daniel's instruction, committed the entire working tree (227 paths: pallet re-weathering, Vinyl Exchange blockout + textures, Art School T-shirts, title screen / intro UI, first delivery, city planimetric + elevation renders, player references moved under `references/characters/named characters/`) and pushed to `origin/main`. `tsc --noEmit` passed before commit; no file over 20 MB.
+**Left uncommitted (if any):** None.
+**Flagged:** This answers the earlier open question on the ~105 MB of city renders: they are now committed.
+**Next:** See the individual entries below for each workstream's next step.
+**Open questions:** None.
+
+---
+
+## 2026-09-16 — Claude (Sterling bike blockout review)
+**HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references)
+**Did:** Review only, no asset changes. Compared Codex's Sterling bike/dock blockout (`createSterlingBikeBlockout.py`, renders A–G) with `IMG_8911`–`IMG_8917`. The biggest problems are the dock (it reads as an EV charger, but the reference is a low, slim, side-mounted J-shaped grey post), the basket (an open slatted cage, but the reference is a solid perforated plastic tub), the rear cover (a faceted 9-gon, but the reference is a smooth D-shape above the axle with the yellow seat stay crossing *outside* it), and the palette (cream yellow and grey-white panel, but the reference is saturated lemon yellow and aqua).
+**Left uncommitted (if any):** This entry only.
+**Flagged:** The fleet stickers in IMG_8913 read beryl.cc, so the real bike is a Beryl e-bike. Also, stays sit inboard of the cover (y ±0.052 vs ±0.075), so they're hidden. The seat tube is 100 mm diameter, about twice the reference.
+**Next:** Second geometry pass on Daniel's go-ahead, in this order: dock, rear cover and stays, basket, palette, then cockpit, fork and mudguards.
+**Open questions:** Is the basket frame-mounted (as IMG_8916 suggests) rather than parented to `SB_SteeringRoot`?
+
+---
+
+## 2026-09-16 — Claude (Vinyl Exchange surface materials, first batch)
+**HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references)
+**Did:**
+- Authored the first batch of real Vinyl Exchange surfaces: `blender/scripts/vinylExchangeTextures.py` writes nine tiling PBR sets (basecolor / ORM / OpenGL normal, glTF convention) to `blender/source/textures/vinyl-exchange/`, 14.2 MB total: painted ashlar, fascia panel, red logo acrylic, black sign panel, petrol-blue frame paint, ribbed mill aluminium, white glazed tile, sage door paint, dark painted steel.
+- **Tiling sets, not an atlas bake, on purpose.** The geometry is still on the detail-pass hold (section 47 adds pilasters, capitals, moulded arches, vent slats, the gate and the lettering), so an atlas baked on the blockout UVs would die with it. Material identity lives in these tiles; position-dependent weathering (the drip under one sill, the spray line at the kerb) stays for a later `surfaceWeathering` atlas bake on the finished geometry, as Spice Cabin and the pallets were done. The fascia band and the corner door are the exceptions — their vertical extent is fixed by the building, so they are authored with a real top and bottom and tile sideways only.
+- Palette is measured, not invented: patch medians sampled from `DSC06347/06349/06354.JPG`, de-lit by hand, recorded under `measured_reference_patches` in `validation.json`. No reference pixels reach the output.
+- Added `noise2_tile` / `fbm2_tile` to `blender/scripts/surfaceWeathering.py` (purely additive; `palletWeathering` and `spiceCabinArtwork` still import, and periodicity is unit-checked).
+- Review frames in `renders/vinyl-exchange-textures/`: one 2 x 2 tiled panel per material plus `00-contact-sheet.png`, rendered flat-on under `Standard` (not AgX) so the frames report authored albedo.
+- `validation.json` records coverage, mm/texel, tiling axes, roughness/metallic ranges, relief in mm, mean base colour, file sizes and a seam measurement in 8-bit levels. Two large seam numbers are the stone course line and the aluminium rib groove landing on a tile edge — the feature, not a seam; confirmed by eye.
+- Documented the whole pass in `docs/assets/vinyl-exchange.md` under "Surface materials (first batch)".
+**Left uncommitted (if any):** All of the above — the script, 27 maps plus `validation.json`, 10 review PNGs, the `surfaceWeathering.py` addition and the two doc edits. Every pre-existing working-tree change was left untouched.
+**Flagged:**
+- Nothing is wired to geometry yet. The blockout still carries `*_PLACEHOLDER` materials and has no UVs for these; applying them is part of the detail pass, per the asset-first rule.
+- The fascia tile is 1.35 m wide, so its tar-splatter clusters repeat every 1.35 m along a 10 m frontage. Fix when it matters: a wider tile (2.70 m with two joints) or a second variation map.
+- Not in this batch: glass, both street plaques, display stock, interior, and all lettering/typography (section 48).
+- `blender/scripts/createArtSchoolTShirtBlack.py` appeared untracked during this session and is not mine — another session may be working in parallel. Left alone.
+**Next:** Daniel to review `renders/vinyl-exchange-textures/00-contact-sheet.png` and say which materials need retuning before the batch is extended (glass, plaques, display, interior) or applied. Once the section 47 geometry lands with UVs, these bind to the `MAT_VE_*` slots and the world-space weathering bake goes on top.
+**Open questions:** Is the upper facade painted render/faience (what the ashlar material assumes) or glazed terracotta? The photographs are consistent with either, and it changes both the joint treatment and the sheen. Should the fascia read as dirty as it does in the low-angle photos, or cleaner for the game's night grade?
+
+---
+
+## 2026-09-15/16 — Claude (city planimetric shots, then front-on cinematic elevations)
+**HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references)
+**Did:**
+- Captured 30 top-down orthographic, north-up (−Z) review renders from the live Vite dev build into `renders/city-planimetric/`: full-city overview (`00`), five district sheets (`01`–`05`), Bus Stops A/B close + context (`10`–`13`), both Sterling Bikes stations + East car-park context (`20`–`22`), Greek Gyros (`30`), and one crop per `WORLD_LOCATIONS` building (`40`–`55`, footprint + 5 m margin). Each has a title/centre/extent strip, scale bar and north arrow.
+- Method, no project code changed: `OrthographicCamera` at y=150 over `window.zealot.scene`, fog disabled and player hidden per frame, direct `renderer.render` (bypasses post-processing grade), player moved to each subject first so local lights activate. PNGs posted to a throwaway scratchpad receiver; its temporary `launch.json` entry was removed again.
+**Left uncommitted (if any):** The 30 new PNGs (~70 MB total, overview alone 8.7 MB). Not committed — not asked. All pre-existing working-tree changes untouched.
+**Flagged:**
+- Several filler building roofs north of North Road render solid black from above (visible in `00`, `01`, `13`) — likely unlit/`fog:false` roof materials on the North Road towers; not investigated.
+- Bus Stop B still stands in the North Road carriageway (`13`), as `docs/WORLD_LAYOUT.md` already notes.
+- Then (Daniel's clarification: he wanted buildings shot front-on and cinematic, not plan views) added `renders/city-elevations/`: 16 front-on night elevations, one per `WORLD_LOCATIONS` building, `01`–`16`, each 2390 × 1000 (2.39:1).
+- Elevation method: own `PerspectiveCamera` + own `createPostProcessing` composer built in-page over the live scene, so the frames carry the real look (bloom, grade, grain, vignette, fog) instead of the raw renderer output the planimetric pass used. Camera stands on each building's authored `front` side at 1.75 m eye height, lens 38–60° by building height, framing distance derived from height then trimmed by `castSphereThroughObstacles` so it never sits inside the opposite building. `toneMappingExposure` ×1.6 for stills (Real Camera ×3.6 — its frontage is unlit).
+- Re-shot three frames whose first pass was blocked by a neighbouring building filling half the frame (Nice Things, Village Books, Real Camera), using a shorter distance plus a 12–14° off-axis yaw.
+**Next:** If Daniel wants either pass repeatable, promote the capture into a dev-only `?planimetric` / `?elevation` hook rather than console JS. Coral, Spice Cabin, Renee and Gulliver's are the strongest frames if any are wanted for the art-direction docs.
+**Open questions:** Should the ~105 MB of PNGs across both folders be committed, downscaled, or kept local only?
+
+---
+
+## 2026-09-16 — Claude (black Art School T-shirt wearable)
+**HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references)
+**Did:**
+- Built Daniel's black Art School T-shirt brief as a new asset. It has its own builder, `blender/scripts/createArtSchoolTShirtBlack.py`, and does not reuse Codex's white-shirt construction. The garment is made from flat pattern pieces measured off `references/characters/clothing/TSAU t-shirts/art_school_black.jpg`, sewn with Blender cloth sewing springs around a 1.78 m A-pose fitting body (player-character proportions), with a collar rib, 2.6 mm thickness, and pattern-space UVs (front not mirrored, print band at 3400 px/m).
+- Outputs: `public/assets/models/characters/clothing/art_school_tshirt_black.glb` (8,496 tris, 3.1 MB), `blender/source/characters/clothing/art_school_tshirt_black.blend`, textures in `blender/source/textures/characters/clothing/art-school-tshirt-black/`, nine review renders plus `validation.json` in `renders/art-school-tshirt-black/`. Asset record: `docs/assets/art-school-tshirt-black.md`.
+- Print: Snell Roundhand, fitted to the photo's 0.268 m line width. Line one lands at 0.211 m against the reference's 0.214 m.
+- Verified: the renders are shot from the reimported GLB. The GLB also loads in the project's Vite/three.js stack with no console errors (a temporary check page, since deleted): MeshPhysicalMaterial with all maps, sheen and specular, print on the −Z front.
+**Left uncommitted (if any):** Everything above. Not committed; nobody asked. Pre-existing working-tree changes, including Codex's white shirt and `.claude/launch.json`, were left untouched. I used the existing `zealot-dev` launch entry without editing it.
+**Flagged:**
+- `BVHTree.FromObject` works in object space. Any script that joins primitives and then queries a BVH without applying the transform gets silently wrong results. This bit this build and could affect other scripts.
+- Solidify with Even Thickness throws long blades out of creased simulated cloth. Use plain offset for garments.
+- The A-pose lifts the hem 0.187 m on the fitting body; the cut length is faithful. The player rig's rest pose is arms-down, so skinning to it needs a re-sim or refit in that pose.
+- Snell Roundhand is a macOS system font, and its licence for a distributed game texture is unchecked. The builder falls back to Great Vibes (OFL).
+- One small fold remains at the wearer's right shoulder-neck junction, visible only in `07-collar-closeup.png`.
+**Next:** Daniel to review the fit, drape and typography against the reference. Then decide on the typeface and on which armature and rest pose the wardrobe items bind to.
+**Open questions:** Should garments be fitted in A-pose, as both T-shirt briefs asked, or in the player rig's arms-down rest pose, so they can be skinned without a refit?
+
+---
+
+## 2026-09-15 — Codex (white Art School T-shirt wearable)
+**HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references)
+**Did:**
+- Built the requested white oversized Art School T-shirt in `blender/scripts/createArtSchoolTShirtWhite.py`, with an A-pose fitting mannequin retained only for review, heavyweight boxy construction, dropped shoulders, broad sleeves, collar rib band, seam relief, and restrained folds.
+- Created the exact two-line red calligraphic chest print at 4K working resolution and baked it with the existing CC0 cotton-jersey source into one 2K base-colour, normal, and roughness set for `MAT_ArtSchool_White`.
+- Saved `blender/source/characters/clothing/art_school_tshirt_white.blend`, exported `public/assets/models/characters/clothing/art_school_tshirt_white.glb`, and produced the seven-view review set plus `validation.json` under `renders/art-school-tshirt-white/`.
+- Reimport-validated the GLB in an empty Blender scene: one named mesh, one material, one UV set, applied scale, 9,206 triangles, zero non-manifold edges after welding glTF attribute splits, and no fitting body/camera/light leakage.
+- Documented construction, export contract, regeneration, and integration notes in `docs/assets/art-school-tshirt-white.md`.
+**Left uncommitted (if any):** The script, `.blend`, GLB, texture set, review renders, asset record, and this log entry are uncommitted. All other pre-existing working-tree changes were preserved untouched.
+**Flagged:** The lettering build depends on a locally installed script face; Great Vibes was used for the delivered bake and the 4K working print is retained. The GLB is a standalone rest-state garment and still needs skinning/deformation tests. Its three embedded 2K PNG maps make it about 6 MB; consider KTX2 for a common runtime wardrobe item. The generated `dist/` directory was removed to recover build space and can be recreated with `npm run build`.
+**Next:** Daniel to approve the fit and chest typography against the supplied reference, then bind a copy to the selected character armature and test shoulder, cuff, and hem deformation.
+**Open questions:** Is this silhouette intended for the player, a specific NPC, or a shared wardrobe item? That determines the armature and clipping pass.
+
+---
+
+## 2026-09-15 — Claude (graphic identity: calligraphy / ornament / romantic heraldry)
+**HEAD at session start:** `ea8f343`. All title-card and identity work below is still uncommitted.
+**Did:**
+- Reworked the graphic identity around Daniel's second update, "this is a record" against "this is a romance". Rewrote `docs/GRAPHIC_IDENTITY.md` to cover both personalities: place (serif) against idea (hand), two palettes (night; print in oxblood and cream), texture by medium, symbols, ornament as interface, negative space, compositions, and title restraint.
+- **Hand:** switched from Water Brush to **Herr Von Muellerhoff** (`--z-hand`), with Mrs Saint Delafield as the alternative. Chosen from a Spencerian specimen against the Lorde and textured-script references. Still a placeholder: Daniel's own lettering or a licensed face (Noir Ink Script, Quiet Attempt) is recommended.
+- **New `src/ui/identity/` modules** (drafts awaiting approval under the asset-first rule):
+  - `emblems.ts`: a woodcut horse passant carrying a star-charged delivery box, and an engraved line rose
+  - `cartouche.ts`: an original frame with concave lace corners, a double pinhole rule and a star medallion
+  - `calligraphicRoute.ts`: a pen-stroke route with the rider star
+  - `compositions.ts`: chapter cards, a delivery card, bus destination and ticket, and *The Night So Far* pause layout
+  - `identity.css`: tokens, night and print worlds, paper-fibre texture
+  - `specimen.ts`: a dev board at `?identity`
+- **Title card cut back per the brief's §16–17.** It now shows the serif title, corner microtype, *The Promised Land* developing behind HARPERHEY (masked exposure reveal and a late second print pass), and a red Zealot star riding the loading line. After "City assembled" come two beats: a sparse horse, RIDER 01 and the coordinates far below; then an enormous developing *Flowers* over DELIVERY 001 in the cartouche with the rose. Then the ready prompt. Return during the beats enters immediately.
+- **Removed from the title card, with their modules deleted:** apparitions, graphic-interruption marks, map fragment, route, edge print, text artefacts, night/money ledgers, record cycler, night clock (`handwriting.ts`, `cartographicFragment.ts`, `nightClock.ts`). The `?accent` and `?mark` dev switches are gone with them.
+- `docs/TITLE_SCREEN.md` rewritten for the new sequence.
+- **Verified in the browser at 1440×900 and 375 px:** rider beat, delivery beat, ready card, entry from ready and from a beat (the overlay is removed, full resolution returns, the camera reports the chase pose 0 / 3.22 / 9.98), and no failed resources. The identity board renders with no errors. `tsc --noEmit` passes.
+**Left uncommitted (if any):** Everything above, plus the earlier title-card files and the `title-specimen` entry in `.claude/launch.json` (a static server for the scratchpad specimen; it can be deleted).
+**Flagged:**
+- The browser pane reports this page as hidden (`document.hidden`), which pauses rendering between checks. Camera and animation checks there can read stale frames; re-check in a real browser tab.
+- A very faint paper-fibre tile edge is still visible on print-world cards.
+- The horse and rose are drawn by hand in SVG code as first drafts; they need Daniel's approval or replacement from a real engraving reference.
+**Next:** Daniel to review the title sequence and the `?identity` board. Decide the hand (placeholder, own lettering, or licensed). Then wire chapter cards and *The Night So Far* to real systems when night progression or pause exists.
+**Open questions:** Approve the horse, rose and cartouche drafts? Is the *Flowers* beat too long at 4.6 s?
+
+---
+
+## 2026-09-15 — Claude (graphic identity: fashion / editorial layer)
+**HEAD at session start:** `ea8f343`, with the title card work below still uncommitted.
+**Did:**
+- Applied Daniel's fashion/editorial/graphic-design brief as a disruptive layer over the title card, keeping the existing design (roughly 80% system, 20% disruption). Wrote `docs/GRAPHIC_IDENTITY.md` covering:
+  - three typographic voices
+  - the accent-colour rule
+  - the Zealot star and the rest of the symbol vocabulary
+  - the graphic interruption
+  - physicality (which part of the interface borrows from which physical object)
+  - heraldry against the gig economy
+  - the planned pattern library, kept to the asset-first rule
+  - how British symbols may be used
+- **Voice 03 (hand):** the Water Brush script in the `--intro-hand` token.
+  - A giant handwritten "Harperhey" is screen-printed behind the classical title once the city is assembled (7.5% ivory plus a misregistered 3.5% amber pass, via the `#intro-ink` SVG filter in `index.html`).
+  - Three one-off loading apparitions (`LoadingApparitions` in `src/ui/title/handwriting.ts`).
+- **Zealot star:** `src/ui/identity/zealotStar.ts`, exporting the path and viewBox for reuse. It is now the amber rider on the route line.
+- **Graphic interruption:** one hand-drawn mark per launch in the accent colour (red `#e5132b` by default; test magenta with `?accent=magenta`), drawn on after ready. Kinds: a circle round the coordinates, a double underline under the balance, a star beside DELIVERY 001, or an arrow with "you are here" pointing at the rider. It avoids repeating the last launch's kind, and dev `?mark=` forces one.
+- DELIVERY 001 now reads as a receipt (perforation, dotted leaders, right-set values).
+- Verified in the browser at 1440×900 and 375 px: all four marks, the apparition render, red and magenta, the full entry sequence (marks fade with the marginalia, the script dissolves with the title, the overlay is removed), and no console errors. `tsc --noEmit` passes.
+**Left uncommitted (if any):** All of the above, plus the earlier title-card files. Also added a `title-specimen` entry to `.claude/launch.json`: a static server on this session's scratchpad, used for the script-face specimen. It can be deleted.
+**Flagged:**
+- Daniel's reference images (the Lorde graphic, fashion editorial, tartan, leopard, flags) never reached the session. They weren't attached and weren't found in the repo. Water Brush was chosen from a specimen of 16 Google script faces against the brief's written description, so the script face is provisional until checked against the Lorde reference.
+- The pattern library is documented only, with no generated patterns, per the asset-first rule.
+**Next:** Daniel to share the references, then retune the script face and texture strength. Choose red or magenta.
+**Open questions:** Red or magenta as the accent? Is Water Brush right once compared with the Lorde reference?
+
+---
+
+## 2026-09-15 — Claude (title card, worldbuilding pass)
+**HEAD at session start:** `ea8f343`. The first title card (entry below) and the Codex pallet/lighting/Vinyl Exchange batch were still uncommitted.
+**Did:**
+- Refined Daniel's title-card brief without redesigning it. Architecture is in the new `docs/TITLE_SCREEN.md`.
+- Added marginalia, written by `src/ui/title/marginalia.ts` into `data-intro-slot` elements in `index.html`:
+  - a Spectres study line and a sector line, each cycling rarely
+  - a rider ledger: night, a clock that keeps real time, deliveries, £4.82, film/sword
+  - a carried-object/garment record during loading, which becomes DELIVERY 001 (flowers, Vinyl Exchange upper floor, real distance 0.05 km, £3.70) once the city is assembled
+  - film-rebate edge print (frame number = entries + 1)
+  - one authored text artefact per launch
+  - a hairline site plan drawn from `worldLayout.ts`, above a Harperhey → Promised Land route and Service 01 timetable
+  - a controls line (9 s) listing only the controls that exist
+- Loading entries are now catalogue descriptions (`src/ui/title/assetCatalogue.ts`). Unnamed embedded textures sometimes read "spectre / unidentified".
+- The live world renders behind the card at 0.14 render scale from a fixed tripod shot (`src/camera/TitleCamera.ts`, dev `?titleshot=`), under a scrim that thins as the city assembles. No lights or passes added.
+- Entry is Return, a click on the prompt, or a tap on touch screens. Marginalia fade, then the loading line. The lamp swells and the street opens up (the `AmbientAudio` veil: low-pass, gain, 100 Hz ballast hum). The title then dissolves while the render returns to full resolution under a CSS focus pull and the camera glides into the chase camera. Player input is held until then.
+- Added `src/ui/title/riderRecord.ts`, which reads `localStorage['zealot-of-harperhey:rider-record']` over first-night defaults and writes only `entries`, plus `src/delivery/firstDelivery.ts` as data.
+- Verified in the browser at 1440×900, 1280×720, 2560×1080 and 375 px (layout rectangles measured for collisions). Also verified the full entry sequence, `?intro=off`, `?view=` auto-skip and no console errors. `tsc --noEmit` passes.
+**Left uncommitted (if any):** All of the above: `index.html`, `src/main.ts`, `src/audio/AmbientAudio.ts`, `src/ui/IntroScreen.ts`, `src/ui/intro.css`, the new `src/ui/title/*`, `src/camera/TitleCamera.ts`, `src/delivery/firstDelivery.ts` and `docs/TITLE_SCREEN.md`.
+**Flagged:**
+- The browser pane's synthetic Return key has an empty `key` and `code`, so it cannot trigger entry. I tested by dispatching an Enter event directly. A real keyboard reports `key: "Enter"`.
+- E / Interact and M / Map from the brief are not shown, because they don't exist (M toggles music).
+- The site plan is unlabelled apart from "001". At its size, place names rendered around 5 px, so the route line names the places instead.
+- The delivery distance is real (0.05 km), not the brief's 0.4 km.
+- Browsers keep the title silent until the first key press or click.
+**Next:** Daniel to review. Delivery, photography and bus systems can write into the rider record when they exist.
+**Open questions:** Balance on a first launch: £4.82 (brief §3) or £0.00 (§17)? Is the bus corridor/Promised Land direction on the route line right?
+
+---
+
+## 2026-09-14 — Claude (title card)
+**HEAD at session start:** `ea8f343`, with the Codex pallet/lighting/Vinyl Exchange batch still uncommitted (untouched apart from two additions to `src/main.ts`).
+**Did:**
+- Added an EB Garamond title card that stays up while the world loads. The markup is in `index.html` and the styles in `src/ui/intro.css`, which `index.html` links directly so the card paints before the bundle parses. `src/ui/IntroScreen.ts` listens to three's `DefaultLoadingManager`, so `createWorld.ts` is unchanged. It shows a progress rule, a count and the name of the asset being loaded. It waits 300 ms after each load wave in case another starts, prewarms shaders with `renderer.compileAsync`, then shows "Press any key" ("Touch to begin" on touch screens). The key press also counts as the gesture `AmbientAudio` needs to start sound.
+- Design: one sodium streetlight (a haze beam and a ground pool that warms from red to amber) falls on a spaced-caps title set like a civic inscription. Plate-frame corner ticks hold four imprint lines.
+- `?intro=off` removes the card. In dev, `?view=…` removes it as soon as the world has loaded, so screenshot views still work.
+- Checked in the browser at desktop and 375 px widths: loading, ready, key press, fade-out and overlay removal all work with no console errors. `tsc --noEmit` passes.
+**Left uncommitted (if any):** `index.html`, `src/main.ts` (the intro hooks), and the new `src/ui/IntroScreen.ts` and `src/ui/intro.css`.
+**Flagged:**
+- The title uses **Harperhey**, the canonical spelling in `AGENTS.md`. Daniel typed "Harpurhey" in his request, so this needs confirming.
+- Copy I added without being asked: "The Spectres Are All Around Us", "53°31′ N 2°13′ W" (real Harpurhey), "Daniel Oyegade" and "MMXXVI".
+- The font loads from Google Fonts. Self-hosting it in `public/assets/fonts/` (currently empty) would remove the third-party dependency.
+- The disk was full (ENOSPC), so `vite build` could not copy `public/`. The module transform passed.
+**Next:** Daniel to review the card. Self-host the font if he wants it.
+**Open questions:** Harperhey or Harpurhey on the title card? Keep the imprint lines?
+
+---
+
+## 2026-09-14 — Claude (localhost check)
+**HEAD at session start:** `ea8f343`, with the Codex pallet/lighting/Vinyl Exchange batch still uncommitted.
+**Did:** Looked into "game isn't loading on localhost". No code changed. No dev server was running. Started `zealot-dev` from `.claude/launch.json`. The game loads at `http://localhost:5173/zealot-of-harperhey/` with no console errors and no failed requests (110 resources). `tsc --noEmit` passes.
+**Left uncommitted (if any):** Only this entry, on top of the existing batch.
+**Flagged:** The Vite `base` is `/zealot-of-harperhey/`, so the bare `localhost:5173/` URL doesn't show the game. The checkout folder is still `zealot-of-harpurhey`, even though the 2026-09-11 entry says the folder was renamed.
+**Next:** None.
+**Open questions:** None.
+
+---
+
+## 2026-09-14 — Codex (three more pallet stacks)
+**HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references), with the documented pallet, lighting and Vinyl Exchange work already uncommitted.
+**Did:**
+- Added three matching 2× blue-under-brown pallet stacks to `PALLET_STACKS` in `worldLayout.ts`: beside the Florist's measured east service wall, north of Coral, and on the car-park edge against the Arts Council.
+- Generalised the Spice Cabin-only loader and collider into shared pallet-stack helpers. All four stacks keep the same scale, blue deck height, brown offset/twist, texture policy, draw order and 2.4 × 2.0 × 0.6 m oriented collision.
+- Cached the blue/brown GLBs as one template pair and clone their scene nodes, so the three extra stacks share geometry, materials and the two large texture sets rather than loading duplicate GPU resources.
+- Added surface-height handling for the car-park instance and development views `?view=pallets-north`, `?view=pallets-west`, and `?view=pallets-east`.
+- Updated `docs/WORLD_LAYOUT.md` and `docs/assets/pallets.md`.
+- Verified `tsc --noEmit`, `git diff --check`, and `npm run build`. Browser-checked the original and all three new stacks at medium quality with no console warnings/errors; the first proposed Florist placement intersected its larger measured GLB and was moved to the clear east wall before completion.
+**Left uncommitted (if any):** The pallet generalisation/placements in `src/world/{worldLayout,createWorld}.ts`, the three views in `src/main.ts`, the two doc updates above, and this entry. Other sessions' pallet assets, lighting work, Vinyl Exchange integration and visualization entry remain uncommitted in the same shared tree.
+**Flagged:** The two 2048² pallet texture sets still take roughly 10–12 seconds to become visible on a cold local browser load in this constrained environment; instances share them, so adding stacks does not multiply that texture cost. The asset doc's recommendation for 1024² runtime derivatives remains valid if pallets become more common.
+**Next:** Daniel checks the three stacks in normal play; adjust only the `PALLET_STACKS` marker coordinates/yaws if a different distribution is preferred.
+**Open questions:** None.
+
+---
+
+## 2026-09-14 — Codex (current game-world map)
+**HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references)
+**Did:**
+- Generated a scale, north-up overview of the current runtime world from `worldLayout.ts`, the road/pavement spans in `createWorld.ts`, and the canonical Map v0.3 topology.
+- The map covers all 18 named plots plus player start, roads, future exits, bus stops, Sterling Bikes, Greek Gyros, all four current pallet stacks, playground reservation, northern estate towers, streetlights, park trees, benches and fountain.
+- Rendered the map in headless Chrome and visually checked the final composition. The visualization lives in Codex's thread-scoped visualization directory; no game source was changed.
+**Left uncommitted (if any):** This SYNC entry only from this session. All pre-existing shared working-tree changes were left untouched.
+**Flagged:** `WORLD_LAYOUT.md` describes the Florist/Nice Things asset as finished, while `worldLayout.ts` still marks it `geometry-wip`; the generated map follows the runtime data. The older canonical JPG also predates several current names and placements, so the runtime map is the more useful current overview.
+**Next:** If this overview becomes a maintained project artifact, generate it directly from exported layout data so future placement changes cannot drift from it.
+**Open questions:** None.
+
+---
+
+## 2026-09-14 — Codex (Vinyl Exchange integrated)
+**HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references), with the documented Vinyl Exchange blockout, pallet passes, lighting work and their shared code/docs already uncommitted.
+**Did:** Daniel: "put vinyl exchange into the game".
+- Treated this as approval to use the existing section 45 blockout at runtime, not approval to invent answers to its three architectural questions or begin the deferred section 47 detail pass.
+- Added `blender/scripts/exportVinylExchangeBlockout.py`, which opens the existing master and exports only `VINYL_EXCHANGE_MASTER`; review pavement/road, figures, cameras and lights stay out of the game.
+- Exported `public/assets/models/vinyl-exchange-blockout.glb`: 1.2 MB, 125 objects, 121 meshes and 27,744 triangles, with both door/entrance anchors retained.
+- Updated `worldLayout.ts` from the 12 × 10 × 8.2 m placeholder to the authored 7.44 × 11.14 × 14.45 m body at `(-7, 48.43)`, status `geometry-wip`. Oldham Street faces south on the existing Z = 54 building line; the Dale Street return faces east into the open gap.
+- Added the GLB loader/failure fallback and a blockout-only runtime material policy in `createWorld.ts`. The policy keeps the authored palette, disables accidental emissive treatment and configures the shared glazing. The body footprint remains solid until door interaction exists.
+- Added `?view=vinyl-exchange` and updated `docs/assets/vinyl-exchange.md` and `docs/WORLD_LAYOUT.md`.
+- Preserved concurrent pallet-generalisation edits that appeared in `worldLayout.ts`/`createWorld.ts` during this pass; I did not remove or rewrite them.
+- Verified the Blender export, `tsc --noEmit`, `git diff --check`, and `npm run build`.
+- Browser-verified `?view=vinyl-exchange&quality=medium&overlays=off/on`: the model and red wordmark load, stand on the pavement at real scale and face South Road; the collision overlay follows the authored body; no Vinyl Exchange warning/error appears in the console.
+**Left uncommitted (if any):** This integration: `blender/scripts/exportVinylExchangeBlockout.py`, `public/assets/models/vinyl-exchange-blockout.glb`, edits to `src/world/{worldLayout,createWorld}.ts`, `src/main.ts`, `docs/{WORLD_LAYOUT,assets/vinyl-exchange}.md`, and this entry. The original uncommitted blockout and other sessions' pallet/lighting work remain in the same tree.
+**Flagged:**
+- This is visibly an untextured geometry blockout in the night grade. The final façade detail, materials and lighting remain a separate asset pass.
+- The fictional map has no second carriageway at this corner. Dale Street therefore reads as an east-facing return into the gap rather than a literal road until a later map decision.
+- The authored 11.14 m depth overlaps the rear edge of Dreams by about 0.4 m while preserving the South Road frontage. This is hidden back-to-back massing, but the row should be reconciled if either rear elevation becomes playable.
+**Next:** Daniel reviews `?view=vinyl-exchange`. If the corner/storey/party-bay questions are answered, proceed with the brief's section 47 detail pass and then the final textured GLB.
+**Open questions:** Is the corner a chamfer or projecting bay? How many upper storeys/what roofline should be final? Should the Oldham party-bay ground stub be included or the upper façade trimmed?
+
+---
+
+## 2026-09-14 — Claude (pallets placed at Spice Cabin)
+**HEAD at session start:** `ea8f343`, with the uncommitted pallet second and third passes (see "worn pallets" below) and other sessions' docs, `createWorld.ts` and `localLighting.ts` changes in the tree. I left those untouched.
+**Did:** Daniel: "put them in the game one stacked on the other. blue one on the ground and outside of spice cabin".
+- **`createWorld.ts`:**
+  - Added `addSpiceCabinPallets` and `addSpiceCabinPalletCollision`, called from the `spice-cabin` branch.
+  - The stack stands against the west gable on the bare ground of the gap, 0.15 m off the wall and 0.35 m behind the Z = 54 building line, long side along the wall.
+  - The blue pallet is on the ground; the brown sits on the blue deck at +0.146 m, askew by 0.06 rad.
+  - Collision is one oriented box, 1.2 × 1.0 m and 0.3 m tall, that doesn't block the camera.
+  - The position is anchored to the plot's layout, so it follows the building.
+- **`busShelterMaterials.ts`:** added `applyPalletTexturePolicy` (shared texture-pass policy, every material plain).
+- **`main.ts`:** added the dev view `?view=spice-cabin-pallets`.
+- **Docs:** `docs/assets/pallets.md` (new "In the game" section) and the Spice Cabin row in `WORLD_LAYOUT.md`.
+- **Ground bug caught:** off the pavement, the gap's `World ground` top is y −0.07. The first placement used `pavementTopAt(...) ?? 0` and floated the stack 7 cm, which a ray cast caught. It now falls back to `WORLD_GROUND_TOP = -0.07`.
+- **Verified:**
+  - `tsc --noEmit` passes.
+  - Both GLBs return 200, with no console errors.
+  - Live scene bounds show the brown pallet resting on the blue deck, clear of the gable (X 7.7) and behind the building line.
+  - The collider is registered.
+**Left uncommitted (if any):** the code and docs above, this entry, and the earlier pallet passes.
+- **Decal overlap:** Spice Cabin's transparent `SPICE_GroundContact_Decal` is one plane at y 0.022, spanning X 5.75–17.3 and Z 44–56.7, which covers the stack. The pallets now draw after it: `transparent`, `depthWrite` and render order 2 at opacity 1. Without that, the decal would paint floor grime over their bottom 9 cm.
+**Flagged:**
+- **Spice Cabin decal floats:** the building stands at pavement height (y 0.016), but the gap beside its gable is bare world ground at y −0.07. The ground-contact decal therefore floats about 9 cm over that gap, and the player's feet sit at y 0 there too. This predates the pallets. It's worth a look if the gap becomes a real space: pave it, or lower that side's decal.
+- **Ground fallback:** `WORLD_GROUND_TOP` is a measured constant beside the pallet code. If the `World ground` surface height changes, update it. The Spice Cabin model and other `?? 0` fallbacks only sample pavement, so they're unaffected.
+- **Browser pane:** hidden (`visibilityState` hidden), as in earlier sessions, so the screenshot is a single frame without managed local lights.
+- **Follow-up (Daniel: "make them 4x bigger"):** `PALLET_STACK_SCALE` = 4 in `createWorld.ts`, applied at runtime; the GLBs are unchanged.
+  - The stack centre, the brown pallet's deck height and offset, and the collider (4.8 × 4.0 × 1.2 m) all scale with it. The wall gap and setback stay absolute.
+  - The stack now spans about X 3.55–7.55 and Z 48.85–53.65, still bare ground behind the building line.
+  - The dev view moved back to (1.6, 56.4).
+- **Follow-up (Daniel: "make them half the size"):** `PALLET_STACK_SCALE` is now 2. Each pallet is 2.4 m long; the stack is 0.6 m tall and spans about X 5.55–7.55, Z 51.25–53.65. The collider is 2.4 × 2.0 × 0.6 m.
+**Next:** Daniel checks the stack in play at `?view=spice-cabin-pallets`.
+**Open questions:** None.
+
+---
+
+## 2026-09-14 — Codex (lighting audit implementation)
+**HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references)
+**Did:**
+- Continued the lighting audit implementation already present in the tree and finished the handoff/docs pass.
+- `src/world/localLighting.ts` now describes the current selector accurately: atomic local-light installations are ranked by player contribution or authored location relevance, with fades and a hard 2/4/5 point-light ceiling.
+- Tuned the temporary Come Through Lab threshold cue from intensity 4.8 to 3.2 so the entrance/drop-box ensemble reads without becoming a broad white facade wash.
+- Reconciled docs with the current system: `PERFORMANCE.md`, `TECHNICAL.md`, `VISUAL_LANGUAGE.md`, `docs/assets/greek-gyros.md`, `docs/assets/come-through-lab.md`, and `docs/LIGHTING_AUDIT.md`.
+- Verified `./node_modules/.bin/tsc --noEmit`, `git diff --check`, and `npm run build`.
+- Browser-verified representative views on the local Vite server:
+  - `?view=come-through-lab&quality=medium&overlays=on`: `1 / 4`, active `Come Through Lab threshold`.
+  - `?view=greek-gyros&quality=medium&overlays=on`: `1 / 4`, active `Greek Gyros counter practical`.
+  - `?view=public-light-pool&quality=medium&overlays=on`: `2 / 4`, active `Florist hero light, Public illumination pool`.
+  - `?view=south-road&quality=high&overlays=on`: `4 / 5`, active `Public illumination pool, Spice Cabin shopfront, Spice Cabin gable sign`.
+  - Fresh tab had no browser console warnings or errors for that check.
+**Left uncommitted (if any):** The code/doc edits above plus this SYNC entry. I made no commit because none was requested.
+**Flagged:**
+- CTL's light is still a temporary runtime cue; the asset needs a real authored luminaire/final material pass.
+- Greek Gyros still needs final signage, menu-board, bright interior and spill materials; only the counter practical and fixture-lens placeholder are live.
+- The display grade/quantisation review remains open after local hierarchy fixes.
+- Hive and car-park threshold lighting remain open from the audit.
+**Next:** Review the lighting changes visually in a normal visible browser window; if approved, move to the remaining asset-authored lights rather than raising global exposure.
+**Open questions:** None for this pass.
+
+---
+
+## 2026-09-14 — Claude (Vinyl Exchange blockout)
+**HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references), with other sessions' uncommitted docs, `createWorld.ts` and `localLighting.ts` changes already in the tree. I left all of those untouched.
+**Did:**
+- Built the section 45 blockout from brief `references/architecture/buildings/vinyl-exchange/14_Vinyl_Exchange.txt` and all ten reference photos.
+- New `blender/scripts/createVinylExchangeBlockout.py` builds the geometry headless. The Blender MCP was not connected, and the script follows the same pattern as the other blockouts.
+- It writes `blender/source/vinyl_exchange_blockout.blend` and five renders under `renders/vinyl-exchange-blockout/`.
+- Model contents: 121 meshes, about 27.7k triangles, corner massing with a 1.60 m chamfer, 1.85 m bays, three storeys of real arched openings with reveals, the fascia wrapping the corner with logo and tagline proxies on both streets, both street plaques, a door pair pivoted at the hinges, the corner recess, the gate recess and an interior shell.
+- New `docs/assets/vinyl-exchange.md` records the section 46 check table and the open questions.
+**Left uncommitted (if any):** the script, the blend file, the renders, the asset doc and this entry. I made no commit because none was requested.
+**Flagged:**
+- Storeys 2–3, the roofline, the building depth and the 90° street angle are inferred.
+- The logo proxy uses the macOS system font Arial Narrow Bold, with a fallback to Blender's built-in font.
+- `worldLayout.ts` still treats `vinyl-exchange` as a 12 × 10 m mid-block south-facing placeholder, but the real building is a two-frontage corner.
+**Next:** Daniel reviews the blockout checks. Only after approval does the second pass (section 47) start: colonnettes, capitals, moulded arches, louvres, accordion lattice, cables, and final 3D letters. The GLB export follows that.
+**Open questions:**
+- Does the corner have a chamfer (as modelled) or a projecting bay?
+- How many storeys sit above the first floor?
+- Should the export include the Oldham party-bay ground stub (under fig + sparrow), or should the upper facade be trimmed?
+
+---
+
+## 2026-09-14 — Claude (worn pallets)
+**HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates). Mid-session, `ea8f343` ("commit and push of the shared batch", below) swept in and pushed my **first-pass** pallet scripts, textures, GLBs and renders. The second-pass fixes are uncommitted on top of it.
+**Did:** Built Daniel's two-pallet brief (`references/architecture/infrastructure:objects/pallet/pallet.txt`) as a repeatable headless Blender pipeline. Full detail is in `docs/assets/pallets.md`.
+- **Scripts:**
+  - `palletGeometry.py`: construction, damage and ray-cast nails.
+  - `palletWeathering.py`: per-board grain and cause-driven paint, wear and grime.
+  - `createPallets.py`: unwrap, bake, maps, `.blend`, GLB, reimport validation and renders.
+  - All three reuse `surfaceWeathering.py` unchanged.
+- **Outputs:**
+  - `public/assets/models/pallets/pallet_worn_{brown,blue}.glb`: one mesh and one material each, 2048² base/ORM/normal maps as embedded WebP.
+  - `blender/source/pallets/*.blend`
+  - `blender/source/textures/pallets/`
+  - `renders/pallets/` (three review views per pallet, plus validation JSON)
+- **Materials:** paint and timber colours were sampled from the five reference photographs by luminance quartile.
+- **Second pass:** the first renders showed four problems, all fixed:
+  - hollow blocks, where deleted hidden faces showed through chipped corners (blocks now keep those faces);
+  - striped paint on block sides;
+  - over-figured, corduroy-regular brown grain;
+  - oversized nail stains.
+- **Third pass:** aged the brown timber harder (greyer deck, dirt in the grain, damp lower timber, darker end grain). On the blue pallet, the cross-board ends sheltered under the deck now keep their paint.
+- **Final:** blue is 7,838 triangles and 1.59 MB; brown is 6,026 triangles and 1.50 MB. Reimport validation is clean for both.
+- **Three.js r185 check:** both GLBs load as one mesh and one `MeshStandardMaterial`, with all five maps at 2048², `EXT_texture_webp`, correct Y-up size resting at Y = 0, and no console errors. A viewer shadow without bias showed acne moiré on the deck boards, which `bias -0.0004` / `normalBias 0.01` cleared. The asset doc notes this for in-game lights.
+**Left uncommitted (if any):**
+- The second and third passes, as modifications on top of `ea8f343`: the two script fixes, plus regenerated `.blend`s, textures, GLBs, renders and validation JSON.
+- New `docs/assets/pallets.md`.
+- A `pallet-viewer` entry in `.claude/launch.json`. It serves a scratchpad Three.js page used to check the GLBs load in the real runtime library.
+- This entry.
+- `origin/main` still carries the flawed first-pass GLBs and renders until this is committed.
+- The pallets are not placed in the world; the brief didn't ask for placement.
+**Flagged:**
+- **Blue footprint:** the blue pallet is 1200 × 1000 mm with seven top boards, not the brief's 1200 × 800 starting point. The blue references are that block-pallet type, and the brief makes the references authoritative. The brown pallet keeps 1200 × 800.
+- **Filenames:** they use the brief's underscores (`pallet_worn_blue.glb`) rather than `TECHNICAL.md`'s kebab-case. `cass_art.glb` and `real_camera.glb` already set that precedent.
+- **Stale Blender version:** `TECHNICAL.md` still says Blender 3.0.0, but the installed version is 5.2.1.
+- **Blender MCP:** the addon wasn't connected, so everything ran headless.
+- **Disk space is critical:** free space fell from 2.4 GB to 258 MB mid-session, and one Blender run died on it without writing anything. It was about 600 MB after I deleted my own bake caches. Free space before any more Blender bakes, renders or builds.
+- **Texture memory:** each pallet is roughly 64 MB of GPU texture memory with mips. A 1024² runtime derivative is worth adding if pallets become common set dressing.
+**Next:** Daniel reviews `renders/pallets/`. Commit the second pass so `origin/main` stops carrying the first-pass assets. If approved, place pallets in service yards and alleys through the existing world asset loading, not a new loader.
+**Open questions:**
+- Is the 1200 × 1000 blue footprint acceptable?
+- Should the `pallet-viewer` launch entry stay, or go?
+
+---
+
+## 2026-09-14 — Claude (collision and camera occlusion)
+**HEAD at session start:** `4562e6d`, with the shared batch uncommitted. Mid-session, the "commit and push" session below committed `ea8f343` and pushed it. That commit already contains all of the code listed here.
+**Did:** Daniel reported "phasing into buildings when I turn" and walking through the fountain. I measured the causes in-game:
+- **Camera:** it had no occlusion. Orbiting near a building put the lens inside it on 7–173 of 432 orbit frames at Village Books, Coral, Dreams, Renee and Cass Art.
+- **Props:** none had collision (the fountain, trees, benches, bins, bollards, streetlights, cabinets and trolleys), and neither did the estate towers.
+- **Footprints:** several didn't match the GLBs' geometry at body height (0.25–1.7 m, triangle-sliced):
+  - Nice Things let you walk through its Central Buildings entry, while its box ran 3.2 m out over the pavement.
+  - Dreams' landing and ramp stand 1.6 m proud of its box.
+  - MCR1's shopfront stands 0.9 m proud.
+  - Advanced Photo's `AP_ArcadeOppositeBoundary` wall had no collision.
+
+Changes:
+- **`collision.ts`:**
+  - Adds circle and oriented-box shapes, with optional `height` and `blocksCamera`.
+  - Movement now uses slices of at most half the radius, each followed by a push-out along the contact normals. This slides along walls and round obstacles, avoids tunnelling, and undoes a slice that can't be resolved, such as a pinch.
+  - Adds `castSphereThroughObstacles` for the camera.
+- **`ThirdPersonCamera`:** the boom is cut short at the first hit from the pivot; it pulls in instantly and eases back out. `main.ts` passes it `world.collision`, and dev `window.zealot` now also exposes `player` and `collision`.
+- **`PlayerController`:** drops velocity that a wall absorbed.
+- **Props:** colliders are registered from the same placement data as their meshes, in `createEnvironmentKit.ts` and `createWorld.ts`. The measured footprint fixes above also live in `createWorld.ts`.
+- **`collisionDebug.ts`:** a new dev overlay (H or `?overlays=on`). Magenta outlines stop the camera; cyan ones stop only the player.
+
+Verified:
+- `tsc --noEmit` passes.
+- Collision maths unit checks pass: head-on contact, sliding, no tunnelling, pinch, oriented face, and the sphere cast.
+- Stepped player walks stop at the fountain rim, the Dreams landing, the florist entry, the Advanced Photo wall and the estate tower. They slide past the fountain and poles, and walk the north pavement past Nice Things.
+- Camera orbit sweeps now show 0 frames inside buildings at all five spots, and 0 escapes from the Renee and Cass Art interiors. Open-park framing is unchanged.
+**Left uncommitted (if any):** the updated camera and collision sections in `docs/TECHNICAL.md`, and this entry.
+**Flagged:**
+- **Browser pane:** it stays hidden, so `requestAnimationFrame` never runs. Tests stepped `player.update` and a separate `ThirdPersonCamera` instance directly. No screenshots were taken.
+- **Fountain:** the collider is the basin rim (1.9 m). The 18 cm plinth stays walkable; feet sink into it just as they do into raised pavements, since there's no vertical support.
+- **Left walk-through:** rubbish bags, kerb stones and litter.
+- **Maintenance:** measured footprints are hard-coded and need re-measuring when a GLB or its placement changes. The Advanced Photo wall collider follows that entry's open question about the arcade context.
+- **Console:** the "reading 'push'" errors logged during this session came from hot reloads between edits. A clean reload is error-free.
+**Next:** Daniel plays and tunes feel if wanted: camera radius 0.3 m, and `OCCLUSION_RECOVERY_RESPONSIVENESS` 5.
+**Open questions:** None.
+
+---
+
 ## 2026-09-14 — Claude (commit and push of the shared batch)
 **HEAD at session start:** `4562e6d` (Add new world assets and gameplay updates)
 **Did:** Daniel asked to push everything so work can continue in the cloud. Committed the entire uncommitted working tree described in the entries below to `main` and pushed it.

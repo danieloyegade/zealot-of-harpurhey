@@ -9,6 +9,7 @@ import {
 } from 'three';
 import { AmbientAudio } from './audio/AmbientAudio';
 import { ThirdPersonCamera } from './camera/ThirdPersonCamera';
+import { TitleCamera } from './camera/TitleCamera';
 import { FixedStepClock } from './core/FixedStepClock';
 import { InputController } from './input/InputController';
 import { PlayerController } from './player/PlayerController';
@@ -17,10 +18,21 @@ import {
   applyInternalResolution,
   resolveQualityProfile,
   resolveToneMapping,
+  type QualityProfile,
 } from './rendering/visualStyle';
 import { DebugOverlay } from './ui/DebugOverlay';
+import { IntroScreen } from './ui/IntroScreen';
 import { createWorld } from './world/createWorld';
 import './style.css';
+
+// Behind the title card the city is drawn at a fraction of its resolution: the
+// browser's upscale is the defocus, and it costs less than the game itself.
+const TITLE_RENDER_SCALE = 0.14;
+// How long the street takes to open up once the player enters.
+const CITY_HEARD_SECONDS = 4.5;
+// The canvas eases from the title's soft image into full sharpness.
+const TITLE_FOCUS_PULL_MS = 2600;
+const TITLE_FOCUS_BLUR_PX = 7;
 
 const app = document.querySelector<HTMLDivElement>('#app');
 
@@ -28,11 +40,27 @@ if (!app) {
   throw new Error('Application root element was not found.');
 }
 
+if (import.meta.env.DEV && new URLSearchParams(window.location.search).has('identity')) {
+  // Look development: the graphic identity's parts and compositions on one board.
+  document.querySelector('[data-intro]')?.remove();
+  void import('./ui/identity/specimen').then(({ mountIdentitySpecimen }) => mountIdentitySpecimen());
+}
+
+// Installed before createWorld() so it observes every model and texture load.
+const intro = new IntroScreen({
+  // Development screenshot views should land straight in the world once loaded.
+  enterAutomatically:
+    import.meta.env.DEV && new URLSearchParams(window.location.search).has('view'),
+});
+
 const scene = new Scene();
 const renderer = new WebGLRenderer({ antialias: true });
 const quality = resolveQualityProfile(window.location.search);
 const toneMapping = resolveToneMapping(window.location.search);
-applyInternalResolution(renderer, window.innerWidth, window.innerHeight, quality);
+let renderQuality: QualityProfile = intro.holdsWorld
+  ? { ...quality, renderScale: Math.min(quality.renderScale, TITLE_RENDER_SCALE) }
+  : quality;
+applyInternalResolution(renderer, window.innerWidth, window.innerHeight, renderQuality);
 renderer.outputColorSpace = SRGBColorSpace;
 renderer.toneMapping = toneMapping.curve;
 renderer.toneMappingExposure = toneMapping.exposure;
@@ -48,7 +76,7 @@ const camera = new PerspectiveCamera(
 
 const world = createWorld(scene, quality.maximumActiveLocalLights);
 const input = new InputController(renderer.domElement);
-new AmbientAudio();
+const ambientAudio = new AmbientAudio({ veiled: intro.holdsWorld });
 const player = new PlayerController(world.collision);
 scene.add(player.object);
 
@@ -78,12 +106,18 @@ if (import.meta.env.DEV) {
     'east-shops': [29.5, 19],
     'south-shops': [0, 22],
     'south-road': [0, 53.5, Math.PI, 0.24],
+    'vinyl-exchange': [-7, 58.2, 0, 0.08],
     'real-camera': [-11.5, 58, Math.PI, 0.06],
     'real-camera-corner': [-26, 58.5, 2.3, 0.06],
     'advanced-photo': [11.8, 59.4, Math.PI, 0.12],
     'spice-cabin': [12.35, 57.6, 0, 0.03],
     'spice-cabin-close': [11.0, 56.4, 0, 0.06],
     'spice-cabin-gable': [4.6, 57.2, -0.36, 0.1],
+    // Beside the stack, not in front of it: the chase camera would put the player over it.
+    'spice-cabin-pallets': [1.6, 56.4, -0.6, 0.2],
+    'pallets-north': [-7.8, -31, 0.9, 0.2],
+    'pallets-west': [-43, 0, -2.35, 0.2],
+    'pallets-east': [43, -7, -2.2, 0.2],
     'sterling-south': [-16.6, 19.6, Math.PI / 2 - 0.35, 0.16],
     'sterling-east': [42.6, -4.4, Math.PI / 2 + 0.35, 0.16],
     pickup: [5, 16.5],
@@ -106,6 +140,7 @@ const thirdPersonCamera = new ThirdPersonCamera(
 );
 thirdPersonCamera.setOrbit(requestedYaw, requestedPitch);
 thirdPersonCamera.snapTo(player.position);
+const titleCamera = new TitleCamera(camera, intro.holdsWorld);
 const postProcessing = createPostProcessing(
   renderer,
   scene,
@@ -113,6 +148,22 @@ const postProcessing = createPostProcessing(
   quality,
   toneMapping,
 );
+
+void intro
+  .waitForAssets()
+  // Compile the loaded world's shaders behind the title card, not as a hitch on entry.
+  .then(() => renderer.compileAsync(scene, camera))
+  .catch(() => undefined)
+  .then(() => intro.setReady());
+
+void intro.whenEntering().then(() => ambientAudio.unveil(CITY_HEARD_SECONDS));
+void intro.whenRevealing().then(() => {
+  titleCamera.release();
+  if (renderQuality === quality) return;
+  renderQuality = quality;
+  resize();
+  pullFocus(renderer.domElement);
+});
 
 const debugOverlay = import.meta.env.DEV ? new DebugOverlay() : null;
 if (import.meta.env.DEV) {
@@ -151,8 +202,21 @@ window.setTimeout(() => {
 function resize(): void {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  applyInternalResolution(renderer, window.innerWidth, window.innerHeight, quality);
+  applyInternalResolution(renderer, window.innerWidth, window.innerHeight, renderQuality);
   postProcessing.resize(window.innerWidth, window.innerHeight);
+}
+
+// Hands the frame from the title's soft, low-resolution image to the game's
+// full resolution without a visible jump in sharpness.
+function pullFocus(canvas: HTMLCanvasElement): void {
+  canvas.style.filter = `blur(${TITLE_FOCUS_BLUR_PX}px)`;
+  void canvas.offsetWidth;
+  canvas.style.transition = `filter ${TITLE_FOCUS_PULL_MS}ms cubic-bezier(0.2, 0.7, 0.2, 1)`;
+  canvas.style.filter = 'blur(0px)';
+  window.setTimeout(() => {
+    canvas.style.removeProperty('filter');
+    canvas.style.removeProperty('transition');
+  }, TITLE_FOCUS_PULL_MS + 100);
 }
 
 window.addEventListener('resize', resize);
@@ -174,12 +238,16 @@ function frame(timestamp: number): void {
   }
   thirdPersonCamera.getPlanarForward(cameraForward);
   const simulationResult = simulationClock.advance(rawDelta, (fixedDelta) => {
-    player.update(fixedDelta, input, cameraForward);
+    // The rider waits where the night begins while the title card holds the frame.
+    if (!titleCamera.holdsPlayer) {
+      player.update(fixedDelta, input, cameraForward);
+    }
     world.update(fixedDelta, player.position);
     elapsedSeconds += fixedDelta;
   });
   const cameraDelta = simulationResult.resetAfterExtremeGap ? 0 : rawDelta;
   thirdPersonCamera.update(cameraDelta, input, player);
+  titleCamera.apply(cameraDelta);
 
   renderer.info.reset();
   postProcessing.render(elapsedSeconds);
@@ -195,7 +263,7 @@ function frame(timestamp: number): void {
     drawingBufferWidth: renderer.domElement.width,
     drawingBufferHeight: renderer.domElement.height,
     pixelRatio: renderer.getPixelRatio(),
-    renderScale: quality.renderScale,
+    renderScale: renderQuality.renderScale,
     textures: renderer.info.memory.textures,
     geometries: renderer.info.memory.geometries,
     materials: sceneMaterialCount,

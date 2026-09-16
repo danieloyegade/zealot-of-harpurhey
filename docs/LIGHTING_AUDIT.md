@@ -4,6 +4,20 @@ Date: 13 September 2026
 
 Scope: current `main` working tree at `4562e6d`, including the uncommitted AgX, layered-road, pavement, Greek Gyros relocation, Advanced Photo, bus-shelter texture, and camera work present during the audit.
 
+## Implementation follow-up — 14 September 2026
+
+The first lighting pass has now implemented the audit's safest recommendations without changing global exposure, fog, moonlight, hemisphere light or the display grade:
+
+- added `LocalLightRegistry` so every runtime local point light shares the 2/4/5 quality budget, including Coral's asset-loaded pair;
+- grouped multi-light fixtures atomically, with short fade in/out windows and development diagnostics that list active light groups;
+- replaced the dead public-streetlight values with one budgeted moving proxy that only contributes when the player is inside a pool;
+- added a restrained player material visibility floor by lifting indirect diffuse response only on the dark denim/leather/hair materials;
+- added a Greek Gyros counter light from the authored GLB anchor and a placeholder emissive treatment for fixture lenses;
+- added a temporary Come Through Lab threshold cue for the entrance/drop-box ensemble, pending a final authored luminaire in the asset;
+- preserved the nocturnal negative space by leaving unlit intervals and the global grade untouched.
+
+Still open after this pass: final post-grade/quantisation review, authored Hive and car-park threshold lighting, final Greek/CTL material-light integration, and repeatable capture comparison once those asset passes land.
+
 ## Executive answer
 
 Some important areas are too dark, but the game as a whole is **not** too dark.

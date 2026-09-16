@@ -7,6 +7,18 @@
       "runtimeArgs": ["node_modules/vite/bin/vite.js"],
       "port": 5173,
       "autoPort": true
+    },
+    {
+      "name": "pallet-viewer",
+      "runtimeExecutable": "/usr/bin/python3",
+      "runtimeArgs": ["-m", "http.server", "5199", "--bind", "127.0.0.1", "--directory", "/private/tmp/claude-501/-Users-danieloyegade-GitHub-zealot-of-harpurhey/273d322e-9494-41d7-aeeb-95c11f147f60/scratchpad/viewer"],
+      "port": 5199
+    },
+    {
+      "name": "title-specimen",
+      "runtimeExecutable": "/usr/bin/python3",
+      "runtimeArgs": ["-m", "http.server", "5201", "--bind", "127.0.0.1", "--directory", "/private/tmp/claude-501/-Users-danieloyegade-GitHub-zealot-of-harpurhey/0135791c-b935-482c-ba64-c4162db12fbc/scratchpad"],
+      "port": 5201
     }
   ]
 }

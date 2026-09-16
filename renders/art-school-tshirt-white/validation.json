@@ -1,0 +1,69 @@
+{
+  "asset": "Art School T-shirt \u2014 white",
+  "glb": "public/assets/models/characters/clothing/art_school_tshirt_white.glb",
+  "object": "ARTSCHOOL_TSHIRT_WHITE",
+  "mesh_objects": 1,
+  "materials": [
+    "MAT_ArtSchool_White"
+  ],
+  "vertices": 16257,
+  "triangles": 10560,
+  "triangle_budget": [
+    5000,
+    12000
+  ],
+  "non_manifold_edges_after_welding_import_splits": 0,
+  "raw_import_boundary_edges_from_uv_normal_splits": 15074,
+  "uv_sets": [
+    "UVMap"
+  ],
+  "bounds_m": {
+    "min": [
+      -0.6232,
+      -0.276,
+      0.6245
+    ],
+    "max": [
+      0.6079,
+      0.2052,
+      1.5498
+    ],
+    "dimensions": [
+      1.2311,
+      0.4812,
+      0.9253
+    ]
+  },
+  "object_scale": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "textures": [
+    {
+      "name": "art-school-tshirt-white-basecolor",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "name": "art-school-tshirt-white-normal",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "name": "art-school-tshirt-white-roughness",
+      "size": [
+        2048,
+        2048
+      ]
+    }
+  ],
+  "fitting_body_exported": false,
+  "cameras_exported": false,
+  "lights_exported": false,
+  "status": "PASS"
+}

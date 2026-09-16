@@ -1,0 +1,92 @@
+{
+  "asset": "Art School T-shirt \u2014 black",
+  "glb": "public/assets/models/characters/clothing/art_school_tshirt_black.glb",
+  "object": "ARTSCHOOL_TSHIRT_BLACK",
+  "mesh_objects": 1,
+  "materials": [
+    "MAT_ArtSchool_Black"
+  ],
+  "vertices": 4706,
+  "triangles": 8496,
+  "triangle_budget": [
+    5000,
+    12000
+  ],
+  "uv_sets": [
+    "UVMap"
+  ],
+  "non_manifold_edges_after_welding_import_splits": 0,
+  "raw_import_boundary_edges_from_uv_normal_splits": 902,
+  "bounds_m": {
+    "min": [
+      -0.3875,
+      -0.1598,
+      0.9435
+    ],
+    "max": [
+      0.3934,
+      0.1476,
+      1.4968
+    ],
+    "dimensions": [
+      0.7808,
+      0.3073,
+      0.5533
+    ]
+  },
+  "object_scale": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "gltf": {
+    "images": [
+      "image/png",
+      "image/png",
+      "image/png"
+    ],
+    "extensionsUsed": [
+      "KHR_materials_specular",
+      "KHR_materials_sheen"
+    ],
+    "materialName": "MAT_ArtSchool_Black",
+    "doubleSided": true,
+    "metallicFactor": 0
+  },
+  "glb_size_mb": 3.13,
+  "print": {
+    "font": "SnellRoundhand.ttc",
+    "size": 0.03567387687188021,
+    "line1_width": 0.2109,
+    "line2_width": 0.268,
+    "natural_ratio": 0.787
+  },
+  "clearance_to_fitting_body_m": {
+    "chest": 0.0156,
+    "shoulder_R": 0.0313,
+    "upper_arm_R": 0.0536,
+    "waist": 0.0288,
+    "hip": 0.0066
+  },
+  "cloth_strain_vs_flat_pattern": {
+    "mean": -0.0053,
+    "p95": 0.0559,
+    "max": 0.4148
+  },
+  "seam_gaps_before_welding_m": {
+    "mean": 0.001,
+    "max": 0.0062
+  },
+  "neckline_length_m": 0.4282,
+  "hang_on_fitting_body": {
+    "hem_z": 0.9435,
+    "drop_m": 0.5065,
+    "pattern_length_m": 0.678,
+    "underarm_z": 1.2477,
+    "underarm_lift_m": 0.1867
+  },
+  "fitting_body_exported": false,
+  "cameras_exported": false,
+  "lights_exported": false,
+  "status": "PASS"
+}

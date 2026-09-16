@@ -55,7 +55,9 @@ The GLB exports the following transform nodes for game integration:
 No runtime code reads these yet — placement in `src/world/createWorld.ts` uses
 a fixed rotation + bounding-box-derived offset instead (see below). Wiring
 delivery/interaction logic to these anchors is future work for
-`src/interaction/`/`src/delivery/`, both currently empty stubs.
+`src/interaction/`/`src/delivery/`, both currently empty stubs. Runtime
+lighting does read these anchors as a fallback if the wall fixture cannot be
+found, so the door/drop-box threshold remains locally classifiable at night.
 
 ## Game integration
 
@@ -93,3 +95,7 @@ collections/anchors present, model bounds non-degenerate, and a clean
 
 Final PBR materials, weathering, CTL branding, the green instruction panel,
 QR code, graffiti, and gameplay/delivery logic remain separate future passes.
+The current local light is intentionally temporary: `createWorld.ts` places a
+small cold-white cue just proud of `CTL_WallFixture_AlarmBox` so the entrance
+and 24-hour drop box read after dark, but the geometry pass does not yet
+include a real authored luminaire.

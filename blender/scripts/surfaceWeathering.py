@@ -68,6 +68,42 @@ def noise2(q, seed=0):
     return _lerp(a, b, u[:, 1])
 
 
+def noise2_tile(q, period, seed=0):
+    """noise2 whose lattice wraps, so a tile sampled over `period` cells is seamless.
+
+    `period` is either one integer or (px, py) in lattice cells.  Pass a very
+    large period on an axis that should not repeat: the wrap then never bites,
+    and tiling and non-tiling axes can share one code path.
+    """
+    px, py = (period, period) if np.isscalar(period) else period
+    cell = np.floor(q)
+    f = (q - cell).astype(F)
+    cell = cell.astype(np.int64)
+    u = f * f * (F(3) - F(2) * f)
+    x0, y0 = np.mod(cell[:, 0], px), np.mod(cell[:, 1], py)
+    x1, y1 = np.mod(x0 + 1, px), np.mod(y0 + 1, py)
+    zero = np.zeros_like(x0)
+    a = _lerp(_hash(x0, y0, zero, seed), _hash(x1, y0, zero, seed), u[:, 0])
+    b = _lerp(_hash(x0, y1, zero, seed), _hash(x1, y1, zero, seed), u[:, 0])
+    return _lerp(a, b, u[:, 1])
+
+
+def fbm2_tile(q, period, octaves=4, seed=0, gain=0.5):
+    """fbm2 over a wrapping lattice.  Lacunarity is fixed at 2 so every octave
+    shares the tile: the cell period doubles as the frequency doubles."""
+    px, py = (period, period) if np.isscalar(period) else period
+    total = np.zeros(len(q), F)
+    r = q.astype(F)
+    amplitude, norm = 1.0, 0.0
+    for octave in range(octaves):
+        total += F(amplitude) * noise2_tile(r, (px, py), seed + octave * 17)
+        norm += amplitude
+        amplitude *= gain
+        r = r * F(2.0)
+        px, py = px * 2, py * 2
+    return total / F(norm)
+
+
 def fbm3(p, octaves=4, seed=0, lacunarity=2.03, gain=0.5):
     total = np.zeros(len(p), F)
     q = p.astype(F)

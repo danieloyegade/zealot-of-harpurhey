@@ -1,6 +1,6 @@
 {
   "glb": "public/assets/models/pallets/pallet_worn_blue.glb",
-  "size_mb": 1.79,
+  "size_mb": 1.59,
   "objects": [
     [
       "pallet-worn-blue",
@@ -35,7 +35,7 @@
         0.0007,
         -0.0007
       ],
-      "triangles": 7162,
+      "triangles": 7838,
       "uv_layers": [
         "UVMap"
       ],

@@ -113,9 +113,10 @@ Nine empties ship in the GLB. Five are the §22 vendor interaction anchors:
 `GG_VendorAnchor` behind it, and `GG_QueueAnchor_01`–`_03` along the frontage.
 Four are authored light positions for the night look described in §§18–19 —
 `GG_LightAnchor_Counter`, `GG_LightAnchor_Interior_A`/`_B` and
-`GG_LightAnchor_Fascia` — following the same pattern Cass Art uses, where
-`createWorld.ts` reads the GLB's lighting anchors and feeds them to the
-nearest-hero-light selector. The fixture meshes
+`GG_LightAnchor_Fascia`. `createWorld.ts` currently reads the counter anchor
+as a restrained warm-white local light through `LocalLightRegistry`; the
+interior and fascia anchors are reserved for the final night-material pass.
+The fixture meshes
 (`GG_LightFixture_A_CounterStrip`, `GG_LightFixture_B_Ceiling_01`/`_02` and
 their lens plates) are plain geometry so the emissive treatment can be chosen
 at texture stage rather than baked now.
@@ -128,20 +129,19 @@ player walk over it.
 
 ## In the world
 
-The kiosk is placed at **(14, -19.35)** on the park's north pavement, directly
-opposite Renee across North Road, declared in `FOOD_STANDS` in
-`src/world/worldLayout.ts` and loaded by `addGreekGyros` in
-`src/world/createWorld.ts`. Blender's -Y frontage imports facing +Z, so it backs
-onto the road and serves into the park with no rotation applied; it sits west of
-the bollard pair and streetlight at x = 18.5-20. Collision is a single box,
-6.4 × 2.6 m extended 0.56 m east to enclose the side service step. Inspect it in
-a development build with `?view=greek-gyros`.
+The kiosk is placed at **(20.6, 10.5)** on the park's east edge, declared in
+`FOOD_STANDS` in `src/world/worldLayout.ts` and loaded by `addGreekGyros` in
+`src/world/createWorld.ts`. Blender's -Y frontage imports facing +Z; runtime
+rotation turns the serving front west toward the park. Collision is a single
+box, 6.4 × 2.6 m extended 0.56 m to enclose the side service step. Inspect it
+in a development build with `?view=greek-gyros`.
 
 ## Not yet done
 
 - All texturing: the `GREEK GYROS` wordmark, Greek flags, the menu strip,
   social icons, food imagery, menu-board content, the diamond-plate pattern and
   stainless wear.
-- Night materials and game lighting (§§18–19) — `applyGreekGyrosPolicy` strips
-  emissive while the asset is untextured, and nothing reads the light anchors
-  yet, so the fascia and interior stay dark after sunset.
+- Final night materials and signage lighting (§§18–19). The runtime now gives
+  the fixture lenses a placeholder emissive and uses the counter anchor for a
+  preliminary local light, but the fascia, menu boards, bright white interior
+  and final spill still belong to the texture/material pass.

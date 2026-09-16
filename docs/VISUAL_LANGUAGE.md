@@ -100,7 +100,7 @@ Palette:
 
 ## Public illumination
 
-Streetlights are six-sided poles with chunky rectangular heads. Each combines a low-cost spotlight, a noisy translucent eight-sided cone, a textured additive ground pool and two fragmented reflection streaks. Colours are selected from the restricted sodium, fluorescent, magenta and cold-white palette. Darkness between pools remains part of the composition.
+Streetlights are six-sided poles with chunky rectangular heads. Each combines a luminous head, a noisy translucent eight-sided cone, a textured additive ground pool and two fragmented reflection streaks. Colours are selected from the restricted sodium, fluorescent, magenta and cold-white palette. A single managed public-light proxy moves to the current nearby pool so the player and immediate ground can respond to one pool at a time; the poles themselves do not each carry real-time spotlights. Darkness between pools remains part of the composition.
 
 Selected façades receive small coloured accents, while low emissive brick contributions imitate lighting information embedded in a photographed or baked surface. Finished bus-shelter lights retain their stronger local colour treatment.
 

@@ -1,0 +1,752 @@
+{
+  "asset": "vinyl-exchange",
+  "pass": "surface materials, first batch",
+  "convention": {
+    "maps": "<slug>-{basecolor,orm,normal}.png",
+    "orm": "R occlusion, G roughness, B metallic (glTF)",
+    "normal": "OpenGL tangent space (+Y up)",
+    "unit": "1 Blender unit = 1 m; coverage_m is what one tile spans"
+  },
+  "measured_reference_patches": {
+    "stone shaded": {
+      "photo": "DSC06349.JPG",
+      "srgb": "#A9A0A1"
+    },
+    "stone sunlit": {
+      "photo": "DSC06349.JPG",
+      "srgb": "#FFFEFD (clipped)"
+    },
+    "fascia grey sunlit": {
+      "photo": "DSC06347.JPG",
+      "srgb": "#9AA1B1"
+    },
+    "fascia grey shaded": {
+      "photo": "DSC06354.JPG",
+      "srgb": "#D1CFD0"
+    },
+    "fascia dirt bloom": {
+      "photo": "DSC06349.JPG",
+      "srgb": "#828C9D"
+    },
+    "logo red face": {
+      "photo": "DSC06349.JPG",
+      "srgb": "#5C091D"
+    },
+    "logo red lower": {
+      "photo": "DSC06349.JPG",
+      "srgb": "#570216"
+    },
+    "tagline strip": {
+      "photo": "DSC06349.JPG",
+      "srgb": "#303239"
+    },
+    "corner sign black": {
+      "photo": "DSC06349.JPG",
+      "srgb": "#41495B"
+    },
+    "window frame blue": {
+      "photo": "DSC06349.JPG",
+      "srgb": "#546A8D (with glass)"
+    },
+    "ribbed pier shaded": {
+      "photo": "DSC06354.JPG",
+      "srgb": "#4C413D"
+    },
+    "ribbed pier lit": {
+      "photo": "DSC06347.JPG",
+      "srgb": "#4D4F52"
+    },
+    "tile band": {
+      "photo": "DSC06354.JPG",
+      "srgb": "#BEAEA3"
+    },
+    "corner door green": {
+      "photo": "DSC06347.JPG",
+      "srgb": "#584B30"
+    },
+    "grille / louvre": {
+      "photo": "DSC06349.JPG",
+      "srgb": "#17171B"
+    }
+  },
+  "materials": [
+    {
+      "slug": "stone-painted-ashlar",
+      "description": "Upper facade painted ashlar: sooted joints, washed faces, crazed paint",
+      "coverage_m": [
+        2.4,
+        2.4
+      ],
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mm_per_texel": [
+        1.1719,
+        1.1719
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.691,
+        0.892
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -2.467,
+        0.184
+      ],
+      "base_srgb_mean": [
+        202,
+        194,
+        187
+      ],
+      "files": {
+        "basecolor": {
+          "file": "stone-painted-ashlar-basecolor.png",
+          "bytes": 1142797
+        },
+        "orm": {
+          "file": "stone-painted-ashlar-orm.png",
+          "bytes": 701410
+        },
+        "normal": {
+          "file": "stone-painted-ashlar-normal.png",
+          "bytes": 4528286
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.03,
+          "typical": 0.23
+        },
+        "basecolor_v": {
+          "wrap": 3.49,
+          "typical": 0.23
+        },
+        "orm_u": {
+          "wrap": 0.02,
+          "typical": 0.18
+        },
+        "orm_v": {
+          "wrap": 0.27,
+          "typical": 0.28
+        },
+        "normal_u": {
+          "wrap": 0.68,
+          "typical": 0.92
+        },
+        "normal_v": {
+          "wrap": 0.66,
+          "typical": 1.06
+        }
+      }
+    },
+    {
+      "slug": "fascia-grey-panel",
+      "description": "Fascia band: coated panel, butt joints, fixings, top grime and run-down",
+      "coverage_m": [
+        1.35,
+        1.35
+      ],
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mm_per_texel": [
+        0.6592,
+        0.6592
+      ],
+      "tiles": {
+        "u": true,
+        "v": false
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.42,
+        0.86
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -2.243,
+        1.648
+      ],
+      "base_srgb_mean": [
+        186,
+        186,
+        185
+      ],
+      "files": {
+        "basecolor": {
+          "file": "fascia-grey-panel-basecolor.png",
+          "bytes": 881079
+        },
+        "orm": {
+          "file": "fascia-grey-panel-orm.png",
+          "bytes": 368533
+        },
+        "normal": {
+          "file": "fascia-grey-panel-normal.png",
+          "bytes": 761542
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.05,
+          "typical": 0.21
+        },
+        "orm_u": {
+          "wrap": 0.01,
+          "typical": 0.16
+        },
+        "normal_u": {
+          "wrap": 0.03,
+          "typical": 0.13
+        }
+      }
+    },
+    {
+      "slug": "logo-red-acrylic",
+      "description": "Projecting logo letters: moulded crimson acrylic, dust film, fine scratches",
+      "coverage_m": [
+        0.6,
+        0.6
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        0.5859,
+        0.5859
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 0.6,
+      "roughness_range": [
+        0.24,
+        0.383
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.035,
+        0.03
+      ],
+      "base_srgb_mean": [
+        177,
+        27,
+        43
+      ],
+      "files": {
+        "basecolor": {
+          "file": "logo-red-acrylic-basecolor.png",
+          "bytes": 304654
+        },
+        "orm": {
+          "file": "logo-red-acrylic-orm.png",
+          "bytes": 192340
+        },
+        "normal": {
+          "file": "logo-red-acrylic-normal.png",
+          "bytes": 286190
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.07
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.07
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.04
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.04
+        },
+        "normal_u": {
+          "wrap": 0.04,
+          "typical": 0.04
+        },
+        "normal_v": {
+          "wrap": 0.04,
+          "typical": 0.04
+        }
+      }
+    },
+    {
+      "slug": "sign-black-panel",
+      "description": "Corner sign box and tagline strip: satin black panel, dust bloom, wipe marks",
+      "coverage_m": [
+        1.0,
+        1.0
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 0.7,
+      "roughness_range": [
+        0.356,
+        0.485
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.039,
+        0.039
+      ],
+      "base_srgb_mean": [
+        24,
+        25,
+        27
+      ],
+      "files": {
+        "basecolor": {
+          "file": "sign-black-panel-basecolor.png",
+          "bytes": 148036
+        },
+        "orm": {
+          "file": "sign-black-panel-orm.png",
+          "bytes": 184702
+        },
+        "normal": {
+          "file": "sign-black-panel-normal.png",
+          "bytes": 278726
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.05
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.03
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.06
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.03
+        },
+        "normal_u": {
+          "wrap": 0.03,
+          "typical": 0.03
+        },
+        "normal_v": {
+          "wrap": 0.03,
+          "typical": 0.03
+        }
+      }
+    },
+    {
+      "slug": "frame-blue-paint",
+      "description": "Upper window frames: aged petrol-blue paint, chalking, chips to primer",
+      "coverage_m": [
+        0.3,
+        0.3
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        0.293,
+        0.293
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.44,
+        0.877
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.383,
+        0.058
+      ],
+      "base_srgb_mean": [
+        31,
+        44,
+        66
+      ],
+      "files": {
+        "basecolor": {
+          "file": "frame-blue-paint-basecolor.png",
+          "bytes": 304592
+        },
+        "orm": {
+          "file": "frame-blue-paint-orm.png",
+          "bytes": 295023
+        },
+        "normal": {
+          "file": "frame-blue-paint-normal.png",
+          "bytes": 424089
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.06,
+          "typical": 0.25
+        },
+        "basecolor_v": {
+          "wrap": 0.02,
+          "typical": 0.19
+        },
+        "orm_u": {
+          "wrap": 0.17,
+          "typical": 0.56
+        },
+        "orm_v": {
+          "wrap": 0.05,
+          "typical": 0.58
+        },
+        "normal_u": {
+          "wrap": 0.62,
+          "typical": 0.75
+        },
+        "normal_v": {
+          "wrap": 0.06,
+          "typical": 0.52
+        }
+      }
+    },
+    {
+      "slug": "shopfront-ribbed-alu",
+      "description": "Shopfront piers: vertically ribbed mill-finish aluminium, brushed, grimy grooves",
+      "coverage_m": [
+        0.64,
+        0.64
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        0.625,
+        0.625
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.265,
+        0.676
+      ],
+      "metallic_range": [
+        0.45,
+        1.0
+      ],
+      "relief_mm": [
+        -1.374,
+        2.2
+      ],
+      "base_srgb_mean": [
+        140,
+        142,
+        145
+      ],
+      "files": {
+        "basecolor": {
+          "file": "shopfront-ribbed-alu-basecolor.png",
+          "bytes": 130445
+        },
+        "orm": {
+          "file": "shopfront-ribbed-alu-orm.png",
+          "bytes": 279014
+        },
+        "normal": {
+          "file": "shopfront-ribbed-alu-normal.png",
+          "bytes": 40615
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.33,
+          "typical": 1.63
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        },
+        "orm_u": {
+          "wrap": 0.65,
+          "typical": 5.93
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.04
+        },
+        "normal_u": {
+          "wrap": 17.41,
+          "typical": 3.33
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 0.0
+        }
+      }
+    },
+    {
+      "slug": "tile-white-glazed",
+      "description": "Shopfront base and corner columns: 100 mm white glazed tiles, dirty grout, chips",
+      "coverage_m": [
+        1.2,
+        1.2
+      ],
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mm_per_texel": [
+        0.5859,
+        0.5859
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.11,
+        0.85
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -2.141,
+        0.35
+      ],
+      "base_srgb_mean": [
+        197,
+        195,
+        184
+      ],
+      "files": {
+        "basecolor": {
+          "file": "tile-white-glazed-basecolor.png",
+          "bytes": 685154
+        },
+        "orm": {
+          "file": "tile-white-glazed-orm.png",
+          "bytes": 539228
+        },
+        "normal": {
+          "file": "tile-white-glazed-normal.png",
+          "bytes": 282863
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 1.0
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 1.0
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 1.32
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 1.32
+        },
+        "normal_u": {
+          "wrap": 0.0,
+          "typical": 0.99
+        },
+        "normal_v": {
+          "wrap": 0.01,
+          "typical": 0.99
+        }
+      }
+    },
+    {
+      "slug": "door-green-paint",
+      "description": "Corner recess door: boarded sage-green paint, kick scuffs, hand grime, tape residue",
+      "coverage_m": [
+        1.15,
+        2.3
+      ],
+      "pixels": [
+        1024,
+        2048
+      ],
+      "mm_per_texel": [
+        1.123,
+        1.123
+      ],
+      "tiles": {
+        "u": true,
+        "v": false
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.391,
+        0.882
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -3.43,
+        0.16
+      ],
+      "base_srgb_mean": [
+        112,
+        117,
+        90
+      ],
+      "files": {
+        "basecolor": {
+          "file": "door-green-paint-basecolor.png",
+          "bytes": 410863
+        },
+        "orm": {
+          "file": "door-green-paint-orm.png",
+          "bytes": 206332
+        },
+        "normal": {
+          "file": "door-green-paint-normal.png",
+          "bytes": 84746
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.44,
+          "typical": 0.6
+        },
+        "orm_u": {
+          "wrap": 0.02,
+          "typical": 0.65
+        },
+        "normal_u": {
+          "wrap": 0.0,
+          "typical": 1.07
+        }
+      }
+    },
+    {
+      "slug": "grille-dark-steel",
+      "description": "Security gate, vents and shutter framing: dark painted steel, rust bloom and bleed",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        0.4883,
+        0.4883
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.471,
+        0.834
+      ],
+      "metallic_range": [
+        0.0,
+        0.595
+      ],
+      "relief_mm": [
+        -0.229,
+        0.228
+      ],
+      "base_srgb_mean": [
+        33,
+        34,
+        36
+      ],
+      "files": {
+        "basecolor": {
+          "file": "grille-dark-steel-basecolor.png",
+          "bytes": 116069
+        },
+        "orm": {
+          "file": "grille-dark-steel-orm.png",
+          "bytes": 207095
+        },
+        "normal": {
+          "file": "grille-dark-steel-normal.png",
+          "bytes": 382867
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.07,
+          "typical": 0.04
+        },
+        "basecolor_v": {
+          "wrap": 0.07,
+          "typical": 0.04
+        },
+        "orm_u": {
+          "wrap": 0.07,
+          "typical": 0.06
+        },
+        "orm_v": {
+          "wrap": 0.06,
+          "typical": 0.06
+        },
+        "normal_u": {
+          "wrap": 0.12,
+          "typical": 0.09
+        },
+        "normal_v": {
+          "wrap": 0.11,
+          "typical": 0.09
+        }
+      }
+    }
+  ]
+}

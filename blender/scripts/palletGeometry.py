@@ -8,9 +8,9 @@ all four sides.
 Every board is its own mesh with a chamfered ten-vertex profile, so edges catch
 highlights, and each is deformed individually from a seeded generator: bow,
 sweep, twist, cup, skewed saw cuts, edge chips, crushed corners and, on a few
-top boards, a splintered end.  Block faces hidden under the cross and bottom
-boards are removed.  Nail heads are placed by ray casting onto the deformed
-boards, so none float.
+top boards, a splintered end.  Blocks keep the faces the boards cover: their
+chipped and crushed corners would otherwise open onto a hollow interior.  Nail
+heads are placed by ray casting onto the deformed boards, so none float.
 
 Local axes of every part: X runs along its length, Y across its width, Z through
 its thickness.  createPallets.py reads these to align wood grain per board.
@@ -81,8 +81,6 @@ class Pallet:
 # three so the top can be jagged at broken ends), left side, bottom.
 CORNERS = {"br": (0, 1), "tr": (2, 3), "tl": (6, 7), "bl": (8, 9)}
 CORNER_SIGN = {"br": (1, -1), "tr": (1, 1), "tl": (-1, 1), "bl": (-1, -1)}
-TOP_SEGMENTS = (3, 4, 5)  # segments k -> k + 1 on the top face
-BOTTOM_SEGMENT = 9  # segment 9 -> 0
 
 
 def profile(w, t, chamfer):
@@ -103,7 +101,7 @@ def random_chips(rng, half_length, count, corners, depth=(2.5, 8.0), length=(0.0
     return chips
 
 
-def build_board(name, size, rng, collection, *, chips=(), broken_end=0, hide_caps=False, deform=1.0):
+def build_board(name, size, rng, collection, *, chips=(), broken_end=0, deform=1.0):
     """Mesh one timber part centred on its origin; returns the object and its damage record."""
     length, width, thick = size
     L, w, t = length / 2, width / 2, thick / 2
@@ -166,18 +164,13 @@ def build_board(name, size, rng, collection, *, chips=(), broken_end=0, hide_cap
             ring.append(bm.verts.new((x, y, z)))
         rings.append(ring)
 
-    hidden = []
     n = len(base)
     for i in range(len(rings) - 1):
         for k in range(n):
-            face = bm.faces.new((rings[i][k], rings[i][(k + 1) % n], rings[i + 1][(k + 1) % n], rings[i + 1][k]))
-            if hide_caps and (k in TOP_SEGMENTS or k == BOTTOM_SEGMENT):
-                hidden.append(face)
+            bm.faces.new((rings[i][k], rings[i][(k + 1) % n], rings[i + 1][(k + 1) % n], rings[i + 1][k]))
     bm.faces.new(rings[0][::-1])
     bm.faces.new(rings[-1])
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    if hidden:
-        bmesh.ops.delete(bm, geom=hidden, context="FACES")
 
     mesh = bpy.data.meshes.new(name)
     bm.to_mesh(mesh)
@@ -317,7 +310,7 @@ def build_pallet(layout, collection):
             chips = random_chips(rng, size[0] / 2, int(rng.integers(1, 4)), ("br", "bl", "br", "bl", "tr"),
                                  depth=(2, 6), length=(0.015, 0.05))
             obj, damage = build_board(f"{layout.slug}-block-{r * 3 + i + 1:02d}", size, rng, collection,
-                                      chips=chips, hide_caps=True, deform=0.3)
+                                      chips=chips, deform=0.3)
             obj.location = (x + rng.normal(0, 1.5) * MM, y + rng.normal(0, 1.5) * MM, z_block)
             parts.append(Part(obj, "block", size, {"x": x, "y": y, **damage}))
 

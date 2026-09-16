@@ -51,7 +51,11 @@ import {
 import { createCollisionDebugOutlines } from './collisionDebug';
 import { loadModel } from './loadModel';
 import { LocalLightRegistry } from './localLighting';
-import { applyBusShelterTexturePolicy, applySpiceCabinTexturePolicy } from './busShelterMaterials';
+import {
+  applyBusShelterTexturePolicy,
+  applyPalletTexturePolicy,
+  applySpiceCabinTexturePolicy,
+} from './busShelterMaterials';
 import { createDreamsBuilding } from './createDreamsBuilding';
 import {
   addHeroStreetEnvironmentKit,
@@ -66,6 +70,7 @@ import {
   BUS_STOPS,
   FOOD_STANDS,
   FUTURE_EXITS,
+  PALLET_STACKS,
   PARK,
   PAVEMENT_WIDTH,
   ROAD_WIDTH,
@@ -73,6 +78,7 @@ import {
   WORLD_BOUNDS,
   WORLD_LOCATIONS,
   type FoodStandMarker,
+  type PalletStackMarker,
   type SterlingStationMarker,
   type WorldLocation,
   type WorldMarker,
@@ -652,6 +658,56 @@ function applyVillageBooksBlockoutPolicy(model: Group): void {
         material.roughness = 0.18;
         material.metalness = 0.04;
       } else {
+        material.roughness = Math.max(material.roughness, 0.58);
+      }
+    }
+  });
+}
+
+function applyVinylExchangeTexturePolicy(model: Group): void {
+  // The GLB carries the Blender-authored metric UVs and PBR material sets.
+  // Runtime only applies the shared photographic filtering policy, preserves
+  // the blockout's untextured regions, and configures transparent glazing.
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      material.emissiveMap = null;
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+
+      for (const texture of [
+        material.map,
+        material.roughnessMap,
+        material.metalnessMap,
+        material.aoMap,
+        material.normalMap,
+      ]) {
+        if (texture) {
+          applyTextureProfile(texture, 'PHOTO_ENVIRONMENT');
+        }
+      }
+
+      if (material.name === 'MAT_VE_Glass_PLACEHOLDER') {
+        material.transparent = true;
+        material.opacity = 0.28;
+        material.depthWrite = false;
+        material.roughness = 0.2;
+        material.metalness = 0.04;
+      } else if (material.name === 'MAT_VE_Surface_sign-black-panel-tagline') {
+        // Measured coating shift: #41495b sign box -> #303239 tagline strip.
+        // MeshStandardMaterial.color is a linear multiplier over the map.
+        material.color.setRGB(0.56, 0.48, 0.39);
+      } else if (!material.map) {
         material.roughness = Math.max(material.roughness, 0.58);
       }
     }
@@ -1426,7 +1482,7 @@ async function addComeThroughLabModel(
             thresholdPosition.y,
             thresholdPosition.z,
             VISUAL_STYLE.lighting.coldWhite,
-            4.8,
+            3.2,
             6,
           ),
         ],
@@ -1633,6 +1689,135 @@ async function addSpiceCabinModel(
   }
 }
 
+// Worn pallets (docs/assets/pallets.md) stacked against Spice Cabin's west gable,
+// just back from the South Road building line, on the bare ground of the gap:
+// the blue 1200 × 1000 on the ground, the brown 1200 × 800 dropped on it
+// slightly askew. Both GLBs are authored at real-world scale standing on Y = 0,
+// long side on local X; the yaw runs that along the wall with the fork-opening
+// face (local +Z) looking west into the gap. Daniel asked for them 4× bigger,
+// then half that, so every pallet-derived size below is multiplied by
+// PALLET_STACK_SCALE; the wall gap and setback stay absolute so the stack still
+// hugs the gable.
+const PALLET_STACK_SCALE = 2;
+const SPICE_CABIN_PALLET_STACK_YAW = -Math.PI / 2;
+const SPICE_CABIN_PALLET_WALL_GAP = 0.15;
+const SPICE_CABIN_PALLET_SETBACK = 0.35;
+// Top of the blue deck boards. The brown pallet's lowest nail heads sink a
+// millimetre or two into them, which is hidden.
+const PALLET_BLUE_DECK_TOP = 0.146;
+// Top face of the 'World ground' surface (laid at y -0.12), measured by ray cast.
+// The gap beside the gable is bare ground, 7 cm below 0, not pavement.
+const WORLD_GROUND_TOP = -0.07;
+// Top of the car-park slab (0.1 m thick, centred at y = -0.02).
+const CAR_PARK_SURFACE_TOP = 0.03;
+
+function spiceCabinPalletStackPlacement(location: WorldLocation): PalletStackMarker {
+  return {
+    id: 'spice-cabin-pallets',
+    name: 'Spice Cabin pallet stack',
+    // The blue pallet is 1.0 m deep across the wall and 1.2 m long along it, before scaling.
+    x: location.x - location.width / 2 - SPICE_CABIN_PALLET_WALL_GAP - 0.5 * PALLET_STACK_SCALE,
+    z: location.z + location.depth / 2 - SPICE_CABIN_PALLET_SETBACK - 0.6 * PALLET_STACK_SCALE,
+    rotationY: SPICE_CABIN_PALLET_STACK_YAW,
+  };
+}
+
+function addPalletStackCollision(
+  obstacles: CollisionObstacle[],
+  marker: PalletStackMarker,
+): void {
+  obstacles.push(
+    orientedBoxObstacle(
+      marker.name,
+      marker.x,
+      marker.z,
+      1.2 * PALLET_STACK_SCALE,
+      1.0 * PALLET_STACK_SCALE,
+      marker.rotationY,
+      0.3 * PALLET_STACK_SCALE,
+    ),
+  );
+}
+
+let palletTemplates: Promise<{ blue: Group; brown: Group }> | undefined;
+
+function loadPalletTemplates(): Promise<{ blue: Group; brown: Group }> {
+  palletTemplates ??= Promise.all([
+    loadModel('assets/models/pallets/pallet_worn_blue.glb?v=texture-pass-20260914'),
+    loadModel('assets/models/pallets/pallet_worn_brown.glb?v=texture-pass-20260914'),
+  ]).then(([blue, brown]) => {
+    applyPalletTexturePolicy(blue);
+    applyPalletTexturePolicy(brown);
+    // Spice Cabin's ground-contact decal crosses its pallet stack. Queue every
+    // instance after such decals so all four stacks share the exact same policy.
+    for (const pallet of [blue, brown]) {
+      pallet.traverse((child) => {
+        if (child instanceof Mesh && child.material instanceof MeshStandardMaterial) {
+          child.material.transparent = true;
+          child.material.depthWrite = true;
+          child.renderOrder = 2;
+        }
+      });
+    }
+    return { blue, brown };
+  });
+  return palletTemplates;
+}
+
+function palletGroundAt(x: number, z: number): number {
+  const pavement = pavementTopAt(PAVEMENTS, x, z);
+  if (pavement !== undefined) {
+    return pavement;
+  }
+  const carPark = WORLD_LOCATIONS.find((location) => location.kind === 'car-park');
+  if (
+    carPark &&
+    Math.abs(x - carPark.x) <= carPark.width / 2 &&
+    Math.abs(z - carPark.z) <= carPark.depth / 2
+  ) {
+    return CAR_PARK_SURFACE_TOP;
+  }
+  return WORLD_GROUND_TOP;
+}
+
+async function addPalletStack(root: Group, marker: PalletStackMarker): Promise<void> {
+  const ground = palletGroundAt(marker.x, marker.z);
+  try {
+    const templates = await loadPalletTemplates();
+    const blue = templates.blue.clone(true);
+    const brown = templates.brown.clone(true);
+    const s = PALLET_STACK_SCALE;
+    blue.name = `${marker.name} worn blue pallet`;
+    blue.scale.setScalar(s);
+    blue.position.set(marker.x, ground, marker.z);
+    blue.rotation.y = marker.rotationY;
+    // Pushed toward the wall inside the blue deck's slack (0.1 m each side before
+    // scaling), and turned a little so one end overhangs, as a dropped pallet lands.
+    // Rotate that local offset with each stack. Both GLB origins are at their
+    // base, so the deck height scales with them.
+    const localOffsetX = -0.04 * s;
+    const localOffsetZ = -0.05 * s;
+    const cos = Math.cos(marker.rotationY);
+    const sin = Math.sin(marker.rotationY);
+    const brownOffsetX = localOffsetX * cos + localOffsetZ * sin;
+    const brownOffsetZ = -localOffsetX * sin + localOffsetZ * cos;
+    brown.name = `${marker.name} worn brown pallet`;
+    brown.scale.setScalar(s);
+    brown.position.set(
+      marker.x + brownOffsetX,
+      ground + PALLET_BLUE_DECK_TOP * s,
+      marker.z + brownOffsetZ,
+    );
+    brown.rotation.y = marker.rotationY + 0.06;
+    root.add(blue, brown);
+  } catch (error) {
+    console.error(
+      `[World] Failed to load ${marker.name}. Only its collision remains.`,
+      error,
+    );
+  }
+}
+
 async function addRealCameraModel(
   root: Group,
   location: WorldLocation,
@@ -1657,6 +1842,41 @@ async function addRealCameraModel(
   } catch (error) {
     console.error(
       '[World] Failed to load real_camera.glb. No legacy Real Camera blockout is retained.',
+      error,
+    );
+  }
+}
+
+async function replaceVinylExchangeFallback(
+  root: Group,
+  fallback: Mesh,
+  location: WorldLocation,
+): Promise<void> {
+  fallback.visible = false;
+  try {
+    const vinylExchange = await loadModel(
+      'assets/models/vinyl-exchange-blockout.glb?v=surface-pass-20260916',
+    );
+    applyVinylExchangeTexturePolicy(vinylExchange);
+    vinylExchange.name = 'Vinyl Exchange textured geometry blockout — facade detail pending';
+
+    // The Blender origin is the notional Oldham/Dale street-line corner. On
+    // import, Blender -Y faces world +Z, so the Oldham frontage already faces
+    // South Road and the Dale return already faces east. Put the authored
+    // X = 0 side wall on the plot's east edge and Y = 0 frontage on Z = 54.
+    const frontZ = location.z + location.depth / 2;
+    vinylExchange.position.set(
+      location.x + location.width / 2,
+      pavementTopAt(PAVEMENTS, location.x, frontZ + 0.5) ?? 0,
+      frontZ,
+    );
+    root.add(vinylExchange);
+    root.remove(fallback);
+  } catch (error) {
+    fallback.visible = true;
+    markLoadFailure(fallback, 'Vinyl Exchange');
+    console.error(
+      '[World] Failed to load vinyl-exchange-blockout.glb. Showing the magenta fallback.',
       error,
     );
   }
@@ -2120,7 +2340,29 @@ function addBuildingLocation(
     // so the measured envelope stays solid.
     addCollisionFootprint(obstacles, location);
     addSpiceCabinBollardCollision(obstacles, location);
+    const palletStack = spiceCabinPalletStackPlacement(location);
+    void addPalletStack(root, palletStack);
+    addPalletStackCollision(obstacles, palletStack);
     addDevelopmentLabel(root, location.name, location.x, location.height + 1.1, location.z);
+    return;
+  }
+
+  if (location.id === 'vinyl-exchange') {
+    const fallback = createBlockoutBuildingMass(location);
+    fallback.position.set(location.x, location.height / 2, location.z);
+    fallback.name = 'Vinyl Exchange loading placeholder';
+    root.add(fallback);
+    void replaceVinylExchangeFallback(root, fallback, location);
+    // The doors are articulated in the GLB for a future interaction pass, but
+    // no interaction system exists yet, so the authored body remains solid.
+    addCollisionFootprint(obstacles, location);
+    addDevelopmentLabel(
+      root,
+      `${location.name} · geometry blockout · detail and textures pending`,
+      location.x,
+      location.height + 1.1,
+      location.z,
+    );
     return;
   }
 
@@ -2771,9 +3013,6 @@ const STERLING_ARTICULATED_NODES = new Set([
 ]);
 // Must match DOCK_SPACING in blender/scripts/createSterlingBikeBlockout.py.
 const STERLING_DOCK_SPACING = 0.94;
-// Top of the car park surface slab (0.1 m thick, centred at y = -0.02).
-const CAR_PARK_SURFACE_TOP = 0.03;
-
 let sterlingTemplates: Promise<{ bike: Group; dock: Group }> | undefined;
 
 function applySterlingBlockoutPolicy(model: Group): void {
@@ -3625,6 +3864,10 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
   addBusShelter(root, obstacles, BUS_STOPS[1], -Math.PI / 2);
   for (const marker of FOOD_STANDS) {
     addGreekGyros(root, obstacles, marker, localLights);
+  }
+  for (const marker of PALLET_STACKS) {
+    void addPalletStack(root, marker);
+    addPalletStackCollision(obstacles, marker);
   }
   addStreetDressing(root, obstacles);
   for (const marker of STERLING_BIKE_DOCKS) {

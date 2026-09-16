@@ -20,9 +20,13 @@ The renderer and gameplay clock are separate. Raw animation-frame time is used f
 
 Most environmental illumination in Zealot of Harperhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights.
 
-Phase 1 removes all 16 streetlight spotlights and the routine point lights attached to storefronts, Dreams fixtures, the pickup, and bus-shelter accents. Those locations retain their identity through emissive signs and textures, painted reflection geometry, visible additive cones, fake pools, and photographic illumination.
+The old streetlight spotlights and routine always-on storefront lights are removed. Those locations retain their identity through emissive signs and textures, painted reflection geometry, visible additive cones, fake pools, and photographic illumination.
 
-Five exterior hero point lights remain in the scene: Dreams, Renae, the florist, and the two bus shelters. Cass Art contributes three warm interior candidates at its authored window and central ceiling-track anchors. A nearest-light selector chooses among all eight candidates while maintaining the active budget for the current quality profile. No local spotlights remain.
+All runtime local point lights now pass through `LocalLightRegistry`. The registry owns both static hero lights and asset-loaded lights, including Coral's pair after the Coral GLBs load. It chooses atomic lighting installations rather than individual loose lights, so LOW cannot select only half of a deliberately balanced pair. The selector ranks by either real point-light reach at the player or explicit location relevance for thresholds and lit facades, with short fades to avoid visible switching.
+
+Public streetlights remain mostly graphic objects. A single managed public-light proxy moves to the nearest streetlight pool and only contributes when the player is inside that pool, so the rider responds to streetlight islands without turning every pole into a real-time light.
+
+The normal active point-light ceiling is still the selected profile's 2/4/5 budget, including Coral, public-light proxy use, and lights fading out. No local spotlights remain.
 
 ## Quality profiles
 
@@ -50,7 +54,7 @@ The development-only overlay is toggled with `H` and reports:
 
 - real FPS and current raw frame milliseconds;
 - renderer draw calls and triangles;
-- active point and spot lights;
+- active point and spot lights, registered local point lights, and active local-light group names;
 - drawing-buffer dimensions;
 - effective renderer pixel ratio and profile render scale;
 - resident textures and geometries;

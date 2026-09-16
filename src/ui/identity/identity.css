@@ -1,0 +1,500 @@
+/*
+ * Zealot graphic identity: tokens and components shared by the title card,
+ * chapter cards, menus and printed artefacts. See docs/GRAPHIC_IDENTITY.md.
+ *
+ * Two worlds. The night world (cobalt, black, ivory, amber) is play. The print
+ * world (oxblood, cream, ink, faded pink) is documents: tickets, receipts,
+ * chapter cards, posters. Texture belongs to a medium: ink to printed type,
+ * paper fibre to documents, grain to photographs.
+ */
+
+:root {
+  --z-night: #020817;
+  --z-cobalt: #071c5a;
+  --z-ivory: #efe6d2;
+  --z-amber: #ffa326;
+  --z-oxblood: #5e1320;
+  --z-cream: #ebdfc6;
+  --z-ink: #1c1414;
+  --z-faded-pink: #d9a1a6;
+  /* The one saturated accent. A small star, never a code. */
+  --z-red: #e5132b;
+  --z-serif: 'EB Garamond', Garamond, 'Adobe Garamond Pro', Georgia, serif;
+  /* Provisional: long ascenders, sweeping capitals, a real hand. Mrs Saint Delafield is the heavier alternative. */
+  --z-hand: 'Herr Von Muellerhoff', 'Mrs Saint Delafield', 'Snell Roundhand', cursive;
+}
+
+/* A world's tone (type and ink colours) can be used without its ground. */
+.z-world--night,
+.z-tone--night {
+  --z-type: var(--z-ivory);
+  --z-mark: var(--z-ivory);
+  --z-ghost: var(--z-amber);
+  --z-ghost-opacity: 0.16;
+  --z-ink-filter: url(#z-ink);
+
+  color: var(--z-type);
+}
+
+.z-world--night {
+  background:
+    radial-gradient(90% 70% at 50% 115%, rgb(255 163 38 / 12%), transparent 60%),
+    radial-gradient(120% 80% at 50% -10%, rgb(7 28 90 / 70%), transparent 70%),
+    var(--z-night);
+}
+
+/* Paper: horizontal fibres and a fine speckle, multiplied into cream. Each
+   filter region is pinned to its tile (x/y 0, width/height 1): stitchTiles only
+   joins seamlessly when the noise is computed over exactly the tile. */
+.z-world--print,
+.z-tone--print {
+  --z-type: var(--z-ink);
+  --z-mark: var(--z-oxblood);
+  --z-ghost: var(--z-faded-pink);
+  --z-ghost-opacity: 0.5;
+  --z-ink-filter: url(#z-ink-print);
+
+  color: var(--z-type);
+}
+
+.z-world--print {
+  background-color: var(--z-cream);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.006 .08' numOctaves='3' seed='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .27 0 0 0 0 .17 0 0 0 .34 -.12'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='1' seed='9' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .22 0 0 0 0 .15 0 0 0 1.4 -.95'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+  background-blend-mode: multiply;
+}
+
+/* ---- Type ------------------------------------------------------------------ */
+
+.z-caps {
+  margin: 0;
+  font-family: var(--z-serif);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.z-caps--1 {
+  font-size: clamp(11px, 0.5rem + 0.18vw, 14px);
+  letter-spacing: 0.24em;
+}
+
+.z-caps--2 {
+  font-size: clamp(10px, 0.44rem + 0.16vw, 12.5px);
+  opacity: 0.66;
+}
+
+.z-caps--3 {
+  font-size: clamp(9.5px, 0.4rem + 0.12vw, 11.5px);
+  letter-spacing: 0.2em;
+  opacity: 0.46;
+}
+
+.z-script {
+  margin: 0;
+  font-family: var(--z-hand);
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.z-printed {
+  position: relative;
+  display: inline-block;
+}
+
+.z-printed__ink {
+  position: relative;
+  color: var(--z-mark);
+  filter: var(--z-ink-filter);
+}
+
+.z-printed__ghost {
+  position: absolute;
+  inset: 0;
+  color: var(--z-ghost);
+  opacity: var(--z-ghost-opacity);
+  filter: var(--z-ink-filter);
+  transform: translate(0.018em, -0.012em);
+}
+
+/* ---- Marks ----------------------------------------------------------------- */
+
+.z-emblem {
+  display: block;
+  height: auto;
+  color: var(--z-mark);
+  overflow: visible;
+}
+
+.z-cartouche {
+  display: block;
+  overflow: visible;
+  color: var(--z-mark);
+}
+
+.z-cartouche__rule path,
+.z-cartouche__ornament path,
+.z-cartouche__ornament ellipse {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.z-cartouche__rule path + path {
+  opacity: 0.5;
+}
+
+.z-cartouche__ornament circle,
+.z-cartouche__lace circle {
+  fill: currentColor;
+  stroke: none;
+}
+
+.z-cartouche__lace {
+  opacity: 0.55;
+}
+
+.z-cartouche__ornament .z-cartouche__star {
+  fill: var(--z-red);
+  stroke: none;
+}
+
+.z-route {
+  display: block;
+  overflow: visible;
+  color: var(--z-mark);
+}
+
+.z-route__stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.1;
+}
+
+.z-route__stroke--pressure {
+  stroke-width: 1.5;
+}
+
+.z-route__rider {
+  fill: var(--z-red);
+}
+
+/* ---- Compositions ---------------------------------------------------------- */
+
+.z-chapter,
+.z-pause,
+.z-destination,
+.z-beat {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.z-chapter__head {
+  position: absolute;
+  top: 9%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4cqw;
+  transform: translateX(-50%);
+}
+
+.z-chapter__emblem--horse {
+  width: 7cqw;
+}
+
+.z-chapter__emblem--rose {
+  width: 2.4cqw;
+}
+
+.z-chapter__frame {
+  position: relative;
+  display: grid;
+  width: 150px;
+  height: 104px;
+  place-items: center;
+}
+
+.z-chapter__frame > .z-cartouche {
+  position: absolute;
+  inset: 0;
+}
+
+.z-chapter__frame > .z-emblem {
+  width: 64px;
+}
+
+.z-chapter__serif {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 2.4cqw;
+  line-height: 1.6;
+  letter-spacing: 0.2em;
+  text-align: center;
+  white-space: pre-line;
+  transform: translate(-50%, -50%);
+}
+
+.z-chapter__script {
+  position: absolute;
+  top: 56%;
+  left: 50%;
+  font-size: 10.5cqw;
+  transform: translate(-50%, -50%) rotate(-4deg);
+}
+
+.z-chapter__meta,
+.z-pause__foot {
+  position: absolute;
+  right: 4%;
+  bottom: 5%;
+  left: 4%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.z-pause__mast {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  font-size: 2.2cqw;
+  letter-spacing: 0.34em;
+  transform: translateX(-50%);
+}
+
+.z-pause__script {
+  position: absolute;
+  top: 33%;
+  left: 50%;
+  font-size: 12cqw;
+  transform: translate(-50%, -50%) rotate(-5deg);
+}
+
+.z-pause__ledger {
+  position: absolute;
+  top: 51%;
+  left: 50%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 4cqw;
+  row-gap: 1.3cqw;
+  width: 32cqw;
+  margin: 0;
+  transform: translateX(-50%);
+}
+
+.z-pause__ledger dt,
+.z-pause__ledger dd {
+  margin: 0;
+  font-size: 1.15cqw;
+}
+
+.z-pause__ledger dt {
+  opacity: 0.5;
+}
+
+.z-pause__ledger dd {
+  text-align: right;
+}
+
+.z-pause__horse {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  width: 4.2cqw;
+  transform: translateX(-50%);
+}
+
+.z-destination__service {
+  position: absolute;
+  top: 10%;
+  left: 8%;
+}
+
+.z-destination__from {
+  position: absolute;
+  top: 40%;
+  left: 8%;
+  font-size: 3.2cqw;
+  letter-spacing: 0.2em;
+}
+
+.z-destination__route {
+  position: absolute;
+  top: 49%;
+  left: 7%;
+  width: 52cqw;
+  height: auto;
+}
+
+.z-destination__to {
+  position: absolute;
+  top: 60%;
+  right: 5%;
+  font-size: 9.5cqw;
+  transform: rotate(-4deg);
+}
+
+.z-destination__time {
+  position: absolute;
+  right: 8%;
+  bottom: 9%;
+}
+
+.z-ticket {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 360px;
+  height: 220px;
+  background: none;
+}
+
+.z-ticket > .z-cartouche {
+  position: absolute;
+  inset: 0;
+}
+
+.z-ticket__from {
+  font-size: 18px;
+  letter-spacing: 0.26em;
+}
+
+.z-ticket__to {
+  margin-top: -6px;
+  font-size: 46px;
+  transform: rotate(-4deg);
+}
+
+.z-ticket__foot {
+  display: flex;
+  gap: 28px;
+}
+
+.z-beat__script {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  font-size: 26cqw;
+  transform: translate(-50%, -50%) rotate(-6deg);
+}
+
+.z-delivery {
+  position: absolute;
+  top: 58%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 300px;
+  height: 214px;
+  transform: translate(-50%, -50%);
+}
+
+.z-delivery > .z-cartouche {
+  position: absolute;
+  inset: 0;
+}
+
+.z-delivery__rose {
+  width: 15px;
+  margin-bottom: 6px;
+}
+
+/* ---- Development board (?identity) ------------------------------------------ */
+
+.z-board {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: auto;
+  padding-block: 32px 80px;
+  padding-inline: clamp(16px, 4vw, 56px);
+  color: #ccc;
+  background: #0c0c0e;
+}
+
+.z-board__section {
+  margin-bottom: 56px;
+}
+
+.z-board__label {
+  margin: 0 0 14px;
+  font: 12px/1 var(--z-serif);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+
+.z-board__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr));
+  gap: 16px;
+}
+
+.z-sheet {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.z-sheet--centred {
+  display: grid;
+  place-items: center;
+}
+
+.z-marks {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 28px 36px;
+  padding: 24px;
+}
+
+.z-marks__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.z-marks__horse {
+  width: 150px;
+}
+
+.z-marks__horse-mark {
+  width: 36px;
+}
+
+.z-marks__rose {
+  width: 30px;
+}
+
+.z-marks__star {
+  width: 12px;
+  height: 30px;
+  color: var(--z-red);
+}
+
+.z-marks__script {
+  font-size: 64px;
+}

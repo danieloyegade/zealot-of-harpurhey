@@ -21,7 +21,7 @@ def c255(r, g, b):
 
 
 EARLY = c255(186, 158, 118)
-LATE = c255(150, 118, 82)
+LATE = c255(160, 128, 92)
 KNOT = c255(96, 64, 40)
 GREY_EARLY = c255(138, 132, 120)
 GREY_LATE = c255(98, 92, 82)
@@ -110,12 +110,15 @@ def timber(tex, fr, parts):
         sb, sc = rs.normal(0, 0.012, 2)
         rho = rs.uniform(110, 190)
         warp = (fbm3(np.stack((a * 0.8, b * 6, c * 6), axis=1) + s, 3, s) - 0.5) * 0.004
-        phase = (np.hypot(b - (pb + sb * a), c - (pc + sc * a)) + warp) * rho
+        radius = np.hypot(b - (pb + sb * a), c - (pc + sc * a)) + warp
+        # Uneven growing seasons: ring widths wander instead of repeating like corduroy.
+        irregular = (fbm2(np.stack((radius * 40, np.full_like(radius, s * 0.1)), axis=1), 3, s + 13) - 0.5) * 4.0
+        phase = radius * rho + irregular
         knot = np.zeros(len(sel), F)
         for _ in range(int(rs.integers(0, 3 if meta["kind"] in ("top", "bottom") else 2))):
             ak, bk, rk = rs.uniform(-half_l + 0.04, half_l - 0.04), rs.uniform(-half_w, half_w), rs.uniform(0.005, 0.013)
             d = np.hypot((a - ak) / 1.6, b - bk) / rk
-            phase += 1.2 * np.exp(-(d / 3.0) ** 2)
+            phase += 0.7 * np.exp(-(d / 3.0) ** 2)
             knot = np.maximum(knot, smoothstep(1.1, 0.75, d))
         f = phase - np.floor(phase)
         out["late"][sel] = smoothstep(0.5, 0.78, f) * (1 - smoothstep(0.9, 1.0, f))
@@ -127,7 +130,7 @@ def timber(tex, fr, parts):
         out["streak"][sel] = noise2(np.stack((a / 0.08, across / 0.0009), axis=1) + s, s + 11)
         spacing = rs.uniform(0.003, 0.007)
         marks = 0.5 + 0.5 * np.sin(2 * np.pi * (a + 0.002 * np.sin(across * 31 + s)) / spacing)
-        patch = smoothstep(0.35, 0.7, noise2(np.stack((a / 0.12, across / 0.05), axis=1) + s, s + 7))
+        patch = smoothstep(0.5, 0.8, noise2(np.stack((a / 0.12, across / 0.05), axis=1) + s, s + 7))
         out["saw"][sel] = marks * patch * rs.uniform(0.3, 1.0)
         warm = rs.normal(0, 0.035)
         out["tone"][sel] = rs.uniform(0.84, 1.08) * np.array((1 + warm, 1, 1 - warm), F)
@@ -165,8 +168,8 @@ def causes(tex, fr, ctx, seed):
     outward = (tex.N[:, 0] * np.sign(x) + tex.N[:, 1] * np.sign(y)) > 0.5
     fork = (fr.kind["block"] | fr.kind["bottom"] | fr.kind["cross"]) & ~fr.end_face & (z < ctx["top_z"] - 0.02)
     fork = fork * np.where(outward, 1.0, 0.45)
-    line = smoothstep(0.93, 0.985, noise2(np.stack((across / 0.0012, a / 0.09), axis=1), seed + 2))
-    gouge = line * smoothstep(0.5, 0.78, noise2(np.stack((a / 0.15, across / 0.15), axis=1), seed + 3)) * fork
+    line = smoothstep(0.955, 0.99, noise2(np.stack((across / 0.0012, a / 0.09), axis=1), seed + 2))
+    gouge = line * smoothstep(0.6, 0.85,noise2(np.stack((a / 0.15, across / 0.15), axis=1), seed + 3)) * fork
 
     scratch = micro_scratches(tex, seed + 4, directions=5, length=0.09) * top_face * fr.wood
     chips = smoothstep(0.7, 0.82, noise3(tex.P / 0.009, seed + 5)) * smoothstep(0.5, 0.72, noise3(tex.P / 0.06, seed + 6))
@@ -185,7 +188,7 @@ def causes(tex, fr, ctx, seed):
 def relief(W, C, fr, tex, fresh):
     """Height in metres: weathered grain, saw marks, fibres, dents, gouges."""
     h = (W["late"] - 0.5) * 0.0003 * (0.35 + C["expo"])
-    h += W["saw"] * 0.00015 * (1 - fresh) + (W["fibre"] - 0.5) * 0.00008 - W["pores"] * 0.00006
+    h += W["saw"] * 0.0001 * (1 - fresh) + (W["fibre"] - 0.5) * 0.00008 - W["pores"] * 0.00006
     h -= C["dents"] * 0.0005 + C["gouge"] * 0.0003 + C["scratch"] * 0.00008
     h += np.where(fr.end_face, (noise3(tex.P / 0.0015, 91) - 0.5) * 0.0004, 0)
     return h * fr.wood
@@ -213,7 +216,7 @@ def nail_marks(L, tex, fr, ctx, rng):
         aniso = np.hypot(along / 2.4, np.sqrt(np.clip(dist ** 2 - along ** 2, 0, None)))
         r = record["radius"]
         strength = rng.uniform(0.4, 0.9)
-        stain[idx] = np.maximum(stain[idx], strength * np.exp(-(aniso / rng.uniform(0.008, 0.016)) ** 2))
+        stain[idx] = np.maximum(stain[idx], strength * np.exp(-(aniso / rng.uniform(0.005, 0.011)) ** 2))
         rust[idx] = np.maximum(rust[idx], 0.5 * np.exp(-((dist - r * 1.5) / 0.002) ** 2))
         L.height[idx] -= 0.00035 * np.exp(-((dist - r * 1.15) / 0.0025) ** 2)
         if "state" not in record:
@@ -285,13 +288,16 @@ def weather_brown(tex, fr, ctx, rng):
     L.albedo = timber_albedo(W, fr)
     L.rough = (0.9 + 0.05 * (W["fibre"] - 0.5) - 0.16 * W["knot"]).astype(F)
 
-    # Years outdoors grey every face a little and silver the exposed deck.
-    grey = np.clip(0.22 + C["expo"] * W["weather"] * (0.45 + 0.5 * C["broad"]), 0, 0.9) * fr.wood
+    # Years outdoors grey every face and silver the exposed deck.
+    grey = np.clip(0.45 + C["expo"] * W["weather"] * (0.5 + 0.5 * C["broad"]), 0, 0.92) * fr.wood
     L.tint(lerp3(full(GREY_EARLY, L.albedo), full(GREY_LATE, L.albedo), W["late"]), grey)
     L.mix_rough(0.94, grey * 0.4)
+    # Yard dirt works into the grain and darkens the lower, damper timber.
+    L.tint(DIRT, (W["late"] * 0.18 + W["pores"] * 0.25) * fr.wood)
+    L.tint(DIRT, (C["dirt"] * 0.25 + C["damp"] * 0.2) * fr.wood)
 
     # End grain wicks water and dirt.
-    L.albedo[fr.end_face] *= 0.62
+    L.albedo[fr.end_face] *= 0.5
     L.rough[fr.end_face] = 0.96
     soak = np.exp(-fr.da / 0.045) * (0.4 + 0.6 * noise3(tex.P / 0.02, 201)) * fr.wood * ~fr.end_face
     L.tint(STAIN, soak * 0.45)
@@ -328,16 +334,21 @@ def weather_blue(tex, fr, ctx, rng):
     top_boards = fr.kind["top"] & top
     rub = top_boards * C["broad"] * W["rub"]
     ground = (C["up"] < -0.7) & (C["z"] < 0.004)
-    # Blocks were painted all over; only board ends take real end-grain wear.
-    end_wear = fr.end_face * np.where(fr.kind["block"], 0.12, 0.5)
-    wear = (0.95 * C["stack"] + 0.9 * C["corner"] + 0.5 * C["edge"] * smoothstep(0.4, 0.75, noise3(tex.P / 0.012, 301))
+    # Blocks and the cross boards sheltered under the deck keep their painted ends;
+    # exposed deck and bottom board ends take real end-grain wear.
+    end_wear = fr.end_face * np.select([fr.kind["block"], fr.kind["cross"]], [0.12, 0.15], 0.5)
+    # A cross board's end is only 22 mm tall, so the corner term would strip the whole face.
+    knocks = C["corner"] * np.where(fr.kind["cross"], 0.3, 1.0)
+    wear = (0.95 * C["stack"] + 0.9 * knocks + 0.5 * C["edge"] * smoothstep(0.4, 0.75, noise3(tex.P / 0.012, 301))
             + 0.55 * rub + C["chips"] * (0.25 + 0.7 * C["edge"]) + 0.6 * C["gouge"] + 0.45 * C["scratch"]
             + 0.12 * top_boards + 0.35 * ground + end_wear)
     # On the deck, paint lets go along latewood ridges and raised fibres, leaving
-    # blue caught in streaks along the grain; protected faces break up less by grain.
-    grain_w = np.where(top, 0.35, 0.12)
-    streak_w = np.where(top, 0.35, 0.08)
-    t = wear + (W["late"] - 0.5) * grain_w + (W["fibre"] - 0.5) * 0.25 + (W["streak"] - 0.5) * streak_w
+    # blue caught in streaks along the grain.  Sides and blocks hold solid paint
+    # that fails in chips, not in bands.
+    grain_w = np.where(top, 0.35, 0.04)
+    streak_w = np.where(top, 0.35, 0.0)
+    fibre_w = np.where(top, 0.25, 0.1)
+    t = wear + (W["late"] - 0.5) * grain_w + (W["fibre"] - 0.5) * fibre_w + (W["streak"] - 0.5) * streak_w
     paint = 1 - smoothstep(0.38, 0.62, t)
     thin = smoothstep(0.1, 0.4, t) * paint
 

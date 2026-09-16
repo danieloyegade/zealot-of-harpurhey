@@ -60,9 +60,10 @@ const FADE_OUT_SECONDS = 0.18;
 /**
  * Owns every real-time local point light in the world.
  *
- * The selector ranks atomic lighting installations by their actual point-light
- * range at the player's torso, rather than filling the budget with the nearest
- * objects regardless of whether their attenuation can reach the action.
+ * The selector ranks atomic lighting installations by either real point-light
+ * reach at the player's torso or authored location relevance for thresholds
+ * and facades. It avoids filling the budget with the nearest objects when
+ * their attenuation or composition role cannot help the current view.
  */
 export class LocalLightRegistry {
   private readonly installations: RuntimeInstallation[] = [];
