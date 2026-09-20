@@ -24,7 +24,8 @@ Development-only references, source photography, `.blend` masters, and renders l
 - `FixedStepClock` advances gameplay at 60 Hz with bounded catch-up and explicit extreme-gap resets.
 - `InputController` tracks keyboard movement, running, and click-drag camera input.
 - `AmbientAudio` layers the local street recording beneath the current ambient music track. Browser autoplay rules mean audio begins on the first key press or pointer interaction; `M` toggles music without muting the street layer.
-- `PlayerController` owns the primitive player representation, velocity, facing direction, movement state, and collision movement.
+- `PlayerController` owns the primitive player representation, velocity, facing direction, movement state, and collision movement. While riding it is seated by `updateRiding`: planar two-bone IK puts the feet on the pedals and the hands on the grips.
+- `BikeInteraction` (`src/interaction/`) is the on-foot / riding state machine. It runs the player on foot, or the ridden Sterling bike and its rider, inside the fixed step, and supplies the camera target and the E prompt (`src/ui/InteractionPrompt.ts`).
 - `ThirdPersonCamera` owns orbit angles, camera-relative movement direction, and smoothed following.
 - `createWorld` builds the canonical city layout, visual blockouts and its collision description.
 - `collision.ts` isolates the lightweight collision routines from player and world rendering code.
@@ -42,12 +43,23 @@ Development-only references, source photography, `.blend` masters, and renders l
 - Run: hold `Shift` or `Space` while moving
 - Orbit camera: click and drag with the primary mouse button
 - Hide/show development labels and debug panel: `H`
+- Use (hire / ride / get off / return to dock): `E`
 - Production walking speed: **2.4 metres per second**
 - Production running speed: **4.5 metres per second**
 - Development walking speed: **3.12 metres per second** (30% faster)
 - Development running speed: **7.65 metres per second** (70% faster)
 
 Movement is calculated relative to the camera's horizontal facing direction. Velocity accelerates and decelerates smoothly to give the placeholder movement some weight. There is no jumping.
+
+### Riding a Sterling bike
+
+- Walk within about 1 m of a docked or parked bike: **E** hires it (docked) or takes it (parked). A docked bike first rolls 1.15 m straight back out of its dock, as at a real dock. Riding forward would run the front wheel through the side post.
+- Riding controls are bike-relative, not camera-relative: `W` pedal, `Shift` e-assist, `Space` boost (drives forward on its own, no `W` needed), `A`/`D` steer, `S` brake (then walk the bike backwards).
+- Pedalling tops out at **4.6 m/s**; e-assist at **6.9 m/s** (the ~15.5 mph fleet cap); Space boost at **20 m/s** (~45 mph, ~4.3x pedalling). Boost is a game-feel sprint, not realism. It was set below 5x because the city is ~100 m across and faster bikes can't turn into its streets. It reaches ~19 m/s in 4 s and bleeds off at 5 m/s² when released. Above assist speed braking is 12 m/s² (20 m/s to a stop in ~2.3 s / ~19 m). No development speed multiplier is applied.
+- **E** within 1 m of an empty dock's bike position (at up to 3.2 m/s) rolls the bike in and locks it. Anywhere else, **E** brakes to a stop, leaves the bike parked, and steps off. Press E again while braking to keep riding.
+- Steering is a kinematic bicycle model (yaw rate = speed × tan(steer) / 1.31 m wheelbase). Steering lock narrows with speed and is further capped by 16 m/s² of sideways grip, giving a ~25 m turning radius at full boost. The bike and rider lean into turns (up to 0.5 rad). Crank speed caps at ~2 rev/s.
+- Collision: a swept 0.27 m body circle plus two narrow wheel probes, sub-stepped every 0.1 m so boost speed cannot pass through lampposts. Anything a wall absorbs is taken off the speed. Docked and parked bikes are solid footprints that `SterlingFleet` adds to and removes from the shared obstacle list. A ridden bike has no footprint. Dock side posts are fixed obstacles.
+- The chase camera eases its boom from 6.8 m to 7.9 m while mounted, and above assist speed up to +2.6 m boom and +11° field of view at full boost.
 
 ## Performance and simulation policy
 
@@ -67,9 +79,15 @@ Most environmental illumination in Zealot of Harperhey is intentionally represen
 
 ### Camera
 
-The prototype uses a 50-degree perspective camera placed 6.8 metres from the player. Horizontal mouse orbit is unrestricted, while vertical pitch is clamped to a modest elevated range. Camera position follows the player using frame-rate-independent exponential smoothing. Pointer lock is not used.
+The agreed direction, the merge plan for the unmerged camera branches and the acceptance tests live in `docs/CAMERA_AND_MOVEMENT_BRIEF.md`. Read it before changing the camera, movement or input.
 
-The camera collides with the same obstacle set as the player. Each frame a 0.3-metre sphere is cast from the orbit pivot (1.15 metres above the player's feet) to the smoothed follow position, and the boom is shortened to the first hit, so orbiting beside or inside a building never puts the lens inside a wall. Pulling in is immediate; extending back out eases over roughly half a second. Obstacles are extruded from the ground to their `height`, so the camera can look over anything lower than it. Thin street furniture sets `blocksCamera: false`, so poles and bollards passing behind the player do not make the camera pump.
+**Guiding principle (Daniel, 2026-09-16):** the game is in part a photo walk through a nocturnal city of architecture. Most of the time the camera sits at eye level with a near-level lens, so building facades, bus stops and the street read clearly and are framed almost like photographs. Don't trade this for a high or top-down chase view. See also the medium-format framing notes in `docs/creative-constitution.md`.
+
+The camera is a 56-degree perspective lens 5.6 m behind the player. The orbit pivot, which is also the look target (`ORBIT_PIVOT_HEIGHT`), is 1.6 m above the feet, and the rest pitch (`DEFAULT_CAMERA_PITCH`) is 0.04 rad. That puts the lens about 1.8 m up with verticals upright and the horizon running through the player's head. Horizontal mouse orbit is unrestricted, and vertical pitch is clamped between -0.12 and 0.9 rad. After manual orbiting, pitch waits 2.5 s, then drifts back to the rest angle, so looking up at a roofline is a glance and not a new default. Camera position follows the player using frame-rate-independent exponential smoothing. Pointer lock is not used.
+
+On foot the camera never turns by itself. Walking is camera-relative, so easing yaw toward the direction of travel rotates the movement basis, and a diagonal or strafing walker gets carried round in a circle. C swings the camera behind the player over a fraction of a second. Only a bike, which steers relative to itself, pulls the camera round behind its direction of travel, and manual orbiting holds that off for 1.2 s. The riding boom is a fixed 7 m. Boost widens the lens by up to 5° but does not change the boom, because a speed-linked boom made the camera zoom in and out with every change of pace.
+
+The camera collides with the same obstacle set as the player. When an obstacle stands between the orbit pivot and the camera, the boom first rises a little and keeps its length. Each frame it sweeps extra pitch in 0.05 rad steps, capped at 0.35 rad so the eye-level framing is never swapped for a view from above, and uses the first angle whose 0.3 m sphere cast clears. The lift rises quickly, holds for 0.8 s after the obstruction clears so rows of buildings do not make it bob, then eases back down. When the capped lift can't clear, the boom is shortened. It is also shortened as a hard constraint while the lift is still catching up. Pulling in is immediate, and extending back out eases. Obstacles are extruded from the ground to their `height`, so the camera can look over anything lower than it. Thin street furniture sets `blocksCamera: false`, so poles and bollards passing behind the player do not make the camera pump.
 
 ### Collision
 
@@ -205,9 +223,9 @@ Use LODs/lower-detail variants for background NPCs where necessary. Characters f
 
 Design intent is in `ART_DIRECTION.md` under "Transport and Movement".
 
-Build vehicle systems in `src/vehicles/` (currently an empty stub) around reusable vehicle controllers. Initial priorities:
+Build vehicle systems in `src/vehicles/` around reusable vehicle controllers. Initial priorities:
 
-- `BicycleController`
+- `BicycleController`: first version exists as `SterlingBike` (physics, collision and rig animation for one fleet bike) plus `SterlingFleet` (docks, parked bikes, dock roll-in/out). Generalise it when the player's own bike arrives.
 - `BusRoute`
 - `BusController`
 - `BusStop`

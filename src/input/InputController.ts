@@ -12,6 +12,37 @@ const MOVEMENT_KEYS = new Set([
   'Space',
 ]);
 
+/**
+ * Some hardware keyboards and automation report an empty `code`, iPadOS ones
+ * among them, which would leave every binding dead. Rebuild the code from the
+ * key when that happens.
+ */
+function resolveCode(event: KeyboardEvent): string {
+  if (event.code) {
+    return event.code;
+  }
+  const key = event.key;
+  if (key.length === 1) {
+    const upper = key.toUpperCase();
+    if (upper >= 'A' && upper <= 'Z') {
+      return `Key${upper}`;
+    }
+    if (key === ' ') {
+      return 'Space';
+    }
+  }
+  if (key.startsWith('Arrow')) {
+    return key;
+  }
+  if (key === 'Shift') {
+    return 'ShiftLeft';
+  }
+  if (key === 'Meta') {
+    return 'MetaLeft';
+  }
+  return '';
+}
+
 export class InputController {
   readonly orbitDelta = new Vector2();
 
@@ -21,11 +52,14 @@ export class InputController {
   private isDragging = false;
   private activePointerId: number | null = null;
   private overlayToggleQueued = false;
+  private interactQueued = false;
+  private recenterQueued = false;
 
   constructor(private readonly element: HTMLCanvasElement) {
     window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('keyup', this.handleKeyUp);
     window.addEventListener('blur', this.handleBlur);
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
     element.addEventListener('pointerdown', this.handlePointerDown);
     element.addEventListener('pointermove', this.handlePointerMove);
     element.addEventListener('pointerup', this.handlePointerUp);
@@ -46,12 +80,21 @@ export class InputController {
     return target.set(right - left, forward - backward);
   }
 
+  /** Shift alone. Space is left free on foot for a future shutter key. */
   get isRunning(): boolean {
     return (
-      this.pressedKeys.has('ShiftLeft') ||
-      this.pressedKeys.has('ShiftRight') ||
-      this.pressedKeys.has('Space')
+      this.pressedKeys.has('ShiftLeft') || this.pressedKeys.has('ShiftRight')
     );
+  }
+
+  /** Shift alone: e-assist on a bike. */
+  get isAssisting(): boolean {
+    return this.pressedKeys.has('ShiftLeft') || this.pressedKeys.has('ShiftRight');
+  }
+
+  /** Space: boost on a bike. */
+  get isBoosting(): boolean {
+    return this.pressedKeys.has('Space');
   }
 
   consumeOverlayToggle(): boolean {
@@ -60,28 +103,67 @@ export class InputController {
     return queued;
   }
 
+  /** True once per E press; stays queued until a simulation step reads it. */
+  consumeInteract(): boolean {
+    const queued = this.interactQueued;
+    this.interactQueued = false;
+    return queued;
+  }
+
+  /** True once per C press: swing the camera behind the player. */
+  consumeRecenter(): boolean {
+    const queued = this.recenterQueued;
+    this.recenterQueued = false;
+    return queued;
+  }
+
   private isPressed(primary: string, alternate: string): boolean {
     return this.pressedKeys.has(primary) || this.pressedKeys.has(alternate);
   }
 
   private readonly handleKeyDown = (event: KeyboardEvent): void => {
-    if (MOVEMENT_KEYS.has(event.code)) {
+    const code = resolveCode(event);
+
+    if (MOVEMENT_KEYS.has(code)) {
       event.preventDefault();
     }
 
-    if (event.code === 'KeyH' && !event.repeat) {
+    // A Cmd chord hands the keystroke to the system, and on iPadOS the matching
+    // keyup never arrives, so every held key would stay down. Let go of them.
+    if (event.metaKey || code === 'MetaLeft' || code === 'MetaRight') {
+      this.pressedKeys.clear();
+      return;
+    }
+
+    if (code === 'KeyH' && !event.repeat) {
       this.overlayToggleQueued = true;
     }
 
-    this.pressedKeys.add(event.code);
+    if (code === 'KeyE' && !event.repeat) {
+      this.interactQueued = true;
+    }
+
+    if (code === 'KeyC' && !event.repeat) {
+      this.recenterQueued = true;
+    }
+
+    this.pressedKeys.add(code);
   };
 
   private readonly handleKeyUp = (event: KeyboardEvent): void => {
-    if (MOVEMENT_KEYS.has(event.code)) {
+    const code = resolveCode(event);
+
+    if (MOVEMENT_KEYS.has(code)) {
       event.preventDefault();
     }
 
-    this.pressedKeys.delete(event.code);
+    this.pressedKeys.delete(code);
+  };
+
+  private readonly handleVisibilityChange = (): void => {
+    if (document.hidden) {
+      this.pressedKeys.clear();
+    }
   };
 
   private readonly handleBlur = (): void => {

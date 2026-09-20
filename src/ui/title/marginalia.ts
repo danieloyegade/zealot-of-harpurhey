@@ -11,6 +11,7 @@ import { createZealotStar } from '../identity/zealotStar';
 const CONTROLS = [
   ['WASD', 'Move'],
   ['Shift', 'Run'],
+  ['E', 'Use'],
   ['Drag', 'Look'],
   ['M', 'Music'],
 ] as const;

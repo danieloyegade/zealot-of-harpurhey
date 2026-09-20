@@ -41,3 +41,55 @@ canvas.is-dragging {
   pointer-events: none;
   user-select: none;
 }
+
+.interaction-prompt,
+.interaction-hint {
+  position: fixed;
+  left: 50%;
+  z-index: 9;
+  color: #efe6d2;
+  font-family: 'EB Garamond', Garamond, Georgia, serif;
+  text-shadow: 0 1px 6px rgb(2 8 23 / 85%);
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transform: translate(-50%, 6px);
+  transition: opacity 220ms cubic-bezier(0.2, 0.7, 0.2, 1), transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.interaction-prompt {
+  bottom: clamp(28px, 9vh, 88px);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: clamp(17px, 1.6vw, 21px);
+  letter-spacing: 0.02em;
+}
+
+.interaction-prompt kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.6em;
+  height: 1.6em;
+  padding: 0 0.3em;
+  color: #020817;
+  background: #ffa326;
+  border-radius: 3px;
+  font: 600 0.8em/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  text-shadow: none;
+  box-shadow: 0 0 18px rgb(255 163 38 / 35%);
+}
+
+.interaction-hint {
+  bottom: clamp(8px, 4vh, 44px);
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-style: italic;
+  color: rgb(239 230 210 / 72%);
+  white-space: nowrap;
+}
+
+.interaction-prompt.is-visible,
+.interaction-hint.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}

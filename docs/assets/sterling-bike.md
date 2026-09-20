@@ -4,8 +4,40 @@
 
 Geometry blockout, placed in game on 2026-09-13 at Daniel's request ("put the
 sterling bikes in the game"). The blockout masters are exported as runtime
-GLBs clearly named `-blockout`. The detailed geometry pass, final materials,
-textures, decals, dirt, working lights, LODs and the brief's final
+GLBs clearly named `-blockout`.
+
+Second geometry pass on 2026-09-16 (Claude), rebuilt part by part against the
+photographs after a review of the first blockout:
+
+- **Dock:** replaced the tall charger-like cabinet with the real slim J-profile
+  grey side post. It stands beside the front wheel on the rider's left (+Y),
+  about 0.8 m tall, with a raked yellow bolted top lock plate and silver bar, a
+  tall yellow "Bike Hire" panel with a teal band facing the wheel, a concave
+  notch, and yellow-striped tread plates under the tyre on a thin rounded
+  baseplate (IMG_8915).
+- **Rear enclosure:** a smooth D-shaped clamshell (superellipse arc over a flat
+  base at z 0.40) with a closing crown. The lower wheel and spokes stay exposed.
+  Seat stays now run outboard and cross the teal panel, with reflective strips.
+  The chainstays are flattened and sit below the dark band, which continues
+  forward as the chain guard (IMG_8911/8912).
+- **Frame:** one swept, flattened step-through tube that swells into the
+  battery housing at the crank, with an access-panel seam, a head-tube gusset
+  and a slimmer 48 mm seat tube (IMG_8913/8914/8916).
+- **Basket:** a solid moulded tub with a rolled lip. Perforations are deferred
+  to an alpha/normal map. It is frame-mounted (IMG_8916), with a dock lock
+  tongue underneath and a white head-unit panel behind it.
+- **Cockpit:** real raked steering axis, painted grey-lavender fork and crown,
+  tall silver stem with collar and bolts, swept-back cruiser bar.
+- **Wheels and running gear:** sidewall reflective stripes, dull rims, 28
+  spokes per wheel, spoke-aligned reflectors, wide channel mudguards with
+  wire stays, rear mudguard tail with a tall capsule rear lens (IMG_8917),
+  black chainring guard, silver 5-arm spider, platform pedals, chain
+  tensioner roller.
+- **Palette:** lemon frame, aqua panels, silver-grey dock, golden-yellow dock
+  panels.
+
+Final materials, textures, decals (STERLING lettering, "electric", fleet
+number, bee mark), dirt, working lights, LODs and the brief's final
 `sterling_bike.glb`/`sterling_dock.glb` are still to come.
 
 ## Source
@@ -14,7 +46,7 @@ textures, decals, dirt, working lights, LODs and the brief's final
 - Photographs: `IMG_8911.HEIC` through `IMG_8917.HEIC`
 - Rebuild script: `blender/scripts/createSterlingBikeBlockout.py`
 - Editable blockout: `blender/source/sterling-bike/sterling_bike_blockout.blend`
-- Review renders: `renders/sterling-bike-blockout/A-...png` through `G-...png`
+- Review renders: `renders/sterling-bike-blockout/A-...png` through `H-...png`
 
 All seven photographs were cross-referenced. Dimensions are inferred from the
 photographs rather than surveyed.
@@ -28,7 +60,9 @@ photographs rather than surveyed.
 - Wheel outside diameter: approximately `0.71 m`
 - Wheelbase: `1.31 m`
 - Overall bike length: approximately `1.9 m`
-- Handlebar height: approximately `1.27 m`
+- Handlebar height: approximately `1.25 m` (grips)
+- Steering axis: `0.30 rad` rake from vertical through `(0.49, 0, 0.93)`
+- Rear enclosure: flat base at `z 0.40`, arc top about `0.82 m`
 - Dock spacing in the reference station: `0.94 m`
 
 The reusable bike origin is at ground level between the axles. The reusable
@@ -40,10 +74,12 @@ The following remain independently transformable:
 
 - `SB_FrontWheel`: origin at the front axle; child of `SB_SteeringRoot`
 - `SB_RearWheel`: origin at the rear axle
-- `SB_SteeringRoot`: origin at the head-tube steering axis
+- `SB_SteeringRoot`: origin on the head-tube steering axis, rotated so its
+  local Z is that raked axis (steer by rotating about local Z)
 - `SB_CrankRoot`: origin at the crank spindle
 - `SB_Pedal_Left` and `SB_Pedal_Right`: separate pedal roots
-- `SB_Basket`: open-topped separate assembly
+- `SB_Basket`: open-topped separate assembly, parented to the frame root (it
+  does not steer), carrying `SB_DockLockTongue` and the front light
 - `SB_FrontLightAnchor` and `SB_RearLightAnchor`: future light anchors
 - `SB_DockAnchor`: bike-side snap transform at the bike root
 - `SD_BikeDockAnchor`: dock-side snap transform
@@ -57,7 +93,7 @@ complete and independent.
 
 ## Review gate
 
-Review the seven renders for:
+Review the eight renders for (H is a close-up of the empty dock):
 
 - shared-bike silhouette and real-world scale;
 - flattened step-through battery/frame mass;
@@ -74,9 +110,9 @@ Approval unlocks the second geometry pass described by the brief.
 - Export script: `blender/scripts/exportSterlingBikeBlockout.py`. It opens the
   saved blockout `.blend` and never re-renders or saves it.
 - Bike: `public/assets/models/sterling-bike/sterling-bike-blockout.glb`
-  (~8.3k triangles, 107 source meshes)
+  (~14.7k triangles, 153 source meshes; was ~8.3k before the second pass)
 - Dock: `public/assets/models/sterling-bike/sterling-dock-blockout.glb`
-  (~1.3k triangles)
+  (~1.7k triangles)
 
 ```bash
 /Applications/Blender.app/Contents/MacOS/Blender --background \
@@ -98,5 +134,5 @@ At load, `src/world/createWorld.ts` merges each bike's static meshes by
 material under their nearest articulated node (or the root). The nodes are
 `SB_FrontWheel`, `SB_RearWheel`, `SB_SteeringRoot`, `SB_CrankRoot`, both pedals
 and `SB_Basket`. The contract above still holds, at a few dozen draw calls per
-bike rather than ~107. Station placement lives in `STERLING_BIKE_DOCKS`; see
+bike rather than ~153. Station placement lives in `STERLING_BIKE_DOCKS`; see
 `docs/WORLD_LAYOUT.md`.

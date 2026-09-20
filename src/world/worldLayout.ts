@@ -134,6 +134,31 @@ export const PALLET_STACKS: readonly PalletStackMarker[] = [
   { id: 'arts-council-pallets', name: 'Arts Council car-park pallet stack', x: 48, z: -3.4, rotationY: 0 },
 ] as const;
 
+export type SpecterVariant = 'specter-haze-pair' | 'specter-drip-trio' | 'specter-outline';
+
+export interface SpecterGraffitiMarker extends WorldMarker {
+  readonly variant: SpecterVariant;
+  /** Yaw of the painted face's outward normal; 0 faces +Z (south). */
+  readonly rotationY: number;
+  /** Height of the texture's bottom edge above the ground. */
+  readonly y: number;
+  /** Painted extent in metres; the textures are authored 2:3. */
+  readonly width: number;
+  readonly height: number;
+}
+
+// Spray-painted specters: Daniel's recurring painting motif of long upright
+// figures with two dot eyes, scattered over walls around the city. x/z is the
+// centre of the painted area on the wall surface itself; the decal is pushed
+// a few millimetres off it at build time. Textures come from
+// scripts/generateSpecterTextures.mjs.
+export const SPECTER_GRAFFITI: readonly SpecterGraffitiMarker[] = [
+  // Dreams' rear wall (Z = 43.25, dark grey render) where it faces the open gap
+  // between Vinyl Exchange's Dale Street return (X = -3.28) and Spice Cabin
+  // (X = 7.7). Visible from Oldham Street looking north up the gap.
+  { id: 'specter-dreams-rear', name: 'Dreams rear wall specters', variant: 'specter-haze-pair', x: 2.2, z: 43.25, y: 0.12, rotationY: 0, width: 2.8, height: 4.2 },
+] as const;
+
 export const FUTURE_EXITS: readonly WorldMarker[] = [
   { id: 'north-road', name: 'North Road', x: 0, z: -59 },
   { id: 'south-road', name: 'South Road', x: 0, z: 75 },

@@ -49,8 +49,11 @@ import {
   type CollisionWorld,
 } from './collision';
 import { createCollisionDebugOutlines } from './collisionDebug';
+import { addSpecterGraffiti } from './createSpecterGraffiti';
 import { loadModel } from './loadModel';
 import { LocalLightRegistry } from './localLighting';
+import { SterlingBike } from '../vehicles/SterlingBike';
+import { SterlingFleet } from '../vehicles/SterlingFleet';
 import {
   applyBusShelterTexturePolicy,
   applyPalletTexturePolicy,
@@ -74,6 +77,7 @@ import {
   PARK,
   PAVEMENT_WIDTH,
   ROAD_WIDTH,
+  SPECTER_GRAFFITI,
   STERLING_BIKE_DOCKS,
   WORLD_BOUNDS,
   WORLD_LOCATIONS,
@@ -87,6 +91,7 @@ import {
 export interface World {
   readonly root: Group;
   readonly collision: CollisionWorld;
+  readonly sterlingFleet: SterlingFleet;
   readonly update: (deltaTime: number, playerPosition: Vector3) => void;
   readonly getLightingStats: () => LightingStats;
   readonly setDevelopmentOverlaysVisible: (visible: boolean) => void;
@@ -1607,7 +1612,7 @@ async function addSpiceCabinModel(
   localLights: LocalLightRegistry,
 ): Promise<void> {
   try {
-    const spiceCabin = await loadModel('assets/models/spice-cabin.glb?v=textured-20260914');
+    const spiceCabin = await loadModel('assets/models/spice-cabin.glb?v=textured-20260916');
     applySpiceCabinTexturePolicy(spiceCabin);
     spiceCabin.name = 'Spice Cabin finished hero asset';
     // Blender's -Y shopfront imports facing +Z, which is this plot's South Road
@@ -1656,7 +1661,7 @@ async function addSpiceCabinModel(
           frontSign.y + 0.15 * s,
           frontSign.z + 0.35 * sd,
           warmTube,
-          4.5 * intensityScale,
+          6 * intensityScale,
           5 * s,
         ),
       ],
@@ -1673,7 +1678,7 @@ async function addSpiceCabinModel(
           sideSign.y - 0.2 * s,
           sideSign.z,
           warmTube,
-          4.5 * intensityScale,
+          6.5 * intensityScale,
           5 * s,
         ),
       ],
@@ -3120,8 +3125,8 @@ function mergeSterlingStaticParts(model: Group): void {
 
 function loadSterlingTemplates(): Promise<{ bike: Group; dock: Group }> {
   sterlingTemplates ??= Promise.all([
-    loadModel('assets/models/sterling-bike/sterling-bike-blockout.glb?v=geometry-blockout-20260913b'),
-    loadModel('assets/models/sterling-bike/sterling-dock-blockout.glb?v=geometry-blockout-20260913b'),
+    loadModel('assets/models/sterling-bike/sterling-bike-blockout.glb?v=geometry-pass2-20260916'),
+    loadModel('assets/models/sterling-bike/sterling-dock-blockout.glb?v=geometry-pass2-20260916'),
   ]).then(([bike, dock]) => {
     for (const model of [bike, dock]) {
       applySterlingBlockoutPolicy(model);
@@ -3156,10 +3161,14 @@ function createSterlingStationFallback(marker: SterlingStationMarker): Group {
   return station;
 }
 
+// Dock side post footprint in dock-local metres (Blender +Y imports as -Z).
+const STERLING_DOCK_POST = { minX: -0.36, maxX: 0.31, minZ: -0.175, maxZ: -0.085, height: 0.82 };
+
 async function replaceSterlingStationFallback(
   root: Group,
   fallback: Group,
   marker: SterlingStationMarker,
+  fleet: SterlingFleet,
 ): Promise<void> {
   try {
     const { bike, dock } = await loadSterlingTemplates();
@@ -3190,6 +3199,19 @@ async function replaceSterlingStationFallback(
     });
     root.add(station);
     root.remove(fallback);
+    station.updateMatrixWorld(true);
+
+    // Bikes live in world space so they can be ridden away; docks stay put.
+    marker.occupancy.forEach((occupied, index) => {
+      const dockPosition = station.localToWorld(
+        new Vector3(0, 0, sterlingDockOffset(index, marker.occupancy.length)).add(bikeOffset),
+      );
+      const dock = fleet.addDock(`${marker.id}-${index + 1}`, dockPosition, marker.rotationY);
+      const bikeInstance = station.getObjectByName(`${marker.name} bike ${index + 1}`);
+      if (!occupied || !bikeInstance) return;
+      root.attach(bikeInstance);
+      fleet.addBike(new SterlingBike(bikeInstance), bikeInstance.name, dock);
+    });
   } catch (error) {
     markShelterLoadFailure(fallback, 'Sterling Bikes');
     console.error(
@@ -3203,6 +3225,7 @@ function addSterlingStation(
   root: Group,
   obstacles: CollisionObstacle[],
   marker: SterlingStationMarker,
+  fleet: SterlingFleet,
 ): void {
   const fallback = createSterlingStationFallback(marker);
   // Stand on the pavement flags where there are any; East is on the car park.
@@ -3213,18 +3236,27 @@ function addSterlingStation(
   );
   fallback.rotation.y = marker.rotationY;
   root.add(fallback);
-  void replaceSterlingStationFallback(root, fallback, marker);
+  void replaceSterlingStationFallback(root, fallback, marker, fleet);
 
-  // Local footprint: from a docked bike's rear enclosure (-1.75 m) to the dock
-  // baseplate's front edge (+0.42 m), plus handlebar clearance past the end docks.
-  const halfLine = sterlingDockOffset(marker.occupancy.length - 1, marker.occupancy.length) + 0.35;
-  obstacles.push(
-    {
-      ...rotatedObstacle(marker.name, marker.x, marker.z, marker.rotationY, -1.75, 0.42, -halfLine, halfLine),
-      height: 1.3,
+  // Only the dock side posts are fixed. Each bike brings its own footprint
+  // while it stands docked or parked, and none while it is being ridden.
+  marker.occupancy.forEach((_, index) => {
+    const offset = sterlingDockOffset(index, marker.occupancy.length);
+    obstacles.push({
+      ...rotatedObstacle(
+        `${marker.name} dock ${index + 1} post`,
+        marker.x,
+        marker.z,
+        marker.rotationY,
+        STERLING_DOCK_POST.minX,
+        STERLING_DOCK_POST.maxX,
+        offset + STERLING_DOCK_POST.minZ,
+        offset + STERLING_DOCK_POST.maxZ,
+      ),
+      height: STERLING_DOCK_POST.height,
       blocksCamera: false,
-    },
-  );
+    });
+  });
   addDevelopmentLabel(root, marker.name, marker.x, 1.8, marker.z);
 }
 
@@ -3869,9 +3901,13 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
     void addPalletStack(root, marker);
     addPalletStackCollision(obstacles, marker);
   }
+  for (const marker of SPECTER_GRAFFITI) {
+    addSpecterGraffiti(root, marker);
+  }
   addStreetDressing(root, obstacles);
+  const sterlingFleet = new SterlingFleet(obstacles);
   for (const marker of STERLING_BIKE_DOCKS) {
-    addSterlingStation(root, obstacles, marker);
+    addSterlingStation(root, obstacles, marker, sterlingFleet);
   }
   for (const marker of FUTURE_EXITS) {
     addDevelopmentLabel(root, `${marker.name} →`, marker.x, 2.2, marker.z);
@@ -3909,6 +3945,7 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
       bounds: WORLD_BOUNDS,
       obstacles,
     },
+    sterlingFleet,
     update: (deltaTime, playerPosition) => {
       updatePickup(deltaTime);
       updatePublicIllumination(playerPosition);

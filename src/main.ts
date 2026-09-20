@@ -8,10 +8,16 @@ import {
   WebGLRenderer,
 } from 'three';
 import { AmbientAudio } from './audio/AmbientAudio';
-import { ThirdPersonCamera } from './camera/ThirdPersonCamera';
+import {
+  DEFAULT_CAMERA_PITCH,
+  ORBIT_PIVOT_HEIGHT,
+  ThirdPersonCamera,
+} from './camera/ThirdPersonCamera';
 import { TitleCamera } from './camera/TitleCamera';
 import { FixedStepClock } from './core/FixedStepClock';
 import { InputController } from './input/InputController';
+import { BikeInteraction } from './interaction/BikeInteraction';
+import { STERLING_ASSISTED_SPEED, STERLING_BOOST_SPEED } from './vehicles/SterlingBike';
 import { PlayerController } from './player/PlayerController';
 import { createPostProcessing } from './rendering/createPostProcessing';
 import {
@@ -21,9 +27,14 @@ import {
   type QualityProfile,
 } from './rendering/visualStyle';
 import { DebugOverlay } from './ui/DebugOverlay';
+import { InteractionPrompt } from './ui/InteractionPrompt';
 import { IntroScreen } from './ui/IntroScreen';
 import { createWorld } from './world/createWorld';
 import './style.css';
+
+// Title screen on/off. While false the game drops straight into the world once
+// it has loaded, with no card, prompt or entry sequence. Set back to true to restore it.
+const SHOW_TITLE_SCREEN = false;
 
 // Behind the title card the city is drawn at a fraction of its resolution: the
 // browser's upscale is the defocus, and it costs less than the game itself.
@@ -50,7 +61,8 @@ if (import.meta.env.DEV && new URLSearchParams(window.location.search).has('iden
 const intro = new IntroScreen({
   // Development screenshot views should land straight in the world once loaded.
   enterAutomatically:
-    import.meta.env.DEV && new URLSearchParams(window.location.search).has('view'),
+    !SHOW_TITLE_SCREEN ||
+    (import.meta.env.DEV && new URLSearchParams(window.location.search).has('view')),
 });
 
 const scene = new Scene();
@@ -79,13 +91,20 @@ const input = new InputController(renderer.domElement);
 const ambientAudio = new AmbientAudio({ veiled: intro.holdsWorld });
 const player = new PlayerController(world.collision);
 scene.add(player.object);
+const bikeInteraction = new BikeInteraction(world.sterlingFleet, player, world.collision);
+const interactionPrompt = new InteractionPrompt();
+// A bike covers more street than walking; pull the chase camera back to match.
+const RIDING_BOOM_LENGTH = 7;
+// Extra lens width reached at full boost speed. The boom length stays fixed:
+// tying it to speed made the camera zoom in and out with every change of pace.
+const BOOST_EXTRA_FIELD_OF_VIEW = 5;
 
 const requestedView = import.meta.env.DEV
   ? new URLSearchParams(window.location.search).get('view')
   : null;
 
 let requestedYaw = 0;
-let requestedPitch = 0.31;
+let requestedPitch = DEFAULT_CAMERA_PITCH;
 if (import.meta.env.DEV) {
   const developmentViews: Record<string, readonly [number, number, number?, number?]> = {
     'park-florist': [-13.9, -18],
@@ -96,6 +115,8 @@ if (import.meta.env.DEV) {
     'collision-dreams': [-3, 32.5, Math.PI],
     'dreams-target': [-3, 29.8, Math.PI],
     'dreams-angle': [-11, 29, 2.45, 0.18],
+    // In the open gap south of Dreams, looking north at its rear wall.
+    'dreams-rear': [4.6, 48.4, 0.32, 0.08],
     'north-road': [-17, -25.2, -Math.PI / 2, 0.24],
     'park-to-dreams': [-3, 18, Math.PI, 0.2],
     'street-detail': [6.4, -27.2, 0.42, 0.16],
@@ -129,13 +150,13 @@ if (import.meta.env.DEV) {
     player.position.set(requestedPosition[0], 0, requestedPosition[1]);
     player.recoverFromCollisionOverlap();
     requestedYaw = requestedPosition[2] ?? 0;
-    requestedPitch = requestedPosition[3] ?? 0.31;
+    requestedPitch = requestedPosition[3] ?? DEFAULT_CAMERA_PITCH;
   }
 }
 
 const thirdPersonCamera = new ThirdPersonCamera(
   camera,
-  requestedView === 'dreams-target' ? 2.9 : 1.05,
+  requestedView === 'dreams-target' ? 2.9 : ORBIT_PIVOT_HEIGHT,
   world.collision,
 );
 thirdPersonCamera.setOrbit(requestedYaw, requestedPitch);
@@ -174,6 +195,9 @@ if (import.meta.env.DEV) {
     camera,
     player,
     collision: world.collision,
+    sterlingFleet: world.sterlingFleet,
+    bikeInteraction,
+    input,
   };
 }
 
@@ -240,13 +264,34 @@ function frame(timestamp: number): void {
   const simulationResult = simulationClock.advance(rawDelta, (fixedDelta) => {
     // The rider waits where the night begins while the title card holds the frame.
     if (!titleCamera.holdsPlayer) {
-      player.update(fixedDelta, input, cameraForward);
+      bikeInteraction.update(fixedDelta, input, cameraForward);
+    } else {
+      // An E pressed over the title card must not take a bike on entry.
+      input.consumeInteract();
     }
     world.update(fixedDelta, player.position);
     elapsedSeconds += fixedDelta;
   });
   const cameraDelta = simulationResult.resetAfterExtremeGap ? 0 : rawDelta;
-  thirdPersonCamera.update(cameraDelta, input, player);
+  const ridingSpeed = Math.abs(bikeInteraction.bike?.speed ?? 0);
+  const boostFraction = Math.min(
+    1,
+    Math.max(0, (ridingSpeed - STERLING_ASSISTED_SPEED) / (STERLING_BOOST_SPEED - STERLING_ASSISTED_SPEED)),
+  );
+  thirdPersonCamera.setBoomLength(
+    bikeInteraction.isRiding
+      ? RIDING_BOOM_LENGTH
+      : thirdPersonCamera.baseDistance,
+  );
+  thirdPersonCamera.setFieldOfView(
+    thirdPersonCamera.fieldOfView + BOOST_EXTRA_FIELD_OF_VIEW * boostFraction,
+  );
+  thirdPersonCamera.update(cameraDelta, input, bikeInteraction.cameraTarget);
+  interactionPrompt.update(
+    rawDelta,
+    titleCamera.holdsPlayer ? null : bikeInteraction.prompt,
+    bikeInteraction.isRiding,
+  );
   titleCamera.apply(cameraDelta);
 
   renderer.info.reset();
