@@ -122,7 +122,18 @@ function addWorldVaryings(shader: CompiledShader): void {
   );
 }
 
-function configureGlass(material: MeshStandardMaterial): void {
+interface GlassOptions {
+  /** Environment reflection strength (the shelter's default is 2.6). */
+  envMapIntensity?: number;
+  /**
+   * Extra reflection towards grazing angles plus a faint cool sheen, so a
+   * darkened shopfront reads as glass rather than an open hatch. 0 is off.
+   */
+  grazingSheen?: number;
+}
+
+function configureGlass(material: MeshStandardMaterial, options: GlassOptions = {}): void {
+  const sheen = options.grazingSheen ?? 0;
   material.transparent = true;
   material.depthWrite = false;
   material.opacity = 1;
@@ -131,9 +142,10 @@ function configureGlass(material: MeshStandardMaterial): void {
   material.blending = CustomBlending;
   material.blendSrc = OneFactor;
   material.blendDst = OneMinusSrcAlphaFactor;
-  material.envMapIntensity = 2.6;
+  material.envMapIntensity = options.envMapIntensity ?? 2.6;
   material.onBeforeCompile = (shader) => {
     addWorldVaryings(shader);
+    shader.fragmentShader = `#define GLASS_GRAZING_SHEEN ${sheen.toFixed(3)}\n${shader.fragmentShader}`;
     shader.fragmentShader = shader.fragmentShader
       .replace(
         '#include <roughnessmap_fragment>',
@@ -149,14 +161,17 @@ function configureGlass(material: MeshStandardMaterial): void {
       )
       .replace(
         '#include <opaque_fragment>',
-        'gl_FragColor = vec4( totalDiffuse * diffuseColor.a + totalSpecular + totalEmissiveRadiance, diffuseColor.a );',
+        `float glassGrazing = pow( 1.0 - saturate( dot( geometryNormal, geometryViewDir ) ), 3.0 );
+        vec3 glassSpecular = totalSpecular * ( 1.0 + GLASS_GRAZING_SHEEN * 4.0 * glassGrazing )
+          + vec3( 0.030, 0.040, 0.062 ) * GLASS_GRAZING_SHEEN * ( 0.35 + glassGrazing );
+        gl_FragColor = vec4( totalDiffuse * diffuseColor.a + glassSpecular + totalEmissiveRadiance, diffuseColor.a );`,
       )
       .replace(
         '#include <fog_fragment>',
         ShaderChunk.fog_fragment.replace('fogColor, fogFactor', 'fogColor * gl_FragColor.a, fogFactor'),
       );
   };
-  material.customProgramCacheKey = () => 'bus-shelter-glass';
+  material.customProgramCacheKey = () => `bus-shelter-glass-${sheen.toFixed(3)}`;
 }
 
 function configureWeatheredSurface(material: MeshStandardMaterial): void {
@@ -201,6 +216,7 @@ function applyTexturePassPolicy(
   model: Group,
   roleOf: (name: string, material: MeshStandardMaterial) => TexturePassRole,
   emissiveScale = 1,
+  glass: GlassOptions = {},
 ): void {
   const environment = getNightStreetEnvironment();
   // Materials are shared between meshes; multiplying emissive strength is not
@@ -242,7 +258,7 @@ function applyTexturePassPolicy(
       }
       material.envMap = environment;
       if (role === 'glass') {
-        configureGlass(material);
+        configureGlass(material, glass);
       } else if (role === 'ground-contact') {
         configureGroundContact(material, child);
       } else if (role === 'emissive') {
@@ -279,7 +295,10 @@ export function applyBusShelterTexturePolicy(model: Group): void {
  * the tube-light diffusers are exterior practicals and keep full strength on a
  * shared clone.
  */
-const SPICE_CABIN_INTERIOR_EMISSIVE_SCALE = 0.35;
+const SPICE_CABIN_INTERIOR_EMISSIVE_SCALE = 0.25;
+// Tinted shopfront glass: stronger street reflection, rising towards grazing
+// angles, so the windows read as glazing from the pavement.
+const SPICE_CABIN_GLASS: GlassOptions = { envMapIntensity: 4.2, grazingSheen: 1 };
 
 export function applySpiceCabinTexturePolicy(model: Group): void {
   applyTexturePassPolicy(
@@ -294,6 +313,7 @@ export function applySpiceCabinTexturePolicy(model: Group): void {
       return name.includes('emissive_signage') ? 'emissive' : 'plain';
     },
     SPICE_CABIN_INTERIOR_EMISSIVE_SCALE,
+    SPICE_CABIN_GLASS,
   );
   let practical: MeshStandardMaterial | undefined;
   model.traverse((child) => {
