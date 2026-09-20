@@ -34,6 +34,8 @@ BOARD_TOP = 1.12
 GLASS_TOP = 1.95
 HEAD_TOP = 2.02
 FASCIA_TOP = 2.48
+FASCIA_FRONT_Y = -3.72  # boxed fascia stands 0.22 m proud of the pier, as photographed
+ANTICLIMB_Z = 5.00
 SIGN_FRONT = (2.52, 3.56)
 BAND = (3.62, 4.02)
 PARAPET_TOP = 4.76
@@ -298,7 +300,7 @@ def _flip_to(b, name, normal):
 
 def build_shopfront(b, m):
     g = "SPICE_blue_fascia"
-    box(b, "SPICE_Blue_Fascia", (PIER_X[1], 2.92), (FRONT_Y, -3.20), (HEAD_TOP, FASCIA_TOP), g, m["blue"], bevel=0.012)
+    box(b, "SPICE_Blue_Fascia", (PIER_X[1], 2.92), (FASCIA_FRONT_Y, -3.20), (HEAD_TOP, FASCIA_TOP), g, m["blue"], bevel=0.015)
 
     g = "SPICE_window_frames"
     for i, (x0, x1) in enumerate(BLUE_POSTS, 1):
@@ -385,14 +387,14 @@ def build_services(b, m):
         box(b, f"SPICE_TubeStandoffPlate_Side_{i:02d}", (SIDE_X - 0.012, SIDE_X), (y - 0.035, y + 0.035), (3.96, 4.05), g, m["paint"])
 
     # Hopper head on the band end, swan neck past it, downpipe to a kicked shoe.
-    hopper = [(2.67, -3.62, 4.28), (2.93, -3.62, 4.28), (2.93, -3.34, 4.28), (2.67, -3.34, 4.28),
-              (2.73, -3.56, 4.06), (2.87, -3.56, 4.06), (2.87, -3.40, 4.06), (2.73, -3.40, 4.06)]
+    hopper = [(2.62, -3.68, 4.32), (2.98, -3.68, 4.32), (2.98, -3.33, 4.32), (2.62, -3.33, 4.32),
+              (2.72, -3.58, 4.04), (2.88, -3.58, 4.04), (2.88, -3.42, 4.04), (2.72, -3.42, 4.04)]
     b.mesh("SPICE_Hopper", hopper, [(0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7), (4, 5, 6, 7)], g, m["metal"])
     pipe(b, "SPICE_Downpipe", [(2.80, -3.48, 4.08), (2.86, -3.48, 4.02), (2.96, -3.47, 3.95), (3.00, -3.465, 3.84),
-                               (3.00, -3.465, 0.24), (3.00, -3.50, 0.12), (3.00, -3.60, 0.075)], 0.034, g, m["metal"], segments=12)
-    pipe(b, "SPICE_Downpipe_Collar", [(3.00, -3.465, 1.82), (3.00, -3.465, 1.90)], 0.041, g, m["metal"], segments=12)
+                               (3.00, -3.465, 0.24), (3.00, -3.50, 0.12), (3.00, -3.62, 0.075)], 0.051, g, m["metal"], segments=12)
+    pipe(b, "SPICE_Downpipe_Collar", [(3.00, -3.465, 1.82), (3.00, -3.465, 1.90)], 0.060, g, m["metal"], segments=12)
     for i, z in enumerate((0.9, 2.4, 3.5), 1):
-        flat_bar(b, f"SPICE_DownpipeClip_{i:02d}", [(3.00, -3.40, z), (3.00, -3.505, z)], 0.03, 0.01, g, m["metal"], up=(0, 0, 1))
+        flat_bar(b, f"SPICE_DownpipeClip_{i:02d}", [(3.00, -3.40, z), (3.00, -3.525, z)], 0.035, 0.012, g, m["metal"], up=(0, 0, 1))
 
     g = "SPICE_alarm_fixtures"
     box(b, "SPICE_AlarmSounder", (2.60, 2.85), (-3.37, BOARD_FACE_Y), (2.93, 3.23), g, m["paint"], bevel=0.035)
@@ -409,9 +411,9 @@ def build_services(b, m):
 def build_security(b, m, rng):
     g = "SPICE_security_wire"
     runs = (
-        ("Front", Vector((-3.14, -3.12, 4.965)), Vector((RIGHT_X, -3.12, 4.965))),
-        ("Gable", Vector((-3.00, -3.12, 4.965)), Vector((-3.00, BACK_Y - 0.05, 4.965))),
-        ("Hopper", Vector((2.42, -3.50, 4.40)), Vector((RIGHT_X, -3.50, 4.40))),
+        ("Front", Vector((-3.14, -3.12, ANTICLIMB_Z)), Vector((RIGHT_X, -3.12, ANTICLIMB_Z))),
+        ("Gable", Vector((-3.00, -3.12, ANTICLIMB_Z)), Vector((-3.00, BACK_Y - 0.05, ANTICLIMB_Z))),
+        ("Hopper", Vector((2.42, -3.50, 4.50)), Vector((RIGHT_X, -3.50, 4.50))),
     )
     for name, p0, p1 in runs:
         axis = (p1 - p0)
@@ -419,8 +421,8 @@ def build_security(b, m, rng):
         axis.normalize()
         perp1 = axis.cross(Vector((0, 0, 1))).normalized()
         perp2 = perp1.cross(axis)
-        parts = [sweep_arrays([p0, p1], circle(0.013, 6))]
-        pitch = 0.10
+        parts = [sweep_arrays([p0, p1], circle(0.018, 6))]
+        pitch = 0.11
         count = int(length / pitch)
         for i in range(count):
             c = p0 + axis * (pitch * (i + 0.5) + rng.normal(0, 0.006))
@@ -433,25 +435,27 @@ def build_security(b, m, rng):
                     a = phase + k * 2 * pi / 5 + star * 0.42 + rng.normal(0, 0.16)
                     d = perp1 * cos(a) + perp2 * sin(a)
                     tangent = perp1 * -sin(a) + perp2 * cos(a)
-                    reach = rng.uniform(0.06, 0.11) if star else rng.uniform(0.04, 0.07)
-                    b0 = cs + d * 0.011 + axis * 0.006
-                    b1 = cs + d * 0.011 - axis * 0.006
-                    b2 = cs + d * 0.011 + tangent * 0.012
-                    tip = cs + d * reach + tangent * rng.uniform(-0.004, 0.024) + axis * rng.normal(0, 0.006)
+                    # Photographed rotors are ~0.3 m across with broad vanes, so the
+                    # run reads as a heavy black silhouette against the sky.
+                    reach = rng.uniform(0.10, 0.16) if star else rng.uniform(0.07, 0.11)
+                    b0 = cs + d * 0.016 + axis * 0.010
+                    b1 = cs + d * 0.016 - axis * 0.010
+                    b2 = cs + d * 0.016 + tangent * 0.024
+                    tip = cs + d * reach + tangent * rng.uniform(-0.006, 0.034) + axis * rng.normal(0, 0.008)
                     parts.append(([b0, b1, b2, tip], [(0, 2, 1), (0, 1, 3), (1, 2, 3), (2, 0, 3)]))
         b.mesh(f"SPICE_AntiClimb_{name}", *_merged(parts), g, m["metal"])
 
     brackets = []
     for x in np.arange(-2.85, RIGHT_X, 0.95):
         brackets.append(sweep_arrays([(x, BRICK_FRONT_Y - 0.004, 4.40), (x, BRICK_FRONT_Y - 0.004, 4.70), (x, -3.37, 4.75),
-                                      (x, -3.37, 4.86), (x, -3.14, 4.965)], [(-0.02, -0.003), (0.02, -0.003), (0.02, 0.003), (-0.02, 0.003)],
+                                      (x, -3.37, 4.86), (x, -3.14, ANTICLIMB_Z)], [(-0.02, -0.003), (0.02, -0.003), (0.02, 0.003), (-0.02, 0.003)],
                                      caps=True, up=(1, 0, 0)))
     for y in np.arange(-2.60, BACK_Y, 0.95):
         brackets.append(sweep_arrays([(SIDE_X - 0.004, y, 4.40), (SIDE_X - 0.004, y, 4.70), (SIDE_X - 0.07, y, 4.75),
-                                      (SIDE_X - 0.07, y, 4.86), (-3.01, y, 4.965)], [(-0.02, -0.003), (0.02, -0.003), (0.02, 0.003), (-0.02, 0.003)],
+                                      (SIDE_X - 0.07, y, 4.86), (-3.01, y, ANTICLIMB_Z)], [(-0.02, -0.003), (0.02, -0.003), (0.02, 0.003), (-0.02, 0.003)],
                                      caps=True, up=(0, 1, 0)))
     for x in (2.55, 3.02):
-        brackets.append(sweep_arrays([(x, -3.40, BAND[1]), (x, -3.45, 4.25), (x, -3.50, 4.40)],
+        brackets.append(sweep_arrays([(x, -3.40, BAND[1]), (x, -3.45, 4.30), (x, -3.50, 4.50)],
                                      [(-0.02, -0.003), (0.02, -0.003), (0.02, 0.003), (-0.02, 0.003)], caps=True, up=(1, 0, 0)))
     b.mesh("SPICE_AntiClimb_Brackets", *_merged(brackets), g, m["metal"])
 

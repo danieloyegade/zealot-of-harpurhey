@@ -51,21 +51,26 @@ GROUND_SIDE_RECT = (0, 640, 400, 1400)
 MARKER_FELT = Path("/System/Library/Fonts/MarkerFelt.ttc")
 CAP_RATIO = 0.70     # Marker Felt Wide cap height / font size (calibrated against the render)
 XHEIGHT_RATIO = 0.50
-TITLE_SCALE = 1.18   # measured letters are larger and wider than the face's proportions
-TITLE_STRETCH = 1.12
+TITLE_SCALE = 1.24   # measured letters are larger and wider than the face's proportions
+TITLE_STRETCH = 1.14
+# The printed letters are a far heavier brush face than Marker Felt Wide:
+# embolden the rendered coverage by this fraction of the plate height.
+TITLE_WEIGHT = 0.010
+CHILLI_SHIFT = -0.014   # plate-fraction x offset: the chilli sits tight between P and c
+FLAME_SHIFT = -0.030    # the flame dots the i of CaBiN
 
 # Title glyphs: (glyph, centre x, baseline y, cap height, lowercase?, colour group, rotation deg).
 # Plate fractions measured on the rectified photograph.
 TITLE = (
-    ("s", 0.091, 0.650, 0.43, True, "red", -2.0),
-    ("P", 0.160, 0.650, 0.45, False, "red", 1.5),
-    ("c", 0.346, 0.650, 0.43, True, "red", -1.0),
-    ("e", 0.434, 0.650, 0.43, True, "red", 2.0),
-    ("C", 0.566, 0.645, 0.43, False, "green", -2.5),
-    ("a", 0.643, 0.655, 0.40, True, "green", 1.0),
-    ("B", 0.724, 0.640, 0.44, False, "green", -1.0),
-    ("I", 0.786, 0.640, 0.30, False, "green", 0.0),
-    ("N", 0.871, 0.600, 0.42, False, "green", 3.0),
+    ("s", 0.112, 0.650, 0.43, True, "red", -2.0),
+    ("P", 0.196, 0.650, 0.45, False, "red", 1.5),
+    ("c", 0.338, 0.650, 0.43, True, "red", -1.0),
+    ("e", 0.428, 0.650, 0.43, True, "red", 2.0),
+    ("C", 0.556, 0.645, 0.43, False, "green", -2.5),
+    ("a", 0.638, 0.655, 0.40, True, "green", 1.0),
+    ("B", 0.720, 0.640, 0.44, False, "green", -1.0),
+    ("I", 0.788, 0.640, 0.33, False, "green", 0.0),
+    ("N", 0.869, 0.600, 0.42, False, "green", 3.0),
 )
 SIDE_FOOD = (("Pizza", 0.086), ("Kebabs", 0.227), ("Fried Chicken", 0.430), ("Burgers", 0.634))
 SIDE_STARS = (0.148, 0.304, 0.556)
@@ -205,8 +210,9 @@ def printed_logs(plate, seed):
     f = v - band
     # Printed round logs: a bright ridge along each log, dark rolled edges and seams.
     roundness = np.sin(np.clip(f, 0, 1) * pi)
-    shade = 0.42 + 0.68 * roundness ** 0.9 + 0.18 * np.exp(-((f - 0.38) / 0.12) ** 2)
-    seam = np.exp(-(f / 0.045) ** 2) + np.exp(-((1 - f) / 0.06) ** 2)
+    # Lit from above: bright shoulder high on each log, rolled-under shadow below.
+    shade = 0.26 + 0.80 * roundness ** 0.7 + 0.34 * np.exp(-((f - 0.34) / 0.11) ** 2) - 0.16 * smoothstep(0.62, 0.95, f)
+    seam = np.exp(-(f / 0.05) ** 2) + np.exp(-((1 - f) / 0.07) ** 2)
     q = np.stack((xx.ravel() / (0.35 * plate.ppm) + band.ravel() * 7.3, yy.ravel() / (0.006 * plate.ppm)), axis=1)
     grain = fbm2(q, 4, seed).reshape(h, w)
     streak = smoothstep(0.52, 0.7, grain)
@@ -214,9 +220,9 @@ def printed_logs(plate, seed):
     tone = fbm2(np.stack((xx.ravel() / (0.9 * plate.ppm) + band.ravel() * 3.1, band.ravel()), axis=1), 3, seed + 1).reshape(h, w)
     base = srgb(186, 100, 52) * (0.85 + 0.3 * tone)[..., None]
     img = base * shade[..., None]
-    img = over(img, srgb(226, 146, 90), light * 0.45 * shade)
-    img = over(img, srgb(104, 48, 24), streak * 0.55)
-    img = over(img, srgb(54, 24, 12), np.clip(seam, 0, 1) * 0.9)
+    img = over(img, srgb(226, 146, 90), light * 0.35 * shade)
+    img = over(img, srgb(104, 48, 24), streak * 0.35)
+    img = over(img, srgb(40, 16, 8), np.clip(seam, 0, 1) * 0.95)
     knots = smoothstep(0.93, 0.97, noise2(np.stack((xx.ravel() / (0.05 * plate.ppm), yy.ravel() / (0.025 * plate.ppm)), axis=1), seed + 2)).reshape(h, w)
     return over(img, srgb(70, 32, 16), knots * 0.8)
 
@@ -241,15 +247,20 @@ def render_type(plate, work_dir, name, glyphs, words, word_y, word_cap, shear, p
         obj.data.shear = shear
     art = canvas.render(Path(work_dir) / f"{name}-type.png")[::-1]
     a = art[..., 3]
-    red = np.clip(art[..., 0] - art[..., 1], 0, 1) * a
-    green = np.clip(art[..., 1] - art[..., 0], 0, 1) * a
+    weight = TITLE_WEIGHT * plate.ph
+    red = dilate(np.clip(art[..., 0] - art[..., 1], 0, 1) * a, weight)
+    green = dilate(np.clip(art[..., 1] - art[..., 0], 0, 1) * a, weight)
     food = art[..., 2] * a
     phone_cov = np.minimum(art[..., 0], art[..., 1]) * a
     return red, green, food, phone_cov
 
 
 def chilli(plate):
-    X, Y = plate.X, plate.Y
+    Y = plate.Y
+
+    def X(fx):
+        return plate.X(fx + CHILLI_SHIFT)
+
     body = bezier([(X(0.293), Y(0.17)), (X(0.262), Y(0.36)), (X(0.300), Y(0.58)), (X(0.297), Y(0.79))], 90)
     t = np.linspace(0, 1, 90, dtype=F)
     widths = plate.ph * 0.085 * np.sqrt(np.clip(t / 0.1, 0, 1)) * (1 - t) ** 0.85 + 1.0
@@ -262,7 +273,11 @@ def chilli(plate):
 
 
 def flame(plate):
-    X, Y = plate.X, plate.Y
+    Y = plate.Y
+
+    def X(fx):
+        return plate.X(fx + FLAME_SHIFT)
+
     shapes = []
     for colour, pts, width in (
         (srgb(40, 140, 50), [(X(0.818), Y(0.27)), (X(0.804), Y(0.20)), (X(0.812), Y(0.11))], 0.020),
@@ -317,7 +332,7 @@ def log_ends(plate, rng):
             q = ecc * (1 + 0.05 * wobble) * 12
             rings = 0.5 + 0.5 * np.cos(q * 2 * pi)
             ring_line = smoothstep(0.85, 0.97, rings)
-            wood = over(srgb(240, 150, 64) * (0.86 + 0.14 * rings)[..., None], srgb(186, 88, 30), ring_line * 0.85)
+            wood = over(srgb(240, 150, 64) * (0.86 + 0.14 * rings)[..., None], srgb(186, 88, 30), ring_line)
             wood = over(wood, srgb(252, 196, 120), smoothstep(0.4, 0.1, ecc) * 0.35)
             for _ in range(rng.integers(3, 5)):
                 angle = rng.uniform(-pi, pi)
@@ -327,7 +342,8 @@ def log_ends(plate, rng):
             wood = over(wood, srgb(110, 52, 22), smoothstep(0.035, 0.015, r))
             wood = over(wood, srgb(245, 196, 120), smoothstep(0.80, 0.83, r) * smoothstep(0.87, 0.84, r))
             wood = over(wood, srgb(84, 42, 20), smoothstep(0.85, 0.88, r))
-            wood = over(wood, WHITE, smoothstep(0.935, 0.95, r / serration))
+            wood = over(wood, WHITE, smoothstep(0.915, 0.93, r / serration))
+            wood = over(wood, INK_BLACK, smoothstep(0.975, 0.99, r / serration))
             region = rgb[y0:y1, x0:x1]
             rgb[y0:y1, x0:x1] = region * (1 - edge[..., None]) + wood * edge[..., None]
             cov[y0:y1, x0:x1] = np.maximum(cov[y0:y1, x0:x1], edge)
@@ -347,16 +363,16 @@ def draw_sign(work_dir, name, plate_w, plate_h, rect, food, stars, food_y, phone
     title = np.maximum(red, green)
     ch_cov, ch_across, ch_along, stem = chilli(plate)
     flames = flame(plate)
-    outline_r = 0.02 * plate.ph
-    shadow_off = int(0.014 * plate.ph)
-    title_shadow = shift(dilate(title, outline_r + 2), shadow_off, shadow_off)
+    outline_r = 0.03 * plate.ph
+    shadow_off = int(0.026 * plate.ph)
+    title_shadow = shift(dilate(title, outline_r + 3), shadow_off, shadow_off)
     extras = np.clip(ch_cov + stem, 0, 1)
-    img = over(img, INK_BLACK, np.maximum(title_shadow, shift(extras, shadow_off // 2, shadow_off // 2) * 0.7) * 0.92)
+    img = over(img, INK_BLACK, np.maximum(title_shadow, shift(extras, shadow_off // 2, shadow_off // 2) * 0.8))
     img = over(img, WHITE, dilate(title, outline_r))
     t = np.clip((yy - plate.Y(0.22)) / (plate.Y(0.66) - plate.Y(0.22)), 0, 1)[..., None]
     gloss = smoothstep(0.30, 0.2, np.abs(t[..., 0] - 0.22)) * 0.25
-    red_fill = over(srgb(222, 36, 56) * (1 - t) + srgb(150, 12, 30) * t, srgb(255, 110, 120), gloss)
-    green_fill = over(srgb(46, 156, 72) * (1 - t) + srgb(20, 98, 44) * t, srgb(120, 210, 140), gloss)
+    red_fill = over(srgb(214, 18, 40) * (1 - t) + srgb(128, 4, 20) * t, srgb(255, 96, 104), gloss * 0.8)
+    green_fill = over(srgb(28, 150, 58) * (1 - t) + srgb(8, 84, 32) * t, srgb(110, 204, 130), gloss * 0.8)
     img = over(img, red_fill, red)
     img = over(img, green_fill, green)
 
@@ -384,9 +400,9 @@ def draw_sign(work_dir, name, plate_w, plate_h, rect, food, stars, food_y, phone
 
     # Outdoor ageing: UV fade (reds go pink first), dust, streaks from the top edge.
     luma = img @ np.array((0.2126, 0.7152, 0.0722), F)
-    img = img * (1 - age * 0.35) + (luma[..., None] * 1.1 + 0.03) * age * 0.35
-    img = over(img, srgb(232, 150, 160), red * age * 0.75)
-    img = over(img, srgb(120, 196, 150), green * age * 0.45)
+    img = img * (1 - age * 0.22) + (luma[..., None] * 1.1 + 0.03) * age * 0.22
+    img = over(img, srgb(214, 96, 110), red * age * 0.35)
+    img = over(img, srgb(90, 170, 120), green * age * 0.25)
     streak_field = fbm2(np.stack((xx.ravel() / (0.03 * plate.ppm), yy.ravel() / (0.5 * plate.ppm)), axis=1), 3, seed + 5).reshape(cell_h, cell_w)
     from_top = smoothstep(plate.y0 + 0.7 * plate.ph, plate.y0, yy)
     dirt = smoothstep(0.6, 0.78, streak_field) * from_top * (0.05 + 0.28 * age)
@@ -435,7 +451,7 @@ def sign_atlas(work_dir):
         (SIGN_SIDE_RECT, dict(name="side-sign", plate_w=y1 - y0, plate_h=sz1 - sz0, food=SIDE_FOOD, stars=SIDE_STARS,
                               food_y=0.915, phone=("Tel: 0161 202 0888", 0.838, 0.905, 0.14), age=0.12, seed=301)),
         (SIGN_FRONT_RECT, dict(name="front-sign", plate_w=x1 - x0, plate_h=z1 - z0, food=FRONT_FOOD, stars=FRONT_STARS,
-                               food_y=0.93, phone=None, age=0.55, seed=302)),
+                               food_y=0.93, phone=None, age=0.40, seed=302)),
     ):
         img, alpha, r, h = draw_sign(work_dir, rect=rect, **args)
         rx, ry, rw, rh = rect

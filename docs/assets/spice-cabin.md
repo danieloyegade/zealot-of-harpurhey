@@ -52,12 +52,12 @@ half, `--only 04,05` re-renders selected views):
 | Loglap cladding (13 boards) | 0.10–1.12 |
 | Glazing | 1.12–1.95 |
 | Timber head | 1.95–2.02 |
-| Blue fascia | 2.02–2.48 |
+| Blue fascia (boxed, 0.22 m proud of the pier) | 2.02–2.48 |
 | Front sign | 2.52–3.56 |
 | Cream band | 3.62–4.02 |
 | Parapet brick | 4.02–4.76 |
 | Green coping | 4.76–4.84 |
-| Rotary anti-climb bar | 4.97 |
+| Rotary anti-climb bar | 5.00 |
 
 - Gable sign: 4.60 × 1.00 m at Z 2.62–3.62.
 - Gable brick changes from brown to buff at the course nearest 3.35 m.
@@ -88,7 +88,9 @@ Notes on geometry:
 - **Loglap boards** have a genuine convex, lipped profile. Brick relief is
   texture-led.
 - **Anti-climb:** each rotor is three offset five-vane stars of closed
-  tetrahedra, merged per run.
+  tetrahedra, merged per run. Rotors reach up to 0.16 m with broad vanes so the
+  run reads as the heavy black silhouette photographed.
+- **Downpipe:** 100 mm pipe under a 0.36 m hopper head.
 - **Door:** stands open inward, as photographed.
 - **No hidden faces:** wall tops under the coping and the party wall are never
   built.
@@ -133,14 +135,19 @@ and timber cannot tile. The pass then:
    - a white bumper-paint smear on one bollard;
    - galvanising bloom;
    - glass film, squeegee arcs, palm prints and sticker residue by the door;
+   - stickers on three bollards;
    - an analytic ground-contact decal: wall-base grime, bollard rust rings,
-     damp at the downpipe shoe, sparse gum and cigarette ends.
+     damp at the downpipe shoe, glossy puddles, gum, cigarette ends and
+     takeaway litter (wrappers, receipts, napkins, crushed cans).
 4. Sets the signs in Marker Felt Wide through the bus shelter's `PrintCanvas`,
    at letter positions measured on a perspective-rectified copy of photo 1.
+   The printed face is far heavier than Marker Felt, so the rendered coverage
+   is emboldened (`TITLE_WEIGHT`), the chilli is pulled in tight between P and c,
+   and the flame dots the i of CaBiN.
    Outlines, drop shadows, the chilli, the flame, the printed round-log
    background and the sawn log-end cut-outs are drawn in numpy. Nothing is
-   copied from the photographs. The front sign is aged harder (pink reds, paler
-   wood).
+   copied from the photographs. The front sign is aged harder, but its reds and greens stay
+   saturated, as in photo 4.
 5. Draws dot-matrix LEDs for the window sign, including its dead LEDs.
    Menu boards and fridge contents are illegible by design, so no copy is
    invented.
@@ -168,10 +175,10 @@ stored, unlike the bus shelter.
 
 The build checks the identifying meshes, anchors and UVs.
 
-Measured on 2026-09-14:
+Measured on 2026-09-16:
 
-- 98 meshes, 12,508 triangles, 11 materials.
-- GLB ≈7.8 MB, of which images are 6.7 MB and brick is ≈4.1 MB.
+- 98 meshes, 11,788 triangles, 11 materials.
+- GLB ≈7.6 MB, of which images are 6.7 MB and brick is ≈4.1 MB.
 - Materials are single-sided.
 
 **Texture budget:** this exceeds `docs/VISUAL_LANGUAGE.md`'s budget (512 px
@@ -238,7 +245,10 @@ Materials and light:
   shelter's texture-pass runtime policy. It applies photographic texture
   filtering and the painted night-street environment map. Shop glass gets the
   premultiplied glass shader, and the ground decal gets polygon-offset blending.
-- Emissives: the shared `MAT_emissive_signage` is held to 0.35 ×
+- Glass: Spice Cabin passes stronger environment reflection (4.2) and a
+  grazing-angle sheen to the shared glass shader, over a darker baked film
+  (alpha 0.74) and a darkened interior, so the windows read as tinted glazing.
+- Emissives: the shared `MAT_emissive_signage` is held to 0.25 ×
   `emissiveMultiplier`, so the menu boxes, fridge and ceiling panels glow
   without blooming out behind the glass. The LED window sign and the tube
   diffusers get a full-strength clone.

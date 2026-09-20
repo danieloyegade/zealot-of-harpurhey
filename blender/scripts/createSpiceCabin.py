@@ -101,7 +101,9 @@ def lerp_rows(a, b, t):
 
 BUFF = np.stack([srgb(182, 152, 108), srgb(196, 172, 130), srgb(162, 128, 90), srgb(150, 134, 108), srgb(126, 94, 66)])
 BUFF_CUM = np.array((0.46, 0.68, 0.88, 0.965, 1.0), F)
-BROWN = np.stack([srgb(116, 72, 47), srgb(134, 88, 58), srgb(98, 60, 40), srgb(124, 92, 70), srgb(82, 50, 34)])
+# Dragfaced brown is a tight blend in photo 1: a narrow palette, so per-brick picks
+# don't build into diagonal patches at a distance.
+BROWN = np.stack([srgb(118, 74, 48), srgb(126, 81, 53), srgb(110, 68, 44), srgb(122, 84, 60), srgb(100, 62, 41)])
 BROWN_CUM = np.array((0.42, 0.66, 0.86, 0.95, 1.0), F)
 MORTAR_BUFF = srgb(152, 144, 128)
 MORTAR_BROWN = srgb(124, 114, 102)
@@ -135,12 +137,12 @@ def weather_brick(tex, rng, seed=11):
     pick_buff = np.searchsorted(BUFF_CUM, h1)
     pick_brown = np.searchsorted(BROWN_CUM, h1)
     col = np.where(brown[:, None], BROWN[np.clip(pick_brown, 0, 4)], BUFF[np.clip(pick_buff, 0, 4)])
-    col = col * (0.9 + 0.2 * h3)[:, None]
+    col = col * np.where(brown, 0.95 + 0.1 * h3, 0.9 + 0.2 * h3)[:, None]
     # Kiln flashing: soft value drift across a brick and between neighbours.
     mott = fbm2(np.stack((s / 0.06, z / 0.035), axis=1), 3, seed + 5)
-    col *= (0.86 + 0.28 * mott)[:, None]
+    col *= np.where(brown, 0.94 + 0.12 * mott, 0.86 + 0.28 * mott)[:, None]
     fine = noise3(P * 820, seed + 6)
-    dark_speck = np.where(brown, smoothstep(0.70, 0.80, fine), smoothstep(0.84, 0.91, fine))
+    dark_speck = np.where(brown, smoothstep(0.78, 0.86, fine), smoothstep(0.84, 0.91, fine))
     col = lerp_rows(col, col * 0.35, dark_speck * 0.85)
     light_speck = smoothstep(0.86, 0.92, noise3(P * 640, seed + 7))
     col = lerp_rows(col, col * 1.45, light_speck * 0.5)
@@ -203,7 +205,7 @@ def weather_brick(tex, rng, seed=11):
         tags[idx] = polyline_coverage(s[idx].astype(F), z[idx].astype(F), pts, 0.012, tex.texel_m)
     L.tint(srgb(214, 212, 204), tags * (0.3 + 0.35 * face))
     # Atmospheric variation and ambient occlusion.
-    L.albedo *= (0.9 + 0.2 * fbm3(P * 0.7, 3, seed + 26))[:, None]
+    L.albedo *= (0.94 + 0.12 * fbm3(P * 0.7, 3, seed + 26))[:, None]
     L.albedo *= (0.6 + 0.4 * tex.ao)[:, None]
     L.ao_channel = 0.5 + 0.5 * tex.ao
     return L.finish()
@@ -465,6 +467,17 @@ def weather_metal(tex, rng, seed=91):
     transfer = transfer * smoothstep(0.55, 0.7, fbm2(np.stack((P[:, 0] / 0.02, z / 0.09), axis=1), 3, seed + 2))
     L.tint(srgb(206, 206, 200), transfer * 0.6)
     L.mix_rough(0.7, transfer)
+    # Stickers and their torn residue on the road-facing sides of two bollards.
+    for name, cz, colour in (("Bollard_02", 0.72, srgb(230, 228, 214)), ("Bollard_02", 0.58, srgb(40, 110, 190)),
+                             ("Bollard_03", 0.80, srgb(236, 196, 40)), ("Bollard_04", 0.84, srgb(230, 228, 214))):
+        body = m(name)
+        if not body.any():
+            continue
+        cx = float(np.median(P[body, 0]))
+        sticker = body * (N[:, 1] < -0.2) * (np.abs(z - cz) < 0.045) * (np.abs(P[:, 0] - cx) < 0.05)
+        sticker = sticker * smoothstep(0.25, 0.4, noise2(np.stack((P[:, 0] / 0.015, z / 0.015), axis=1), seed + 8 + int(cz * 100)))
+        L.tint(colour, sticker * 0.9)
+        L.mix_rough(0.35, sticker)
     rust_ring = bollard * smoothstep(0.14, 0.0, z + 0.04 * noise3(P * 30, seed + 3))
     L.tint(RUST, rust_ring * 0.6)
     L.mix_rough(0.9, rust_ring)
@@ -495,7 +508,7 @@ def weather_glass(tex, rng, seed=111):
     P = tex.P
     z = P[:, 2]
     # Dark from outside, as photographed: reflections dominate and the interior only glows through.
-    L = Layers(tex, (0.008, 0.010, 0.012), 0.05, alpha=0.62)
+    L = Layers(tex, (0.006, 0.008, 0.010), 0.04, alpha=0.74)
     s0, s1, t0, t1 = tex.panel_bounds()
     edge = np.minimum(np.minimum(tex.s - s0, s1 - tex.s), np.minimum(tex.t - t0, t1 - tex.t))
     film = smoothstep(0.06, 0.0, edge) * (0.6 + 0.4 * noise2(np.stack((tex.s / 0.03, tex.t / 0.03), axis=1), seed))
@@ -554,6 +567,9 @@ def weather_interior(tex, rng, seed=131):
     L.rough[m("Fridge")] = 0.35
     L.albedo[m("WindowLedge")] = srgb(186, 182, 170)
     L.albedo *= (0.85 + 0.3 * fbm3(P * 3, 3, seed))[:, None]
+    # Held darker than the materials suggest: behind tinted glass the shop should
+    # glow through its practicals, not read as an open, evenly lit hatch.
+    L.albedo *= 0.7
     L.albedo *= (0.35 + 0.65 * tex.ao)[:, None]
     L.ao_channel = 0.3 + 0.7 * tex.ao
     return L.finish()
@@ -703,6 +719,37 @@ def ground_contact_maps():
             colour[butt] = srgb(225, 220, 205)
             colour[tip] = srgb(196, 120, 60)
             alpha[butt] = 1.0
+        # Rain pooled in dished flags: darker, glossy, soft-edged.
+        for px, py, pr in ((-1.35, -4.95, 0.34), (1.60, -5.05, 0.26), (-3.90, -1.20, 0.22)):
+            if not (xr[0] < px < xr[1] and yr[0] < py < yr[1]):
+                continue
+            q = np.hypot((X - px) / 1.6, Y - py) + 0.06 * n
+            puddle = smoothstep(pr, pr * 0.6, q)
+            colour = colour * (1 - puddle[..., None] * 0.55) + srgb(22, 22, 24) * puddle[..., None] * 0.55
+            alpha = np.maximum(alpha, puddle * 0.55)
+            rough_rect = np.minimum(rough_rect, 0.9 - 0.82 * puddle)
+        # Takeaway litter along the frontage: wrappers, receipts, napkins and cans.
+        litter = ((srgb(210, 30, 36), 0.07, 0.05), (srgb(236, 234, 226), 0.06, 0.04), (srgb(30, 90, 170), 0.05, 0.035),
+                  (srgb(240, 196, 40), 0.045, 0.03), (srgb(236, 234, 226), 0.09, 0.03), (srgb(180, 182, 186), 0.06, 0.03))
+        for _ in range(int(26 * rw * rh / (size * size))):
+            kind = rng.integers(len(litter))
+            tint, half_u, half_v = litter[kind]
+            gx, gy = rng.uniform(xr[0], xr[1]), rng.uniform(yr[0], yr[1])
+            if np.hypot(gx - 0.0, gy + 3.9) < 0.45:
+                continue  # the doorway is walked clear
+            angle = rng.uniform(0, pi)
+            du = (X - gx) * np.cos(angle) + (Y - gy) * np.sin(angle)
+            dv = -(X - gx) * np.sin(angle) + (Y - gy) * np.cos(angle)
+            crumple = 0.012 * noise2(np.stack((du.ravel() / 0.02, dv.ravel() / 0.02), axis=1), 90 + kind).reshape(X.shape)
+            piece = smoothstep(0.004, 0.0, np.maximum(np.abs(du) - half_u, np.abs(dv) - half_v) + crumple)
+            if kind == 5:  # crushed can: a lozenge with a darker crease and a bright rim
+                piece = smoothstep(0.004, 0.0, (du / half_u) ** 2 + (dv / (half_v * 0.8)) ** 2 - 1.0 + crumple * 20)
+            shade = (0.75 + 0.25 * fine)[..., None]
+            colour = colour * (1 - piece[..., None]) + tint * shade * piece[..., None]
+            shadow = smoothstep(0.02, 0.0, np.maximum(np.abs(du) - half_u, np.abs(dv) - half_v)) * (1 - piece)
+            colour = colour * (1 - shadow[..., None] * 0.3)
+            alpha = np.maximum(alpha, np.maximum(piece, shadow * 0.3))
+            rough_rect = np.where(piece > 0.5, 0.45 if kind == 5 else 0.7, rough_rect)
         rgba[ry:ry + rh, rx:rx + rw, :3] = srgb_encode(colour.reshape(-1, 3)).reshape(colour.shape)
         rgba[ry:ry + rh, rx:rx + rw, 3] = np.clip(alpha, 0, 1)
         rough[ry:ry + rh, rx:rx + rw] = rough_rect
