@@ -52,6 +52,7 @@ import { createCollisionDebugOutlines } from './collisionDebug';
 import { addSpecterGraffiti } from './createSpecterGraffiti';
 import { loadModel } from './loadModel';
 import { LocalLightRegistry } from './localLighting';
+import { mergeStaticModelMeshes } from './mergeStaticModelMeshes';
 import { SterlingBike } from '../vehicles/SterlingBike';
 import { SterlingFleet } from '../vehicles/SterlingFleet';
 import {
@@ -1178,6 +1179,10 @@ async function replaceCoralFallback(
     applyCoralModelPolicy(streetlight);
     applyCoralModelPolicy(bollard);
 
+    for (const model of [shop, bin, streetlight, bollard]) {
+      mergeStaticModelMeshes(model);
+    }
+
     shop.name = 'Harperhey Coral finished hero asset';
     shop.position.set(location.x, 0, location.z);
     // The Blender façade faces +Z after glTF axis conversion. Rotate it to the
@@ -1251,6 +1256,7 @@ async function replaceFloristFallback(
       'assets/models/nice-things-blockout.glb?v=geometry-approved-20260911',
     );
     applyNiceThingsBlockoutPolicy(florist);
+    mergeStaticModelMeshes(florist);
     florist.name = 'Nice Things geometry blockout';
     // The authored asset includes Central Buildings to the left, while the
     // canonical florist location remains centred on the 5.9 m shopfront.
@@ -1277,6 +1283,7 @@ async function replaceDreamsFallback(
       'assets/models/harperhey-dreams-greybox.glb?v=geometry-approved-20260911',
     );
     applyDreamsModelPolicy(dreams);
+    mergeStaticModelMeshes(dreams);
     dreams.name = 'Harperhey Dreams geometry-first hero asset';
     dreams.position.set(location.x, 0, location.z);
     dreams.rotation.y = location.front === 'north' ? Math.PI : 0;
@@ -1301,6 +1308,7 @@ async function addGulliversModel(
       'assets/models/harperhey-gullivers.glb?v=geometry-wip-20260911',
     );
     applyGulliversModelPolicy(gullivers);
+    mergeStaticModelMeshes(gullivers);
     gullivers.name = 'Gullivers geometry WIP — textures pending';
     gullivers.position.set(location.x, 0, location.z);
     // Blender front (-Y) imports facing +Z, aligning the Oldham Street
@@ -1323,6 +1331,7 @@ async function addMcr1Model(
       'assets/models/harperhey-mcr1-geometry.glb?v=geometry-wip-20260911',
     );
     applyMcr1ModelPolicy(mcr1);
+    mergeStaticModelMeshes(mcr1);
     mcr1.name = 'MCR1 geometry WIP — textures pending';
     // The Blender asset uses the real corner as its modelling origin rather
     // than the plot centre. This offset centres its 11.7 m envelope immediately
@@ -1347,6 +1356,7 @@ async function replaceCassArtFallback(
       'assets/models/cass_art.glb?v=geometry-wip-20260911',
     );
     applyCassArtModelPolicy(cassArt);
+    mergeStaticModelMeshes(cassArt);
     cassArt.name = 'Cass Art geometry WIP — textures pending';
     const scale = location.width / 18;
     // Blender -Y imports as Three.js +Z. Rotate the facade north and align its
@@ -1375,6 +1385,7 @@ async function replaceReneeFallback(
       'assets/models/renee-blockout.glb?v=geometry-wip-20260911',
     );
     applyReneeBlockoutPolicy(renee);
+    mergeStaticModelMeshes(renee);
     renee.name = 'Renee geometry blockout — textures pending';
     // Blender -Y becomes Three.js +Z, matching this south-facing plot. The
     // plot centre is shifted north so the deeper model keeps the old frontage.
@@ -1399,6 +1410,7 @@ async function addTheHiveModel(
       'assets/models/the_hive.glb?v=geometry-20260911',
     );
     applyTheHiveModelPolicy(hive);
+    mergeStaticModelMeshes(hive);
     hive.name = 'The Hive / Arts Council geometry asset';
     // Blender's -Y frontage imports facing +Z. Rotate that frontage west and
     // centre the authored metric envelope on the canonical Arts Council plot.
@@ -1500,6 +1512,9 @@ async function addComeThroughLabModel(
         '[World] Come Through Lab has no usable threshold or wall-fixture anchor.',
       );
     }
+    mergeStaticModelMeshes(lab);
+    mergeStaticModelMeshes(dropbox);
+    mergeStaticModelMeshes(props);
   } catch (error) {
     console.error(
       '[World] Failed to load the Come Through Lab hero asset set (building, drop box, supply holder).',
@@ -1518,6 +1533,7 @@ async function replaceVillageBooksFallback(
       'assets/models/village-books-blockout.glb?v=geometry-wip-20260912',
     );
     applyVillageBooksBlockoutPolicy(villageBooks);
+    mergeStaticModelMeshes(villageBooks);
     villageBooks.name = 'Village Books geometry blockout — detail pass pending';
     // Blender's -Y Oldham Street frontage imports facing +Z. Rotate it east,
     // then align the measured fascia projection to the canonical X = -34
@@ -1550,6 +1566,7 @@ async function replaceAdvancedPhotoFallback(
       'assets/models/advanced-photo-blockout.glb?v=geometry-wip-20260913',
     );
     applyAdvancedPhotoBlockoutPolicy(advancedPhoto);
+    mergeStaticModelMeshes(advancedPhoto);
     advancedPhoto.name =
       'Advanced Photo geometry blockout — detail pass pending';
     // Blender's main -Y frontage imports facing +Z. Rotate it north and place
@@ -1686,6 +1703,7 @@ async function addSpiceCabinModel(
       selectionMode: 'location-relevance',
       activationRadius: 12 * s,
     });
+    mergeStaticModelMeshes(spiceCabin);
   } catch (error) {
     console.error(
       '[World] Failed to load spice-cabin.glb. Only its collision footprint remains.',
@@ -1753,6 +1771,8 @@ function loadPalletTemplates(): Promise<{ blue: Group; brown: Group }> {
   ]).then(([blue, brown]) => {
     applyPalletTexturePolicy(blue);
     applyPalletTexturePolicy(brown);
+    mergeStaticModelMeshes(blue);
+    mergeStaticModelMeshes(brown);
     // Spice Cabin's ground-contact decal crosses its pallet stack. Queue every
     // instance after such decals so all four stacks share the exact same policy.
     for (const pallet of [blue, brown]) {
@@ -1832,6 +1852,7 @@ async function addRealCameraModel(
       'assets/models/real_camera.glb?v=geometry-20260912',
     );
     applyRealCameraModelPolicy(realCamera);
+    mergeStaticModelMeshes(realCamera);
     realCamera.name = 'Real Camera geometry asset — textures pending';
     // Blender's -Y Dale Street frontage imports facing +Z. Rotate it to face
     // north, then sit the authored metric envelope on the plot with the
@@ -1863,6 +1884,7 @@ async function replaceVinylExchangeFallback(
       'assets/models/vinyl-exchange-blockout.glb?v=surface-pass-20260916',
     );
     applyVinylExchangeTexturePolicy(vinylExchange);
+    mergeStaticModelMeshes(vinylExchange);
     vinylExchange.name = 'Vinyl Exchange textured geometry blockout — facade detail pending';
 
     // The Blender origin is the notional Oldham/Dale street-line corner. On
@@ -2526,6 +2548,7 @@ function loadBusShelterTemplate(): Promise<Group> {
     'assets/models/bus-shelter/preston-busstop-textured.glb?v=texture-pass-20260913',
   ).then((model) => {
     applyBusShelterGeometryPolicy(model);
+    mergeStaticModelMeshes(model);
     return model;
   });
   return busShelterTemplate;
@@ -2648,6 +2671,7 @@ async function replaceGreekGyrosFallback(
     } else {
       console.warn('[World] Greek Gyros counter light anchor is missing.');
     }
+    mergeStaticModelMeshes(stand);
     root.remove(fallback);
   } catch (error) {
     markShelterLoadFailure(fallback, 'Greek Gyros');

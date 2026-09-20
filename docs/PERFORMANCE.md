@@ -46,6 +46,19 @@ Bloom remains available where it materially supports emissive photographic highl
 
 Phase 1 caches identical box, cylinder, circle, cone, dodecahedron, and Dreams railing geometries. Repeated flat-colour standard/basic materials are shared where mutation is not required. This reduced resident geometry at the start view from 398 to 199 without merging objects or changing their independent transforms.
 
+Static hero GLBs are also batched after their material policy and authored-anchor lookups have run. Opaque, non-animated meshes with the same material and compatible vertex layout are transformed into model-local space and merged. Transparent meshes remain separate so object-level sorting is unchanged; skinned, instanced, morph-target, multi-material, and articulated Sterling parts are excluded.
+
+The 2026-09-20 browser pass at 1280 × 720, DPR 1 and MEDIUM measured these complete-composer draw-call changes after assets settled:
+
+| Development view | Before | After | Reduction |
+| --- | ---: | ---: | ---: |
+| Start | 1,737 | 589 | 66% |
+| Sterling South | 2,594 | 676 | 74% |
+| East Shops | 1,996 | 842 | 58% |
+| Spice Cabin | 5,319 | 1,705 | 68% |
+
+At Spice Cabin, the previously worst measured view, observed frame rate increased from approximately 14 to 22 FPS in the same in-app browser test surface. The scene is still CPU-limited there and remains the priority for a later visibility/LOD pass. Static batching intentionally accepts a modest increase in submitted triangles where a whole material batch intersects the frustum; the reduced submission count is the larger win on the current target hardware.
+
 Future work may instance repeated streetlight parts, tower windows, trees, benches, bollards, and road markings. That work should be measured and kept within the existing world architecture rather than becoming a renderer rewrite.
 
 ## Development diagnostics
