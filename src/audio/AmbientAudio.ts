@@ -44,7 +44,7 @@ export class AmbientAudio {
   );
 
   private readonly streetSounds = createLoopingTrack(
-    'Foley/Street Sounds/manny-final.wav',
+    'ambience/manny-streets.mp3',
     STREET_SOUNDS_VOLUME,
   );
 

@@ -78,6 +78,8 @@ export class IntroScreen {
     if (this.holdsWorld && this.element) {
       mountTitleContent(this.element);
     } else {
+      // No title: take the card down now rather than leaving it over the loading world.
+      this.element?.remove();
       this.resolveEntering();
       this.resolveRevealing();
     }

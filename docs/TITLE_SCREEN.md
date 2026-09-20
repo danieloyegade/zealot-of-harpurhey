@@ -57,5 +57,5 @@ The title card deliberately shows no ledger. The record (night, money, film, bus
 ## Known limits
 
 - Browsers keep audio silent until the first key press or click, so the title is silent until the player presses a key or clicks.
-- The only street recording is `Foley/Street Sounds/manny-final.wav`.
+- The only street recording is `ambience/manny-streets.mp3` (192 kbps MP3; the 97 MB WAV master was dropped).
 - EB Garamond, Herr Von Muellerhoff and Mrs Saint Delafield load from Google Fonts. The script face is a placeholder; see `docs/GRAPHIC_IDENTITY.md`.
