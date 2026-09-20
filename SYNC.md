@@ -23,6 +23,233 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-20 — Claude (repo consolidation)
+**HEAD at session start:** `f93ac7a` (Add Vinyl Exchange, T-shirts, title screen, city renders and pallet re-weathering)
+**Did:** Consolidated everything on Daniel's machine into `origin/main`, so there is one source of truth. Committed the 89-path working tree as five commits that each typecheck on their own: Spice Cabin surfacing/artwork/renders; Specter graffiti textures, generator script and placement helper; the shopfront glass `grazingSheen` option; the rideable Sterling bike system (bikes, docks, `BikeInteraction`, camera/input/player wiring, `src/style.css` prompt) together with the Phase 1 movement work from the concurrent session; and the street-audio swap (97 MB `manny-final.wav` dropped for `ambience/manny-streets.mp3`) with the `?intro=off` title-card fix. Also restored `references/tittle_screen/` to `references/title_screen/`, so git recorded it as a rename of the 12 webps plus one new screenshot rather than a delete-and-replace. Pushed `f93ac7a..6a99263`. Verified the state: local `main` and `origin/main` are identical, no stashes, the `.worktrees/tone-mapping` worktree is clean and its branch is pushed, no project dev server is running, and nothing needs git-lfs (largest uncommitted file was under 20 MB).
+**Left uncommitted (if any):** Nothing.
+**Flagged:** Two things worth knowing. **(1) Concurrent sessions share this working tree.** While committing, another session was mid-write in `PlayerController.ts`; the first version of the bike commit captured it half-written and did not compile. Caught it by typechecking the commit in a throwaway worktree, then rebuilt the last two commits from the finished file. Anyone committing here should check file mtimes first and typecheck `HEAD` (not just the working tree) before pushing. **(2) The five unmerged branches were not merged**, contrary to a first instruction in that session, because `docs/CAMERA_AND_MOVEMENT_BRIEF.md` §7.0 says explicitly not to `git merge` them: they predate the `createWorld.ts` rebuild, and several of their behaviours (run-by-default, FOV 58/64, pitch to 1.02) are on the brief's reject list. Daniel was shown the brief's instruction and left the call to this session. They are kept as the port source for §7's table, not as live work.
+**Next:** Port the remaining §7 items on a `camera-movement-consolidation` branch, one feature per commit, then delete `claude/engineer-communication-workflow-uex7id`, `claude/game-improvement-ideas-vkan3h`, `claude/local-cloud-workflow-h6ivy0`, `claude/local-game-startup-qjn3f1` and `codex/tone-mapping`. That work belongs with whoever is running the camera brief, to avoid two agents in the same files. Note `claude/local-cloud-workflow-h6ivy0` is not camera work: it adds `src/core/assetUrl.ts`, a single helper for runtime asset URLs, and is a clean small port on its own.
+**Open questions:** None.
+
+## 2026-09-20 — Codex (Chrome performance profiler skill)
+**HEAD at session start:** `6a99263` (Replace the street WAV master with an MP3 and tidy the title card)
+**Did:** Verified the dedicated Chrome DevTools performance profiler skill is `web-perf`. It is already installed globally at `~/.agents/skills/web-perf` and active in Codex; the current curated `openai/skills` catalog does not offer a separate copy to install.
+**Left uncommitted (if any):** This `SYNC.md` entry only; all pre-existing working-tree changes were preserved.
+**Flagged:** The skill requires the `chrome-devtools` MCP server when an audit is run; availability must be checked at the start of that audit.
+**Next:** Invoke `web-perf` for a performance audit when needed.
+**Open questions:** None.
+
+## 2026-09-20 — Claude (Phase 1: movement feel)
+**HEAD at session start:** `f93ac7a` (unchanged; nothing committed yet).
+**Did:** Phase 1 of `docs/CAMERA_AND_MOVEMENT_BRIEF.md`, after Daniel chose keyboard feel over touch controls as the next step.
+- **Basis latch** (`PlayerController.updateLatchedBasis`): the camera-relative movement basis is latched while a direction is held, re-captured only on a change of held keys or the player's own orbiting. This is the structural version of the fix `9d60c9d` made by deleting auto-follow.
+- **Response:** acceleration 20, deceleration 26, zero-snap at 0.12 m/s (was 8/11 with no snap).
+- **Speeds:** the dev multipliers now apply only behind `?fast=on`, so tuning judges the real pace.
+- **Facing:** the figure faces the input direction, not its post-collision slide.
+- **Camera:** one smoothed anchor (responsiveness 14) drives both the lens and the look target.
+- **Input:** `event.code` resolved with a `key` fallback for every binding, not just E; held keys released on blur, on a hidden document and on any Cmd chord (iPadOS swallows that keyup); Space unbound on foot, so it is free for a future shutter and no longer doubles as run.
+**Verified** with the stepped harness in the dev page (`tsc` clean, no console errors):
+- camera yaw drift while walking a diagonal for 10 s: **0°**; path spread in free space **0°**.
+- camera yaw shoved externally every frame while holding W: path spread **0°** (the latch). With the player orbiting instead, the walk re-aims and then holds the new heading — both halves work.
+- 90% of pace in **0.117 s**, stop in **0.117 s**, glide after release **6.8 cm**.
+- 30 vs 60 Hz end position **1.7 cm**, 60 vs 120 Hz **0.9 cm**.
+- East shops run with the camera angled at the buildings: **0** sudden-boom frames, **0** blocked frames, camera steady at 1.82 m.
+- Screenshot at `?view=east-shops` still matches Daniel's reference framing.
+**Committed by another session, mid-work:** while this session was running, a parallel session committed and pushed the whole working tree. HEAD moved `f93ac7a` -> `6a99263`, and all of this session's camera and movement work, plus `docs/CAMERA_AND_MOVEMENT_BRIEF.md`, went into `5de21cd` "Add rideable Sterling bikes, docks and the on-foot/riding state machine" — a commit message that says nothing about any of it. Nothing was lost (the working tree matches HEAD for `src/`), but the history is misleading: anyone bisecting camera feel will not find it by subject line. Worth a note in a future commit or a `git notes` entry rather than a rewrite, since it is already on `origin/main`.
+**Flagged:** T1 first read 315° of heading spread, which was the harness measuring a second where the figure slid past a park obstacle, not a camera fault. Measure heading only over legs with real displacement.
+**Next:** Phase 2 (arrow-key look, pointer lock checked on an iPad, V framing presets) is blocked on questions 1–3 in the brief. Live keyboard play on a desktop and on an iPad is still unverified.
+
+## 2026-09-16 — Claude (camera and movement brief)
+**HEAD at session start:** `f93ac7a`, same session as the two entries below.
+**Did:**
+- Daniel asked for everything said this session to be consolidated into a detailed brief: the regression report, the photographic guiding principle and its reference screenshot, "movement as consistent as GTA on an iPad with a keyboard", and the fact that the side-branch camera/movement work is going to be merged.
+- Wrote `docs/CAMERA_AND_MOVEMENT_BRIEF.md` (340 lines) and linked it from `docs/TECHNICAL.md` § Camera. It contains:
+  - **§1 What Daniel said** — his reports and the principle, quoted, so it can't drift in the retelling.
+  - **§3 Principles P1–P6** — ranked, so conflicts have an answer: photographer's eye level; no camera motion without a cause; directions mean the same thing from moment to moment; the walk is the point; gentlest-first collision handling; riding is its own mode.
+  - **§4 Consistency spec** — including a **basis latch** (the movement basis is latched while a direction is held), which is the structural fix for the circling bug that `9d60c9d` fixed only by deleting auto-follow. Plus iPad-with-keyboard requirements (`event.code` fallbacks, stuck keys after Cmd/app-switch, no Cmd/Globe binds, pointer lock to be checked on device) and a proposed key map.
+  - **§5 Photographic framing** — resting frame, dev-view re-tune, figure hide, a "tripod settle" when standing still, canopy fade, and a photo-mode seam.
+  - **§7 Merge plan** — port by feature onto a branch off `main`; do **not** `git merge` either side branch, since both predate `ea8f343`/`f93ac7a` and would conflict through `createWorld.ts`. Item-by-item port/reject table for `9d60c9d` and `625474d`, including the E-key clash (branch binds Q/E to orbit, `main` uses E for interact) and the rejected run-by-default and FOV-on-run changes.
+  - **§8 Phases**, **§9 ten acceptance tests** with thresholds, **§10 six open questions**.
+**Left uncommitted:** the brief, the `TECHNICAL.md` link, this entry, plus the camera code from the two entries below and the large pre-existing dirty tree.
+**Flagged:** the brief's §10 needs Daniel's answers before Phase 2 starts, especially the key map (arrow keys for look) and framing presets on V instead of free wheel zoom.
+**Next:** Phase 1 in §8 — basis latch, movement responsiveness, facing the input direction, single smoothed anchor, iPad key hygiene, dev-view pitches — each with its §9 test.
+
+## 2026-09-16 — Claude (eye-level photographic camera)
+**HEAD at session start:** `f93ac7a`, same session as the "camera navigation" entry below.
+**Did:**
+- Daniel rejected the raised chase angle from the entry below. He sent a reference screenshot (low, level view of Coral from beside the bus shelter) and set a **guiding principle**: the game is partly a photo walk through the nocturnal city, so most of the time the camera sits at eye level with facades, bus stops and buildings framed like photographs. Recorded in `docs/TECHNICAL.md` § Camera.
+- `ThirdPersonCamera`:
+  - **Rest framing:** pitch 0.04 and pivot/look height 1.6 m (`ORBIT_PIVOT_HEIGHT`, now also the look target, so the lens is level). Boom 5.6 m, FOV 56. The lens sits at ~1.8 m.
+  - **Pitch return:** after manual orbiting, pitch drifts back to rest (2.5 s delay).
+  - **Occlusion lift:** capped at 0.35 rad.
+  - **Riding:** the boom is 7 m.
+  - **Kept from the entry below:** no on-foot auto-follow, and C to recentre.
+- Verified: `tsc` is clean. The `?view=east-shops` screenshot matches the reference framing. The sim walks show the camera steady at 1.82 m, 0 blocked frames, and 0–9 frames of sudden boom change per 8–10 s walk.
+**Left uncommitted:** all of it.
+**Flagged:** the dev views in `main.ts` with explicit pitches (0.16–0.24) were tuned for the old camera, so they now frame higher than default play.
+**Next:** Daniel plays it. Possible follow-ups are a stationary "photograph" framing (e.g. a slow drift to a frontal composition when the player stands still near a facade, per the constitution's tripod notes) and fading tree canopies near the lens.
+
+## 2026-09-16 — Claude (camera navigation)
+**HEAD at session start:** `f93ac7a` (Add Vinyl Exchange, T-shirts, title screen, city renders and pallet re-weathering)
+**Did:**
+- Daniel said navigation had regressed to disorientating: unexpected zooming, the camera diving into buildings, and no view over rooftops. **Root cause:** the camera fixes he remembers were never merged into `main`. They live on the unmerged branches `origin/claude/engineer-communication-workflow-uex7id` (`9d60c9d`, which removed the auto-follow feedback loop and added C recentre) and `origin/claude/game-improvement-ideas-vkan3h` / `codex/tone-mapping` (`625474d`). `main` had rewritten the camera independently and still carried the auto-follow loop.
+- Rewrote `src/camera/ThirdPersonCamera.ts`, keeping `main`'s API and sphere-cast collision:
+  - **Auto-follow:** removed on foot, kept only while riding.
+  - **Recentre:** C swings the camera behind the player (`InputController.consumeRecenter`).
+  - **Framing:** raised chase angle (`DEFAULT_CAMERA_PITCH` 0.5, boom 7.6 m, FOV 52).
+  - **Occlusion:** the camera now rises over buildings before shortening the boom, with a hold so it doesn't bob.
+  - **Recovery:** easing back out after an obstruction is slower.
+- `main.ts`: the riding boom is a fixed 9 m and no longer grows with boost speed. The boost FOV bump drops from 11° to 5°.
+- Verification: `tsc` is clean. Ran an A/B sim in the dev page comparing the old and new camera over five scripted walks, stepped directly because the hidden pane throttles rAF. Results:
+  - **Unasked camera rotation:** 598/300/581° before, 0° after.
+  - **Frames of sudden boom change:** 84/38 before, 7/4 after.
+  - **Blocked-view frames:** 0 in both.
+  - **Backing straight into a tall wall:** still pulls in, as expected.
+  - One screenshot confirms the higher framing. Live keyboard feel was **not** checked, since the pane was hidden.
+- Updated `docs/TECHNICAL.md` § Camera.
+**Left uncommitted:** all of the above, along with the pre-existing dirty tree.
+**Flagged:**
+- **Unmerged branches:** they still hold other useful work that never reached `main`: keyboard orbit (Q/E, R/F), wheel zoom, pointer lock, hiding the player when the camera is very close, 4x MSAA composer target, shadows, and `LocationAwareness`.
+- **Trees:** they don't block the camera, so foliage can still sit in front of the lens. The fix is canopy fading near the camera, not more pull-in.
+**Next:** Daniel plays to tune feel (`DEFAULT_CAMERA_PITCH`, `OCCLUSION_LIFT_*`). Then decide whether to port wheel zoom, keyboard orbit and player-hide from `9d60c9d`.
+
+## 2026-09-16 — Claude (title screen off)
+**HEAD at session start:** `f93ac7a` (Add Vinyl Exchange, T-shirts, title screen, city renders and pallet re-weathering)
+**Did:**
+- `SHOW_TITLE_SCREEN = false` in `src/main.ts` still left the static `[data-intro]` card from `index.html` on screen for the whole load, because `IntroScreen` only removed it in `setReady()`. The constructor now removes the card straight away when `enterAutomatically` is set. Checked in the dev preview: no card, the world renders, no console errors.
+**Left uncommitted:** this change, along with the rest of the working tree.
+**Next:** set `SHOW_TITLE_SCREEN` back to `true` to bring the title back.
+
+## 2026-09-16 — Claude (specter graffiti)
+**HEAD at session start:** `f93ac7a` (Add Vinyl Exchange, T-shirts, title screen, city renders and pallet re-weathering)
+**Did:**
+- Daniel asked for the specters (his recurring painting motif: long upright figures with two dot eyes, often beside a scale bar with pink/blue marks) to be spray-painted in several spots around the map, starting behind Dreams.
+- New `scripts/generateSpecterTextures.mjs` makes three procedural RGBA spray textures in `public/assets/textures/graffiti/`: `specter-haze-pair`, `specter-drip-trio` and `specter-outline`. It takes about 4 minutes to run.
+- New `SPECTER_GRAFFITI` markers in `worldLayout.ts`, built by the new `src/world/createSpecterGraffiti.ts` (alpha quads 12 mm off the wall, polygon offset, no collision), are wired into `createWorld.ts`.
+- First placement: the Dreams rear wall (Z = 43.25, facing south into the gap between Vinyl Exchange and Spice Cabin), haze pair at 2.8 × 4.2 m. Added the dev view `?view=dreams-rear`. Checked in the browser that it renders on the wall and the console shows no errors. `tsc --noEmit` passes. Documented in `docs/WORLD_LAYOUT.md` § Specter graffiti.
+**Left uncommitted (if any):** All of the above. Not committed; nobody asked for a commit. The large pre-existing dirty tree from other sessions was left untouched.
+**Flagged:** None.
+**Next:** Add more `SPECTER_GRAFFITI` markers at other walls once Daniel picks spots or approves random ones. Use `drip-trio` on pale walls and `haze-pair`/`outline` on dark ones.
+**Open questions:** Where else should specters go? Does Daniel want the procedural textures replaced with scans of his own drawings?
+
+---
+
+## 2026-09-16 — Claude (Sterling bike Space boost)
+**HEAD at session start:** `f93ac7a`, with the uncommitted Sterling riding work in the tree.
+**Did:**
+- Daniel asked for Space to make a ridden bike go much faster, "about five times". Chose **20 m/s** (~4.3x the 4.6 m/s pedalling speed, ~45 mph). Above that the ~100 m city is crossed in seconds and the bike can't turn into streets.
+- `SterlingBike`:
+  - Added a `boost` control: 9 m/s² tapered acceleration, 5 m/s² bleed-off on release.
+  - Braking is 12 m/s² above assist speed.
+  - Steering is capped by 16 m/s² lateral grip (~25 m radius at boost).
+  - Lean max is now 0.5 rad, and crank rate caps at 12.5 rad/s.
+  - Collision is sub-stepped every 0.1 m.
+- Input: Shift is now e-assist only (`isAssisting`); Space is boost (`isBoosting`) and drives forward without W. Walking `isRunning` is unchanged.
+- The camera eases up to +2.6 m boom and +11° FOV with boost speed (`ThirdPersonCamera.setFieldOfView`). The riding hint and `docs/TECHNICAL.md` are updated.
+- Console-stepped checks:
+  - Space alone reaches 19 m/s in 4 s.
+  - Full-boost turn radius is 25.5 m.
+  - Braking from 20 m/s stops in 2.25 s / 18.7 m.
+  - A lamppost hit at 20 m/s blocks, with no tunnelling.
+  - W still tops out at 4.6 m/s, and W+Shift at 6.9 m/s.
+  - `tsc` is clean.
+**Left uncommitted (if any):** All of the above.
+**Flagged:** The browser pane was hidden again, so the FOV/boom feel at speed is unwatched. The dev page reloaded several times mid-test, probably another session editing files. Hitting a wall at 20 m/s still just stops dead.
+**Next:** Play-test boost feel; consider a crash bump or wobble now that impacts are fast.
+**Open questions:** None.
+
+---
+
+## 2026-09-16 — Claude (title screen toggle)
+**HEAD at session start:** `f93ac7a` (Add Vinyl Exchange, T-shirts, title screen, city renders and pallet re-weathering)
+**Did:** Daniel wanted the title screen out of the way for testing, but easy to bring back. Added `SHOW_TITLE_SCREEN` at the top of `src/main.ts` (currently `false`). When false it reuses the existing `enterAutomatically` path (the one `?view=` uses): the loading card stays up only until assets load, then drops straight into the world with no prompt or entry sequence. Verified in the dev server: card removed after load, chase camera on the player in the park, no console errors, `tsc` clean.
+**Left uncommitted (if any):** This change, plus the earlier uncommitted 2026-09-16 batches.
+**Flagged:** Flip `SHOW_TITLE_SCREEN` back to `true` before any release/deploy.
+**Next:** None.
+**Open questions:** None.
+
+---
+
+## 2026-09-16 — Claude (Sterling bike riding and docking)
+**HEAD at session start:** `f93ac7a` (Add Vinyl Exchange, T-shirts, title screen, city renders and pallet re-weathering)
+**Did:**
+- Daniel asked for getting on a Sterling bike and riding it round the city. New modules:
+  - `src/vehicles/SterlingBike.ts`: kinematic bicycle physics, collision, wheel, steering, crank and pedal animation, lean.
+  - `src/vehicles/SterlingFleet.ts`: docks, docked and parked bikes, their dynamic collision footprints, and scripted roll in/out of docks.
+  - `src/interaction/BikeInteraction.ts`: on-foot / undocking / riding / docking state machine, camera target, prompt text.
+  - `src/ui/InteractionPrompt.ts`: E prompt plus a riding controls hint, styled in `style.css`.
+- `PlayerController` gained `beginRiding` / `updateRiding` / `endRiding`, with planar two-bone IK: feet to pedals, hands to grips, torso lean. `spine` and `neck` joined the animated bones. `MovementState` now includes `'Riding'`.
+- `InputController` has `consumeInteract()` for E (falls back to `event.key` when `code` is empty). `ThirdPersonCamera` has `setBoomLength` (7.9 m while riding).
+- `createWorld` replaces the whole-station obstacle with per-dock side-post obstacles. Bikes are re-parented to world space and registered with `world.sterlingFleet`.
+- Title card controls line gains `E / Use` (as `docs/TITLE_SCREEN.md` asked). Controls and riding rules are documented in `docs/TECHNICAL.md`.
+- Verified in the dev server by stepping the simulation from the console: hire, roll-out, pedal (4.6 m/s), assist (6.9 m/s), steer, collide with docked bikes and a wall, brake-and-park, re-mount a parked bike, dock into an empty slot, and dismount-spot selection. IK measured against bike geometry: the upper foot lands within 2 cm of its pedal and the wrists sit at the grips. Offscreen renders confirmed seated pose and lean. `tsc --noEmit` is clean, with no console errors.
+**Left uncommitted (if any):** All of the above, plus the earlier uncommitted Sterling geometry pass.
+**Flagged:**
+- The Browser pane was hidden all session, so live keyboard play (camera auto-follow feel while riding) was never watched on screen. Give it a real play-through.
+- The rig's legs are shorter than saddle-to-pedal: at the bottom of the stroke the foot stops about 11 cm above the pedal (reads as a pointed toe). Either lower the saddle in the Blender script or add ankle extension.
+- No crash feedback: hitting a wall just stops the bike. No money or hire cost is charged yet ("Hire" is a label only).
+**Next:** A real play-through for feel (steering lock, camera boom, braking distance). Then bike lights (`SB_FrontLightAnchor` / `SB_RearLightAnchor`), hire cost into the rider record, and a bump or wobble on impact.
+**Open questions:** Should a parked (abandoned) bike eventually return to a dock or count against the player?
+
+---
+
+## 2026-09-16 — Claude (street audio)
+**HEAD at session start:** `f93ac7a` (Add Vinyl Exchange, T-shirts, title screen, city renders and pallet re-weathering)
+**Did:** Daniel couldn't hear the street foley. It was loading/playing on localhost (−25 LUFS source, louder in the mix than the music), but it was a 97 MB 24-bit/48 kHz WAV streamed via `<audio>`, so it was slow to start locally and hopeless deployed. Encoded it to 192 kbps MP3 (8.1 MB, loudness unchanged) at `public/assets/audio/ambience/manny-streets.mp3`, repointed `src/audio/AmbientAudio.ts`, updated `docs/TITLE_SCREEN.md`, and `git rm`'d the WAV master (Daniel doesn't want it; it's still in history at `4562e6d`). Verified in-game: track plays after entering.
+**Left uncommitted (if any):** These audio changes, alongside the pre-existing Sterling bike batch from the earlier 2026-09-16 session (untouched).
+**Flagged:** `Foley/clips/*.WAV` (~66 MB, unused by code) are also uncompressed masters still shipped in `public/`.
+**Next:** Compress or move the clips out of `public/` when they're wired in.
+**Open questions:** None.
+
+---
+
+## 2026-09-16 — Claude
+**HEAD at session start:** `f93ac7a` (Add Vinyl Exchange, T-shirts, title screen, city renders and pallet re-weathering)
+**Did:** Advice only, no code or asset changes. Daniel asked how to improve the look of all buildings. Audited GLB contents and `renders/city-*`: only Dreams, Florist, Spice Cabin and Vinyl Exchange GLBs carry textures; Real Camera, Come Through Lab, MCR1, Cass Art, The Hive, Gulliver's, Renee, Nice Things, Village Books, Advanced Photo and Greek Gyros are flat-colour placeholder materials (0 images). Shadows are off and there is no AO or baked light, so geometry-heavy assets (e.g. Real Camera's cornices) read as flat blue silhouettes under the moon/ambient light. Recommended: shared Blender material library + texture pass, baked AO/lightmaps, lit windows/shopfront practicals, roof/back-face treatment and placeholder-box replacement.
+**Left uncommitted (if any):** Only this entry. Pre-existing uncommitted Sterling bike work untouched.
+**Flagged:** None new.
+**Next:** Daniel to choose which recommendation to start with.
+**Open questions:** None.
+
+
+## 2026-09-16 — Claude (Spice Cabin look pass)
+**HEAD at session start:** `f93ac7a`, with another session's Sterling bike and audio work uncommitted in the tree (untouched, apart from the Spice Cabin lines in the shared `createWorld.ts`).
+**Did:** Daniel: "make the changes you listed" (from the critique entry below).
+- **Sign** (`spiceCabinArtwork.py`): heavier title (`TITLE_WEIGHT` emboldens Marker Felt), tighter spacing, chilli pulled in between P and c, flame over the i, thicker outline and shadow, deeper reds and greens, gentler fading on the front sign, rounder printed logs, dark outline on the log ends.
+- **Geometry** (`spiceCabinGeometry.py`): boxed fascia 0.22 m proud of the pier; anti-climb rotors about 1.5× larger, bar raised to Z 5.00; 100 mm downpipe and a bigger hopper.
+- **Surfaces** (`createSpiceCabin.py`): narrower brown brick palette with less mottling; glass alpha 0.62 → 0.74; interior albedo ×0.7; stickers on three bollards; puddles and takeaway litter in the ground decal.
+- **Runtime:** `configureGlass` takes options (default is unchanged for the bus shelter). Spice Cabin uses env 4.2 with a grazing sheen; interior emissive 0.35 → 0.25; front sign wash 4.5 → 6, gable 4.5 → 6.5; GLB cache key `textured-20260916`.
+- Rebuilt the GLB (7.6 MB, 11,788 tris) and all 11 renders. `tsc --noEmit` is clean. The in-game frame at `?view=spice-cabin` shows the new sign, glass sheen and stickers, with no console errors. The final 7 → 6 sign-light trim was not re-screenshotted, because the browser pane was hidden.
+**Left uncommitted (if any):** All of the above plus `docs/assets/spice-cabin.md`.
+**Flagged:** None.
+**Next:** Daniel reviews in play.
+**Open questions:** None.
+
+---
+
+## 2026-09-16 — Claude (Spice Cabin critique, no changes)
+**HEAD at session start:** `f93ac7a`, with the Sterling bike pass uncommitted in the tree (not mine, untouched).
+**Did:** Daniel asked what would make Spice Cabin look better. Compared `renders/spice-cabin/` 01/07/08/09 and an in-game `?view=spice-cabin` frame against the reference photos. No code or assets changed. Top gaps found: shop glass reads as open hatches (no reflection); sign lettering is too thin, pale and gapped ("SP ice") next to the photos' heavy, saturated brush letters; the log sign background is too flat; the blue fascia is flush where the real one is a deep box; the anti-climb rotors and downpipe are too thin to read; there's no street clutter.
+**Left uncommitted (if any):** This entry only.
+**Flagged:** None new.
+**Next:** Daniel picks which fixes to do.
+**Open questions:** None.
+
+---
+
+## 2026-09-16 — Claude (Sterling bike second geometry pass)
+**HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references)
+**Did:**
+- Daniel asked for the review below to be implemented. Rebuilt `build_bike`/`build_dock` in `blender/scripts/createSterlingBikeBlockout.py` against IMG_8911-8917. New helpers: sweep, loft, tub, superellipse D outline and smooth shading. Details are in `docs/assets/sterling-bike.md` under "Second geometry pass".
+- Dock is now the slim J-profile side post beside the front wheel. Rear cover is a smooth D clamshell with outboard stays. Frame is a swept step-through tube, basket is a solid frame-mounted tub, the steering axis is raked, and the palette is corrected.
+- Re-rendered A-G plus a new `H-empty-dock-detail.png`. Re-exported both GLBs. Bumped the cache key in `createWorld.ts` to `geometry-pass2-20260916`. Checked in game with `?view=sterling-south`: both GLBs load and there are no console errors. `tsc --noEmit` is clean.
+**Left uncommitted (if any):** The script, `.blend`, 8 renders, 2 GLBs, the `createWorld.ts` cache key, the asset doc and this entry. All earlier working-tree changes are untouched.
+**Flagged:** The bike is now about 14.7k tris (was 8.3k). Draw calls are unchanged because meshes are still merged by material per articulated node. `SB_SteeringRoot` is now rotated (local Z = steering axis), so steer about local Z, not world up. `SB_Basket` now hangs off the frame root, not the steering root. Most anchor positions and snap offsets are unchanged; `SB_FrontLightAnchor` and `SB_RearLightAnchor` moved with the new basket and mudguard tail.
+**Next:** Texture/decal pass (STERLING lettering, basket perforation alpha, hazard stripes, fleet number), then LODs.
+**Open questions:** Is a frame-mounted basket correct for the riding state?
+
+---
+
 ## 2026-09-16 — Claude (commit + push of working tree)
 **HEAD at session start:** `ea8f343` (Add surface, lighting, and hero asset passes; reorganise references)
 **Did:** On Daniel's instruction, committed the entire working tree (227 paths: pallet re-weathering, Vinyl Exchange blockout + textures, Art School T-shirts, title screen / intro UI, first delivery, city planimetric + elevation renders, player references moved under `references/characters/named characters/`) and pushed to `origin/main`. `tsc --noEmit` passed before commit; no file over 20 MB.
