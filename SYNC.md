@@ -23,6 +23,27 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-21 — Codex (project-health remediation: first delivery and release boundary)
+**HEAD at session start:** `c9fdd7b` (Replace the streetlights with a real-scale municipal family; concurrent commits landed during the session)
+**Did:** Applied the project-health report rather than only documenting it.
+- Separated and committed the safe backlog: Space-to-run (`0aab9ac`), title render references (`ba4f074`), and the verified loading artwork/progress screen (`3d6f7a6`). The capture, lighting-plan and ABC batches also landed independently during the session (`1de2c46`, `db563e0`), leaving no mixed feature commit.
+- Added the first complete playable delivery in `685e54d`: collect flowers at Nice Things, carry them to Vinyl Exchange, leave them and receive the existing £3.70 fee. It shares the existing E queue and prompt with bikes and uses a restrained address docket, not a waypoint/minimap/XP layer. Added focused development views and gameplay documentation.
+- Added an explicit production asset manifest and generated public boundary. Production now copies 90.7 MB of runtime assets instead of the prior ~228 MB public tree. Added a repository-wide audio rights register; all 10 unverified recordings remain available in development but are excluded from production, where audio is disabled until a source is cleared.
+- Added four Node tests, manifest/rights validation, `npm run check`, and a GitHub Actions workflow. Reconciled README, WORLD_LAYOUT and the stale Dreamcast-era ART_DIRECTION sections with the implemented project and current creative constitution.
+- Verified `npm run check`, `git diff --check`, both delivery interaction points in the rendered game, the completed `RECEIVED — £3.70` state, and zero browser warnings/errors.
+**Left uncommitted (if any):** None after this log entry is committed.
+**Flagged:** The existing ~806 kB minified JavaScript chunk warning remains. Production intentionally has no audio until Daniel confirms ownership/licensing. The older structural follow-ups from the audit remain: archive the oversized SYNC history, plan Git LFS/repository compaction, and split `createWorld.ts` only along concrete domain boundaries.
+**Next:** Playtest Delivery 001 as an ordinary route from the park without the development teleports. Then confirm the Manny field-recording rights and add one authored consequence/handoff before expanding to a second delivery or a broad quest framework.
+**Open questions:** Are the Manny street/foley recordings Daniel's own recordings with permission to publish? If yes, record that evidence in `config/asset-rights.json` and approve only the chosen release files.
+
+## 2026-09-21 — Codex (new loading artwork and live progress bar)
+**HEAD at session start:** `ba4f074` (Organize title screen render references)
+**Did:** Replaced the previous printed-menu title card with Daniel's supplied 1672 × 941 navy textile loading artwork. Added a real progress fill aligned inside the artwork's empty silver bar; asset loading advances it monotonically to 94%, and the final six per cent completes only after the load settles and `renderer.compileAsync` finishes. The full bar holds for 650 ms, then the plate dissolves automatically into play. Updated `docs/TITLE_SCREEN.md` and added the required visual comparison in `design-qa.md`. Verified the native-size loading state, automatic entry and game canvas in the in-app browser with no console warnings/errors; `npm run build` and `git diff --check` pass.
+**Left uncommitted (if any):** `index.html`, `src/ui/IntroScreen.ts`, `src/ui/intro.css`, `public/ui/title/zealot-loading-screen.png`, `docs/TITLE_SCREEN.md`, `design-qa.md`, and this SYNC entry. Preserved all concurrent delivery/runtime-asset work, ABC building work, captures and staging exactly as found.
+**Flagged:** The new visual has no menu, so entry is now automatic after loading. Browser autoplay policy means music/ambience still begins on the player's first key or pointer input. The existing visible *Harpurhey* versus codebase *Harperhey* discrepancy remains.
+**Next:** Review the live loading fill and dissolve on the target display; adjust only the hold/fade timing if the transition feels too quick or slow.
+**Open questions:** None.
+
 ## 2026-09-21 — Claude (ABC Building detail pass; Side Street position corrected)
 **HEAD at session start:** `c1c8908` (my blockout commit; later commits from other sessions landed during this one)
 **Did:**
@@ -46,6 +67,22 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 **Next:** Daniel to review `renders/abc-building/`. Then either Three.js placement or the texture/emissive pass (canopy panels, Clints neon), followed by the Clints interior.
 **Open questions:** Where does the ABC Building go in the world layout?
 
+## 2026-09-21 — Codex (verified municipal streetlights in game)
+**HEAD at session start:** `c9fdd7b` (Replace the streetlights with a real-scale municipal family)
+**Did:** Reconciled the request against the concurrent `c9fdd7b` implementation and verified it is already complete: all 20 public-light placements instantiate the four new GLB fixture variants through `createStreetlights.ts`, the Coral scene uses the matching warm-old fixture, lantern heads face the nearest carriageway, emitter-derived pools/proxy lights remain aligned, column collisions remain present, and the three authored LODs are retained. Read the creative constitution and the streetlight asset documentation, inspected the integration paths, and confirmed `npm run build` plus `git diff --check` pass. No duplicate implementation or source-code change was needed.
+**Left uncommitted (if any):** This SYNC entry only from this verification. Preserved the pre-existing Space-to-run edits, title-render reorganisation, and untracked capture folders exactly as found.
+**Flagged:** The existing build advisory for the large main JavaScript chunk remains unrelated to the streetlights. The fixture family currently uses photographic magenta/fluorescent casts on selected LEDs, as documented in the preceding Claude entry.
+**Next:** Review the dedicated `?view=streetlights` scene in normal play; tune lamp colour/intensity only if the new fixtures read incorrectly on the target display.
+**Open questions:** None.
+
+## 2026-09-21 — Codex (overall project health audit)
+**HEAD at session start:** `c1c8908` (Add ABC Building (Clints + Side Street) geometry blockout for review)
+**Did:** Completed a read-only high-level audit of Git state/history, folder structure, documentation, source architecture, asset footprint, build/dependencies, implemented game systems, performance records, and current MCR1/bus-stop/streetlight captures. `npm run build`, `git diff --check`, and `npm audit --offline --omit=dev` pass; the build retains its existing ~814 kB JavaScript chunk advisory. Created a verified local report app outside the repository at `/Users/danieloyegade/.codex/visualizations/2026/09/21/01a0c542-fb18-7a83-a5bf-58284ca34281/zealot-project-health-report/`.
+**Left uncommitted (if any):** This SYNC entry only from this audit. Preserved the existing Space-to-run, streetlight, title-art, weathering, documentation and capture changes exactly as found; did not stage, commit, clean, move or modify them. `npm run build` refreshed ignored `dist/` output.
+**Flagged:** `main` equals `origin/main`, but the working tree contains 12 modified tracked files and 73 untracked files across several coherent batches. Production output is ~228 MB (about 108 MB audio, 96 MB models, 24 MB textures); unused/public development media ships automatically. Public audio needs a release-rights manifest. There is no project test suite or CI on main. README/WORLD_LAYOUT/art-direction statements have drifted, SYNC.md is far beyond its own archive threshold, `.git` is ~1.7 GB with loose objects/no Git LFS, and `src/world/createWorld.ts` is 3,990 lines. The game foundation and visual identity are strong, but delivery/NPC/photography gameplay remains early.
+**Next:** Review and commit the current worktree as separate feature batches; then establish a runtime-asset/rights boundary, re-baseline performance after streetlights land, and build one complete pickup-to-delivery vertical slice before another broad environment expansion.
+**Open questions:** None.
+
 ## 2026-09-21 — Claude (municipal streetlight family)
 **HEAD at session start:** `d2181e4` (Record branch cleanup in SYNC.md); `789bb94` and `c1c8908` landed from other sessions mid-session.
 **Did:** Replaced every streetlight in the game with four new real-scale council fixtures, built from scratch in Blender (brief: Daniel's 2026-09-21 streetlight request + photo board). Spec, hierarchy, materials and regen command are in `docs/assets/streetlights.md`.
@@ -59,8 +96,6 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 **Flagged:** `docs/superpowers/plans/2026-09-21-lighting-hierarchy.md` (`789bb94`, not yet executed) was written against the old code: its "merge streetlights" step is now done differently (LOD + per-material merge in `createStreetlights.ts`), `addStreetlight` no longer exists, and the proxy now reads `PUBLIC_LIGHTS[].emitter`. Re-base those tasks before running the plan. The brief lists "fake painted pools of light" under things to avoid; the painted pools were kept because the performance policy forbids one real light per lamp. The lighting plan's soft pool texture is the natural place to revisit them.
 **Next:** Daniel to review `renders/streetlights/` and the in-game `?view=streetlights`. Possible follow-ups: tune `EMITTER_INTENSITY` / proxy intensity against the lighting-plan captures; place more columns (the models are cheap) at real ~30 m spacing along South Road.
 **Open questions:** Keep the magenta / fluorescent-green casts on some physical LED lanterns, or reserve those casts for signage and give the lamps their real sodium/4000 K colours?
-
----
 
 ## 2026-09-21 — Claude (ABC Building / Clints + Side Street blockout)
 **HEAD at session start:** `789bb94` (Plan the lighting hierarchy pass from the current in-game look)
@@ -76,6 +111,30 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 **Flagged:** The references don't agree on where Side Street is. The night photo puts a Side Street panel directly east of Clints. Street View puts its tall window at the Lower Byrom corner, with the canopy's end cap just past it. I modelled both: the main frontage at the corner and a secondary Quay St panel in the Tartuffe bay. All dimensions are photographic estimates. No GLB was exported, because the brief stops at review.
 **Next:** Daniel to review against brief §48 (tower height/width, grid spacing, podium height, canopy projection, Clints width/door position, Side Street, side-elevation massing). After approval, do the §49 second geometry pass.
 **Open questions:** Is the Side Street placement right? Is the tower's long grid face on Quay St with a blank east wall correct? Is the tower height right (14 floors)?
+
+## 2026-09-21 — Codex (MCR1 gameplay captures and close-ups)
+**HEAD at session start:** `d2181e4` (Record branch cleanup in SYNC.md)
+**Did:** Ran the current local game at the dedicated MCR1 development views and captured five 1280 × 720 night-time JPEGs: straight-on, corner three-quarter, opposing east/west obliques, and a low corner angle. Added three tighter crops covering the illuminated fascia/shopfront, upper masonry and circular window, and corner signage. Saved all eight images under `renders/game-mcr1-2026-09-21/`.
+**Left uncommitted (if any):** The eight new screenshots and this log entry. Preserved the concurrent Space-to-run changes and fresh bus-stop captures.
+**Flagged:** None. The final MCR1 page loads used for the captures reported no browser console warnings or errors.
+**Next:** Daniel to review the frames; recapture without the player or at another exposure if desired.
+**Open questions:** None.
+
+## 2026-09-21 — Codex (fresh bus-stop angle captures)
+**HEAD at session start:** `d2181e4` (Record branch cleanup in SYNC.md)
+**Did:** Ran the current local game at `?view=bus-shelter&quality=high&overlays=off&intro=off` and captured three fresh 1280 × 720 in-game JPEGs: a straight-on establishing view, a Coral-side three-quarter view, and the opposite street angle. Saved them under `renders/game-bus-stop-2026-09-21-fresh/`.
+**Left uncommitted (if any):** The three new screenshots and this log entry. Preserved the concurrent Space-to-run changes and the unrelated untracked `renders/game-mcr1-2026-09-21/` directory.
+**Flagged:** None.
+**Next:** Daniel to review the three frames; recapture closer, wider, or without the player if desired.
+**Open questions:** None.
+
+## 2026-09-21 — Codex (restore Space to run on foot)
+**HEAD at session start:** `d2181e4` (Record branch cleanup in SYNC.md)
+**Did:** Traced the missing Space-to-run control to `5de21cd`, where `InputController.isRunning` was deliberately changed to Shift-only to reserve Space for a possible future shutter. Restored Space as the second on-foot run key while preserving its separate contextual bike-boost behavior. Updated the title-card control legend and reconciled `docs/TECHNICAL.md` plus `docs/CAMERA_AND_MOVEMENT_BRIEF.md` with the restored binding. `npm run build` and `git diff --check` pass.
+**Left uncommitted (if any):** `src/input/InputController.ts`, `src/ui/title/marginalia.ts`, `docs/TECHNICAL.md`, `docs/CAMERA_AND_MOVEMENT_BRIEF.md`, and this log entry. The unrelated untracked `renders/game-mcr1-2026-09-21/` directory appeared during the session and was left untouched.
+**Flagged:** The build retains the existing warning for the approximately 809 kB main JavaScript chunk; unrelated to this control fix.
+**Next:** Live-check Space + a movement key on the target keyboard/browser if desired; the input route and production build are otherwise verified.
+**Open questions:** None.
 
 ## 2026-09-21 — Claude (committed the working-tree backlog; branch audit)
 **HEAD at session start:** `35779fa` (Texture MCR1 and light its old honeycomb fascia)
