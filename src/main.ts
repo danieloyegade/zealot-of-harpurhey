@@ -161,6 +161,12 @@ if (import.meta.env.DEV) {
     'sterling-east': [42.6, -4.4, Math.PI / 2 + 0.35, 0.16],
     'delivery-pickup': [-16.9, -27.1, 0, 0.16],
     'delivery-dropoff': [-7, 55.35, 0, 0.16],
+    // ABC Building across the Outer North Road: street view, Clints doorway,
+    // Side Street on Lower Byrom Street, and the tower seen from the park.
+    'abc': [-4, -44.2, 0, 0.02],
+    'abc-clints': [-2.8, -50.6, 0.25, 0.1],
+    'abc-side-street': [25.4, -57.5, Math.PI / 2 - 0.35, 0.08],
+    'abc-tower': [-4, -17.5, 0, -0.3],
     pickup: [5, 16.5],
   };
   const requestedPosition = requestedView

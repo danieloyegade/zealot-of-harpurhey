@@ -23,6 +23,29 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-21 — Claude (ABC Building placed in the game)
+**HEAD at session start:** `db563e0` (my detail-pass commit; other sessions' commits followed)
+**Did:**
+- Daniel asked whether the ABC Building fits between Nice Things and Renee. It doesn't: that gap is about 24 × 11 m and the building is 62 × 22 m with a 56.5 m tower. He chose to keep it at full scale and extend the world.
+- New block north of the outer North Road, which becomes its Quay Street:
+  - `ABC_BUILDING_CORNER` (19.65, -53.95) in `worldLayout.ts` plus an `abc-building` location.
+  - The GLB loads with no rotation.
+  - It replaces the two placeholder "north estate" towers (`addNorthEstateBackdrop` removed).
+- Lower Byrom Street replaces the North Road outward connection, moving from X 0 to X 26.4. There is a 6 m Quay Street pavement and a 3 m Lower Byrom pavement, with five new LED/sodium streetlights.
+- World bounds `minZ` moved from -62 to -106, and the world ground now extends to match.
+- Bus Stop B moved to (7, -49), clear of the Clints door. The North Road exit marker moved to (26.4, -102).
+- `applyAbcBuildingModelPolicy`:
+  - Tower glass is opaque (one pane in nine lit) so it merges.
+  - Shop glass stays transparent.
+  - The canopy has a low emission.
+- `CL_Entrance` is kept out of `mergeStaticModelMeshes`. The building ends up as 64 meshes. Multi-box collision.
+- Dev views `?view=abc`, `abc-clints`, `abc-side-street`, `abc-tower`. `docs/WORLD_LAYOUT.md` and `docs/assets/abc-building.md` are updated.
+**Verified:** `tsc` and `npm run build` pass. The game loaded with no console errors. Headless-Chromium screenshots of the four views look right: the canopy is lit, the Clints interior reads through the glass, and the tower rises behind the north block from the park.
+**Left uncommitted (if any):** None. **Not pushed:** `origin` refused the push because the earlier unpushed commit `685e54d` (another session) adds `.github/workflows/ci.yml`, and this machine's GitHub token lacks the `workflow` scope. Local `main` is 4 commits ahead of `origin/main` until Daniel pushes with a token that has that scope.
+**Flagged:** The in-app Browser pane was hidden and Playwright was held by another session. Screenshots came from `chrome-headless-shell` (Playwright's cached binary, `--use-angle=swiftshader --screenshot`), which works for future captures. Gulliver's back wall pokes about 0.16 m into the Lower Byrom junction; it already did the same into the outer North Road.
+**Next:** Texture/emissive pass for the ABC Building, then making the Clints interior enterable.
+**Open questions:** None.
+
 ## 2026-09-21 — Codex (project-health remediation: first delivery and release boundary)
 **HEAD at session start:** `c9fdd7b` (Replace the streetlights with a real-scale municipal family; concurrent commits landed during the session)
 **Did:** Applied the project-health report rather than only documenting it.

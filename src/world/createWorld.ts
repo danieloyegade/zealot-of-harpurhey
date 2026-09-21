@@ -91,6 +91,7 @@ import {
   SPECTER_GRAFFITI,
   STERLING_BIKE_DOCKS,
   WORLD_BOUNDS,
+  ABC_BUILDING_CORNER,
   WORLD_LOCATIONS,
   type FoodStandMarker,
   type PalletStackMarker,
@@ -1908,6 +1909,121 @@ async function addPalletStack(root: Group, marker: PalletStackMarker): Promise<v
   }
 }
 
+// Stable pseudo-random pick so the same tower windows stay lit every load.
+function nameHash(name: string): number {
+  let hash = 2166136261;
+  for (let index = 0; index < name.length; index += 1) {
+    hash = Math.imul(hash ^ name.charCodeAt(index), 16777619);
+  }
+  return hash >>> 0;
+}
+
+function applyAbcBuildingModelPolicy(model: Group): void {
+  // Geometry pass with placeholder clay. The ~400 tower-window panes are
+  // opaque here so they merge into two draw calls instead of sorting as
+  // hundreds of transparent meshes; a few are lit for the northern skyline.
+  // Shopfront glass stays transparent so the Clints and Side Street shells read.
+  const darkWindow = new MeshStandardMaterial({
+    name: 'ABC tower window dark (runtime)',
+    color: 0x0c121b,
+    roughness: 0.32,
+    metalness: 0.1,
+    emissive: 0x050a14,
+    emissiveIntensity: 0.4,
+  });
+  const litWindow = new MeshStandardMaterial({
+    name: 'ABC tower window lit (runtime)',
+    color: 0x2a2418,
+    roughness: 0.6,
+    emissive: VISUAL_STYLE.lighting.sodium,
+    emissiveIntensity: 0.55,
+  });
+  model.traverse((child) => {
+    if (!(child instanceof Mesh)) {
+      return;
+    }
+    child.castShadow = true;
+    child.receiveShadow = true;
+    if (/^ABC_(TowerWindow_|TowerCore_CurtainGlass|PodiumGlass_RearWing)/.test(child.name)) {
+      child.material = nameHash(child.name) % 9 === 0 ? litWindow : darkWindow;
+      return;
+    }
+    const materials = Array.isArray(child.material) ? child.material : [child.material];
+    for (const material of materials) {
+      if (!(material instanceof MeshStandardMaterial)) {
+        continue;
+      }
+      if (material.name === 'MAT_ABC_Canopy_PLACEHOLDER') {
+        // The marquee's underside panels and sign bands are lit at night.
+        material.emissive.set(0xfff1d8);
+        material.emissiveIntensity = 0.35;
+      } else {
+        material.emissive.set(0x000000);
+        material.emissiveIntensity = 0;
+      }
+      if (material.name === 'MAT_ABC_Glass_PLACEHOLDER') {
+        material.transparent = true;
+        material.opacity = 0.22;
+        material.depthWrite = false;
+        material.roughness = 0.28;
+      } else {
+        material.roughness = Math.max(material.roughness, 0.58);
+      }
+    }
+  });
+}
+
+async function addAbcBuildingModel(root: Group): Promise<void> {
+  try {
+    const abc = await loadModel('assets/models/abc_building.glb?v=geometry-20260921');
+    applyAbcBuildingModelPolicy(abc);
+    // Keep the hinged Clints entrance (CL_Door pivots on its jamb) out of the
+    // static merge so it can swing once interactions exist.
+    const entrance = abc.getObjectByName('CL_Entrance');
+    entrance?.removeFromParent();
+    mergeStaticModelMeshes(abc);
+    if (entrance) {
+      abc.add(entrance);
+    }
+    abc.name = 'ABC Building (Clints, Side Street) geometry — textures pending';
+    // Authored origin is the Quay Street / Lower Byrom Street corner; the
+    // Quay Street frontage already faces +Z, so no rotation is needed.
+    abc.position.set(ABC_BUILDING_CORNER.x, 0, ABC_BUILDING_CORNER.z);
+    root.add(abc);
+  } catch (error) {
+    console.error('[World] Failed to load abc_building.glb.', error);
+  }
+}
+
+function addAbcBuildingCollision(obstacles: CollisionObstacle[]): void {
+  // Boxes in the GLB's own frame: mx along the frontage (west is negative),
+  // my back from the Quay Street face (north is positive).
+  const { x, z } = ABC_BUILDING_CORNER;
+  const add = (name: string, mx0: number, mx1: number, my0: number, my1: number, height: number) => {
+    obstacles.push({
+      name: `ABC Building ${name}`,
+      minX: x + mx0,
+      maxX: x + mx1,
+      minZ: z - my1,
+      maxZ: z - my0,
+      height,
+    });
+  };
+  // Shopfronts sit 0.32 m behind the column faces; the Clints and Side Street
+  // doors are closed until interiors can be entered.
+  add('tower', -26.4, 0.55, 0.3, 21.95, 60);
+  add('podium', -61.9, -26.4, 0.3, 21.95, 10.3);
+  add('Side Street corner wall', -4.9, 0.55, -0.55, 0.3, 56.5);
+  add('rear wing', -18, 0.55, 21.95, 46, 26.95);
+  for (const mx of [-12.4, -19.9, -27.4, -34.9, -42.4, -49.9]) {
+    add('column', mx - 0.33, mx + 0.33, -0.13, 0.3, 3.55);
+  }
+  add('ABC blade sign', -50.25, -49.92, -1.7, 0.3, 9.4);
+  for (const [mx, my] of [[-33.3, -2.6], [-32.4, -1.4], [-29.2, -2.2], [-19.3, -2.3]] as const) {
+    add('planter', mx - 0.55, mx + 0.55, my - 0.4, my + 0.4, 0.74);
+  }
+}
+
 async function addRealCameraModel(
   root: Group,
   location: WorldLocation,
@@ -2451,6 +2567,19 @@ function addBuildingLocation(
     return;
   }
 
+  if (location.id === 'abc-building') {
+    void addAbcBuildingModel(root);
+    addAbcBuildingCollision(obstacles);
+    addDevelopmentLabel(
+      root,
+      `${location.name} · geometry · textures pending`,
+      location.x,
+      11.5,
+      location.z + location.depth / 2,
+    );
+    return;
+  }
+
   if (location.id === 'real-camera') {
     void addRealCameraModel(root, location);
     // Solid footprint rather than an interior shell: the authored shop floor
@@ -2959,7 +3088,9 @@ const ROADS: readonly RoadSpan[] = [
   { name: 'Outer South Road', x: 0, z: 59.5, width: 114, depth: ROAD_WIDTH },
   { name: 'Outer west street', x: -48, z: 0, width: ROAD_WIDTH, depth: 96 },
   { name: 'Outer east street', x: 57, z: 0, width: ROAD_WIDTH, depth: 96 },
-  { name: 'North Road outward connection', x: 0, z: -55, width: ROAD_WIDTH, depth: 16, centreLine: false },
+  // Lower Byrom Street: the north outward connection, moved from X = 0 to run
+  // past the ABC Building's east corner (Side Street wraps onto it).
+  { name: 'Lower Byrom Street', x: 26.4, z: -76.975, width: ROAD_WIDTH, depth: 58.05 },
   { name: 'South Road outward connection', x: 0, z: 69.625, width: ROAD_WIDTH, depth: 12.75, centreLine: false },
   { name: 'West outward connection', x: -58, z: 25.5, width: 16, depth: ROAD_WIDTH, centreLine: false },
   { name: 'East outward connection', x: 61, z: 0, width: 8, depth: ROAD_WIDTH, centreLine: false },
@@ -2991,6 +3122,12 @@ const STREETLIGHTS = [
   [1, 55, VISUAL_STYLE.lighting.sodium, 'warm-old'],
   [16.5, 55, VISUAL_STYLE.lighting.magenta, 'led-modern'],
   [29, 55, VISUAL_STYLE.lighting.sodium, 'weathered'],
+  // ABC Building frontage and Lower Byrom Street: modern LED heads.
+  [-30, -48.5, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
+  [-12, -48.5, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
+  [15, -48.5, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
+  [22.2, -72, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
+  [22.2, -92, VISUAL_STYLE.lighting.sodium, 'weathered'],
 ] as const satisfies readonly (readonly [number, number, number, StreetlightModel])[];
 
 // Painted pool radius under an eight-metre lantern.
@@ -3052,6 +3189,10 @@ const PAVEMENTS: readonly PavementSpan[] = [
   { name: 'East building pavement', x: 34.2, z: 0, width: 2, depth: 66, back: 'wall' },
   { name: 'South Road shop frontage pavement', x: 0, z: 54.875, width: 72, depth: 1.75, back: 'wall', damp: true },
   { name: 'South Road opposite pavement', x: 18.5, z: 64, width: 75, depth: 1.5, back: 'wall', damp: true },
+  // ABC Building: a wide Quay Street pavement under the canopy, and the
+  // Lower Byrom Street footway along its east side.
+  { name: 'ABC Quay Street pavement', x: -10.8, z: -50.95, width: 66.9, depth: 6, back: 'wall' },
+  { name: 'ABC Lower Byrom Street pavement', x: 21.15, z: -79.975, width: 3, depth: 52.05, back: 'wall', damp: true },
 ];
 
 function addRoadAndPavementLayout(root: Group): void {
@@ -3540,62 +3681,6 @@ function addStreetlightPool(
   root.add(lamp);
 }
 
-function addNorthEstateBackdrop(root: Group, obstacles: CollisionObstacle[]): void {
-  const towerMaterial = createWorldMaterial('brick-soot-overhaul', {
-    repeatX: 4,
-    repeatY: 8,
-    tint: 0x514443,
-    emissive: 0x050812,
-    emissiveIntensity: 0.05,
-    roughness: 0.98,
-  });
-  const darkWindow = createWorldMaterial('window-dark-temporary', {
-    clamp: true,
-    tint: 0x11182a,
-    emissive: 0x071126,
-    emissiveIntensity: 0.08,
-    roughness: 0.8,
-  });
-  const litWindow = createWorldMaterial('window-lit-temporary', {
-    clamp: true,
-    emissive: VISUAL_STYLE.lighting.sodium,
-    emissiveIntensity: 0.62,
-    roughness: 0.68,
-  });
-
-  for (const [side, x, z, width, height] of [
-    ['west', -13.5, -48.5, 10.5, 16.5],
-    ['east', 14.5, -49, 11.5, 18.5],
-  ] as const) {
-    const tower = createBox(width, height, 6, towerMaterial);
-    tower.name = `North road ${side} estate tower`;
-    tower.position.set(x, height / 2, z);
-    root.add(tower);
-    obstacles.push({
-      name: tower.name,
-      minX: x - width / 2,
-      maxX: x + width / 2,
-      minZ: z - 3,
-      maxZ: z + 3,
-      height,
-    });
-
-    for (let floor = 0; floor < 7; floor += 1) {
-      for (let column = 0; column < 4; column += 1) {
-        const isLit = (floor * 5 + column * 3 + (side === 'west' ? 1 : 2)) % 7 === 0;
-        const window = createBox(0.72, 0.85, 0.06, isLit ? litWindow : darkWindow);
-        window.name = `North road ${side} tower ${isLit ? 'lit' : 'dark'} window`;
-        window.position.set(
-          x - width * 0.34 + column * (width * 0.225),
-          2.05 + floor * 1.9,
-          z + 3.04,
-        );
-        root.add(window);
-      }
-    }
-  }
-}
-
 function addDevelopmentPickup(root: Group): (deltaTime: number) => void {
   if (!import.meta.env.DEV) {
     return () => undefined;
@@ -3887,9 +3972,9 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
     root,
     'World ground',
     0,
-    8,
+    -14,
     128,
-    140,
+    184,
     'concrete-cracked-overhaul',
     -0.12,
     5,
@@ -3897,7 +3982,6 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
   addRoadAndPavementLayout(root);
   const obstacles: CollisionObstacle[] = [];
   addCentralPark(root, obstacles);
-  addNorthEstateBackdrop(root, obstacles);
   const updatePickup = addDevelopmentPickup(root);
 
   for (const location of WORLD_LOCATIONS) {

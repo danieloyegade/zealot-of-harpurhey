@@ -57,7 +57,16 @@ The detail script validates the scene, renders, exports the GLB, saves the
   and are excluded from the GLB.
 - Planters (`ABC_Planter_Module`) are independent props, not fused to the building.
 
+## In game
+
+Loaded by `addAbcBuildingModel` in `src/world/createWorld.ts` at `ABC_BUILDING_CORNER` (19.65, -53.95) with no rotation. It faces south across the outer North Road, with Lower Byrom Street at X = 26.4 (see `docs/WORLD_LAYOUT.md`). The runtime policy `applyAbcBuildingModelPolicy`:
+- makes the tower-window glass opaque (about one pane in nine lit sodium) so it merges into two draw calls;
+- keeps the shopfront glass transparent;
+- gives the canopy material a low warm emission.
+
+`CL_Entrance` is detached during `mergeStaticModelMeshes` and re-added afterwards, so the door stays a separate, pivoting object. After merging, the building is 64 meshes, 46 of them transparent glass.
+
 ## Not yet done
 
-Texture/normal-map pass, emissive canopy panels and Clints neon, the detailed Clints
-interior, LODs, and Three.js placement in `createWorld.ts`.
+Texture/normal-map pass, final emissive canopy panels and Clints neon, the detailed
+Clints interior (and entering it), and LODs.

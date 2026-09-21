@@ -25,7 +25,9 @@ export interface WorldMarker {
 export const WORLD_BOUNDS = {
   minX: -64,
   maxX: 64,
-  minZ: -62,
+  // Extended north for the ABC Building block on the far side of the Outer
+  // North Road: its tower, rear wing and Lower Byrom Street reach Z ≈ -100.
+  minZ: -106,
   maxZ: 78,
 } as const;
 
@@ -34,6 +36,14 @@ export const PLAYER_START = { x: 0, z: 3.5 } as const;
 export const PARK = { x: 0, z: 0, width: 44, depth: 34 } as const;
 export const ROAD_WIDTH = 7.5;
 export const PAVEMENT_WIDTH = 2.5;
+
+// ABC Building GLB origin: its ground-level Quay Street / Lower Byrom Street
+// corner. The Quay Street frontage (Blender -Y) imports facing +Z, so it faces
+// south across the Outer North Road, 6 m of pavement back from the kerb
+// (Z = -47.95). The 61.9 m frontage runs west from here to X = -42.25, 2 m
+// short of the outer west street; Lower Byrom Street runs north past the
+// corner's east side, 3 m of pavement away.
+export const ABC_BUILDING_CORNER = { x: 19.65, z: -53.95 } as const;
 
 export const WORLD_LOCATIONS: readonly WorldLocation[] = [
   { id: 'florist', name: 'Nice Things', kind: 'building', status: 'geometry-wip', front: 'south', x: -16.9, z: -32, width: 6, depth: 7.5, height: 14.55, color: 0xb56f72 },
@@ -75,6 +85,10 @@ export const WORLD_LOCATIONS: readonly WorldLocation[] = [
   // connector extends outside this collision footprint toward the west.
   { id: 'advanced-photo', name: 'Advanced Photo', kind: 'building', status: 'geometry-wip', front: 'north', x: 12.1, z: 67.85, width: 5.8, depth: 6.2, height: 3.55, color: 0x3e4b53 },
 
+  // Footprint of the podium and tower (61.9 m x 22 m, 60 m to the core top).
+  // The rear wing continues 24 m further north along Lower Byrom Street.
+  { id: 'abc-building', name: 'ABC Building (Clints, Side Street)', kind: 'building', status: 'geometry-wip', front: 'south', x: ABC_BUILDING_CORNER.x - 30.95 + 0.275, z: ABC_BUILDING_CORNER.z - 10.975, width: 62.45, depth: 21.95, height: 60, color: 0xb9b8b2 },
+
   { id: 'central-park', name: 'Central Park', kind: 'park', status: 'placeholder', x: PARK.x, z: PARK.z, width: PARK.width, depth: PARK.depth, height: 0, color: 0x263d2b },
 ] as const;
 
@@ -82,7 +96,9 @@ export const BUS_STOPS: readonly WorldMarker[] = [
   // Centred on the 3.6 m park south pavement: the whole footprint stays on the
   // flags and the roof's front edge is 0.63 m back from the kerb.
   { id: 'bus-stop-a', name: 'Bus Stop A', x: 0, z: 20.0 },
-  { id: 'bus-stop-b', name: 'Bus Stop B', x: 0, z: -49 },
+  // On the ABC Building's Quay Street pavement, east of Clints so the shop's
+  // entrance stays open; clear of the canopy edge at Z = -50.75.
+  { id: 'bus-stop-b', name: 'Bus Stop B', x: 7, z: -49 },
 ] as const;
 
 export interface FoodStandMarker extends WorldMarker {
@@ -177,7 +193,7 @@ export const SPECTER_GRAFFITI: readonly SpecterGraffitiMarker[] = [
 ] as const;
 
 export const FUTURE_EXITS: readonly WorldMarker[] = [
-  { id: 'north-road', name: 'North Road', x: 0, z: -59 },
+  { id: 'north-road', name: 'North Road', x: 26.4, z: -102 },
   { id: 'south-road', name: 'South Road', x: 0, z: 75 },
   { id: 'west-exit', name: 'West', x: -61, z: 25.5 },
   { id: 'east-exit', name: 'East', x: 61, z: 0 },

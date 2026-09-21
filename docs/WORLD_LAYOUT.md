@@ -63,7 +63,7 @@ Inner north and south roads run east-west at Z -25.5 and Z 25.5. Inner west and 
 
 Outward future-area markers are:
 
-- North Road: (0, -59)
+- North Road: (26.4, -102), at the north end of Lower Byrom Street
 - South Road: (0, 75)
 - West: (-61, 25.5)
 - East: (61, 0)
@@ -72,16 +72,18 @@ The Arts Council remains directly south-east of the car park. The former procedu
 
 Advanced Photo now uses its authored corner-shop GLB rather than the old box and remains opposite Spice Cabin. Real Camera sits west of the South Road exit and opposite Vinyl Exchange, while Advanced Photo sits east of the exit, forming a small photographic-retail cluster without closing the future route. Advanced Photo collision follows its walls, fixed display cabinets, counter and service partition, leaving the photographed open door and compact customer route enterable.
 
+The ABC Building (Clints, Side Street) occupies a new block north of the outer North Road, which serves as its Quay Street. It replaced the two placeholder estate towers there. Its GLB origin is the Quay Street / Lower Byrom Street corner at `ABC_BUILDING_CORNER` (19.65, -53.95), with no rotation. The 61.9 m frontage runs west to X = -42.25 behind a 6 m pavement under the lit canopy, in the order Every Man, ABC, The Dome, Tartuffe, Clints, ABC, ABC and Side Street. Side Street wraps onto Lower Byrom Street, which replaces the old North Road outward connection: it now runs north at X = 26.4 instead of X = 0. The world's north boundary moved from Z = -62 to Z = -106 to take the 56.5 m tower (60 m at the core) and the rear wing, which reaches Z ≈ -100. Collision is split into tower, podium, corner wall, rear wing, columns, the ABC blade sign and the planters. Clints and Side Street stay closed until interiors can be entered. Gulliver's back wall sits about 0.16 m into the carriageway at the Lower Byrom junction, as it already did into the outer North Road. Development views: `?view=abc`, `?view=abc-clints`, `?view=abc-side-street`, `?view=abc-tower`.
+
 ## Player and transport infrastructure
 
 - Player start: (0, 3.5), just south of and facing the Central Park fountain
 - Bus Stop A: (0, 20.0), centred on the South park zebra crossing and on the 3.6 m park south pavement
-- Bus Stop B: (0, -49), on outer North Road
+- Bus Stop B: (7, -49), on the ABC Building's Quay Street pavement, east of Clints
 - Sterling Bikes South station: (-20.5, 21.2), three docks on the park south pavement, all occupied
 - Sterling Bikes East station: (38.5, -6.3), three docks in the car park's open northern bay, two occupied
 - Greek Gyros food stand: (20.6, 10.5), just inside the park's east edge opposite the Arts Council
 
-Both bus stops instance the textured North Road, Preston shelter and its independently parented shopping trolley. Each stands at the surface height of the pavement under its marker (`pavementTopAt`), with uprights, rail legs and the advert plinth set 30 mm into the flags. The park north and south pavements are 3.6 m deep so they meet the carriageway kerb; Bus Stop A's roof front edge is 0.63 m from that kerb. Bus Stop B currently stands in the North Road outward-connection carriageway, where there is no pavement. The glass is truly transparent and contains no baked background photography.
+Both bus stops instance the textured North Road, Preston shelter and its independently parented shopping trolley. Each stands at the surface height of the pavement under its marker (`pavementTopAt`), with uprights, rail legs and the advert plinth set 30 mm into the flags. The park north and south pavements are 3.6 m deep so they meet the carriageway kerb; Bus Stop A's roof front edge is 0.63 m from that kerb. Bus Stop B stands on the ABC Building's 6 m Quay Street pavement, between the canopy edge (Z = -50.75) and the kerb. The glass is truly transparent and contains no baked background photography.
 
 Four matching worn-pallet stacks use the same 2× blue-under-brown arrangement and shared GLB templates. The original remains beside Spice Cabin. Three more sit against the Florist's east service wall at (-12.8, -35), in the service gap north of Coral at (-38.5, 4.35), and against the Arts Council edge of the car park at (48, -3.4). Each has one 2.4 × 2.0 m oriented collider and stays clear of shop entrances and principal pedestrian routes. Development views: `?view=pallets-north`, `?view=pallets-west`, and `?view=pallets-east`.
 
