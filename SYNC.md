@@ -23,6 +23,21 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-21 — Claude (ABC Building / Clints + Side Street blockout)
+**HEAD at session start:** `789bb94` (Plan the lighting hierarchy pass from the current in-game look)
+**Did:** Built the §47 review blockout from `references/architecture/buildings/clints/12_ABC_Building_Clints_Side_Street.txt`, the photos in `EXT/`, and Daniel's Street View captures.
+- New `blender/scripts/createABCBuildingBlockout.py` (Blender 5.2, headless). It writes `blender/source/abc_building_blockout.blend` and seven clay views A–G to `renders/abc-building-blockout/`.
+- Origin is the Quay St / Lower Byrom St corner. Quay St faces −Y; Lower Byrom faces +X.
+- Order along Quay St, east to west: Every Man/Smolensky end block with the vertical ABC blade sign, then ABC, THE DOME, TARTUFFE (with Side Street's black Quay St panel), CLINTS, ABC, ABC, and a blank corner wall.
+- Tower: 14 floors × 3.35 m on a 9.6 m podium (top 56.5 m), footprint 26.4 × 22 m, 1.95 m grid bays. Glazed core at the east end with the ABC letters; the east side wall is blank. The grid uses linked `ABC_TowerBay_Module` / `ABC_TowerWindow_Module` instances (945 mesh objects, 173 unique meshes, ~46k tris).
+- Canopy: 3.2 m deep, underside at 3.55 m. Real underside panel grid, sign band with marquee lines, placeholder tenant names.
+- Clints: 6.9 m clear width. Left glazing, a fixed leaf plus a 1.10 × 3.02 m leaf hinged on its west jamb (`CL_Door` pivot on the hinge, positive Z swings it out; view D shows it open as in the photo), transom, and a 14.3 m interior shell (`CL_InteriorShell_TEMP`). All CL_* anchors required by the brief are present.
+- Side Street: double-height window, door and row windows on Lower Byrom under the blank corner, plus a shallow tall shell. The projecting glass volume is on that elevation. A rear wing with the service grille modules sits further down Lower Byrom.
+**Left uncommitted (if any):** None of mine. Other sessions' working-tree changes (Codex SYNC entries, Space-to-run, streetlights, captures) were not touched.
+**Flagged:** The references don't agree on where Side Street is. The night photo puts a Side Street panel directly east of Clints. Street View puts its tall window at the Lower Byrom corner, with the canopy's end cap just past it. I modelled both: the main frontage at the corner and a secondary Quay St panel in the Tartuffe bay. All dimensions are photographic estimates. No GLB was exported, because the brief stops at review.
+**Next:** Daniel to review against brief §48 (tower height/width, grid spacing, podium height, canopy projection, Clints width/door position, Side Street, side-elevation massing). After approval, do the §49 second geometry pass.
+**Open questions:** Is the Side Street placement right? Is the tower's long grid face on Quay St with a blank east wall correct? Is the tower height right (14 floors)?
+
 ## 2026-09-21 — Claude (committed the working-tree backlog; branch audit)
 **HEAD at session start:** `35779fa` (Texture MCR1 and light its old honeycomb fascia)
 **Did:** Committed the finished-but-uncommitted work from earlier Codex/Claude sessions in five groups: night atmosphere (`63d6766`), title screen + `SHOW_TITLE_SCREEN = true` (`e250e90`), walking camera follow (`173fd7d`), Eastern Bloc/Flok blockout (`55aa578`), bus-stop captures (`ddf5dc6`). Each commit type-checks on its own; `npm run build` passes at HEAD; title card → Enter → park scene loads with no console errors.
