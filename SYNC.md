@@ -22,6 +22,24 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-22 — Claude (Nice Things surface-material pass)
+**HEAD at session start:** `3108021`
+**Did:**
+- Daniel asked for textures for Nice Things based on the references. New `blender/scripts/niceThingsTextures.py` writes 9 tiling metric PBR sets to `blender/source/textures/nice-things/`. It follows the Vinyl Exchange convention and reuses its `Surface` toolkit.
+  - The shopfront is `pink-limewash`: a salmon ground with swirled rose and blush brush strokes, as in the photos.
+  - Also added: pink satin joinery, buff sandstone ashlar, sooted sandstone, white sash paint, and interior plaster, floor, ply and dark steel.
+  - Colours are patch medians sampled from the two reference photos (`MEASURED`).
+- New `blender/scripts/exportNiceThings.py` binds the sets in memory, adds metric UVs, and writes `nice-things-blockout.glb` with WebP maps: 1.5 MB, against 22 MB as PNG.
+- `createWorld.ts`: `applyNiceThingsTexturePolicy` replaces the blockout policy, and the cache key is bumped. `vinylExchangeTextures.py`'s writers now take optional output dirs, with unchanged defaults.
+- New `docs/assets/nice-things.md`. Review frames, including daylight in-context renders, are in `renders/nice-things-textures/`.
+**Verified:** exporter validation (9 materials, 27 maps, UV0 on every textured primitive); in game the GLB loads with no console errors; `npm run check` passes.
+**Left uncommitted (if any):** A concurrent session's Cass Art texture work (`createCassArt.py`, `cassArtTextures.py`, cass renders/GLB, Cass hunks in `createWorld.ts`) and a `worldLayout.ts` edit are not mine and were left unstaged.
+**Flagged:**
+- `createNiceThingsBlockout.py` still writes an untextured GLB to the same path. Always run `exportNiceThings.py` after it; it now prints a reminder.
+- Pre-existing blockout geometry: the Central Buildings fanlight spokes sit in front of the balcony/upper window rather than inside the arch.
+**Next:** The brief §35 second geometry pass and the signage pass (the `nice things.` lettering, vents, strip lights), then location-specific weathering (graffiti on the Central Buildings pier).
+**Open questions:** Is the limewash contrast/pink right against the photos in game light?
+
 
 ## 2026-09-21 — Claude (Bus Stop B moved to the ABC Building's west end)
 **HEAD at session start:** `3108021`

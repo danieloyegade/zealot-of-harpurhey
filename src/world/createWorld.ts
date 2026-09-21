@@ -588,8 +588,11 @@ function applyBusShelterGeometryPolicy(model: Group): void {
   applyBusShelterTexturePolicy(model);
 }
 
-function applyNiceThingsBlockoutPolicy(model: Group): void {
-  applyPhotographicModelPolicy(model);
+function applyNiceThingsTexturePolicy(model: Group): void {
+  // The GLB carries the Blender-authored metric UVs and PBR sets from
+  // niceThingsTextures.py / exportNiceThings.py (pink limewash, sandstone,
+  // joinery). Runtime applies the shared photographic filtering policy and
+  // configures the glazing, which stays a placeholder material.
   model.traverse((child) => {
     if (!(child instanceof Mesh)) {
       return;
@@ -603,12 +606,28 @@ function applyNiceThingsBlockoutPolicy(model: Group): void {
       if (!(material instanceof MeshStandardMaterial)) {
         continue;
       }
+      material.emissiveMap = null;
+      material.emissive.set(0x000000);
+      material.emissiveIntensity = 0;
+
+      for (const texture of [
+        material.map,
+        material.roughnessMap,
+        material.metalnessMap,
+        material.aoMap,
+        material.normalMap,
+      ]) {
+        if (texture) {
+          applyTextureProfile(texture, 'PHOTO_ENVIRONMENT');
+        }
+      }
+
       if (material.name === 'MAT_NT_Glass_PLACEHOLDER') {
         material.transparent = true;
         material.opacity = 0.16;
         material.depthWrite = false;
         material.roughness = 0.22;
-      } else {
+      } else if (!material.map) {
         material.roughness = Math.max(material.roughness, 0.72);
       }
     }
@@ -1274,11 +1293,11 @@ async function replaceFloristFallback(
 ): Promise<void> {
   try {
     const florist = await loadModel(
-      'assets/models/nice-things-blockout.glb?v=geometry-approved-20260911',
+      'assets/models/nice-things-blockout.glb?v=surface-pass-20260921',
     );
-    applyNiceThingsBlockoutPolicy(florist);
+    applyNiceThingsTexturePolicy(florist);
     mergeStaticModelMeshes(florist);
-    florist.name = 'Nice Things geometry blockout';
+    florist.name = 'Nice Things textured blockout';
     // The authored asset includes Central Buildings to the left, while the
     // canonical florist location remains centred on the 5.9 m shopfront.
     florist.position.set(location.x - 2.8, 0, location.z);

@@ -391,6 +391,9 @@ def apply_mesh_transforms():
 
 
 def export_runtime_glb():
+    # This writes the untextured review GLB. The game ships the textured one:
+    # run niceThingsTextures.py (if the maps are stale) and exportNiceThings.py
+    # after this script, or the runtime loses its surface materials.
     GLB_PATH.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.object.select_all(action="DESELECT")
     export_objects = [
@@ -413,6 +416,7 @@ def export_runtime_glb():
     )
     bpy.ops.object.select_all(action="DESELECT")
     print(f"Exported runtime blockout: {GLB_PATH}")
+    print("Untextured. Run blender/scripts/exportNiceThings.py to restore the textured runtime GLB.")
 
 
 def main():

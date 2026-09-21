@@ -1,0 +1,760 @@
+{
+  "asset": "nice-things",
+  "pass": "surface materials, first batch",
+  "convention": {
+    "maps": "<slug>-{basecolor,orm,normal}.png",
+    "orm": "R occlusion, G roughness, B metallic (glTF)",
+    "normal": "OpenGL tangent space (+Y up)",
+    "unit": "1 Blender unit = 1 m; coverage_m is what one tile spans"
+  },
+  "measured_reference_patches": {
+    "pink fascia, overcast": {
+      "photo": "nice-things-jun-2023-mcrfinest-2-scaled.jpg",
+      "srgb": "#E6B5A7"
+    },
+    "pink fascia band, overcast": {
+      "photo": "nice-things-jun-2023-mcrfinest-2-scaled.jpg",
+      "srgb": "#D69C8F"
+    },
+    "pink plinth, overcast": {
+      "photo": "nice-things-jun-2023-mcrfinest-2-scaled.jpg",
+      "srgb": "#D49687"
+    },
+    "pink fascia, low sun": {
+      "photo": "nice.things.plant_.shop_271673900_403213688227475_1875144679113432539_n.jpg",
+      "srgb": "#ED9B83"
+    },
+    "pink plinth, low sun": {
+      "photo": "nice.things.plant_.shop_271673900_403213688227475_1875144679113432539_n.jpg",
+      "srgb": "#F39E85"
+    },
+    "pink door frame, shaded": {
+      "photo": "nice-things-jun-2023-mcrfinest-2-scaled.jpg",
+      "srgb": "#BA7360"
+    },
+    "sandstone upper wall": {
+      "photo": "nice-things-jun-2023-mcrfinest-2-scaled.jpg",
+      "srgb": "#BBA48A"
+    },
+    "sandstone upper pilaster": {
+      "photo": "nice-things-jun-2023-mcrfinest-2-scaled.jpg",
+      "srgb": "#9E8A73"
+    },
+    "sandstone pier, Central Bldgs": {
+      "photo": "nice-things-jun-2023-mcrfinest-2-scaled.jpg",
+      "srgb": "#AB967F"
+    },
+    "sandstone pier base, sooted": {
+      "photo": "nice-things-jun-2023-mcrfinest-2-scaled.jpg",
+      "srgb": "#6C5B4F"
+    },
+    "upper sash (frame + glass)": {
+      "photo": "nice-things-jun-2023-mcrfinest-2-scaled.jpg",
+      "srgb": "#748888"
+    }
+  },
+  "materials": [
+    {
+      "slug": "pink-limewash",
+      "description": "Shopfront limewash: salmon ground, rose and blush brush strokes, board joints",
+      "coverage_m": [
+        2.4,
+        2.4
+      ],
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mm_per_texel": [
+        1.1719,
+        1.1719
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 0.8,
+      "roughness_range": [
+        0.823,
+        0.88
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.856,
+        0.294
+      ],
+      "base_srgb_mean": [
+        237,
+        173,
+        148
+      ],
+      "files": {
+        "basecolor": {
+          "file": "pink-limewash-basecolor.png",
+          "bytes": 3370016
+        },
+        "orm": {
+          "file": "pink-limewash-orm.png",
+          "bytes": 701891
+        },
+        "normal": {
+          "file": "pink-limewash-normal.png",
+          "bytes": 4044721
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.16,
+          "typical": 0.33
+        },
+        "basecolor_v": {
+          "wrap": 0.21,
+          "typical": 0.3
+        },
+        "orm_u": {
+          "wrap": 0.02,
+          "typical": 0.06
+        },
+        "orm_v": {
+          "wrap": 0.03,
+          "typical": 0.03
+        },
+        "normal_u": {
+          "wrap": 14.08,
+          "typical": 0.53
+        },
+        "normal_v": {
+          "wrap": 0.53,
+          "typical": 0.5
+        }
+      }
+    },
+    {
+      "slug": "pink-satin-joinery",
+      "description": "Shopfront joinery: satin pink paint on timber, brush marks, knocks at hand height",
+      "coverage_m": [
+        0.6,
+        0.6
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        0.5859,
+        0.5859
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.46,
+        0.79
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.227,
+        0.076
+      ],
+      "base_srgb_mean": [
+        207,
+        138,
+        121
+      ],
+      "files": {
+        "basecolor": {
+          "file": "pink-satin-joinery-basecolor.png",
+          "bytes": 133546
+        },
+        "orm": {
+          "file": "pink-satin-joinery-orm.png",
+          "bytes": 25415
+        },
+        "normal": {
+          "file": "pink-satin-joinery-normal.png",
+          "bytes": 110053
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.06,
+          "typical": 0.26
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.02
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        },
+        "normal_u": {
+          "wrap": 0.85,
+          "typical": 0.57
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        }
+      }
+    },
+    {
+      "slug": "sandstone-ashlar",
+      "description": "Buff sandstone ashlar: bedding, iron bands, soot run-down, pitting",
+      "coverage_m": [
+        2.28,
+        2.28
+      ],
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mm_per_texel": [
+        1.1133,
+        1.1133
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.86,
+        0.938
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -3.89,
+        0.325
+      ],
+      "base_srgb_mean": [
+        189,
+        164,
+        126
+      ],
+      "files": {
+        "basecolor": {
+          "file": "sandstone-ashlar-basecolor.png",
+          "bytes": 3803894
+        },
+        "orm": {
+          "file": "sandstone-ashlar-orm.png",
+          "bytes": 139130
+        },
+        "normal": {
+          "file": "sandstone-ashlar-normal.png",
+          "bytes": 3705530
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.11,
+          "typical": 0.53
+        },
+        "basecolor_v": {
+          "wrap": 1.2,
+          "typical": 0.64
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.14
+        },
+        "orm_v": {
+          "wrap": 0.06,
+          "typical": 0.28
+        },
+        "normal_u": {
+          "wrap": 0.43,
+          "typical": 0.72
+        },
+        "normal_v": {
+          "wrap": 1.48,
+          "typical": 0.98
+        }
+      }
+    },
+    {
+      "slug": "sandstone-sooted",
+      "description": "Projecting and low sandstone: the same stone under a black soot crust",
+      "coverage_m": [
+        2.28,
+        2.28
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        2.2266,
+        2.2266
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.86,
+        0.938
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -3.842,
+        0.572
+      ],
+      "base_srgb_mean": [
+        160,
+        137,
+        106
+      ],
+      "files": {
+        "basecolor": {
+          "file": "sandstone-sooted-basecolor.png",
+          "bytes": 1156274
+        },
+        "orm": {
+          "file": "sandstone-sooted-orm.png",
+          "bytes": 50614
+        },
+        "normal": {
+          "file": "sandstone-sooted-normal.png",
+          "bytes": 1115533
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.28,
+          "typical": 0.8
+        },
+        "basecolor_v": {
+          "wrap": 5.25,
+          "typical": 0.94
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.29
+        },
+        "orm_v": {
+          "wrap": 0.09,
+          "typical": 0.56
+        },
+        "normal_u": {
+          "wrap": 0.46,
+          "typical": 0.82
+        },
+        "normal_v": {
+          "wrap": 35.81,
+          "typical": 1.08
+        }
+      }
+    },
+    {
+      "slug": "white-painted-frame",
+      "description": "Upper window frames and fanlight bars: white gloss gone to satin, dirt film",
+      "coverage_m": [
+        0.4,
+        0.4
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.7812,
+        0.7812
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.38,
+        0.548
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.177,
+        0.049
+      ],
+      "base_srgb_mean": [
+        227,
+        225,
+        219
+      ],
+      "files": {
+        "basecolor": {
+          "file": "white-painted-frame-basecolor.png",
+          "bytes": 79755
+        },
+        "orm": {
+          "file": "white-painted-frame-orm.png",
+          "bytes": 61301
+        },
+        "normal": {
+          "file": "white-painted-frame-normal.png",
+          "bytes": 31854
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.1,
+          "typical": 0.43
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.11
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.05
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.06
+        },
+        "normal_u": {
+          "wrap": 0.35,
+          "typical": 0.3
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        }
+      }
+    },
+    {
+      "slug": "interior-plaster-warm",
+      "description": "Interior walls and ceiling: warm peach matt emulsion, roller texture",
+      "coverage_m": [
+        2.0,
+        2.0
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        1.9531,
+        1.9531
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 0.6,
+      "roughness_range": [
+        0.9,
+        0.9
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.058,
+        0.059
+      ],
+      "base_srgb_mean": [
+        235,
+        193,
+        165
+      ],
+      "files": {
+        "basecolor": {
+          "file": "interior-plaster-warm-basecolor.png",
+          "bytes": 32503
+        },
+        "orm": {
+          "file": "interior-plaster-warm-orm.png",
+          "bytes": 20725
+        },
+        "normal": {
+          "file": "interior-plaster-warm-normal.png",
+          "bytes": 884249
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "normal_u": {
+          "wrap": 0.23,
+          "typical": 0.26
+        },
+        "normal_v": {
+          "wrap": 0.25,
+          "typical": 0.26
+        }
+      }
+    },
+    {
+      "slug": "floor-sealed-concrete",
+      "description": "Interior floor: sealed warm-grey concrete, trowel marks, scuffs",
+      "coverage_m": [
+        2.0,
+        2.0
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        1.9531,
+        1.9531
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 0.6,
+      "roughness_range": [
+        0.372,
+        0.42
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.04,
+        0.04
+      ],
+      "base_srgb_mean": [
+        166,
+        148,
+        130
+      ],
+      "files": {
+        "basecolor": {
+          "file": "floor-sealed-concrete-basecolor.png",
+          "bytes": 307266
+        },
+        "orm": {
+          "file": "floor-sealed-concrete-orm.png",
+          "bytes": 121689
+        },
+        "normal": {
+          "file": "floor-sealed-concrete-normal.png",
+          "bytes": 876999
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.03,
+          "typical": 0.1
+        },
+        "basecolor_v": {
+          "wrap": 0.05,
+          "typical": 0.11
+        },
+        "orm_u": {
+          "wrap": 0.02,
+          "typical": 0.05
+        },
+        "orm_v": {
+          "wrap": 0.03,
+          "typical": 0.04
+        },
+        "normal_u": {
+          "wrap": 0.24,
+          "typical": 0.27
+        },
+        "normal_v": {
+          "wrap": 0.24,
+          "typical": 0.27
+        }
+      }
+    },
+    {
+      "slug": "birch-ply",
+      "description": "Counter and shelving: lacquered birch ply, soft grain, warm yellowed lacquer",
+      "coverage_m": [
+        1.2,
+        1.2
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        1.1719,
+        1.1719
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 0.5,
+      "roughness_range": [
+        0.5,
+        0.5
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.026,
+        0.025
+      ],
+      "base_srgb_mean": [
+        214,
+        176,
+        134
+      ],
+      "files": {
+        "basecolor": {
+          "file": "birch-ply-basecolor.png",
+          "bytes": 243337
+        },
+        "orm": {
+          "file": "birch-ply-orm.png",
+          "bytes": 20723
+        },
+        "normal": {
+          "file": "birch-ply-normal.png",
+          "bytes": 116986
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.03
+        },
+        "basecolor_v": {
+          "wrap": 0.05,
+          "typical": 0.47
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "normal_u": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "normal_v": {
+          "wrap": 0.01,
+          "typical": 0.02
+        }
+      }
+    },
+    {
+      "slug": "dark-painted-steel",
+      "description": "Shutter box and door furniture: dark grey powder coat, dust and knocks",
+      "coverage_m": [
+        0.4,
+        0.4
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.7812,
+        0.7812
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.5,
+        0.5
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.039,
+        0.039
+      ],
+      "base_srgb_mean": [
+        53,
+        51,
+        48
+      ],
+      "files": {
+        "basecolor": {
+          "file": "dark-painted-steel-basecolor.png",
+          "bytes": 45984
+        },
+        "orm": {
+          "file": "dark-painted-steel-orm.png",
+          "bytes": 5805
+        },
+        "normal": {
+          "file": "dark-painted-steel-normal.png",
+          "bytes": 139561
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.04
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.04
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "normal_u": {
+          "wrap": 0.14,
+          "typical": 0.13
+        },
+        "normal_v": {
+          "wrap": 0.12,
+          "typical": 0.13
+        }
+      }
+    }
+  ]
+}

@@ -760,16 +760,20 @@ def seam_report(surface, grids):
     return report
 
 
-def write_surface(surface):
-    """Write the three maps and return the record for validation.json."""
+def write_surface(surface, texture_dir=None):
+    """Write the three maps and return the record for validation.json.
+
+    `texture_dir` lets another asset's texture script reuse this writer.
+    """
     from surfaceWeathering import save_rgba
 
-    TEXTURE_DIR.mkdir(parents=True, exist_ok=True)
+    texture_dir = texture_dir or TEXTURE_DIR
+    texture_dir.mkdir(parents=True, exist_ok=True)
     base, orm, normal = surface.maps()
     grids = {"basecolor": base, "orm": orm, "normal": normal}
     files = {}
     for kind, grid in grids.items():
-        path = TEXTURE_DIR / f"{surface.slug}-{kind}.png"
+        path = texture_dir / f"{surface.slug}-{kind}.png"
         save_rgba(path, grid, f"{surface.slug}-{kind}")
         files[kind] = {"file": path.name, "bytes": path.stat().st_size}
     record = surface.record()
@@ -796,7 +800,7 @@ def set_engine(scene):
     return scene.render.engine
 
 
-def review_render(surface, repeats=2):
+def review_render(surface, repeats=2, texture_dir=None, render_dir=None):
     """Flat-on review of `repeats` x `repeats` tiles under a raking key.
 
     Rendering whole tiles side by side is the seam test a human can read: any
@@ -809,7 +813,9 @@ def review_render(surface, repeats=2):
     # Resetting the file frees every datablock, so the maps are reloaded from
     # disk here rather than carried in from the writing pass.
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    images = {kind: load_image(TEXTURE_DIR / f"{surface.slug}-{kind}.png",
+    texture_dir = texture_dir or TEXTURE_DIR
+    render_dir = render_dir or RENDER_DIR
+    images = {kind: load_image(texture_dir / f"{surface.slug}-{kind}.png",
                                non_color=kind != "basecolor")
               for kind in ("basecolor", "orm", "normal")}
     scene = bpy.context.scene
@@ -879,15 +885,15 @@ def review_render(surface, repeats=2):
     scene.collection.objects.link(camera)
     scene.camera = camera
 
-    RENDER_DIR.mkdir(parents=True, exist_ok=True)
-    path = RENDER_DIR / f"{surface.slug}.png"
+    render_dir.mkdir(parents=True, exist_ok=True)
+    path = render_dir / f"{surface.slug}.png"
     scene.render.filepath = str(path)
     scene.render.image_settings.file_format = "PNG"
     bpy.ops.render.render(write_still=True)
     return path
 
 
-def contact_sheet(paths, columns=3, cell=640):
+def contact_sheet(paths, columns=3, cell=640, render_dir=None):
     """One sheet of every review frame, for a single look at the whole set."""
     import bpy
 
@@ -909,7 +915,7 @@ def contact_sheet(paths, columns=3, cell=640):
         top = (rows - 1 - row) * cell
         sheet[top:top + cell, column * cell:(column + 1) * cell] = frame[yi][:, xi]
         bpy.data.images.remove(image)
-    path = RENDER_DIR / "00-contact-sheet.png"
+    path = (render_dir or RENDER_DIR) / "00-contact-sheet.png"
     save_rgba(path, sheet, "contact-sheet")
     return path
 
