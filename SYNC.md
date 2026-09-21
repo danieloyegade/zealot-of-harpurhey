@@ -29,7 +29,8 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 **Branch audit:** main is the live game. Every other branch forked 12–14 commits back and must not be merged wholesale. `codex/performance-recovery` and `claude/local-game-startup-qjn3f1` hold nothing main lacks. `codex/tone-mapping` / `claude/game-improvement-ideas-vkan3h` (`625474d`, `17e3b34`): tone-map switch and camera occlusion already exist on main in their own form; still unique there are `LocationAwareness`/`LocationLabel`, `LoadingVeil`, a typecheck CI workflow and moving unreferenced GLBs. `claude/engineer-communication-workflow-uex7id`: pointer lock, Q/E + R/F camera keys, wheel zoom, run-by-default. `claude/local-cloud-workflow-h6ivy0`: `src/core/assetUrl.ts` (`VITE_ASSET_BASE_URL`).
 **Left uncommitted (if any):** None.
 **Flagged:** Pressing Enter on the title card did not start the game in the preview browser; clicking "Enter" did. May be intentional.
-**Next:** Delete the dead branches and the `.worktrees/tone-mapping` worktree (awaiting Daniel's go-ahead), then rebuild the listed unique features on short branches off main one at a time. Do not create new long-lived side branches.
+**Cleanup done:** Deleted `codex/tone-mapping` (local + remote, and its `.worktrees/` worktree), `codex/performance-recovery` (local), `claude/game-improvement-ideas-vkan3h` and `claude/local-game-startup-qjn3f1` (remote). `codex/tone-mapping` (which contains `625474d`) is preserved as the pushed tag `archive/tone-mapping` for salvage.
+**Next:** Rebuild the listed unique features on short branches off main one at a time. Do not create new long-lived side branches.
 **Open questions:** None.
 
 ---
