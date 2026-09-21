@@ -137,6 +137,8 @@ if (import.meta.env.DEV) {
     // Beside the stack, not in front of it: the chase camera would put the player over it.
     'spice-cabin-pallets': [1.6, 56.4, -0.6, 0.2],
     'pallets-north': [-7.8, -31, 0.9, 0.2],
+    'mcr1': [-29.5, -24.5, 0, 0.12],
+    'mcr1-corner': [-39.5, -26.5, -0.7, 0.12],
     'pallets-west': [-43, 0, -2.35, 0.2],
     'pallets-east': [43, -7, -2.2, 0.2],
     'sterling-south': [-16.6, 19.6, Math.PI / 2 - 0.35, 0.16],

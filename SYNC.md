@@ -23,6 +23,17 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-21 — Claude (MCR1 texture pass, illuminated signage)
+**HEAD at session start:** `435b66f` (Pool local point lights and drop glass transmission to stop lag)
+**Did:** Textured MCR1 and gave it the old bright yellow signage from the night photograph, which Daniel confirmed as canonical. In the game the shopkeeper says people keep asking him to take the sign down (real-world backstory: the owner was asked to remove it as tacky). New `blender/scripts/mcr1Textures.py` writes procedural brick, sandstone, honeycomb and LED-ceiling PBR tiles plus the signage, vinyl, upper-glazing and shelving atlases to `blender/source/textures/mcr1/`. `createMCR1.py` now projects UVs, applies the textures and exports the textured GLB (4.8 MB). Also fixed an existing bug: the sign faces sat inside their light boxes and never rendered. `createWorld.ts` has a new MCR1 runtime policy with emissive lightboxes, a pooled "MCR1 fascia" local-light group and reflection patches. `worldLayout` status for MCR1 is now `finished`. Dev views `?view=mcr1` and `?view=mcr1-corner` were added. Details are in `docs/assets/mcr1.md`.
+**Left uncommitted (if any):** Only this session's hunks were staged in `createWorld.ts`, `main.ts`, `worldLayout.ts` and this file. The other in-flight work in those files (night atmosphere, camera, title screen, bougainvillea, Eastern Bloc blockout) is untouched and still uncommitted.
+**Flagged:** I accidentally truncated the working-tree SYNC.md mid-session. The uncommitted Codex "urban night sky" entry below was restored word for word from the Codex session log (`~/.codex/sessions/2026/09/21/rollout-...01a0c4c1...jsonl`). It is still uncommitted, as Codex left it. Also: yellow emissive washes to cream under the game's tone mapping unless the emissive colour itself is tinted yellow, so MCR1 uses a `0xffc400` tint.
+**Next:** Shopkeeper NPC and the "people keep asking me to take it down" dialogue once `src/npc` / interactions exist. Then the location-specific grime, fly-posters and pier stickers from DSC06326.
+**Open questions:** None.
+
+---
+
+
 ## 2026-09-21 — Codex (bus-stop gameplay captures)
 **HEAD at session start:** `b80ac9d` (Batch static hero meshes for rendering)
 **Did:** Ran the current development build at the dedicated `?view=bus-shelter` position on HIGH quality with the title and overlays disabled, then captured three 1280 × 720 in-game JPEGs: a clean front establishing view, an east-side street angle, and a west-side angle including Coral. Saved them under `renders/game-bus-stop-2026-09-21/`.

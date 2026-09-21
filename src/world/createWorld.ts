@@ -850,9 +850,25 @@ function applyGulliversModelPolicy(model: Group): void {
   });
 }
 
+// Runtime glow per MCR1 material. The GLB carries the Blender-authored
+// artwork as base colour; the lit surfaces reuse it as their emissive map so
+// the honeycomb holes and the black sign housings stay dark.
+// The yellow lightboxes carry a saturated emissive tint: at this brightness
+// the tone mapper otherwise bleaches the lettering to cream.
+const MCR1_EMISSIVE: Readonly<Record<string, readonly [number, number]>> = {
+  MCR1_Signage: [2.6, 0xffc400],
+  MCR1_Honeycomb_Lightbox: [2.2, 0xffc400],
+  MCR1_Sign_Ring_White: [3, 0xffffff],
+  MCR1_Window_Vinyl: [0.75, 0xffffff],
+  MCR1_Riser_Vinyl: [0.75, 0xffffff],
+  MCR1_Shelving: [0.7, 0xffffff],
+  MCR1_LED_Ceiling: [1.5, 0xffffff],
+  MCR1_Upper_Glazing: [0.55, 0xffffff],
+};
+
 function applyMcr1ModelPolicy(model: Group): void {
-  // MCR1 is intentionally still at geometry approval. Preserve the authored
-  // clay material IDs and do not substitute runtime textures or emissive signs.
+  // MCR1 keeps its illuminated fascia. In the game the owner has been asked
+  // to take it down; he has not.
   model.traverse((child) => {
     if (!(child instanceof Mesh)) {
       return;
@@ -866,15 +882,37 @@ function applyMcr1ModelPolicy(model: Group): void {
       if (!(material instanceof MeshStandardMaterial)) {
         continue;
       }
-      material.emissive.set(0x000000);
-      material.emissiveIntensity = 0;
-      if (material.name.toLowerCase().includes('clay_glass')) {
-        material.transparent = true;
-        material.opacity = 0.34;
-        material.depthWrite = false;
-        material.roughness = 0.16;
+      for (const texture of [
+        material.map,
+        material.roughnessMap,
+        material.metalnessMap,
+        material.aoMap,
+        material.normalMap,
+      ]) {
+        if (texture) {
+          applyTextureProfile(texture, 'PHOTO_ENVIRONMENT');
+        }
+      }
+      const glow = MCR1_EMISSIVE[material.name];
+      if (glow !== undefined) {
+        const [intensity, tint] = glow;
+        material.emissive.set(tint);
+        material.emissiveMap = material.map;
+        material.emissiveIntensity =
+          intensity * VISUAL_STYLE.lighting.emissiveMultiplier;
       } else {
-        material.roughness = Math.max(material.roughness, 0.55);
+        material.emissiveMap = null;
+        material.emissive.set(0x000000);
+        material.emissiveIntensity = 0;
+      }
+      if (material.name === 'MCR1_Window_Vinyl') {
+        // Opaque print over clear glass: the alpha lives in the base map.
+        material.transparent = true;
+        material.depthWrite = false;
+        material.roughness = 0.08;
+      } else if (material.name === 'MCR1_Upper_Glazing') {
+        material.roughness = 0.08;
+        material.metalness = 0.25;
       }
     }
   });
@@ -1330,19 +1368,64 @@ async function addGulliversModel(
 async function addMcr1Model(
   root: Group,
   location: WorldLocation,
+  localLights: LocalLightRegistry,
 ): Promise<void> {
   try {
     const mcr1 = await loadModel(
-      'assets/models/harperhey-mcr1-geometry.glb?v=geometry-wip-20260911',
+      'assets/models/harperhey-mcr1-geometry.glb?v=illuminated-20260921',
     );
     applyMcr1ModelPolicy(mcr1);
     mergeStaticModelMeshes(mcr1);
-    mcr1.name = 'MCR1 geometry WIP — textures pending';
+    mcr1.name = 'MCR1 illuminated corner shop';
     // The Blender asset uses the real corner as its modelling origin rather
     // than the plot centre. This offset centres its 11.7 m envelope immediately
     // west of the Florist while keeping the main frontage south-facing.
-    mcr1.position.set(location.x - 1.45, 0, location.z);
+    const originX = location.x - 1.45;
+    mcr1.position.set(originX, 0, location.z);
     root.add(mcr1);
+
+    // Blender Y maps to world -Z after glTF conversion: the frontage at
+    // Blender Y -4.0 sits at world z + 4.0, the side (Blender X -4.4) at x - 4.4.
+    const frontZ = location.z + 4.0;
+    const sideX = originX - 4.4;
+    const intensityScale = VISUAL_STYLE.lighting.emissiveMultiplier;
+    localLights.register({
+      name: 'MCR1 fascia',
+      lights: [
+        createManagedPointLight(
+          'MCR1 yellow fascia wash front',
+          originX + 2.2,
+          3.0,
+          frontZ + 1.4,
+          0xffd21a,
+          10 * intensityScale,
+          9,
+        ),
+        createManagedPointLight(
+          'MCR1 yellow fascia wash corner',
+          sideX - 0.9,
+          3.0,
+          frontZ + 0.6,
+          0xffd21a,
+          8 * intensityScale,
+          8,
+        ),
+        createManagedPointLight(
+          'MCR1 cold interior spill',
+          originX + 1.6,
+          1.6,
+          frontZ + 0.9,
+          VISUAL_STYLE.lighting.coldWhite,
+          3.2 * intensityScale,
+          7,
+        ),
+      ],
+      priority: 1.25,
+      selectionMode: 'location-relevance',
+      activationRadius: 18,
+    });
+    addReflectionPatch(root, 'MCR1 fascia reflection front', originX + 1.8, frontZ + 2.6, 8.4, 1.4, 0xffd21a, 0.34);
+    addReflectionPatch(root, 'MCR1 fascia reflection side', sideX - 2.2, location.z + 1.6, 1.3, 3.0, 0xffd21a, 0.28);
   } catch (error) {
     console.error(
       '[World] Failed to load harperhey-mcr1-geometry.glb. No legacy M1 fallback is retained.',
@@ -2295,7 +2378,7 @@ function addBuildingLocation(
   }
 
   if (location.id === 'mcr1') {
-    void addMcr1Model(root, location);
+    void addMcr1Model(root, location, localLights);
     addCollisionFootprint(obstacles, location);
     // Stall risers, piers and portal jambs stand 0.9 m proud of the plot's
     // south edge (measured from the GLB at body height).
@@ -2307,13 +2390,6 @@ function addBuildingLocation(
       maxZ: location.z + location.depth / 2 + 0.9,
       height: location.height,
     });
-    addDevelopmentLabel(
-      root,
-      `${location.name} · geometry WIP · textures pending`,
-      location.x,
-      location.height + 1.1,
-      location.z,
-    );
     return;
   }
 

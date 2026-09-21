@@ -1,8 +1,17 @@
 # MCR1 corner shop
 
-MCR1 is a metric, geometry-stage reconstruction of the corner shop at Hilton
-Street and Stevenson Square. The current asset deliberately contains neutral
-clay materials rather than final photographic textures.
+MCR1 is a metric reconstruction of the corner shop at Hilton Street and
+Stevenson Square, textured and shown with its illuminated signage.
+
+## Signage state (canonical for the game)
+
+The game shows the old, very bright configuration from the night photograph:
+yellow honeycomb lightboxes wrapping the corner, two MCR_1 wordmarks, the
+white roundel and the neon CONVENIENCE STORE blade. In the real city the
+owner was asked to take it down because some people found it tacky. In the
+game it stays up, and that is a mechanic: the shopkeeper tells the player
+that people keep asking him to take it down. The later black-and-gold fascia
+in the daylight set is not modelled.
 
 ## Reconstruction rule
 
@@ -65,6 +74,8 @@ immediately west of the Florist.
 
 ## QC render manifest
 
+Views 05 and 06 are night renders with the QC lights off, for comparison with the night photograph.
+
 | File | Required view |
 | --- | --- |
 | `mcr1_01_straight_shopfront.png` | Straight-on shopfront |
@@ -75,9 +86,37 @@ immediately west of the Florist.
 These are review artifacts, not runtime textures, and therefore remain under
 `renders/mcr1/` rather than `public/`.
 
+## Texture pass (2026-09-21)
+
+`blender/scripts/mcr1Textures.py` writes every map to
+`blender/source/textures/mcr1/` (see `manifest.json`). `createMCR1.py` calls it,
+projects the UVs from the geometry and embeds the maps in the GLB as JPEG/PNG
+(about 4.8 MB). Pass `-- --reuse-textures` to rebuild the model without
+regenerating the maps, which takes about 4 minutes.
+
+| Material | Source | Notes |
+| --- | --- | --- |
+| `MCR1_Brick` | procedural, 1.35 m tile | Pressed salmon-red stretcher bond with 8 mm pale joints (DSC06327) |
+| `MCR1_Sandstone` | procedural, 1.8 m tile | Buff ashlar, sooted lower beds, washed patches |
+| `MCR1_Signage` | atlas 4096 × 768 at 476 px/m | Fascia faces, roundel disc, blade sign |
+| `MCR1_Honeycomb_Lightbox` | procedural tile | Corner piers wrapped in the lit perforated skin |
+| `MCR1_Window_Vinyl` / `MCR1_Riser_Vinyl` | strip 4096 × 640 | Printed lower 1 m of each pane plus its stall riser; clear glass above |
+| `MCR1_Upper_Glazing` | four sash variants | Net curtains, a lit office with blinds, dark glass |
+| `MCR1_Shelving`, `MCR1_LED_Ceiling` | artwork / tile | Stocked gondolas and the honeycomb LED tube ceiling (DSC06326) |
+
+At runtime `applyMcr1ModelPolicy` in `createWorld.ts` reuses the base colour as
+the emissive map for the lit materials. The yellow lightboxes get a saturated
+emissive tint so the tone mapper does not bleach them to cream. A pooled group
+of three local lights (two yellow fascia washes and one cold interior spill)
+and two reflection patches put the colour onto the street. Dev views:
+`?view=mcr1` and `?view=mcr1-corner`.
+
+The sign faces originally sat 7 cm inside their light boxes and were invisible.
+They, the roundel disc and the ring now sit on the box fronts. The bar-light
+housings on the interior ceiling were removed in favour of the LED texture.
+
 ## Deferred work
 
-Final MCR1 lettering, perforated fascia graphics, emissive surfaces, brick and
-stone textures, grime, posters, stickers, products, shelves, counter detail,
-NPC placement, and street furniture belong to later material, interior-prop,
-and environment passes.
+Location-specific grime (sill drips, kerb splash), the fly-posters and
+stickers on the left pier, 3D products and counter detail, the shopkeeper NPC
+and his complaint dialogue, and street furniture belong to later passes.
