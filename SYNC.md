@@ -23,6 +23,17 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-21 — Claude (committed the working-tree backlog; branch audit)
+**HEAD at session start:** `35779fa` (Texture MCR1 and light its old honeycomb fascia)
+**Did:** Committed the finished-but-uncommitted work from earlier Codex/Claude sessions in five groups: night atmosphere (`63d6766`), title screen + `SHOW_TITLE_SCREEN = true` (`e250e90`), walking camera follow (`173fd7d`), Eastern Bloc/Flok blockout (`55aa578`), bus-stop captures (`ddf5dc6`). Each commit type-checks on its own; `npm run build` passes at HEAD; title card → Enter → park scene loads with no console errors.
+**Branch audit:** main is the live game. Every other branch forked 12–14 commits back and must not be merged wholesale. `codex/performance-recovery` and `claude/local-game-startup-qjn3f1` hold nothing main lacks. `codex/tone-mapping` / `claude/game-improvement-ideas-vkan3h` (`625474d`, `17e3b34`): tone-map switch and camera occlusion already exist on main in their own form; still unique there are `LocationAwareness`/`LocationLabel`, `LoadingVeil`, a typecheck CI workflow and moving unreferenced GLBs. `claude/engineer-communication-workflow-uex7id`: pointer lock, Q/E + R/F camera keys, wheel zoom, run-by-default. `claude/local-cloud-workflow-h6ivy0`: `src/core/assetUrl.ts` (`VITE_ASSET_BASE_URL`).
+**Left uncommitted (if any):** None.
+**Flagged:** Pressing Enter on the title card did not start the game in the preview browser; clicking "Enter" did. May be intentional.
+**Next:** Delete the dead branches and the `.worktrees/tone-mapping` worktree (awaiting Daniel's go-ahead), then rebuild the listed unique features on short branches off main one at a time. Do not create new long-lived side branches.
+**Open questions:** None.
+
+---
+
 ## 2026-09-21 — Claude (MCR1 texture pass, illuminated signage)
 **HEAD at session start:** `435b66f` (Pool local point lights and drop glass transmission to stop lag)
 **Did:** Textured MCR1 and gave it the old bright yellow signage from the night photograph, which Daniel confirmed as canonical. In the game the shopkeeper says people keep asking him to take the sign down (real-world backstory: the owner was asked to remove it as tacky). New `blender/scripts/mcr1Textures.py` writes procedural brick, sandstone, honeycomb and LED-ceiling PBR tiles plus the signage, vinyl, upper-glazing and shelving atlases to `blender/source/textures/mcr1/`. `createMCR1.py` now projects UVs, applies the textures and exports the textured GLB (4.8 MB). Also fixed an existing bug: the sign faces sat inside their light boxes and never rendered. `createWorld.ts` has a new MCR1 runtime policy with emissive lightboxes, a pooled "MCR1 fascia" local-light group and reflection patches. `worldLayout` status for MCR1 is now `finished`. Dev views `?view=mcr1` and `?view=mcr1-corner` were added. Details are in `docs/assets/mcr1.md`.
