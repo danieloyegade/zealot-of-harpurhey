@@ -96,9 +96,10 @@ export const BUS_STOPS: readonly WorldMarker[] = [
   // Centred on the 3.6 m park south pavement: the whole footprint stays on the
   // flags and the roof's front edge is 0.63 m back from the kerb.
   { id: 'bus-stop-a', name: 'Bus Stop A', x: 0, z: 20.0 },
-  // On the ABC Building's Quay Street pavement, east of Clints so the shop's
-  // entrance stays open; clear of the canopy edge at Z = -60.75.
-  { id: 'bus-stop-b', name: 'Bus Stop B', x: 7, z: -59 },
+  // On the ABC Building's Quay Street pavement, centred on the Every Man block
+  // at its west end: about 2.5 m clear of the building's west end and of the
+  // ABC blade sign, with the trolley at the kerb line and ~3.5 m of pavement behind.
+  { id: 'bus-stop-b', name: 'Bus Stop B', x: -36.5, z: -59.8 },
 ] as const;
 
 export interface FoodStandMarker extends WorldMarker {

@@ -126,6 +126,7 @@ if (import.meta.env.DEV) {
     'come-through-lab': [-26, -15, Math.PI / 2, 0.2],
     'village-books': [-27, -3.5, Math.PI / 2, 0.16],
     'bus-shelter': [0, 27],
+    'bus-stop-b': [-33.5, -53.6, -0.35, 0.1],
     'collision-dreams': [-3, 32.5, Math.PI],
     'dreams-target': [-3, 29.8, Math.PI],
     'dreams-angle': [-11, 29, 2.45, 0.18],

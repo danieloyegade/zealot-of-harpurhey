@@ -23,6 +23,14 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-21 — Claude (Bus Stop B moved to the ABC Building's west end)
+**HEAD at session start:** `3108021`
+**Did:** At Daniel's request, moved Bus Stop B from (7, -59) to (-36.5, -59.8), centred on the Every Man block at the west end of the ABC frontage. It is about 2.5 m clear of the building's west end, the ABC blade sign and the x -30 streetlight, its trolley stops at the kerb, and there is ~3.5 m of pavement behind it. Added dev view `?view=bus-stop-b` and updated `docs/WORLD_LAYOUT.md`. `tsc` passes; checked with a headless screenshot.
+**Left uncommitted (if any):** None.
+**Flagged:** None.
+**Next:** ABC texture/emissive pass.
+**Open questions:** None.
+
 ## 2026-09-21 — Claude (outer North Road moved north; Renee and Gulliver's off the road)
 **HEAD at session start:** `dd42163`
 **Did:**

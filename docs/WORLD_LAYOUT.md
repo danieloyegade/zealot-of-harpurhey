@@ -78,12 +78,12 @@ The ABC Building (Clints, Side Street) occupies a new block north of the outer N
 
 - Player start: (0, 3.5), just south of and facing the Central Park fountain
 - Bus Stop A: (0, 20.0), centred on the South park zebra crossing and on the 3.6 m park south pavement
-- Bus Stop B: (7, -59), on the ABC Building's Quay Street pavement, east of Clints
+- Bus Stop B: (-36.5, -59.8), on the ABC Building's Quay Street pavement, in front of the Every Man block at the building's west end
 - Sterling Bikes South station: (-20.5, 21.2), three docks on the park south pavement, all occupied
 - Sterling Bikes East station: (38.5, -6.3), three docks in the car park's open northern bay, two occupied
 - Greek Gyros food stand: (20.6, 10.5), just inside the park's east edge opposite the Arts Council
 
-Both bus stops instance the textured North Road, Preston shelter and its independently parented shopping trolley. Each stands at the surface height of the pavement under its marker (`pavementTopAt`), with uprights, rail legs and the advert plinth set 30 mm into the flags. The park north and south pavements are 3.6 m deep so they meet the carriageway kerb; Bus Stop A's roof front edge is 0.63 m from that kerb. Bus Stop B stands on the ABC Building's 6 m Quay Street pavement, between the canopy edge (Z = -60.75) and the kerb. The glass is truly transparent and contains no baked background photography.
+Both bus stops instance the textured North Road, Preston shelter and its independently parented shopping trolley. Each stands at the surface height of the pavement under its marker (`pavementTopAt`), with uprights, rail legs and the advert plinth set 30 mm into the flags. The park north and south pavements are 3.6 m deep so they meet the carriageway kerb; Bus Stop A's roof front edge is 0.63 m from that kerb. Bus Stop B stands on the ABC Building's 6 m Quay Street pavement in front of the Every Man block, where there is no canopy. It is about 2.5 m clear of the building's west end and the ABC blade sign, and its trolley stops at the kerb. The glass is truly transparent and contains no baked background photography.
 
 Four matching worn-pallet stacks use the same 2× blue-under-brown arrangement and shared GLB templates. The original remains beside Spice Cabin. Three more sit against the Florist's east service wall at (-12.8, -35), in the service gap north of Coral at (-38.5, 4.35), and against the Arts Council edge of the car park at (48, -3.4). Each has one 2.4 × 2.0 m oriented collider and stays clear of shop entrances and principal pedestrian routes. Development views: `?view=pallets-north`, `?view=pallets-west`, and `?view=pallets-east`.
 
