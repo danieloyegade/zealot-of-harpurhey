@@ -1,6 +1,7 @@
 import { Vector2, Vector3 } from 'three';
 import type { CameraTarget } from '../camera/ThirdPersonCamera';
 import type { InputController } from '../input/InputController';
+import type { InteractionPromptView } from './InteractionPromptView';
 import type { PlayerController } from '../player/PlayerController';
 import type { SterlingBike } from '../vehicles/SterlingBike';
 import type { SterlingFleet } from '../vehicles/SterlingFleet';
@@ -20,11 +21,6 @@ const DISMOUNT_SPOTS: readonly (readonly [number, number])[] = [
   [-1.5, 0],
 ];
 const DISMOUNT_CLEARANCE = 0.12;
-
-export interface InteractionPromptView {
-  readonly key: string;
-  readonly label: string;
-}
 
 type RideState =
   | { readonly kind: 'on-foot' }

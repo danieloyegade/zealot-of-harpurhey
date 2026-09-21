@@ -1,6 +1,7 @@
 # Dependencies and generated output
 node_modules/
 dist/
+.runtime-public/
 *.tsbuildinfo
 
 # Local environment files

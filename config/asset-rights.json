@@ -1,0 +1,65 @@
+{
+  "policy": "Audio is excluded from production unless productionApproved is true and evidence is recorded here.",
+  "assets": [
+    {
+      "path": "assets/audio/Ambient music/Space Afrika - ＂Honest Labour (ft. HforSpirit)＂ (Official Audio) [1QVgcV-_lv4].mp3",
+      "status": "verification-required",
+      "productionApproved": false,
+      "notes": "Filename identifies a commercial release. No public-release licence is recorded in the repository."
+    },
+    {
+      "path": "assets/audio/Ambient music/Purcell Music for a While - Dawn Upshaw (youtube).mp3",
+      "status": "verification-required",
+      "productionApproved": false,
+      "notes": "Filename identifies a YouTube-derived commercial performance. Do not ship without documented clearance."
+    },
+    {
+      "path": "assets/audio/Ambient music/Y2Mate.is - Popcorn.mp3",
+      "status": "verification-required",
+      "productionApproved": false,
+      "notes": "Source and licence are undocumented; the downloader-style filename is a release warning."
+    },
+    {
+      "path": "assets/audio/Ambient music/sun, drench.mp3",
+      "status": "verification-required",
+      "productionApproved": false,
+      "notes": "Authorship and licence are not recorded in the repository."
+    },
+    {
+      "path": "assets/audio/ambience/manny-streets.mp3",
+      "status": "verification-required",
+      "productionApproved": false,
+      "notes": "Likely project field audio, but authorship and release permission still need owner confirmation."
+    },
+    {
+      "path": "assets/audio/Foley/clips/Manny streets 2.WAV",
+      "status": "verification-required",
+      "productionApproved": false,
+      "notes": "Likely project field audio, but authorship and release permission still need owner confirmation."
+    },
+    {
+      "path": "assets/audio/Foley/clips/Manny streets.WAV",
+      "status": "verification-required",
+      "productionApproved": false,
+      "notes": "Likely project field audio, but authorship and release permission still need owner confirmation."
+    },
+    {
+      "path": "assets/audio/Foley/clips/Picc gardens.WAV",
+      "status": "verification-required",
+      "productionApproved": false,
+      "notes": "Likely project field audio, but authorship and release permission still need owner confirmation."
+    },
+    {
+      "path": "assets/audio/Foley/clips/Stairs.WAV",
+      "status": "verification-required",
+      "productionApproved": false,
+      "notes": "Authorship and release permission are not recorded in the repository."
+    },
+    {
+      "path": "assets/audio/Foley/clips/Stairs2.WAV",
+      "status": "verification-required",
+      "productionApproved": false,
+      "notes": "Authorship and release permission are not recorded in the repository."
+    }
+  ]
+}

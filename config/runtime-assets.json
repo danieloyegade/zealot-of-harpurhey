@@ -1,0 +1,42 @@
+{
+  "production": [
+    "ui/title",
+    "assets/textures",
+    "assets/models/player-character-rigged.glb",
+    "assets/models/nice-things-blockout.glb",
+    "assets/models/harperhey-dreams-greybox.glb",
+    "assets/models/harperhey-gullivers.glb",
+    "assets/models/harperhey-mcr1-geometry.glb",
+    "assets/models/cass_art.glb",
+    "assets/models/renee-blockout.glb",
+    "assets/models/the_hive.glb",
+    "assets/models/come_through_lab.glb",
+    "assets/models/ctl_dropbox.glb",
+    "assets/models/ctl_dropoff_props.glb",
+    "assets/models/village-books-blockout.glb",
+    "assets/models/advanced-photo-blockout.glb",
+    "assets/models/spice-cabin.glb",
+    "assets/models/pallets/pallet_worn_blue.glb",
+    "assets/models/pallets/pallet_worn_brown.glb",
+    "assets/models/real_camera.glb",
+    "assets/models/vinyl-exchange-blockout.glb",
+    "assets/models/bus-shelter/preston-busstop-textured.glb",
+    "assets/models/greek_gyros.glb",
+    "assets/models/sterling-bike/sterling-bike-blockout.glb",
+    "assets/models/sterling-bike/sterling-dock-blockout.glb",
+    "assets/models/bougainvillea/BGV_fence_bougainvillea.glb",
+    "assets/models/bougainvillea/BGV_fence_extension.glb",
+    "assets/models/bougainvillea/BGV_signpost_no_entry.glb",
+    "assets/models/streetlight-warm-old-01.glb",
+    "assets/models/streetlight-led-modern-01.glb",
+    "assets/models/streetlight-curved-01.glb",
+    "assets/models/streetlight-weathered-01.glb",
+    "assets/models/harperhey-coral-shop.glb",
+    "assets/models/harperhey-coral-bin.glb",
+    "assets/models/harperhey-coral-bollard.glb"
+  ],
+  "developmentOnly": [
+    "assets/audio",
+    "assets/models"
+  ]
+}

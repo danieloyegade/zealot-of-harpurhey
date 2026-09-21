@@ -15,6 +15,7 @@ import {
 } from './camera/ThirdPersonCamera';
 import { TitleCamera } from './camera/TitleCamera';
 import { FixedStepClock } from './core/FixedStepClock';
+import { DeliveryInteraction } from './delivery/DeliveryInteraction';
 import { InputController } from './input/InputController';
 import { BikeInteraction } from './interaction/BikeInteraction';
 import { STERLING_ASSISTED_SPEED, STERLING_BOOST_SPEED } from './vehicles/SterlingBike';
@@ -27,6 +28,7 @@ import {
   type QualityProfile,
 } from './rendering/visualStyle';
 import { DebugOverlay } from './ui/DebugOverlay';
+import { DeliveryDocket } from './ui/DeliveryDocket';
 import { InteractionPrompt } from './ui/InteractionPrompt';
 import { IntroScreen } from './ui/IntroScreen';
 import { createWorld } from './world/createWorld';
@@ -88,10 +90,22 @@ const camera = new PerspectiveCamera(
 
 const world = createWorld(scene, quality.maximumActiveLocalLights);
 const input = new InputController(renderer.domElement);
-const ambientAudio = new AmbientAudio({ veiled: intro.holdsWorld });
+// Current audio sources remain available for local development, but none has
+// repository-level release clearance yet (config/asset-rights.json).
+const ambientAudio = import.meta.env.DEV
+  ? new AmbientAudio({ veiled: intro.holdsWorld })
+  : null;
 const player = new PlayerController(world.collision);
 scene.add(player.object);
 const bikeInteraction = new BikeInteraction(world.sterlingFleet, player, world.collision);
+const deliveryInteraction = new DeliveryInteraction(
+  undefined,
+  import.meta.env.DEV
+    && new URLSearchParams(window.location.search).get('delivery') === 'carrying'
+    ? 'in-transit'
+    : 'awaiting-pickup',
+);
+const deliveryDocket = new DeliveryDocket();
 const interactionPrompt = new InteractionPrompt();
 // A bike covers more street than walking; pull the chase camera back to match.
 const RIDING_BOOM_LENGTH = 7;
@@ -145,6 +159,8 @@ if (import.meta.env.DEV) {
     'pallets-east': [43, -7, -2.2, 0.2],
     'sterling-south': [-16.6, 19.6, Math.PI / 2 - 0.35, 0.16],
     'sterling-east': [42.6, -4.4, Math.PI / 2 + 0.35, 0.16],
+    'delivery-pickup': [-16.9, -27.1, 0, 0.16],
+    'delivery-dropoff': [-7, 55.35, 0, 0.16],
     pickup: [5, 16.5],
   };
   const requestedPosition = requestedView
@@ -181,7 +197,7 @@ void intro
   .catch(() => undefined)
   .then(() => intro.setReady());
 
-void intro.whenEntering().then(() => ambientAudio.unveil(CITY_HEARD_SECONDS));
+void intro.whenEntering().then(() => ambientAudio?.unveil(CITY_HEARD_SECONDS));
 void intro.whenRevealing().then(() => {
   titleCamera.release();
   if (renderQuality === quality) return;
@@ -202,6 +218,7 @@ if (import.meta.env.DEV) {
     atmosphere: world.atmosphere,
     sterlingFleet: world.sterlingFleet,
     bikeInteraction,
+    deliveryInteraction,
     input,
   };
 }
@@ -269,6 +286,9 @@ function frame(timestamp: number): void {
   const simulationResult = simulationClock.advance(rawDelta, (fixedDelta) => {
     // The rider waits where the night begins while the title card holds the frame.
     if (!titleCamera.holdsPlayer) {
+      // Delivery gets first refusal on E only at its active address; everywhere
+      // else the same queued press remains available to the bike interaction.
+      deliveryInteraction.update(input, player.position, bikeInteraction.isRiding);
       bikeInteraction.update(fixedDelta, input, cameraForward);
     } else {
       // An E pressed over the title card must not take a bike on entry.
@@ -294,9 +314,10 @@ function frame(timestamp: number): void {
   thirdPersonCamera.update(cameraDelta, input, bikeInteraction.cameraTarget);
   interactionPrompt.update(
     rawDelta,
-    titleCamera.holdsPlayer ? null : bikeInteraction.prompt,
+    titleCamera.holdsPlayer ? null : deliveryInteraction.prompt ?? bikeInteraction.prompt,
     bikeInteraction.isRiding,
   );
+  deliveryDocket.update(deliveryInteraction.view, titleCamera.holdsPlayer);
   titleCamera.apply(cameraDelta);
 
   renderer.info.reset();

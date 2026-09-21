@@ -1,29 +1,27 @@
 # Art Direction
 
-> **Reconciliation note (2026-09-14):** "Core principles" and "Rendering restraint" below predate the current direction, "uncanny realism suspended between the photographic and the obviously constructed" (see `AGENTS.md`). In particular, "not modern photorealistic PBR" and "Dreamcast-era urban 3D" conflict with the PBR garment pipeline in "Fashion as a Core Art-Direction Pillar" and `TECHNICAL.md`. The sections from "Fashion as a Core Art-Direction Pillar" onward are current. The two older sections are still to be reconciled by Daniel.
-
 ## Core principles
 
 - Project title: **Zealot of Harperhey**.
 - This is a browser-based 3D artwork and game.
 - The experience is desktop first and centred on third-person exploration.
-- Its visual language is Dreamcast-era urban 3D: it is **not** generic cyberpunk and **not** modern photorealistic PBR.
+- Its visual target is **uncanny realism suspended between the photographic and the obviously constructed**. It may borrow the economy and directness of early 3D, but nostalgia for a console era is not the governing style.
 - Daniel Oyegade's photography and filmmaking are primary influences.
 - *The Spectres Are All Around Us* is a primary influence.
 - Frames should be planimetric and carefully composed.
-- The world is made from liminal urban spaces, pools of isolated streetlight at night, and deep darkness with photographic colour casts.
+- The world is made from specific municipal and commercial spaces, isolated streetlight pools, deep darkness and photographic colour casts. Avoid generic "liminal space" or backrooms shorthand.
 - Architecture is derived partly from photographs of Manchester, Harperhey, Preston, and elsewhere in North-West England.
 - Geography is fictional rather than a literal reconstruction of Manchester.
-- Photographic textures should be combined with deliberately simplified geometry.
+- Photographic textures, authored PBR materials and deliberately legible geometry should coexist. The right level of realism is the one that preserves the image's tension between evidence and construction.
 - Subtitles use EB Garamond in yellow.
 - The game HUD should be restrained.
 - The world should sometimes look like a photograph or film frame.
 - Social commentary, melancholy, humour, and surrealism should coexist.
-- Avoid unnecessary visual polish that destroys the early-3D character.
+- Avoid polish that makes the world generic, frictionless or merely demonstrative of rendering technology.
 
 ## Rendering restraint
 
-Art-direction changes must not be made merely because a more modern rendering technique is technically available. Rendering decisions should serve the photographic composition, atmosphere, and deliberately constrained early-3D character of the work. A technically newer effect is not inherently an artistic improvement.
+Art-direction changes must not be made merely because a more modern rendering technique is technically available. Rendering decisions should serve photographic composition, atmosphere, material specificity and the productive gap between a photograph and an authored set. A technically newer effect is not inherently an artistic improvement; neither is visible retro stylisation an end in itself.
 
 ## Fashion as a Core Art-Direction Pillar
 

@@ -1,4 +1,4 @@
-import type { InteractionPromptView } from '../interaction/BikeInteraction';
+import type { InteractionPromptView } from '../interaction/InteractionPromptView';
 
 const RIDING_HINT_SECONDS = 7;
 

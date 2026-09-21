@@ -4,9 +4,17 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "assets:prepare": "node scripts/prepareRuntimeAssets.mjs --production",
+    "assets:prepare:dev": "node scripts/prepareRuntimeAssets.mjs --development",
+    "assets:validate": "node scripts/prepareRuntimeAssets.mjs --check",
+    "rights:check": "node scripts/checkAssetRights.mjs",
+    "predev": "npm run assets:prepare:dev",
     "dev": "vite",
+    "prebuild": "npm run assets:prepare",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
+    "check": "npm test && npm run assets:validate && npm run rights:check && npm run build"
   },
   "dependencies": {
     "three": "^0.185.0"

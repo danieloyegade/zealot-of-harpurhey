@@ -4,20 +4,29 @@ export interface DeliveryAssignment {
   readonly number: number;
   readonly item: string;
   /** A `WORLD_LOCATIONS` id. */
+  readonly pickupId: string;
+  readonly pickupDetail: string;
+  /** A `WORLD_LOCATIONS` id. */
   readonly destinationId: string;
   readonly destinationDetail: string;
   readonly feePence: number;
 }
 
-// The first assignment of a night. No delivery system exists yet: this is the
-// data it will start from, and what the title card already reads.
+// The first assignment of a night. The mundanity is intentional: the courier
+// structure is established before the night asks anything stranger of it.
 export const FIRST_DELIVERY: DeliveryAssignment = {
   number: 1,
   item: 'Flowers',
+  pickupId: 'florist',
+  pickupDetail: 'Collect at shutter',
   destinationId: 'vinyl-exchange',
   destinationDetail: 'Upper floor',
   feePence: 370,
 };
+
+export function deliveryPickup(assignment: DeliveryAssignment): WorldLocation | undefined {
+  return WORLD_LOCATIONS.find((location) => location.id === assignment.pickupId);
+}
 
 export function deliveryDestination(assignment: DeliveryAssignment): WorldLocation | undefined {
   return WORLD_LOCATIONS.find((location) => location.id === assignment.destinationId);
