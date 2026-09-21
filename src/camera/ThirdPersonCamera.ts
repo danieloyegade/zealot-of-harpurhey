@@ -23,10 +23,27 @@ export const DEFAULT_CAMERA_PITCH = 0.04;
 // boom pitch, so at rest the horizon sits level through the player's head.
 export const ORBIT_PIVOT_HEIGHT = 1.6;
 
-// Only a bike pulls the camera round behind its direction of travel. Walking
-// is camera-relative, so easing yaw toward travel rotates the movement basis
-// and carries a strafing or diagonal walker round in a circle.
+// A bike pulls the camera round behind its direction of travel immediately:
+// it steers relative to itself, so following it can never bend the ride.
 const RIDING_FOLLOW_RESPONSIVENESS = 2.4;
+
+// Walking pulls the camera round too, but only once the walk has settled.
+// Walking is camera-relative, so a camera that turned while the player was
+// still steering would redefine "forward" under their hands. Two things make
+// this safe: PlayerController latches the movement basis while a direction is
+// held, so a camera turning on its own cannot bend the path into a circle
+// (the old bug); and the short wait below means a tap or a quick correction
+// is over before the lens moves. Hold a direction and the city comes round
+// behind you almost at once.
+// Kept short: at 1 s the lag read as the camera failing to keep up.
+const WALK_FOLLOW_DELAY_SECONDS = 0.2;
+// Brisk enough that the camera keeps pace with the walk rather than trailing
+// it. Measured on a 45-degree diagonal: halfway round 0.6 s after the key goes
+// down, 90% round by 1.7 s (the boom's own positional smoothing adds a little).
+const WALK_FOLLOW_RESPONSIVENESS = 3;
+// Any real change of direction is the player steering, and restarts the wait.
+// Loose enough to ignore the jitter of a diagonal held against a kerb.
+const WALK_FOLLOW_STEER_TOLERANCE = 0.05;
 
 // How long manual orbiting suppresses auto-follow, so the camera does not
 // fight a player who is deliberately looking somewhere else.
@@ -87,6 +104,8 @@ export class ThirdPersonCamera {
   private manualOrbitHold = 0;
   private pitchReturnDelay = 0;
   private recenterYaw: number | null = null;
+  private steadyWalkSeconds = 0;
+  private previousFacingYaw: number | null = null;
   private occlusionLift = 0;
   private occlusionLiftHold = 0;
   private boomFraction = 1;
@@ -165,6 +184,7 @@ export class ThirdPersonCamera {
     }
     this.applyRecenter(deltaTime);
     this.applyRidingFollow(deltaTime, target);
+    this.applyWalkingFollow(deltaTime, target);
 
     const boomBlend = 1 - Math.exp(-BOOM_LENGTH_RESPONSIVENESS * deltaTime);
     this.distance += (this.targetDistance - this.distance) * boomBlend;
@@ -220,6 +240,43 @@ export class ThirdPersonCamera {
     }
     const turn = shortestAngle(yawBehind(target.facingDirection) - this.yaw);
     this.yaw += turn * (1 - Math.exp(-RIDING_FOLLOW_RESPONSIVENESS * deltaTime));
+  }
+
+  /**
+   * Eases the camera round behind a walk that has held its direction for
+   * `WALK_FOLLOW_DELAY_SECONDS`, so a long walk ends up looking where the
+   * player is going instead of stranding them at an angle to their own path.
+   *
+   * Steering, orbiting or recentring all restart the wait, so the lens only
+   * ever moves after the player has stopped asking it to do anything else.
+   */
+  private applyWalkingFollow(deltaTime: number, target: CameraTarget): void {
+    const facingYaw = yawBehind(target.facingDirection);
+    const steered = this.previousFacingYaw !== null
+      && Math.abs(shortestAngle(facingYaw - this.previousFacingYaw))
+        > WALK_FOLLOW_STEER_TOLERANCE;
+    this.previousFacingYaw = facingYaw;
+
+    const onFoot = target.movementState === 'Walking'
+      || target.movementState === 'Running';
+
+    if (
+      !onFoot
+      || steered
+      || this.manualOrbitHold > 0
+      || this.recenterYaw !== null
+    ) {
+      this.steadyWalkSeconds = 0;
+      return;
+    }
+
+    this.steadyWalkSeconds += deltaTime;
+    if (this.steadyWalkSeconds < WALK_FOLLOW_DELAY_SECONDS) {
+      return;
+    }
+
+    const turn = shortestAngle(facingYaw - this.yaw);
+    this.yaw += turn * (1 - Math.exp(-WALK_FOLLOW_RESPONSIVENESS * deltaTime));
   }
 
   private updateOcclusionLift(deltaTime: number): void {

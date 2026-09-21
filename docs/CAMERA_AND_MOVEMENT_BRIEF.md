@@ -66,7 +66,7 @@ That rules out several things:
 - **Speed:** no zoom or boom change linked to speed on foot.
 - **Running:** no FOV swell when running.
 - **Bobbing:** no camera bob.
-- **Self-rotation:** no rotation the player didn't ask for while walking.
+- **Self-rotation:** no rotation the player didn't ask for *while they are still steering*. Revised 2026-09-20: a walk that holds one direction (for 0.2 s) does bring the camera round behind it (§4, walking follow). The original absolute ban was aimed at the circling bug, and the basis latch has since fixed that at its source, so the ban is no longer the thing protecting straight walks.
 
 ### P3. Directions mean the same thing from one moment to the next
 This is the GTA-with-a-keyboard quality.
@@ -108,7 +108,8 @@ The target is a feel, not a copy. Concretely:
 | Speeds | Walk 2.4 m/s by default, run 4.5 m/s with Shift. **The same in dev and prod builds.** The dev multipliers (×1.3 walk, ×1.7 run) make every tuning session feel different from the real game; remove them, or put them behind an explicit `?fast=on` flag. |
 | Facing | The figure faces the *input* direction, turning quickly but smoothly (from `625474d`), not its post-collision slide. Sliding along a wall doesn't swing the figure round to face along it. |
 | Walls | Collision slides along surfaces. Velocity is reconciled with actual displacement every step, so nothing stale carries over (`9d60c9d`). An overlap is always resolvable, so the player can never be trapped. |
-| Camera follow | Positional follow only, from one smoothed anchor that drives both the lens and the look target. This stops the figure swimming around the frame when it speeds up (`9d60c9d`). There is no rotational follow on foot. |
+| Camera follow | Positional follow from one smoothed anchor that drives both the lens and the look target. This stops the figure swimming around the frame when it speeds up (`9d60c9d`). |
+| **Walking follow** (revised 2026-09-20) | After a direction is held steady for 0.2 s, the camera eases round behind the direction of travel at a responsiveness of 3 — halfway round 0.6 s after the key goes down, 90% by 1.7 s. (First tuned at 1 s / 1.1; Daniel found that lag noticeable on 2026-09-21.) Steering, orbiting or C restart the wait, and standing still never moves the lens. Safe only because the basis latch holds the movement basis still, so the swing cannot bend the path. Daniel asked for this on 2026-09-20, reversing the earlier "no rotational follow on foot" rule. |
 | Recentre | C swings the camera behind the figure over about a quarter of a second. It eases rather than cuts, so the new view stays readable. |
 | Frame-rate independence | All smoothing is exponential with `1 - exp(-k·dt)`. The simulation runs on the fixed step. The camera runs on the render delta, which is zeroed after long gaps (already in place). |
 
@@ -199,7 +200,7 @@ Don't build it yet. Keep the camera code structured (presets, latch, pitch retur
 ## 6. Current state of the working tree (2026-09-16, uncommitted)
 
 **Done:**
-- **Auto-follow:** removed on foot, kept only while riding (`RIDING_FOLLOW_RESPONSIVENESS` 2.4, suspended for 1.2 s after manual orbit).
+- **Auto-follow:** riding follows immediately (`RIDING_FOLLOW_RESPONSIVENESS` 2.4). On foot it was removed entirely, then reinstated on 2026-09-20 as a delayed follow (`WALK_FOLLOW_DELAY_SECONDS` 0.2, `WALK_FOLLOW_RESPONSIVENESS` 3). Both are suspended for 1.2 s after manual orbit.
 - **Recentre:** C swings the camera behind the figure (`InputController.consumeRecenter`).
 - **Resting frame:** eye-level, as in §5.1, with pitch return.
 - **Occlusion:** rise-before-retract, with the lift capped at 0.35 rad, rising quickly, held for 0.8 s and falling slowly. The sphere-cast boom clamp is the hard backstop, pulling in immediately and recovering at a rate of 2.5.
@@ -211,7 +212,7 @@ Don't build it yet. Keep the camera code structured (presets, latch, pitch retur
 - 0 frames with the view blocked.
 
 **Not done:**
-- basis latch;
+- ~~basis latch~~ (since done on `main`, `PlayerController.updateLatchedBasis`);
 - movement responsiveness, zero-snap and speeds;
 - facing the input direction;
 - single smoothed anchor;
@@ -325,6 +326,9 @@ It runs even when the Browser pane is hidden. **Every threshold must pass before
 | T8 | Resting frame at `?view=east-shops` | Lens height 1.7–1.9 m; tilt at most 3°; screenshot matches the reference composition |
 | T9 | Ride and boost for 10 s | Boom constant at 7 m ±0.05 m; FOV change at most 5° |
 | T10 | Hold W, press Cmd+Tab away and back (iPad and macOS) | No stuck movement on return |
+| T11 | Hold W+D for 4 s in the park | Swing starts by 0.25 s; halfway by 0.7 s; misalignment with travel under 2° by 2 s; path heading spread still 0° |
+| T12 | Tap D four times for 0.15 s each | Unasked camera yaw under 1° |
+| T13 | Stand still for 5 s after looking 40° off-axis | Unasked camera yaw 0° — the lens stays where it was left |
 
 Also play it live on a desktop browser and on an iPad with a keyboard before calling a phase done. The Browser pane isn't enough on its own.
 
