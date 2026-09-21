@@ -17,7 +17,7 @@
 - Do not add shadow maps. `VISUAL_STYLE.geometry.shadowsEnabled` stays `false`.
 - Do not give streetlights real lights. The single moving proxy stays the only public-light slot.
 - The player's clothing must read as near-black and must never turn visibly blue.
-- Do not spread magenta to new locations.
+- Do not spread magenta to new locations. Renee's light is red, not magenta (Daniel, 21 Sept).
 - Rendering performance must never change simulation speed (`docs/PERFORMANCE.md`).
 - Preserve-first (`AGENTS.md`): extend the existing systems and never build a parallel one.
 - Asset-first (`AGENTS.md`): no new major visual asset built in engine code. Streetlight poles already exist as a world component, so adding more is allowed. New luminaires for CTL and Greek Gyros come from Blender (out of scope here).
@@ -33,9 +33,9 @@ These are observations from MEDIUM captures at 1280 × 720 of `?view=` dev views
 1. **The global night is bluer and flatter than the audit says.** The hemisphere (0.72) and moon (1.28) light every façade evenly. On pale blockout buildings, such as the grey building beside MCR1 in `park-florist` and `public-light-pool`, and the Hive in `greek-gyros` and `north-road`, the brightest surfaces in the frame are unlit walls, not practical lights. The gaps between lit areas read as navy blue, not black.
 2. **The rider reads as navy blue outside the pools** (`west-street`, `park-florist`, `public-light-pool`). The player-lift multiplies the rider's ambient (indirect) light by 1.55, and that ambient light is mostly the blue hemisphere sky (`0x304e9b`). So the lift makes the rider bluer, which the audit forbids.
 3. **Inside a pool the rider goes darker, not brighter, from the default camera** (`south-road`, `dreams-angle`). The proxy lights the side of the rider facing the lamp, and the chase camera usually sees the other side. The rider becomes a black silhouette against lit paving. That can be photographically right, but the pool is not "selecting the figure" in the way the constitution describes.
-4. **The painted pools read as scattered orange confetti, not pools of light.** They reuse the `reflection-broken-overhaul` texture on a 2.45 m disc (`addStreetlight`, `src/world/createWorld.ts:3454`). This is the most visible lighting artefact in the build.
+4. **The painted pools read as scattered orange confetti, not pools of light.** They reuse the `reflection-broken-overhaul` texture on a disc (2.9 m since `c9fdd7b`, in `addStreetlightPool`). This is the most visible lighting artefact in the build.
 5. **Location lights are chosen without regard to camera direction.** At `come-through-lab`, three of the four MEDIUM slots go to MCR1 and Florist lights about 16 m away, off to one side of the view. The CTL cue gets the fourth slot at intensity 3.2. Location-relevance mode checks only horizontal distance from the player.
-6. **The streetlights cost roughly 100 draw calls.** 20 poles × (pole + head + pool + two reflection strips), none of them merged.
+6. **The streetlights were rebuilt mid-plan (`c9fdd7b`, another session).** Twenty real-scale GLB fixtures (four models, three LODs, merged per material) replaced the procedural poles, and the pool and proxy now sit under each lantern's emitter. The fixtures stay as they are. What remains for this plan: the pools and reflection strips are still 60 separate confetti meshes, and the proxy jumps between two lamps that are only 8 m apart while still about 26% lit.
 7. **Greek Gyros now works.** The counter practical from the GLB anchor produces a readable white commercial island. **The CTL door cue works** but is weak and temporary. **Bus Stop A's spill is already re-anchored** to the marker (audit item E1 is done).
 8. **The `spice-cabin` dev view is stale.** Collision recovery pushes the player from (12.35, 57.6) to (18.9, 62.1), into the Eastern Bloc frontage. The fixed-view comparison needs this fixed first.
 
@@ -44,7 +44,7 @@ These are observations from MEDIUM captures at 1280 × 720 of `?view=` dev views
 - `LocalLightRegistry` keeps `maximumActiveLocalLights` point-light slots **always visible**; spare slots sit at intensity 0 (`src/world/localLighting.ts:60-78`). Every lit material therefore pays for the full budget on every pixel, all the time. Turning a light off changes nothing on the GPU, and adding a slot costs everywhere. **Improvements must come from better selection, emissive and painted light, and shader terms, never from more slots.**
 - A shader term on the player's materials only runs on the rider's few thousand pixels, so it is effectively free.
 - The grade pass has constant cost. Changing its parameters costs nothing.
-- Merging the streetlight meshes cuts about 80 draw calls. The measured bottleneck is the CPU (Spice Cabin: 22 FPS, `docs/PERFORMANCE.md`), so this is a real saving.
+- Merging the pool and reflection meshes cuts at least 40 draw calls. The measured bottleneck is the CPU (Spice Cabin: 22 FPS, `docs/PERFORMANCE.md`), so this is a real saving. The new GLB fixtures were not in the 20 Sept draw-call measurements, so Task 10 re-measures everything.
 
 ---
 
@@ -59,13 +59,15 @@ These are observations from MEDIUM captures at 1280 × 720 of `?view=` dev views
 | `src/main.ts` | Modify | Dev views (fix `spice-cabin`, add `start`, `public-light-pool-front`, `hive-entrance`, `car-park`). Dev hooks `zealot.lighting` / `zealot.grade`. Pass the camera to `world.update`. Feed the player the character lamp. |
 | `src/world/localLighting.ts` | Modify | View-aware location relevance. |
 | `src/world/localLighting.test.ts` | Create | Registry selection tests. |
-| `src/world/publicIllumination.ts` | Create | Nearest-streetlight lookup, pool falloff, character-lamp state. |
+| `src/world/publicIllumination.ts` | Create | Nearest-two lamp lookup, pool falloff, lamp handover, character-lamp state. |
 | `src/world/publicIllumination.test.ts` | Create | Tests for the above. |
-| `src/world/createWorld.ts` | Modify | Use `publicIllumination.ts`. Drop the proxy on LOW. Merge streetlights. Car-park lamps. Hive entrance cue. Expose global lights and character lamp. |
+| `src/world/createWorld.ts` | Modify | Use `publicIllumination.ts`. Drop the proxy on LOW. Merge pools and reflections. Three car-park lamps. Hive entrance cue. Renee red. Expose global lights and character lamp. |
+| `src/world/createStreetlights.ts` | **Do not modify** | Owned by the streetlight fixture work (`c9fdd7b`). |
 | `src/player/PlayerController.ts` | Modify | Replace the 1.55 ambient gain with a neutral floor plus a lamp wrap/rim term. |
 | `src/rendering/lightPoolTexture.ts` | Create | Soft radial `DataTexture` for painted pools. |
 | `src/rendering/lightPoolTexture.test.ts` | Create | Falloff tests. |
-| `src/rendering/createPostProcessing.ts` | Modify | Protected-toe contrast, grain-order switch, live grade parameters. Defaults unchanged. |
+| `src/rendering/createPostProcessing.ts` | Modify | Protected-toe contrast, grain-order switch, live grade parameters. |
+| `src/rendering/visualStyle.ts` | Modify | `red` lighting colour for Renee; grade defaults. |
 | `docs/LIGHTING_AUDIT.md`, `docs/PERFORMANCE.md`, `docs/TECHNICAL.md`, `docs/VISUAL_LANGUAGE.md`, `SYNC.md` | Modify | Task 10. |
 
 ---
@@ -406,7 +408,7 @@ async (page) => {
     'between-light-pools', 'bus-shelter', 'dreams-angle', 'come-through-lab',
     'village-books', 'greek-gyros', 'hive-entrance', 'car-park', 'west-street',
     'south-road', 'real-camera', 'advanced-photo', 'spice-cabin', 'north-road',
-    'park-florist',
+    'park-florist', 'streetlights', 'street-detail',
   ];
   const critical = [
     'public-light-pool', 'between-light-pools', 'come-through-lab',
@@ -441,7 +443,7 @@ With the `zealot-dev` preview running, point the Playwright page at it (`browser
 mv renders/lighting-captures/latest renders/lighting-captures/2026-09-21-baseline
 ```
 
-Expected: 28 PNGs and a metrics file with 28 entries. Open `public-light-pool-front-medium.png` and confirm the rider's lamp side faces the camera.
+Expected: 30 PNGs and a metrics file with 30 entries. Open `public-light-pool-front-medium.png` and confirm the rider's lamp side faces the camera.
 
 - [ ] **Step 4: Commit**
 
@@ -715,7 +717,11 @@ git commit -m "Skip location lights that neither reach the rider nor touch the v
 
 ---
 
-### Task 4: Public illumination module, character-lamp state, LOW slot
+### Task 4: Public illumination module, lamp handover, character-lamp state, LOW slot
+
+**Rebased 21 Sept on `c9fdd7b`**, which replaced the streetlights with GLB fixtures (`src/world/createStreetlights.ts`). Lamps are now `PUBLIC_LIGHTS` entries with an `emitter` (the lantern's world position, about 6.6–7.8 m up). The painted pool radius is `STREETLIGHT_POOL_RADIUS = 2.9`, and the proxy fades from radius + 0.1 to radius + 1.6 = 4.5 m. That session retuned the proxy to intensity 95 / range 12 for the new height. Leave those values alone.
+
+**Bug this task fixes:** the proxy jumps to whichever lamp is nearest. Two lamps whose emitters are closer than 9 m apart (2 × 4.5 m; for example the pair at (8, 19) and (16, 19)) still have about 26% response at the midpoint. So the proxy's position and colour jump while it is visibly lit. The handover below fades the response to zero exactly where the nearest lamp changes.
 
 **Files:**
 - Create: `src/world/publicIllumination.ts`
@@ -723,7 +729,13 @@ git commit -m "Skip location lights that neither reach the rider nor touch the v
 - Modify: `src/world/createWorld.ts` (`addPublicIlluminationResponse`, `createWorld`, `World`)
 
 **Interfaces:**
-- Produces: `POOL_FADE_START = 2.55`, `POOL_FADE_END = 4`, `poolResponse(distance: number): number`, `findNearestStreetlight(lights: readonly StreetlightDefinition[], x: number, z: number): { index: number; distance: number }`, `type StreetlightDefinition = readonly [x: number, z: number, color: number]`, `interface CharacterLampState { readonly position: Vector3; readonly color: Color; strength: number }`, and `World.characterLamp: CharacterLampState`.
+- Produces:
+  - `POOL_FADE_WIDTH = 1.5` and `HANDOVER_WIDTH = 1.5`
+  - `poolResponse(distance: number, poolRadius: number): number`
+  - `findNearestTwo(points: readonly { readonly x: number; readonly z: number }[], x: number, z: number): { index: number; distance: number; runnerUpDistance: number }`
+  - `publicLampStrength(distance: number, runnerUpDistance: number, poolRadius: number): number`
+  - `interface CharacterLampState { readonly position: Vector3; readonly color: Color; strength: number }`
+  - `World.characterLamp: CharacterLampState`
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -732,53 +744,69 @@ Create `src/world/publicIllumination.test.ts`:
 ```ts
 import { describe, expect, it } from 'vitest';
 import {
-  POOL_FADE_END,
-  POOL_FADE_START,
-  findNearestStreetlight,
+  POOL_FADE_WIDTH,
+  findNearestTwo,
   poolResponse,
+  publicLampStrength,
 } from './publicIllumination';
 
+const RADIUS = 2.9;
+const FADE_START = RADIUS + 0.1;
+const FADE_END = FADE_START + POOL_FADE_WIDTH;
+
 describe('poolResponse', () => {
-  it('is full across the painted pool', () => {
-    expect(poolResponse(0)).toBe(1);
-    expect(poolResponse(POOL_FADE_START)).toBe(1);
-  });
-
-  it('is zero at and beyond the fade end', () => {
-    expect(poolResponse(POOL_FADE_END)).toBe(0);
-    expect(poolResponse(9)).toBe(0);
-  });
-
-  it('is a smooth half-way at the midpoint', () => {
-    expect(poolResponse((POOL_FADE_START + POOL_FADE_END) / 2)).toBeCloseTo(0.5, 5);
-  });
-
-  it('never increases with distance', () => {
-    let previous = 1;
-    for (let d = 0; d <= 5; d += 0.05) {
-      const value = poolResponse(d);
-      expect(value).toBeLessThanOrEqual(previous + 1e-9);
-      previous = value;
-    }
+  it('matches the existing fade: full to radius + 0.1, zero from radius + 1.6', () => {
+    expect(poolResponse(0, RADIUS)).toBe(1);
+    expect(poolResponse(FADE_START, RADIUS)).toBe(1);
+    expect(poolResponse(FADE_END, RADIUS)).toBe(0);
+    expect(poolResponse((FADE_START + FADE_END) / 2, RADIUS)).toBeCloseTo(0.5, 5);
   });
 });
 
-describe('findNearestStreetlight', () => {
-  const lights = [
-    [0, 0, 0xffffff],
-    [8, 0, 0xff0000],
-    [0, 10, 0x00ff00],
-  ] as const;
+describe('findNearestTwo', () => {
+  const points = [
+    { x: 0, z: 0 },
+    { x: 8, z: 0 },
+    { x: 0, z: 10 },
+  ];
 
-  it('returns the nearest lamp and its horizontal distance', () => {
-    expect(findNearestStreetlight(lights, 6, 1)).toEqual({
-      index: 1,
-      distance: Math.hypot(2, 1),
-    });
+  it('returns the nearest point and the runner-up distance', () => {
+    const result = findNearestTwo(points, 6, 1);
+    expect(result.index).toBe(1);
+    expect(result.distance).toBeCloseTo(Math.hypot(2, 1), 9);
+    expect(result.runnerUpDistance).toBeCloseTo(Math.hypot(6, 1), 9);
   });
 
-  it('keeps the first lamp on an exact tie', () => {
-    expect(findNearestStreetlight(lights, 4, 0).index).toBe(0);
+  it('reports an infinite runner-up with a single point', () => {
+    expect(findNearestTwo([{ x: 0, z: 0 }], 1, 0).runnerUpDistance).toBe(
+      Number.POSITIVE_INFINITY,
+    );
+  });
+});
+
+describe('publicLampStrength', () => {
+  it('equals the pool response when no other lamp is near', () => {
+    expect(publicLampStrength(1, 30, RADIUS)).toBe(poolResponse(1, RADIUS));
+  });
+
+  it('is zero exactly where the nearest lamp changes', () => {
+    expect(publicLampStrength(4, 4, RADIUS)).toBe(0);
+  });
+
+  it('never jumps while walking between two lamps 8 m apart', () => {
+    const lamps = [
+      { x: 0, z: 0 },
+      { x: 8, z: 0 },
+    ];
+    let previous: number | null = null;
+    for (let x = 0; x <= 8; x += 0.05) {
+      const { distance, runnerUpDistance } = findNearestTwo(lamps, x, 0);
+      const strength = publicLampStrength(distance, runnerUpDistance, RADIUS);
+      if (previous !== null) {
+        expect(Math.abs(strength - previous)).toBeLessThan(0.06);
+      }
+      previous = strength;
+    }
   });
 });
 ```
@@ -795,35 +823,56 @@ Create `src/world/publicIllumination.ts`:
 ```ts
 import { Color, Vector3 } from 'three';
 
-export type StreetlightDefinition = readonly [x: number, z: number, color: number];
+/** Metres over which a lamp's response falls from full to nothing. */
+export const POOL_FADE_WIDTH = 1.5;
+/**
+ * Metres by which the nearest lamp must beat the runner-up before its response
+ * reaches full strength. Where two pools overlap, the response dips to zero at
+ * the handover, so the proxy and the rider's lamp never jump while lit.
+ */
+export const HANDOVER_WIDTH = 1.5;
 
-/** Response is full across the 2.45 m painted pool and gone before the darkness. */
-export const POOL_FADE_START = 2.55;
-export const POOL_FADE_END = 4;
-
-export function poolResponse(distance: number): number {
-  const t = Math.max(
-    0,
-    Math.min(1, (POOL_FADE_END - distance) / (POOL_FADE_END - POOL_FADE_START)),
-  );
+function smooth(value: number): number {
+  const t = Math.max(0, Math.min(1, value));
   return t * t * (3 - 2 * t);
 }
 
-export function findNearestStreetlight(
-  lights: readonly StreetlightDefinition[],
+/** Full across the painted pool, zero before the surrounding darkness. */
+export function poolResponse(distance: number, poolRadius: number): number {
+  const fadeStart = poolRadius + 0.1;
+  return smooth((fadeStart + POOL_FADE_WIDTH - distance) / POOL_FADE_WIDTH);
+}
+
+export function findNearestTwo(
+  points: readonly { readonly x: number; readonly z: number }[],
   x: number,
   z: number,
-): { index: number; distance: number } {
+): { index: number; distance: number; runnerUpDistance: number } {
   let index = 0;
-  let nearestSquared = Number.POSITIVE_INFINITY;
-  lights.forEach(([lightX, lightZ], candidate) => {
-    const squared = (lightX - x) ** 2 + (lightZ - z) ** 2;
-    if (squared < nearestSquared) {
-      nearestSquared = squared;
+  let nearest = Number.POSITIVE_INFINITY;
+  let runnerUp = Number.POSITIVE_INFINITY;
+  points.forEach((point, candidate) => {
+    const distance = Math.hypot(point.x - x, point.z - z);
+    if (distance < nearest) {
+      runnerUp = nearest;
+      nearest = distance;
       index = candidate;
+    } else if (distance < runnerUp) {
+      runnerUp = distance;
     }
   });
-  return { index, distance: Math.sqrt(nearestSquared) };
+  return { index, distance: nearest, runnerUpDistance: runnerUp };
+}
+
+export function publicLampStrength(
+  distance: number,
+  runnerUpDistance: number,
+  poolRadius: number,
+): number {
+  const handover = Number.isFinite(runnerUpDistance)
+    ? smooth((runnerUpDistance - distance) / HANDOVER_WIDTH)
+    : 1;
+  return poolResponse(distance, poolRadius) * handover;
 }
 
 /**
@@ -845,12 +894,12 @@ Expected: 6 passed.
 
 - [ ] **Step 5: Rewrite `addPublicIlluminationResponse`**
 
-In `src/world/createWorld.ts`, add `Color` to the `three` import and add:
+In `src/world/createWorld.ts`, add `Color` to the `three` import if missing, and add:
 
 ```ts
 import {
-  findNearestStreetlight,
-  poolResponse,
+  findNearestTwo,
+  publicLampStrength,
   type CharacterLampState,
 } from './publicIllumination';
 ```
@@ -858,15 +907,19 @@ import {
 Replace the whole `addPublicIlluminationResponse` function with:
 
 ```ts
-const STREETLIGHT_HEAD_HEIGHT = 3.85;
+const PUBLIC_LIGHT_GROUND_POINTS = PUBLIC_LIGHTS.map(({ emitter }) => ({
+  x: emitter.x,
+  z: emitter.z,
+}));
 
 function addPublicIlluminationResponse(
   localLights: LocalLightRegistry,
   registerProxy: boolean,
 ): { characterLamp: CharacterLampState; update: (playerPosition: Vector3) => void } {
+  const first = PUBLIC_LIGHTS[0];
   const characterLamp: CharacterLampState = {
-    position: new Vector3(STREETLIGHTS[0][0], STREETLIGHT_HEAD_HEIGHT, STREETLIGHTS[0][1]),
-    color: new Color(STREETLIGHTS[0][2]),
+    position: new Vector3(first.emitter.x, first.emitter.y, first.emitter.z),
+    color: new Color(first.color),
     strength: 0,
   };
 
@@ -875,10 +928,10 @@ function addPublicIlluminationResponse(
   const light = registerProxy
     ? createManagedPointLight(
         'Nearest public streetlight response',
-        characterLamp.position.x,
-        characterLamp.position.y,
-        characterLamp.position.z,
-        STREETLIGHTS[0][2],
+        first.emitter.x,
+        first.emitter.y,
+        first.emitter.z,
+        first.color,
         VISUAL_STYLE.lighting.streetLightIntensity,
         VISUAL_STYLE.lighting.streetLightDistance,
       )
@@ -888,7 +941,7 @@ function addPublicIlluminationResponse(
       name: 'Public illumination pool',
       lights: [light],
       priority: 1.7,
-      activationRadius: 4,
+      activationRadius: 5,
       intensityScale: () => characterLamp.strength,
     });
   }
@@ -896,18 +949,23 @@ function addPublicIlluminationResponse(
   return {
     characterLamp,
     update: (playerPosition: Vector3): void => {
-      const nearest = findNearestStreetlight(
-        STREETLIGHTS,
+      const nearest = findNearestTwo(
+        PUBLIC_LIGHT_GROUND_POINTS,
         playerPosition.x,
         playerPosition.z,
       );
-      const [x, z, color] = STREETLIGHTS[nearest.index];
-      characterLamp.position.set(x, STREETLIGHT_HEAD_HEIGHT, z);
-      characterLamp.color.setHex(color);
-      characterLamp.strength = poolResponse(nearest.distance);
+      const lamp = PUBLIC_LIGHTS[nearest.index];
+      // The proxy sits at the lantern's real emitter.
+      characterLamp.position.set(lamp.emitter.x, lamp.emitter.y, lamp.emitter.z);
+      characterLamp.color.setHex(lamp.color);
+      characterLamp.strength = publicLampStrength(
+        nearest.distance,
+        nearest.runnerUpDistance,
+        STREETLIGHT_POOL_RADIUS,
+      );
       if (light) {
         light.position.copy(characterLamp.position);
-        light.color.setHex(color);
+        light.color.setHex(lamp.color);
       }
     },
   };
@@ -925,23 +983,17 @@ In `createWorld`, replace `const updatePublicIllumination = addPublicIlluminatio
 
 In the returned `update`, change `updatePublicIllumination(playerPosition);` to `publicIllumination.update(playerPosition);`. Add `characterLamp: publicIllumination.characterLamp,` to the returned object and `readonly characterLamp: CharacterLampState;` to `interface World`.
 
-Check the streetlight spacing: the closest pair of lamps is (8, 19) and (16, 19), 8 m apart. `POOL_FADE_END` (4 m) × 2 = 8 m, so the proxy only jumps between lamps while its strength is 0. If a later layout puts two lamps closer than 8 m, the proxy will pop. Add this comment above `STREETLIGHTS`:
-
-```ts
-// Keep lamps at least 2 × POOL_FADE_END (8 m) apart: the public proxy and the
-// rider's lamp response move to the nearest lamp, and only do so invisibly
-// while both pools are out of reach.
-```
+If the other session has changed `addPublicIlluminationResponse` again since `c9fdd7b`, keep its emitter/intensity decisions and apply only the handover, the character-lamp state and the LOW switch.
 
 - [ ] **Step 6: Verify**
 
-Run: `npx vitest run && npm run build`. Expected: all tests pass and the build passes. Load `?view=public-light-pool&overlays=off` and run `zealot.lighting.probe().activeLocalLightGroups`. Expected: it includes `Public illumination pool`. Repeat with `&quality=low`. Expected: it does not. The rider's response to the lamp strength is checked visually in Task 5 Step 4.
+Run: `npx vitest run && npm run build`. Expected: all tests pass and the build passes. Load `?view=public-light-pool&overlays=off` and run `zealot.lighting.probe().activeLocalLightGroups`. Expected: it includes `Public illumination pool`. Repeat with `&quality=low`. Expected: it does not. Walk slowly east along the park's south edge from (4, 19) to (20, 19) with overlays on. The proxy should fade out and back in between the two LED lamps, with no jump in colour or position.
 
 - [ ] **Step 7: Commit**
 
 ```bash
 git add src/world/publicIllumination.ts src/world/publicIllumination.test.ts src/world/createWorld.ts
-git commit -m "Track the nearest public lamp for the rider and free the proxy slot on LOW"
+git commit -m "Hand the public-light proxy between lamps smoothly and free its slot on LOW"
 ```
 
 ---
@@ -1113,15 +1165,17 @@ git commit -m "Replace the rider's blue ambient gain with a neutral floor and a 
 
 ---
 
-### Task 6: Soft painted pools and merged streetlights
+### Task 6: Soft painted pools, merged pool and reflection meshes
+
+**Rebased 21 Sept on `c9fdd7b`.** The fixtures are now GLBs with LODs, already merged per material in `createStreetlights.ts`. **Do not touch `createStreetlights.ts`.** This task changes only `addStreetlightPool`: the per-lamp painted pool (still the confetti `reflection-broken-overhaul` texture) and its two reflection strips, which cost 60 separate draw calls across 20 lamps. The streetlight brief lists "fake painted pools of light" as something to avoid. A soft pool that fades into the ground is the closest the performance policy allows.
 
 **Files:**
 - Create: `src/rendering/lightPoolTexture.ts`
 - Test: `src/rendering/lightPoolTexture.test.ts`
-- Modify: `src/world/createWorld.ts` (replace per-lamp `addStreetlight` with a batched builder)
+- Modify: `src/world/createWorld.ts` (replace `addStreetlightPool` and its loop)
 
 **Interfaces:**
-- Produces: `lightPoolFalloff(radius: number): number` (0–1 input, 1 at centre, 0 at the rim) and `getLightPoolTexture(): DataTexture`.
+- Produces: `lightPoolFalloff(radius: number): number` (0–1 input: 1 at the centre, 0 at the rim) and `getLightPoolTexture(): DataTexture`.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1227,19 +1281,19 @@ Expected: 3 passed.
 
 Read `drawCalls` for `public-light-pool-medium` and `south-road-medium` from `renders/lighting-captures/2026-09-21-baseline/metrics.json`, and write them down for Step 8.
 
-- [ ] **Step 6: Replace `addStreetlight` with a batched builder**
+- [ ] **Step 6: Replace `addStreetlightPool` with a batched builder**
 
-The names `Public illumination streetlight`, `Streetlight painted pool` and `Broken streetlight reflection` are referenced only where they are set (checked 21 Sept: `grep -rn "painted pool\|Public illumination streetlight\|Broken streetlight" src`). Re-run that grep before editing. If anything else now reads them, keep those names on the merged meshes.
+Before editing, run `grep -rn "Public illumination pool\|Streetlight painted pool\|Broken streetlight" src`. At `c9fdd7b` these names are only set, never read. (`Public illumination pool` is also the *registry group* name in `addPublicIlluminationResponse`. That is a separate string and must stay.) If anything now reads the mesh names, keep them on the merged meshes.
 
-In `src/world/createWorld.ts`, add `AdditiveBlending`, `DoubleSide`, `Euler`, `Matrix4` and `Quaternion` to the `three` import if missing, and add `import { getLightPoolTexture } from '../rendering/lightPoolTexture';`. Replace the whole `addStreetlight` function with:
+In `src/world/createWorld.ts`, add `AdditiveBlending`, `DoubleSide`, `Euler`, `Matrix4` and `Quaternion` to the `three` import if missing, and add `import { getLightPoolTexture } from '../rendering/lightPoolTexture';`. Replace the whole `addStreetlightPool` function with:
 
 ```ts
 /**
- * Builds every public streetlight as a handful of merged meshes: one for all
- * poles and, per lamp colour, one each for heads, painted pools and the two
- * broken reflections. Twenty separate lamps cost about 100 draw calls.
+ * The light each streetlight throws on the ground, centred under the lantern
+ * (the fixtures themselves are GLBs, createStreetlights.ts). Pools and broken
+ * reflections are merged per lamp colour: 20 lamps × 3 meshes were 60 draws.
  */
-function addStreetlights(root: Group, streetlights: typeof STREETLIGHTS): void {
+function addStreetlightPools(root: Group, lights: typeof PUBLIC_LIGHTS): void {
   const placed = (
     geometry: BufferGeometry,
     x: number,
@@ -1257,23 +1311,22 @@ function addStreetlights(root: Group, streetlights: typeof STREETLIGHTS): void {
     );
 
   type ColourParts = {
-    heads: BufferGeometry[];
     pools: BufferGeometry[];
     longReflections: BufferGeometry[];
     sideReflections: BufferGeometry[];
   };
-  const poles: BufferGeometry[] = [];
   const byColour = new Map<number, ColourParts>();
 
-  for (const [x, z, color] of streetlights) {
-    poles.push(placed(getCylinderGeometry(0.075, 0.105, 4.2, 6), x, 2.1, z));
+  for (const { emitter, color } of lights) {
+    const { x, z } = emitter;
     let parts = byColour.get(color);
     if (!parts) {
-      parts = { heads: [], pools: [], longReflections: [], sideReflections: [] };
+      parts = { pools: [], longReflections: [], sideReflections: [] };
       byColour.set(color, parts);
     }
-    parts.heads.push(placed(getBoxGeometry(0.52, 0.16, 0.38), x, 4.18, z));
-    parts.pools.push(placed(getCircleGeometry(2.45, 12), x, 0.035, z, -Math.PI / 2));
+    parts.pools.push(
+      placed(getCircleGeometry(STREETLIGHT_POOL_RADIUS, 16), x, 0.035, z, -Math.PI / 2),
+    );
     parts.longReflections.push(
       placed(getBoxGeometry(0.7, 0.018, 4.9), x + 0.35, 0.04, z + 2.1, 0, 0.08),
     );
@@ -1294,13 +1347,7 @@ function addStreetlights(root: Group, streetlights: typeof STREETLIGHTS): void {
     root.add(mesh);
   };
 
-  addMerged(
-    'Public illumination streetlight poles',
-    poles,
-    createWorldMaterial('metal-oxidised-overhaul', { repeatX: 1, repeatY: 3, tint: 0x5c6063 }),
-  );
   for (const [color, parts] of byColour) {
-    addMerged('Public illumination streetlight heads', parts.heads, getBasicColorMaterial(color));
     addMerged(
       'Streetlight painted pool',
       parts.pools,
@@ -1328,56 +1375,60 @@ function addStreetlights(root: Group, streetlights: typeof STREETLIGHTS): void {
 }
 ```
 
-If `getBoxGeometry`'s default segment arguments differ from what `createBox` used, pass the same arguments `createBox` passes (read `createBox` at `src/world/createWorld.ts:203`).
+If `getBoxGeometry`'s default segment arguments differ from what `createBox` uses, pass the same arguments `createBox` passes (read `createBox` in `createWorld.ts`).
 
-In `createWorld`, replace:
-
-```ts
-  for (const [x, z, color] of STREETLIGHTS) {
-    addStreetlight(root, x, z, color);
-    obstacles.push(circleObstacle('Streetlight pole', x, z, 0.12, 4.3));
-  }
-```
-
-with:
+In `createWorld`, change the streetlight loop from
 
 ```ts
-  addStreetlights(root, STREETLIGHTS);
-  for (const [x, z] of STREETLIGHTS) {
-    obstacles.push(circleObstacle('Streetlight pole', x, z, 0.12, 4.3));
-  }
+  for (const light of PUBLIC_LIGHTS) {
+    addStreetlightPool(root, light.emitter.x, light.emitter.z, light.color);
+    obstacles.push(
 ```
+
+to
+
+```ts
+  addStreetlightPools(root, PUBLIC_LIGHTS);
+  for (const light of PUBLIC_LIGHTS) {
+    obstacles.push(
+```
+
+and leave the collision push and `void addStreetlightFixtures(root, PUBLIC_LIGHTS);` exactly as they are.
 
 - [ ] **Step 7: Build and check the look**
 
-Run: `npx vitest run && npm run build`. Expected: pass. Load `public-light-pool`, `south-road` and `dreams-angle` and take screenshots.
-Expected: each pool reads as a soft warm pool that fades into the paving and grass, with no scattered dashes. The broken reflection strips remain. Tune `opacity` (0.22–0.4) until the pool centre on grey paving is about as bright as the baseline pool's brightest dashes, then write the value in.
+Run: `npx vitest run && npm run build`. Expected: pass. Load `public-light-pool`, `south-road`, `dreams-angle` and `streetlights`, and take screenshots.
+Expected: each pool reads as a soft pool that fades into the paving and grass, with no scattered dashes. The broken reflection strips remain. Tune `opacity` (0.22–0.4) until the pool centre on grey paving is about as bright as the baseline pool's brightest dashes, then write the value in.
 
 - [ ] **Step 8: Measure draw calls**
 
 Run `zealot.lighting.probe().drawCalls` at `public-light-pool` and `south-road` on MEDIUM.
-Expected: each is at least 60 lower than the Step 5 baseline number. If it isn't, check the scene for leftover per-lamp meshes: `zealot.scene.getObjectsByProperty('name', 'Public illumination streetlight')` should return `[]`.
+Expected: each is at least 40 lower than the Step 5 baseline (60 meshes become at most 3 × the number of lamp colours). If it isn't, check for leftovers: `zealot.scene.getObjectsByProperty('name', 'Public illumination pool').filter((o) => o.type === 'Group')` should return `[]`.
 
 - [ ] **Step 9: Commit**
 
 ```bash
 git add src/rendering/lightPoolTexture.ts src/rendering/lightPoolTexture.test.ts src/world/createWorld.ts
-git commit -m "Soften the painted streetlight pools and merge all streetlights into a few meshes"
+git commit -m "Soften the painted streetlight pools and merge them per lamp colour"
 ```
 
 ---
 
-### Task 7: Hive entrance cue and car-park pools
+### Task 7: Hive entrance cue, car-park pools and Renee's red
 
 **Files:**
-- Modify: `src/world/createWorld.ts` (`addTheHiveModel`, its caller at about line 2488, `STREETLIGHTS`)
+- Modify: `src/world/createWorld.ts` (`addTheHiveModel`, its caller in `addBuildingLocation`, `STREETLIGHTS`, Renee's light and spill)
+- Modify: `src/rendering/visualStyle.ts` (new `red` lighting colour)
 
 **Interfaces:**
-- Consumes: the `ACE_EntranceTriggerAnchor` node in `public/assets/models/the_hive.glb` (confirmed present 21 Sept), `LocalLightRegistry.register`, `createManagedPointLight`.
+- Consumes: the `ACE_EntranceTriggerAnchor` node in `public/assets/models/the_hive.glb` (confirmed present 21 Sept), `LocalLightRegistry.register`, `createManagedPointLight`, and the `STREETLIGHTS` 4-tuple `[x, z, colour, StreetlightModel]` from `c9fdd7b`.
+- Produces: `VISUAL_STYLE.lighting.red`.
+
+**Decisions (Daniel, 21 Sept):** the car park gets three lamps (one sodium, two cold white), and Renee's light is red rather than magenta.
 
 - [ ] **Step 1: Hive entrance cue from the authored anchor**
 
-Change the signature to `async function addTheHiveModel(root: Group, location: WorldLocation, localLights: LocalLightRegistry): Promise<void>` and its call to `void addTheHiveModel(root, location, localLights);`.
+Change the signature to `async function addTheHiveModel(root: Group, location: WorldLocation, localLights: LocalLightRegistry): Promise<void>` and its call in `addBuildingLocation` to `void addTheHiveModel(root, location, localLights);`.
 
 Inside, **move `mergeStaticModelMeshes(hive);` to after the anchor lookup** (merging can remove empties, and the performance doc says anchors are read before batching). After `root.add(hive);`, add:
 
@@ -1415,28 +1466,45 @@ Inside, **move `mergeStaticModelMeshes(hive);` to after the anchor lookup** (mer
 
 Load `?view=hive-entrance&overlays=on`. The Hive faces west, so the cue should sit on the street side of the doors. If it lands inside the building, flip the sign of the x offset and note why in the comment.
 
-- [ ] **Step 2: Two isolated car-park pools**
+- [ ] **Step 2: Three car-park lamps: one sodium, two cold white**
 
-Add two entries to the end of `STREETLIGHTS`:
+Add three entries to the end of `STREETLIGHTS`:
 
 ```ts
-  // Car park: two hard security pools with a wide dark gap between them.
-  [38, -3, VISUAL_STYLE.lighting.coldWhite],
-  [49, 4.5, VISUAL_STYLE.lighting.coldWhite],
+  // Car park: hard security pools with dark asphalt between them. The old
+  // sodium column survived the retrofit; the two LED heads replaced the rest.
+  [36, -3.5, VISUAL_STYLE.lighting.sodium, 'warm-old'],
+  [44.5, 4, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
+  [51, -5, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
 ```
 
-These get a pole, collision, a painted pool, the public proxy and the rider response automatically. They are 13 m apart and more than 8 m from every other lamp and from the Arts Council pallet stack at (48, −3.4).
+Each automatically gets a fixture, column collision, a painted pool, the public proxy and the rider response. The lamps are at least 11 m apart and more than 9 m from every other lamp, so Task 4's handover never overlaps with them. The column at (51, −5) stands 3.4 m from the Arts Council pallet stack at (48, −3.4). `yawTowardNearestRoad` picks each lantern's direction. If a lantern overhangs into a wall rather than the bays, note it in `SYNC.md` as a follow-up rather than changing the shared tuple format.
 
-- [ ] **Step 3: Verify**
+- [ ] **Step 3: Renee's light is red, not magenta**
 
-Run `npm run build` (expected: passes). Capture `hive-entrance`, `car-park` and `pallets-east` on MEDIUM and LOW, and run `zealot.lighting.probe()` at each.
-Expected: at `hive-entrance`, `activeLocalLightGroups` includes `The Hive entrance` and the door plane is readable while the upper building stays moonlit. At `car-park` there are two separate pools with near-black asphalt between them. `blackShare` at `car-park` should fall by no more than 0.05 from its Task 2 baseline. Walking into either car-park pool colours the rider.
+In `VISUAL_STYLE.lighting` add, next to `magenta`:
 
-- [ ] **Step 4: Commit**
+```ts
+    // Renee's own light: a warm signage red. Magenta stays the bus shelter's.
+    red: 0xff3b2f,
+```
+
+In `createWorld.ts`, change `VISUAL_STYLE.lighting.magenta` to `VISUAL_STYLE.lighting.red` in the `'Renee hero light'` definition and in the `'Renee fascia spill'` reflection patch. Then run `grep -n "Renee" src/world/createWorld.ts` and switch any other magenta that belongs to Renee's *light* (for example an emissive in its model policy). Leave the magenta error fallback (`Showing the magenta fallback`) alone, because it is a load-failure marker, not a colour choice.
+
+- [ ] **Step 4: Verify**
+
+Run `npm run build` (expected: passes). Capture `hive-entrance`, `car-park`, `pallets-east` and `street-detail` (Renee) on MEDIUM and LOW, and run `zealot.lighting.probe()` at each.
+Expected:
+- `hive-entrance`: `activeLocalLightGroups` includes `The Hive entrance`, and the door plane is readable while the upper building stays moonlit.
+- `car-park`: three separate pools, one warm and two cold, with near-black asphalt between them. `blackShare` should fall by no more than 0.06 from its Task 2 baseline.
+- Renee reads red, not pink, under AgX. If AgX pushes it towards orange, move the hex towards `0xff2a3a` and recapture.
+- Walking into any car-park pool colours the rider.
+
+- [ ] **Step 5: Commit**
 
 ```bash
-git add src/world/createWorld.ts
-git commit -m "Light The Hive entrance from its anchor and add two isolated car-park pools"
+git add src/world/createWorld.ts src/rendering/visualStyle.ts
+git commit -m "Light The Hive entrance, add three car-park lamps and turn Renee's light red"
 ```
 
 ---
@@ -1570,9 +1638,18 @@ git add src/rendering/createPostProcessing.ts src/rendering/visualStyle.ts src/m
 git commit -m "Add protected-toe and grain-order grade controls with A/B captures"
 ```
 
-- [ ] **Step 6: Daniel decides**
+- [ ] **Step 6: Choose the variant (delegated by Daniel, 21 Sept)**
 
-Show Daniel the A–E sheet for each view. The bus shelter is the colour benchmark (the audit's rule). Write his choice into `VISUAL_STYLE.render`, rerun Step 3's probe to confirm, and commit as "Adopt grade variant <X> after the A/B review". If he keeps A, record that in Task 10's audit follow-up and change nothing.
+Daniel asked the implementer to choose. Decide from the A–E captures with these rules, in order:
+
+1. **Darkness first:** reject any variant whose `blackShare` falls more than 0.02 below A in any of the five views.
+2. **Bus shelter colour:** reject any variant where the shelter's green/white/pink loses its hue or its core clips (visual check against A).
+3. **Dark detail:** among the survivors, prefer the largest `separation` gain at `between-light-pools` and `come-through-lab`.
+4. **Keep it constructed:** if two variants are within 0.01 separation, keep 32 steps over 64. The visible banding is part of the image's constructed quality.
+
+Expected winner, to be confirmed by the captures, not assumed: **D** (protected toe + grain after quantisation, 32 steps). It removes the two faults the audit identified (the linear black offset and grain flipping dark values between steps) and keeps the posterised character.
+
+Write the chosen values into `VISUAL_STYLE.render`, rerun Step 3's probe to confirm the defaults took effect, add a two-line rationale with the numbers to the Task 10 audit follow-up, and commit as "Adopt grade variant <X> after the A/B review". Daniel can overrule it from the saved captures at any time.
 
 ---
 
@@ -1650,12 +1727,12 @@ For each view in `metrics.json`, compare with `2026-09-21-baseline/metrics.json`
 
 | Check | Pass condition |
 | --- | --- |
-| Darkness kept | `blackShare` drops by no more than 0.03 in any view except `hive-entrance` and `car-park` (≤ 0.05). |
+| Darkness kept | `blackShare` drops by no more than 0.03 in any view except `hive-entrance` (≤ 0.05) and `car-park` (≤ 0.06). |
 | Rider stays near-black | Out of pools (`between-light-pools`, `west-street`, `park-florist`), `playerLuminance` is at most 1.2 × baseline. |
 | Rider separates | `separation` is at least the baseline in every view. In `public-light-pool-front` it is higher than baseline. |
 | Rider not blue | Visual check in `west-street` and `park-florist`: the clothing reads neutral near-black. |
 | Budget honest | No `activeLocalLightGroups` list is longer than 2/4/5 lights by profile. LOW never lists `Public illumination pool`. |
-| Draw calls | `drawCalls` in `public-light-pool-medium` and `south-road-medium` are at least 60 lower than baseline. |
+| Draw calls | `drawCalls` in `public-light-pool-medium` and `south-road-medium` are at least 40 lower than baseline. |
 | No popping | Manual: walk from `public-light-pool` to `between-light-pools` and orbit 360° at Cass Art. No visible switching. |
 
 Any failure: fix it in the task that owns it, re-capture, and re-check.
@@ -1669,7 +1746,7 @@ Headless and hidden-pane browsers do not give representative GPU timings. In a n
 - `docs/LIGHTING_AUDIT.md`: add an "Implementation follow-up — <date>" section under the 14 Sept one. List the ten tasks' outcomes, the grade and moon decisions, a link to the before/after capture folders, and correct the 14 Sept wording: the old "visibility floor" was a 1.55× gain on ambient light, not a floor.
 - `docs/PERFORMANCE.md`: the fixed-slot cost model (slots always present), view-aware selection, the LOW proxy change, the rider shader term costing no slot, the streetlight merge draw-call numbers, and the Step 3 FPS table.
 - `docs/TECHNICAL.md`: `npm test` (Vitest), the `zealot.lighting` / `zealot.grade` / `zealot.characterLight` dev hooks, and the capture routine.
-- `docs/VISUAL_LANGUAGE.md`: public illumination is now a soft painted pool plus broken reflections plus one proxy plus the rider's lamp response. Note the lamp-spacing rule (≥ 8 m).
+- `docs/VISUAL_LANGUAGE.md`: public illumination is now GLB fixture plus soft painted pool plus broken reflections plus one proxy (with lamp handover) plus the rider's lamp response. Add `red` (Renee) to the palette.
 
 - [ ] **Step 5: SYNC entry and commit**
 
@@ -1688,8 +1765,14 @@ git commit -m "Record the lighting hierarchy pass: captures, performance and doc
 - **Greek Gyros final material and light pass.** Emissive fixture faces and three more anchors, again authored in Blender first.
 - **View-dependent wet reflections.** The broken reflection strips always point towards +Z, so from some angles they point away from the camera. Fixing that is a separate reflection task.
 
+## Decisions recorded (Daniel, 21 Sept)
+
+- Renee's light is red, not magenta (Task 7).
+- Car park: three lamps, one sodium and two cold white (Task 7).
+- Grade variant: delegated to the implementer, with the rules in Task 8 Step 6.
+- Streetlight conflict: delegated. Resolved by keeping `c9fdd7b`'s fixtures untouched and rebasing Tasks 4 and 6 onto `PUBLIC_LIGHTS`.
+
 ## Open questions for Daniel
 
-1. Four public streetlights are magenta (`STREETLIGHTS` at (8, 19), (16, 19), (12, −29), (16.5, 55)). The audit says to keep magenta specific to Renee. Should they be sodium or cold white?
-2. Car-park pools: cold white (security) as planned, or one sodium and one cold white for a mixed-light scene?
-3. Task 8 and Task 9 decisions (grade variant, moon elevation) are yours by design. Nothing global changes without them.
+1. The magenta and fluorescent-green casts on some public LED lanterns ((8, 19), (16, 19), (12, −29), (16.5, 55) magenta; (25, −10) green). Keep them as photographic casts, or give the lamps their real sodium / 4000 K colours and reserve those casts for signage? The streetlight session asked the same question. Nothing in this plan changes them.
+2. Task 9's moon elevation is still yours to pick from the captures.
