@@ -22,6 +22,21 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-22 — Claude (Nice Things in-game QA)
+**HEAD at session start:** `f0333fe`
+**Did:** QA'd the textured Nice Things in game. Added dev view `?view=nice-things`, the shopfront from the kerb.
+**Verified:**
+- The textured GLB loads (`?v=surface-pass-20260921`) with no console errors.
+- Limewash, sandstone soot, white sashes, pink joinery and ply shelving all render.
+- `applyTextureProfile` only sets filtering, so the normal/ORM colour spaces are intact.
+- `dist/` carries the identical 1.5 MB GLB; it is in the `production` manifest. `tsc` passes.
+**Left uncommitted (if any):** The concurrent Cass Art session's files (unchanged from the previous entry).
+**Flagged:**
+- The shop interior is not enterable: the florist collider is solid, so a player placed inside is pushed out beside the east pallets.
+- At the game's night lighting the pink reads dusky mauve and the shop is unlit. The `NT_Light_*` anchors exist but nothing drives them yet. That is a lighting-pass item, not a texture one.
+**Next:** Signage/lettering pass; interior light for the display window; interior collision if the shop is to be entered.
+**Open questions:** None.
+
 ## 2026-09-22 — Claude (Nice Things surface-material pass)
 **HEAD at session start:** `3108021`
 **Did:**

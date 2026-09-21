@@ -143,6 +143,7 @@ if (import.meta.env.DEV) {
     'west-shops': [-29.5, 7],
     'east-shops': [29.5, 19],
     'south-shops': [0, 22],
+    'cass-art': [-16.6, 27.5, Math.PI, 0.08],
     'south-road': [0, 53.5, Math.PI, 0.24],
     'vinyl-exchange': [-7, 58.2, 0, 0.08],
     'real-camera': [-11.5, 58, Math.PI, 0.06],
@@ -161,6 +162,8 @@ if (import.meta.env.DEV) {
     'sterling-south': [-16.6, 19.6, Math.PI / 2 - 0.35, 0.16],
     'sterling-east': [42.6, -4.4, Math.PI / 2 + 0.35, 0.16],
     'delivery-pickup': [-16.9, -27.1, 0, 0.16],
+    // Nice Things surface pass: the textured shopfront from the kerb.
+    'nice-things': [-16.2, -28.8, 0, 0.02],
     'delivery-dropoff': [-7, 55.35, 0, 0.16],
     // ABC Building across the Outer North Road: street view, Clints doorway,
     // Side Street on Lower Byrom Street, and the tower seen from the park.
