@@ -134,6 +134,23 @@ export const PALLET_STACKS: readonly PalletStackMarker[] = [
   { id: 'arts-council-pallets', name: 'Arts Council car-park pallet stack', x: 48, z: -3.4, rotationY: 0 },
 ] as const;
 
+// The bougainvillea fence scene (docs/assets/bougainvillea-fence.md) closes
+// the ground-level gap between Village Books' south wall (Z = 0.44) and
+// Coral's north brick (Z = 5.75), set back behind the Coral north pallet
+// stack (X -39.7 to -37.3, Z 3.35 to 5.35). Daniel asked for it 30% larger
+// than authored, so the fence is 2.34 m tall. The 4.68 m hero section starts at
+// Village Books; the extension runs on into Coral's wall, of which only 0.63 m
+// shows. The signpost stands in front of the fence and north of the pallets.
+// The GLBs face +Z, so a quarter turn faces them east toward the street.
+export const BOUGAINVILLEA_FENCE_SCENE = {
+  scale: 1.3,
+  rotationY: Math.PI / 2,
+  hero: { x: -40.3, z: 2.78 },
+  extension: { x: -40.3, z: 6.29 },
+  signpost: { x: -38.94, z: 2.3 },
+  gap: { minZ: 0.44, maxZ: 5.75 },
+} as const;
+
 export type SpecterVariant = 'specter-haze-pair' | 'specter-drip-trio' | 'specter-outline';
 
 export interface SpecterGraffitiMarker extends WorldMarker {

@@ -3,9 +3,56 @@
 ## Asset status
 
 A set of production assets built from Daniel's brief and photograph on
-2026-09-21. The assets are exported and validated, but they are not placed in
-the world yet. The brief says the scene will fill a gap between two buildings,
-and that gap has not been chosen.
+2026-09-21, exported, validated and placed in the world.
+
+## In the game
+
+Daniel asked for the plant, fence, lamp and sign to stand between Coral and
+Village Books. `src/world/bougainvilleaFence.ts` loads them, and
+`createWorld.ts` calls it next to the pallet stacks. The positions are in
+`BOUGAINVILLEA_FENCE_SCENE` in `worldLayout.ts`.
+
+- **The gap:** measured from the loaded meshes, the ground is clear from
+  Village Books' south wall (Z = 0.44) to Coral's north brick (Z = 5.75).
+  Coral's concrete, which reaches Z = 3.9, is cornice above 6.3 m.
+- **Scale:** Daniel asked for the fence, flowers and signpost 30% larger, so
+  all three load at a runtime scale of 1.3 (`scale` in the layout constant).
+  The GLBs stay at real-world size. In the game the fence is 2.34 m tall and
+  the sign lamp stands 4.3 m up.
+- **Fence:** it stands behind the Coral north pallet stack, which covers
+  X −39.7 to −37.3, at X = −40.3. That is 6.3 m back from the X = −34
+  building line. It is turned a quarter turn to face east toward the street.
+  - The 4.68 m hero section starts at Village Books (centre Z = 2.78).
+  - The extension follows it (centre Z = 6.29). Only 0.63 m of it shows
+    before it runs into Coral's wall.
+  - The flower mass is at the Village Books end.
+- **Signpost:** at (−38.94, 2.3), 1.37 m in front of the fence, which is the
+  scaled offset from the Blender scene. It moved north of the pallets, because
+  the photo's position, south of the flower mass, falls inside the stack. The
+  sign faces the street.
+- **Sign lamp:** `addBougainvilleaSignLamp` registers a warm point light just
+  under the lamp lens:
+  - colour `0xffd6a0`, intensity 16, range 10 m;
+  - location-relevance selection within 18 m, priority 1.1.
+
+  It lights the flowers and fence from the front, and spills onto Village
+  Books' side wall. The lens emission is raised 3× through
+  `applyBougainvilleaTexturePolicy`, so the lamp reads as the source.
+- **Ground height:** both use `palletGroundAt`. In the gap that is world ground
+  (−0.07), the same as the pallets.
+- **Materials:** `applyBougainvilleaTexturePolicy` in `busShelterMaterials.ts`
+  gives them the shared photographic filtering and night-street environment,
+  and treats the lamp lens as emissive.
+- **Collision:** there are two solids, and neither blocks the camera:
+  - a strip covering the fence and its dense growth across the whole gap
+    (X −40.53 to −39.81, 2.6 m tall);
+  - a circle of about 0.1 m for the signpost.
+- **Not placed:** the background tree is 8 m wide and would cut through both
+  buildings in the 5.3 m gap. The ground strip carries its own kerb and road,
+  which would double the world's.
+- **Viewing it:** there is no dedicated dev view yet. `?view=village-books`
+  looks at the neighbouring shopfront, and the scene is at the left of that
+  frame.
 
 - Brief: `references/architecture/infrastructure:objects/plants/bougainvillea/17_Bougainvillea_Fence_Scene_Assets.txt`
 - Photograph: `IMG_8966.jpg` in the same folder

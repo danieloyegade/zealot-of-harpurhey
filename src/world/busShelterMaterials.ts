@@ -340,3 +340,18 @@ export function applySpiceCabinTexturePolicy(model: Group): void {
 export function applyPalletTexturePolicy(model: Group): void {
   applyTexturePassPolicy(model, () => 'plain');
 }
+
+/**
+ * Bougainvillea fence scene: everything plain except the sign lamp's lens,
+ * which is pushed well past the other practicals so it reads as the source of
+ * the pool of light that falls on the flowers.
+ */
+const BOUGAINVILLEA_LAMP_EMISSIVE_SCALE = 3;
+
+export function applyBougainvilleaTexturePolicy(model: Group): void {
+  applyTexturePassPolicy(
+    model,
+    (name) => (name.includes('lamp_lens') ? 'emissive' : 'plain'),
+    BOUGAINVILLEA_LAMP_EMISSIVE_SCALE,
+  );
+}

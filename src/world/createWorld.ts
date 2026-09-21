@@ -50,6 +50,11 @@ import {
 } from './collision';
 import { createCollisionDebugOutlines } from './collisionDebug';
 import { addSpecterGraffiti } from './createSpecterGraffiti';
+import {
+  addBougainvilleaFenceCollision,
+  addBougainvilleaFenceScene,
+  addBougainvilleaSignLamp,
+} from './bougainvilleaFence';
 import { loadModel } from './loadModel';
 import { LocalLightRegistry } from './localLighting';
 import { mergeStaticModelMeshes } from './mergeStaticModelMeshes';
@@ -3925,6 +3930,9 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
     void addPalletStack(root, marker);
     addPalletStackCollision(obstacles, marker);
   }
+  void addBougainvilleaFenceScene(root, palletGroundAt);
+  addBougainvilleaFenceCollision(obstacles);
+  addBougainvilleaSignLamp(localLights);
   for (const marker of SPECTER_GRAFFITI) {
     addSpecterGraffiti(root, marker);
   }

@@ -70,6 +70,26 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-21 — Claude (bougainvillea fence placed between Coral and Village Books)
+**HEAD at session start:** `807f1e5` (Add bougainvillea fence scene…)
+**Did:** Daniel asked for the plant, fence, lamp and sign in the gap between Coral and Village Books.
+- Measured the loaded meshes: the ground is clear from Z 0.44 (Village Books) to Z 5.75 (Coral brick).
+- New `src/world/bougainvilleaFence.ts` loads the hero fence, the extension and the signpost, and adds collision (a fence strip and the pole). Positions are in `BOUGAINVILLEA_FENCE_SCENE` in `worldLayout.ts`, it is called from `createWorld.ts`, and the new `applyBougainvilleaTexturePolicy` is in `busShelterMaterials.ts`.
+- The fence sits 0.6 m behind the X = −34 line, because the west pavement is only 0.8 m to the kerb and the pole needs to stand on it.
+- `tsc --noEmit` is clean. In the dev server all three models loaded at the planned positions, and frames rendered at night from the pavement show the fence, flowers and signpost at the right scale.
+**Left uncommitted (if any):** Nothing of mine. The concurrent title/camera/main.ts and eastern-bloc work is untouched. I kept out of `main.ts` for that reason, so there is no dedicated `?view=` for the scene.
+**Flagged:** The tree and ground strip are not placed: the tree is too wide for the gap and the ground strip duplicates the kerb. The pane was hidden and throttled the game loop, so verification used manual `renderer.render` frames, not play.
+**Next:** Daniel to walk past it. If he wants the dark canopy behind, the tree needs a narrower variant for a 5.3 m gap.
+**Open questions:** Should the sign face the road (current) or along the traffic, as a real No Entry would?
+**Later in the same session:** Daniel asked for the scene moved behind the pallets, everything 30% larger, and the sign lamp bright enough to light the plants.
+- Everything now loads at 1.3 scale. The fence is at X = −40.3, behind the Coral north pallet stack; the hero starts at Village Books and the extension runs into Coral's wall.
+- The signpost is at (−38.94, 2.3), north of the stack. Its photo-relative spot fell inside the pallets.
+- New `addBougainvilleaSignLamp` registers a warm point light (intensity 16, range 10 m) under the lamp lens. The lens emission is 3×.
+- Verified in the dev server: the light takes a live local-light slot at full intensity, and rendered frames show the pallets in front of a warm-lit fence and flower mass.
+- `createWorld.ts` was being edited at the same time by another session (a night-atmosphere refactor: sky, fog and cones removed). Only my import and three call lines were committed, by staging a HEAD-based blob. Their edits are still unstaged.
+
+---
+
 ## 2026-09-21 — Claude (bougainvillea fence scene assets)
 **HEAD at session start:** `b80ac9d` (Batch static hero meshes for rendering)
 **Did:** Built brief 17 (`references/architecture/infrastructure:objects/plants/bougainvillea/`) as five independent GLBs in `public/assets/models/bougainvillea/`: `BGV_signpost_no_entry`, `BGV_fence_bougainvillea` (3.6 m hero), `BGV_fence_extension` (1.8 m, tiles beside it), `BGV_background_tree`, `BGV_ground_strip_optional`.
