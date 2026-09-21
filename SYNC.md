@@ -37,11 +37,13 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 - The Hive, Come Through Lab, Village Books, Advanced Photo and Greek Gyros runtime policies set `material.map = null`, which would silently strip any new textures. The plan replaces this with a shared `profileAuthoredMaps()`.
 - Coral's policy swaps any `*brick`/`*concrete` material for world-prototype tiles, so Coral is not truly flat today.
 **Next:** Execute the plan from Task 1. Tasks 1–4 touch no shared files. Task 5 onwards waits until the Cass Art `createWorld.ts` diff has landed.
-**Open questions:** The four "Decisions to confirm" in the plan:
-1. Dreams: texture the greybox or revive the photographic GLB?
-2. Coral: go ahead with only two reference photos?
-3. Village Books upper wall and ABC end block: brick or render?
-4. Signage: defer it to an artwork pass?
+**Decisions (Daniel, same day):**
+- Dreams: texture the greybox.
+- Coral: two photos are enough.
+- Signage: deferred.
+- Village Books / ABC left to Claude's judgement. From the photos: VB upper wall is painted render and its floor is concrete; ABC end block is pale render and its planters are black steel. The plan is updated to match.
+
+**Open questions:** None.
 
 ---
 ## 2026-09-22 — Claude (Nice Things in-game QA)

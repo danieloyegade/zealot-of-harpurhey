@@ -48,14 +48,15 @@ Audit of `public/assets/models/*.glb` as loaded by `src/world/createWorld.ts` on
 | MCR1, Spice Cabin, Vinyl Exchange | — | already textured | — |
 | Florist (legacy) | `harperhey-florist.glb` | not loaded; superseded by Nice Things | Excluded |
 
-## Decisions to confirm before starting
+## Decisions (confirmed by Daniel, 2026-09-22)
 
-Each has a default that the tasks below implement. Change the task if Daniel decides otherwise.
-
-1. **Dreams:** texture the approved greybox (default). The alternative is to revive the older photographic `harperhey-dreams.glb`, which is textured but was replaced by the greybox on 2026-09-11.
-2. **Coral:** only two reference photos and no brief. Default: proceed with those two photos.
-3. **Village Books upper wall** and **ABC end block** are mapped to `brick`. If the photographs show render, swap that one builder call to `painted_render` with the same palette key names.
-4. **Signage and lettering** stay flat for now (see Global Constraints).
+1. **Dreams:** texture the approved greybox. The older photographic `harperhey-dreams.glb` stays retired.
+2. **Coral:** proceed with the two reference photos.
+3. **Village Books and ABC:** left to Claude's judgement from the photographs:
+   - **Village Books upper wall:** off-white painted render with dark window frames (`DSC06337.JPG`, `bbc76082…jpeg`), so `painted_render`. The shop floor is dark and hard, so `concrete`, not timber.
+   - **ABC end block** (the west-end block carrying the Smolensky / Every Man signs): pale painted render under the "ABC" letters (`Screenshot 2026-09-11 at 14.43.55.png`), so `painted_render`. The blockout's brown "brick" placeholder was a guess, and the only brick in frame is the neighbouring building.
+   - **ABC planters:** black powder-coated steel boxes (`IMG_8908.HEIC`), so `painted_metal`, not concrete.
+4. **Signage, lettering and logos:** a later artwork pass.
 
 ## Precondition
 
@@ -2018,7 +2019,7 @@ Run `npm test`. Expected: FAIL for `village-books-blockout.glb`.
 
 - [ ] **Step 2: Measure the palette**
 
-Photos: `references/architecture/buildings/village-books/` (`DSC06337.JPG`, `4efd27a2bb538cccb3dd78ac6e20b603-623x438.jpg`, `b3102f59670e76236c2a828b58ba9eac.jpeg`, `bbc76082711a5a2a9ec54f95efcfd91a.jpeg`). Palette: `blender/source/textures/village-books/palette.json`. Keys: `shopfront black`, `frame black`, `upper wall face`, `upper wall mortar`, `soot`, `interior wall`, `floor light`, `floor dark`. If `DSC06337.JPG` shows render rather than brick on the upper wall, see Decision 3.
+Photos: `references/architecture/buildings/village-books/` (`DSC06337.JPG`, `4efd27a2bb538cccb3dd78ac6e20b603-623x438.jpg`, `b3102f59670e76236c2a828b58ba9eac.jpeg`, `bbc76082711a5a2a9ec54f95efcfd91a.jpeg`). Palette: `blender/source/textures/village-books/palette.json`. Keys: `shopfront black`, `frame black`, `upper wall`, `upper wall dirt`, `interior wall`, `floor`. Sample `upper wall` from the band above the fascia in `DSC06337.JPG` (overcast) and `bbc76082…jpeg`. Sample `floor` from the shop floor seen through the open door.
 
 - [ ] **Step 3: Write `blender/scripts/villageBooksTextures.py`**
 
@@ -2041,7 +2042,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent))
 
 from commonSurfaces import (  # noqa: E402
-    brick, load_palette, painted_metal, plaster, run_texture_pass, timber,
+    concrete, load_palette, painted_metal, painted_render, plaster, run_texture_pass,
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -2049,8 +2050,7 @@ TEXTURE_DIR = PROJECT_ROOT / "blender" / "source" / "textures" / "village-books"
 RENDER_DIR = PROJECT_ROOT / "renders" / "village-books-textures"
 PALETTE_PATH = TEXTURE_DIR / "palette.json"
 P = load_palette(PALETTE_PATH, (
-    "shopfront black", "frame black", "upper wall face", "upper wall mortar", "soot",
-    "interior wall", "floor light", "floor dark",
+    "shopfront black", "frame black", "upper wall", "upper wall dirt", "interior wall", "floor",
 ))
 
 BUILDERS = (
@@ -2058,10 +2058,11 @@ BUILDERS = (
                           P["shopfront black"], seed=6701, rust_amount=0.1, roughness=0.45),
     lambda: painted_metal("vb-frame-black", "Black aluminium window frames",
                           P["frame black"], seed=6711, rust_amount=0.05, px=512),
-    lambda: brick("vb-upper-wall", "Upper wall brick",
-                  P["upper wall face"], P["upper wall mortar"], P["soot"], seed=6721),
+    lambda: painted_render("vb-upper-wall", "Off-white painted render above the fascia",
+                           P["upper wall"], P["upper wall dirt"], seed=6721),
     lambda: plaster("vb-interior-wall", "Shop interior walls", P["interior wall"], seed=6731),
-    lambda: timber("vb-floor", "Shop floor boards", P["floor light"], P["floor dark"], seed=6741),
+    lambda: concrete("vb-floor", "Dark sealed shop floor", P["floor"], seed=6741,
+                     roughness=0.6, stain_amount=0.1),
 )
 
 
@@ -2248,7 +2249,7 @@ Run `npm test`. Expected: FAIL for `abc_building.glb`.
 
 - [ ] **Step 2: Measure the palette**
 
-Photos: `references/architecture/buildings/clints/EXT/` (the nine `Screenshot 2026-09-11 …png`, `images.jpeg`; convert `IMG_8908.HEIC` with `sips`). Palette: `blender/source/textures/abc-building/palette.json`. Keys: `white facade`, `facade dirt`, `concrete`, `dark metal`, `end block face`, `end block mortar`, `soot`, `planter`.
+Photos: `references/architecture/buildings/clints/EXT/` (the nine `Screenshot 2026-09-11 …png`, `images.jpeg`; convert `IMG_8908.HEIC` with `sips`). Palette: `blender/source/textures/abc-building/palette.json`. Keys: `white facade`, `facade dirt`, `concrete`, `dark metal`, `end block render`, `planter`. Sample `end block render` from the pale wall around the "ABC" letters in `Screenshot 2026-09-11 at 14.43.55.png`, and `planter` from the black planter boxes in `IMG_8908.HEIC`. That photo is lit at night, so mark the planter sample `shaded` and take a second daylight sample from `Screenshot 2026-09-11 at 14.42.03.png` if the planters are visible there.
 
 - [ ] **Step 3: Write `blender/scripts/abcBuildingTextures.py`**
 
@@ -2272,7 +2273,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent))
 
 from commonSurfaces import (  # noqa: E402
-    brick, concrete, load_palette, painted_metal, painted_render, run_texture_pass,
+    concrete, load_palette, painted_metal, painted_render, run_texture_pass,
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -2280,8 +2281,7 @@ TEXTURE_DIR = PROJECT_ROOT / "blender" / "source" / "textures" / "abc-building"
 RENDER_DIR = PROJECT_ROOT / "renders" / "abc-building-textures"
 PALETTE_PATH = TEXTURE_DIR / "palette.json"
 P = load_palette(PALETTE_PATH, (
-    "white facade", "facade dirt", "concrete", "dark metal", "end block face",
-    "end block mortar", "soot", "planter",
+    "white facade", "facade dirt", "concrete", "dark metal", "end block render", "planter",
 ))
 
 BUILDERS = (
@@ -2290,10 +2290,10 @@ BUILDERS = (
     lambda: concrete("abc-concrete", "Structural grid and columns", P["concrete"], seed=6911),
     lambda: painted_metal("abc-metal-dark", "Dark metal mullions and frames",
                           P["dark metal"], seed=6921, rust_amount=0.15),
-    lambda: brick("abc-endblock", "End block brick",
-                  P["end block face"], P["end block mortar"], P["soot"], seed=6931),
-    lambda: concrete("abc-planter", "Street planters", P["planter"], seed=6941,
-                     stain_amount=0.4),
+    lambda: painted_render("abc-endblock", "West end block: pale render under the ABC letters",
+                           P["end block render"], P["facade dirt"], seed=6931),
+    lambda: painted_metal("abc-planter", "Black powder-coated steel planter boxes",
+                          P["planter"], seed=6941, rust_amount=0.1, roughness=0.5, px=512),
 )
 
 
@@ -2337,7 +2337,7 @@ git push
 
 - [ ] **Step 1: Contract entry (failing)**
 
-See Decision 1 before starting this task.
+Daniel confirmed (Decision 1) that the approved greybox is the one to texture.
 
 ```json
 {
@@ -2468,7 +2468,7 @@ git push
 
 - [ ] **Step 1: Contract entry (failing)**
 
-See Decision 2. Coral's policy currently replaces every brick and concrete material with the world-prototype tiles. After this task, the authored surfaces replace those.
+Daniel confirmed (Decision 2) that two photos are enough. Coral's policy currently replaces every brick and concrete material with the world-prototype tiles. After this task, the authored surfaces replace those.
 
 ```json
 {
@@ -2637,7 +2637,7 @@ If `git log` shows the Nice Things / Cass Art texture work committed, add contra
 
 - [ ] **Step 4: Append the `SYNC.md` entry**
 
-Record which buildings are now textured, any `maxBytes` raised and why, which decisions (1–4) were taken, and that signage/lettering remains a separate artwork pass.
+Record which buildings are now textured, any `maxBytes` raised and why, that decisions 1–4 were confirmed by Daniel on 2026-09-22, and that signage/lettering remains a separate artwork pass.
 
 - [ ] **Step 5: Commit**
 
