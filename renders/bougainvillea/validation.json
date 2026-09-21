@@ -1,0 +1,412 @@
+{
+  "BGV_signpost_no_entry": {
+    "size_mb": 0.19,
+    "nodes": [
+      "BGV_SIGNPOST_ROOT",
+      "BGV_lamp",
+      "BGV_pole",
+      "BGV_pole_base",
+      "BGV_sign_mounts",
+      "BGV_sign_plate"
+    ],
+    "cameras_or_lights": [],
+    "triangles": {
+      "BGV_lamp": 608,
+      "BGV_pole": 120,
+      "BGV_pole_base": 612,
+      "BGV_sign_mounts": 336,
+      "BGV_sign_plate": 108
+    },
+    "bounds_min": [
+      -0.375,
+      -0.282,
+      0.0
+    ],
+    "bounds_max": [
+      0.375,
+      0.067,
+      3.328
+    ],
+    "root_transform_identity": true,
+    "materials": {
+      "MAT_lamp_housing": {
+        "alphaMode": "OPAQUE",
+        "doubleSided": false,
+        "textures": []
+      },
+      "MAT_lamp_lens": {
+        "alphaMode": "OPAQUE",
+        "doubleSided": false,
+        "textures": []
+      },
+      "MAT_pole_grey_metal": {
+        "alphaMode": "OPAQUE",
+        "doubleSided": false,
+        "textures": [
+          "baseColorTexture",
+          "metallicRoughnessTexture",
+          "occlusionTexture"
+        ]
+      },
+      "MAT_sign_metal_back": {
+        "alphaMode": "OPAQUE",
+        "doubleSided": false,
+        "textures": []
+      },
+      "MAT_sign_reflective_weathered": {
+        "alphaMode": "OPAQUE",
+        "doubleSided": false,
+        "textures": [
+          "baseColorTexture",
+          "metallicRoughnessTexture",
+          "occlusionTexture"
+        ]
+      }
+    },
+    "images": [
+      [
+        "image/webp",
+        "bgv-pole-orm"
+      ],
+      [
+        "image/webp",
+        "bgv-pole-basecolor"
+      ],
+      [
+        "image/webp",
+        "bgv-sign-face-orm"
+      ],
+      [
+        "image/webp",
+        "bgv-sign-face-basecolor"
+      ]
+    ],
+    "extensions": [
+      "EXT_texture_webp"
+    ],
+    "triangles_total": 1784
+  },
+  "BGV_fence_bougainvillea": {
+    "size_mb": 3.66,
+    "nodes": [
+      "BGV_FENCE_FLOWERS_ROOT",
+      "BGV_bougainvillea_flowers",
+      "BGV_bougainvillea_leaves",
+      "BGV_bougainvillea_primary_stems",
+      "BGV_bougainvillea_secondary_stems",
+      "BGV_fence_boards",
+      "BGV_fence_structure"
+    ],
+    "cameras_or_lights": [],
+    "triangles": {
+      "BGV_bougainvillea_flowers": 55818,
+      "BGV_bougainvillea_leaves": 12504,
+      "BGV_bougainvillea_primary_stems": 4480,
+      "BGV_bougainvillea_secondary_stems": 6560,
+      "BGV_fence_boards": 1440,
+      "BGV_fence_structure": 60
+    },
+    "bounds_min": [
+      -1.8,
+      -0.763,
+      0.0
+    ],
+    "bounds_max": [
+      1.834,
+      0.357,
+      2.844
+    ],
+    "root_transform_identity": true,
+    "materials": {
+      "MAT_bougainvillea_flower": {
+        "alphaMode": "MASK",
+        "doubleSided": true,
+        "textures": [
+          "baseColorTexture"
+        ]
+      },
+      "MAT_bougainvillea_leaf": {
+        "alphaMode": "OPAQUE",
+        "doubleSided": true,
+        "textures": [
+          "baseColorTexture"
+        ]
+      },
+      "MAT_branch_dark_wood": {
+        "alphaMode": "OPAQUE",
+        "doubleSided": false,
+        "textures": []
+      },
+      "MAT_fence_aged_timber": {
+        "alphaMode": "OPAQUE",
+        "doubleSided": false,
+        "textures": [
+          "baseColorTexture",
+          "metallicRoughnessTexture",
+          "normalTexture",
+          "occlusionTexture"
+        ]
+      }
+    },
+    "images": [
+      [
+        "image/webp",
+        "bgv-bougainvillea-bract-basecolor"
+      ],
+      [
+        "image/webp",
+        "bgv-bougainvillea-leaf-basecolor"
+      ],
+      [
+        "image/webp",
+        "bgv-fence-timber-normal"
+      ],
+      [
+        "image/webp",
+        "bgv-fence-timber-orm"
+      ],
+      [
+        "image/webp",
+        "bgv-fence-timber-basecolor"
+      ]
+    ],
+    "extensions": [
+      "EXT_texture_webp"
+    ],
+    "triangles_total": 80862
+  },
+  "BGV_fence_extension": {
+    "size_mb": 0.4,
+    "nodes": [
+      "BGV_FENCE_EXTENSION_ROOT",
+      "BGV_ext_bougainvillea_flowers",
+      "BGV_ext_bougainvillea_leaves",
+      "BGV_ext_bougainvillea_primary_stems",
+      "BGV_ext_bougainvillea_secondary_stems",
+      "BGV_ext_fence_boards",
+      "BGV_ext_fence_structure"
+    ],
+    "cameras_or_lights": [],
+    "triangles": {
+      "BGV_ext_bougainvillea_flowers": 2058,
+      "BGV_ext_bougainvillea_leaves": 620,
+      "BGV_ext_bougainvillea_primary_stems": 465,
+      "BGV_ext_bougainvillea_secondary_stems": 508,
+      "BGV_ext_fence_boards": 720,
+      "BGV_ext_fence_structure": 48
+    },
+    "bounds_min": [
+      -0.908,
+      -0.217,
+      0.0
+    ],
+    "bounds_max": [
+      0.907,
+      0.305,
+      2.147
+    ],
+    "root_transform_identity": true,
+    "materials": {
+      "MAT_bougainvillea_flower": {
+        "alphaMode": "MASK",
+        "doubleSided": true,
+        "textures": [
+          "baseColorTexture"
+        ]
+      },
+      "MAT_bougainvillea_leaf": {
+        "alphaMode": "OPAQUE",
+        "doubleSided": true,
+        "textures": [
+          "baseColorTexture"
+        ]
+      },
+      "MAT_branch_dark_wood": {
+        "alphaMode": "OPAQUE",
+        "doubleSided": false,
+        "textures": []
+      },
+      "MAT_fence_aged_timber": {
+        "alphaMode": "OPAQUE",
+        "doubleSided": false,
+        "textures": [
+          "baseColorTexture",
+          "metallicRoughnessTexture",
+          "normalTexture",
+          "occlusionTexture"
+        ]
+      }
+    },
+    "images": [
+      [
+        "image/webp",
+        "bgv-bougainvillea-bract-basecolor"
+      ],
+      [
+        "image/webp",
+        "bgv-bougainvillea-leaf-basecolor"
+      ],
+      [
+        "image/webp",
+        "bgv-fence-timber-normal"
+      ],
+      [
+        "image/webp",
+        "bgv-fence-timber-orm"
+      ],
+      [
+        "image/webp",
+        "bgv-fence-timber-basecolor"
+      ]
+    ],
+    "extensions": [
+      "EXT_texture_webp"
+    ],
+    "triangles_total": 4419
+  },
+  "BGV_background_tree": {
+    "size_mb": 0.44,
+    "nodes": [
+      "BGV_TREE_ROOT",
+      "BGV_tree_branches",
+      "BGV_tree_foliage",
+      "BGV_tree_trunk"
+    ],
+    "cameras_or_lights": [],
+    "triangles": {
+      "BGV_tree_branches": 4217,
+      "BGV_tree_foliage": 2996,
+      "BGV_tree_trunk": 648
+    },
+    "bounds_min": [
+      -3.938,
+      -2.255,
+      -0.071
+    ],
+    "bounds_max": [
+      4.256,
+      1.612,
+      6.982
+    ],
+    "root_transform_identity": true,
+    "materials": {
+      "MAT_tree_bark": {
+        "alphaMode": "OPAQUE",
+        "doubleSided": false,
+        "textures": [
+          "baseColorTexture",
+          "metallicRoughnessTexture",
+          "normalTexture",
+          "occlusionTexture"
+        ]
+      },
+      "MAT_tree_leaf": {
+        "alphaMode": "MASK",
+        "doubleSided": true,
+        "textures": [
+          "baseColorTexture"
+        ]
+      }
+    },
+    "images": [
+      [
+        "image/webp",
+        "bgv-tree-bark-normal"
+      ],
+      [
+        "image/webp",
+        "bgv-tree-bark-orm"
+      ],
+      [
+        "image/webp",
+        "bgv-tree-bark-basecolor"
+      ],
+      [
+        "image/webp",
+        "bgv-tree-sprigs-basecolor"
+      ]
+    ],
+    "extensions": [
+      "EXT_texture_webp"
+    ],
+    "triangles_total": 7861
+  },
+  "BGV_ground_strip_optional": {
+    "size_mb": 1.01,
+    "nodes": [
+      "BGV_GROUND_ROOT",
+      "BGV_debris_optional",
+      "BGV_ground",
+      "BGV_weeds"
+    ],
+    "cameras_or_lights": [],
+    "triangles": {
+      "BGV_debris_optional": 980,
+      "BGV_ground": 2448,
+      "BGV_weeds": 1293
+    },
+    "bounds_min": [
+      -1.8,
+      -1.62,
+      -0.11
+    ],
+    "bounds_max": [
+      1.8,
+      0.06,
+      0.263
+    ],
+    "root_transform_identity": true,
+    "materials": {
+      "MAT_bougainvillea_flower": {
+        "alphaMode": "MASK",
+        "doubleSided": true,
+        "textures": [
+          "baseColorTexture"
+        ]
+      },
+      "MAT_ground_rough_optional": {
+        "alphaMode": "OPAQUE",
+        "doubleSided": false,
+        "textures": [
+          "baseColorTexture",
+          "metallicRoughnessTexture",
+          "normalTexture",
+          "occlusionTexture"
+        ]
+      },
+      "MAT_bougainvillea_leaf": {
+        "alphaMode": "OPAQUE",
+        "doubleSided": true,
+        "textures": [
+          "baseColorTexture"
+        ]
+      }
+    },
+    "images": [
+      [
+        "image/webp",
+        "bgv-bougainvillea-bract-basecolor"
+      ],
+      [
+        "image/webp",
+        "bgv-ground-strip-normal"
+      ],
+      [
+        "image/webp",
+        "bgv-ground-strip-orm"
+      ],
+      [
+        "image/webp",
+        "bgv-ground-strip-basecolor"
+      ],
+      [
+        "image/webp",
+        "bgv-bougainvillea-leaf-basecolor"
+      ]
+    ],
+    "extensions": [
+      "EXT_texture_webp"
+    ],
+    "triangles_total": 4721
+  }
+}
