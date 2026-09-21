@@ -1,239 +1,31 @@
 /*
- * Title card for Zealot of Harperhey.
+ * Initial loading plate for Zealot of Harperhey.
  *
- * Linked from index.html rather than imported by main.ts, so it paints before
- * the game bundle has parsed. The card is one scanned print object held over
- * the live city: an oxblood plate, a knight on horseback running at a courier
- * on a hire bike, and a printed menu.
- *
- * Because the menu is printed, it cannot light up on its own. Transparent hit
- * areas are laid over ENTER / SETTINGS / QUIT in per-cent of the plate, and
- * pointing at one brings the card's single lamp onto that line. Assembly rides
- * the plate's own bottom rule. See docs/TITLE_SCREEN.md and
- * docs/GRAPHIC_IDENTITY.md.
+ * The supplied artwork owns the whole composition. Browser UI is limited to
+ * the live fill inside its printed progress-bar frame and an accessible title.
  */
 
 .intro {
-  --intro-ink: #efe6d2;
-  --intro-ink-1: rgb(239 230 210 / 72%);
-  --intro-ink-2: rgb(239 230 210 / 50%);
-  --intro-ink-3: rgb(239 230 210 / 32%);
-  --intro-hairline: rgb(239 230 210 / 18%);
-  --intro-sodium: #ffa326;
-  --intro-sodium-lit: #ffbe62;
-  --intro-red: var(--z-red, #e5132b);
-  --intro-night: #020817;
-  --intro-gutter: clamp(16px, 3.2vw, 44px);
-  --intro-meta-1: clamp(11px, 0.5rem + 0.18vw, 14px);
-  --intro-meta-2: clamp(10px, 0.44rem + 0.16vw, 12.5px);
-  --intro-meta-3: clamp(9.5px, 0.4rem + 0.12vw, 11.5px);
-  --intro-serif: 'EB Garamond', Garamond, 'Adobe Garamond Pro', 'Iowan Old Style', Georgia, serif;
-  --intro-hand: var(--z-hand, 'Herr Von Muellerhoff', cursive);
-  --intro-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-
   position: fixed;
   inset: 0;
   z-index: 20;
   display: grid;
   place-items: center;
   overflow: hidden;
-  color: var(--intro-ink);
-  font-family: var(--intro-serif);
-  font-kerning: normal;
-  font-variant-ligatures: common-ligatures;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+  background: #020814;
   user-select: none;
-  background: transparent;
+  transition: opacity 1100ms ease;
 }
-
-/* Vignette, matching the game's own edge falloff. */
-.intro::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 48%, transparent 52%, rgb(0 0 0 / 62%) 100%);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 2400ms ease;
-}
-
-/* ---- Night: scrim over the live city, fog, lamp, passing light, grain ---- */
-
-/* The city is rendered underneath at low resolution. The scrim thins as it assembles. */
-.intro__scrim {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(130% 75% at 50% -5%, rgb(7 28 90 / 60%), transparent 72%),
-    var(--intro-night);
-  opacity: 0.965;
-  transition: opacity 3200ms ease;
-}
-
-.intro__fog {
-  position: absolute;
-  inset: -20%;
-  pointer-events: none;
-  transition: opacity 2400ms ease;
-}
-
-.intro__fog::before,
-.intro__fog::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-}
-
-.intro__fog::before {
-  top: 30%;
-  left: 5%;
-  width: 60%;
-  height: 45%;
-  background: radial-gradient(closest-side, rgb(46 70 140 / 14%), transparent);
-  animation: intro-fog-west 95s ease-in-out infinite alternate;
-}
-
-.intro__fog::after {
-  top: 46%;
-  right: 0;
-  width: 55%;
-  height: 40%;
-  background: radial-gradient(closest-side, rgb(60 72 120 / 11%), transparent);
-  animation: intro-fog-east 130s ease-in-out infinite alternate;
-}
-
-.intro__light {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  transform-origin: 50% 70%;
-  transition:
-    opacity 2400ms ease,
-    transform 3200ms var(--intro-ease);
-}
-
-/* Haze in the beam, as fog catches it. */
-.intro__beam {
-  position: absolute;
-  inset: 0;
-  background: conic-gradient(
-    at 50% -8%,
-    transparent 0deg 156deg,
-    rgb(255 163 38 / 7%) 170deg 190deg,
-    transparent 204deg 360deg
-  );
-  filter: blur(28px);
-  mask-image: linear-gradient(to bottom, #000 5%, rgb(0 0 0 / 55%) 55%, transparent 80%);
-  opacity: 0;
-  animation: intro-lamp-warm 4200ms ease-out 200ms forwards;
-}
-
-/* The pool on the ground. Low-pressure sodium strikes a dim red before it
-   settles into amber; ::before is that first glow. Once warm it breathes,
-   like an exposure that will not quite settle. */
-.intro__pool {
-  position: absolute;
-  /* Below the title on landscape; kept near it on tall portrait screens. */
-  top: min(71%, calc(50% + 21vw));
-  left: 50%;
-  width: min(96vw, 1180px);
-  height: clamp(130px, 24vh, 280px);
-  border-radius: 50%;
-  background: radial-gradient(
-    closest-side,
-    rgb(255 176 64 / 34%),
-    rgb(255 150 40 / 14%) 36%,
-    rgb(255 138 28 / 5%) 68%,
-    transparent 100%
-  );
-  filter: blur(6px);
-  /* Additive, so amber lifts the cobalt instead of muddying it to brown. */
-  mix-blend-mode: screen;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  animation:
-    intro-lamp-warm 4200ms ease-out 200ms both,
-    intro-exposure 13s ease-in-out 4400ms infinite;
-}
-
-.intro__pool::before {
-  content: '';
-  position: absolute;
-  inset: 12%;
-  border-radius: inherit;
-  background: radial-gradient(closest-side, rgb(196 46 30 / 55%), transparent 100%);
-  animation: intro-lamp-strike 3400ms ease-in 200ms forwards;
-}
-
-/* The lamp coming up as the player enters. */
-.intro__swell {
-  position: absolute;
-  top: min(64%, calc(50% + 17vw));
-  left: 50%;
-  width: min(74vw, 940px);
-  height: clamp(180px, 38vh, 420px);
-  border-radius: 50%;
-  background: radial-gradient(
-    closest-side,
-    rgb(255 184 90 / 22%),
-    rgb(255 150 40 / 8%) 50%,
-    transparent 100%
-  );
-  mix-blend-mode: screen;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  transition: opacity 2600ms ease 600ms;
-}
-
-/* Headlights on a far road, crossing the foot of the frame now and then. */
-.intro__passing {
-  position: absolute;
-  bottom: 3%;
-  left: 0;
-  width: 38vw;
-  height: 16vh;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgb(255 228 190 / 8%), transparent);
-  mix-blend-mode: screen;
-  pointer-events: none;
-  opacity: 0;
-  animation: intro-passing 41s linear 11s infinite;
-}
-
-.intro__grain {
-  position: absolute;
-  inset: -40%;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.3 0 0 0 -.45'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: 0.075;
-  pointer-events: none;
-  animation: intro-grain 900ms steps(6) infinite;
-  transition: opacity 2400ms ease;
-}
-
-/* ---- The printed plate ----------------------------------------------------
-   The plate owns the static title, the joust, the border and every piece of
-   marginalia. It was authored as one reproduced object so the ink, the paper
-   and the registration fail together, and it is deliberately not rebuilt from
-   browser primitives.
-
-   The box is locked to the artwork's aspect and contained in the window, so
-   every live element below can be placed in per-cent of the plate and land on
-   the printed words at any size. `container-type` makes 1cqw one per-cent of
-   the plate's width, so the live type scales with the print rather than with
-   the window. Browser text remains only for assembly, entry and accessibility. */
 
 .intro__plate {
   position: relative;
-  z-index: 1;
-  width: min(100vw, calc(100vh * 1672 / 940));
-  width: min(100dvw, calc(100dvh * 1672 / 940));
-  aspect-ratio: 1672 / 940;
-  container-type: inline-size;
+  width: min(100vw, calc(100vh * 1672 / 941));
+  width: min(100dvw, calc(100dvh * 1672 / 941));
+  aspect-ratio: 1672 / 941;
+  overflow: hidden;
   transition:
-    opacity 900ms ease,
-    filter 2200ms ease,
-    transform 3200ms var(--intro-ease);
+    filter 1100ms ease,
+    transform 1400ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .intro__artefact {
@@ -243,13 +35,11 @@
   height: 100%;
   object-fit: cover;
   pointer-events: none;
-  filter: saturate(0.94) blur(1.5px);
   opacity: 0;
-  transform: scale(1.008);
-  animation: intro-artefact-arrive 1800ms var(--intro-ease) 120ms forwards;
+  transform: scale(1.004);
+  animation: intro-artefact-arrive 900ms ease-out 80ms forwards;
 }
 
-/* The printed title, restated for assistive technology only. */
 .intro__title {
   position: absolute;
   width: 1px;
@@ -261,434 +51,53 @@
   white-space: nowrap;
 }
 
-/* ---- The printed menu -----------------------------------------------------
-   Nothing here draws a word: the words are on the plate. These are hit areas
-   measured off the artwork, and the states are lamplight arriving on the line
-   being pointed at. Settings and Quit are `aria-disabled` rather than
-   `disabled`, because they are meant to be clickable and to answer for
-   themselves — they just have nothing behind them yet. */
-
-.intro__menu {
+/* Measured from the empty silver frame in the 1672 x 941 source artwork. */
+.intro__progress {
+  --intro-progress: 0;
   position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  transition: opacity 800ms ease;
-}
-
-.intro__choice {
-  position: absolute;
-  left: 50%;
-  display: block;
-  padding: 0;
-  color: inherit;
-  background: none;
-  border: 0;
-  font: inherit;
-  cursor: pointer;
-  pointer-events: auto;
-  transform: translateX(-50%);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.intro__choice[disabled] {
-  cursor: default;
-  pointer-events: none;
-}
-
-/* Measured off the plate: the printed words sit inside these boxes. */
-.intro__choice--enter {
-  top: 84.6%;
-  width: 8.6%;
-  height: 3.4%;
-}
-
-.intro__choice--settings {
-  top: 88.2%;
-  width: 8.6%;
-  height: 2.6%;
-}
-
-.intro__choice--quit {
-  top: 90.9%;
-  width: 6%;
-  height: 2.3%;
-}
-
-.intro__choice-label {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
+  top: 85.97%;
+  left: 39.18%;
+  width: 21.65%;
+  height: 0.78%;
   overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-/* The lamp finding the line. Feathered to nothing at its edges, so no
-   rectangle ever shows against the printed ground, and additive, so it lifts
-   the silver out of the oxblood instead of laying a film over both. */
-.intro__choice::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 176%;
-  height: 270%;
-  border-radius: 50%;
-  background: radial-gradient(
-    closest-side,
-    rgb(255 238 212 / 30%),
-    rgb(255 214 168 / 11%) 48%,
-    transparent 100%
-  );
-  filter: blur(2px);
-  mix-blend-mode: screen;
   pointer-events: none;
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0.7);
-  transition:
-    opacity 420ms ease,
-    transform 520ms var(--intro-ease);
 }
 
-/* A rule struck under the chosen line, in the plate's own hand. */
-.intro__choice::after {
-  content: '';
-  position: absolute;
-  bottom: -6%;
-  left: 50%;
-  width: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgb(250 238 216 / 72%), transparent);
-  pointer-events: none;
-  transform: translateX(-50%);
-  transition: width 460ms var(--intro-ease);
-}
-
-.intro__choice:is(:hover, :focus-visible)::before {
-  opacity: 1;
-  animation: none;
-  transform: translate(-50%, -50%) scale(1);
-}
-
-.intro__choice:is(:hover, :focus-visible)::after {
-  width: 76%;
-}
-
-.intro__choice:focus {
-  outline: none;
-}
-
-.intro__choice:focus-visible {
-  outline: 1px solid rgb(250 238 216 / 38%);
-  outline-offset: 2px;
-}
-
-/* Chosen, and nothing behind it: the lamp gutters and falls back. */
-.intro__choice.is-refused::before {
-  animation: intro-gutter 1000ms ease both;
-}
-
-/* Once the city is ready, Enter is the line already under the lamp. The
-   exclusion keeps this off whatever is being pointed at, which would otherwise
-   outrank the hover state and hold it at a breath. */
-.intro.is-ready .intro__choice--enter:not(:hover, :focus-visible)::before {
-  opacity: 0.46;
-  transform: translate(-50%, -50%) scale(0.9);
-  animation: intro-choice-breathe 5200ms ease-in-out 1400ms infinite;
-}
-
-/* ---- The line above the rule ----------------------------------------------
-   One line carries three things in turn: the catalogue while the city loads,
-   the controls once it is ready, and whatever a chosen item has to say. */
-
-.intro__item,
-.intro__controls,
-.intro__notice {
-  position: absolute;
-  top: 93.5%;
-  left: 50%;
-  z-index: 2;
-  width: 62%;
-  margin: 0;
-  overflow: hidden;
-  line-height: 1;
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  pointer-events: none;
-  transform: translateX(-50%);
-  transition: opacity 700ms ease;
-}
-
-.intro__item {
-  color: rgb(250 238 216 / 40%);
-  font-size: clamp(8px, 0.68cqw, 12px);
-  font-style: italic;
-  letter-spacing: 0.02em;
-}
-
-.intro__controls {
-  display: flex;
-  gap: 2.4em;
-  justify-content: center;
-  color: rgb(250 238 216 / 34%);
-  font-size: clamp(7px, 0.6cqw, 10.5px);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  opacity: 0;
-}
-
-.intro__notice {
-  color: rgb(250 238 216 / 62%);
-  font-size: clamp(7px, 0.6cqw, 10.5px);
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  opacity: 0;
-}
-
-.intro.is-showing-controls .intro__controls {
-  opacity: 1;
-}
-
-.intro.is-refusing .intro__controls,
-.intro.is-refusing .intro__item {
-  opacity: 0;
-}
-
-.intro.is-refusing .intro__notice {
-  opacity: 1;
-}
-
-/* ---- Assembly, riding the plate's own rule -------------------------------- */
-
-.intro__status {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 1200ms ease 900ms;
-}
-
-/* The plate already prints a rule here; this only lights the part reached. */
-.intro__rule {
-  position: absolute;
-  top: 95.74%;
-  left: 7%;
-  width: 86%;
-  height: 0.22%;
-  background: none;
-}
-
-.intro__rule-fill {
+.intro__progress-fill {
+  width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, rgb(255 242 218 / 8%), rgb(255 242 218 / 76%));
-  transform: scaleX(var(--intro-progress, 0));
+  background: rgb(222 216 202 / 88%);
+  box-shadow: 0 0 0.35cqw rgb(231 224 209 / 48%);
+  transform: scaleX(var(--intro-progress));
   transform-origin: left;
-  transition: transform 700ms var(--intro-ease);
+  transition: transform 280ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-/* The Zealot star as the rule's head: where the assembly has reached. Struck
-   in the plate's silver rather than the identity's red, which the oxblood
-   ground would swallow. */
-.intro__rule-star {
-  position: absolute;
-  top: 50%;
-  left: calc(var(--intro-progress, 0) * 100%);
-  width: clamp(3px, 0.3cqw, 5px);
-  height: clamp(8px, 0.75cqw, 12.5px);
-  overflow: visible;
-  color: rgb(255 240 214 / 82%);
-  transform: translate(-50%, -50%);
-  transition: left 700ms var(--intro-ease);
-}
-
-.intro__caption {
-  position: absolute;
-  top: 97.1%;
-  left: 7%;
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  width: 86%;
-  margin: 0;
-  color: rgb(250 238 216 / 44%);
-  font-size: clamp(7px, 0.6cqw, 10.5px);
-  font-variant-numeric: lining-nums tabular-nums;
-  letter-spacing: 0.24em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-/* ---- States -------------------------------------------------------------- */
-
-/* Added by the inline script in index.html once EB Garamond is ready. */
-.intro.is-typeset .intro__status {
-  opacity: 1;
-}
-
-.intro.is-assembled .intro__scrim {
-  opacity: 0.9;
-}
-
-.intro.is-assembled .intro__item {
-  opacity: 0;
-}
-
-.intro.is-ready .intro__status {
-  opacity: 0;
-  transition: opacity 700ms ease 0ms;
-}
-
-/* Entry, in order: the live marginalia and the assembly line fade; the lamp
-   swells and the scrim thins; then the plate dissolves into the city. */
-.intro.is-entering :is(.intro__status, .intro__item, .intro__controls, .intro__notice, .intro__menu) {
-  opacity: 0;
-  transition: opacity 800ms ease 0ms;
-}
-
-.intro.is-entering .intro__scrim {
-  opacity: 0.72;
-  transition: opacity 2200ms ease 700ms;
-}
-
-.intro.is-entering .intro__light {
-  transform: scale(1.08);
-}
-
-.intro.is-entering .intro__swell {
-  opacity: 1;
-}
-
-.intro.is-revealing .intro__scrim {
-  opacity: 0;
-  transition: opacity 2600ms ease;
-}
-
-.intro.is-revealing::after,
-.intro.is-revealing .intro__light,
-.intro.is-revealing .intro__fog,
-.intro.is-revealing .intro__grain {
+.intro.is-revealing {
   opacity: 0;
 }
 
 .intro.is-revealing .intro__plate {
-  opacity: 0;
-  filter: saturate(0.72) blur(8px);
-  transform: scale(1.018);
-  transition:
-    opacity 2400ms ease,
-    filter 2400ms ease,
-    transform 2400ms ease;
+  filter: saturate(0.78) blur(3px);
+  transform: scale(1.008);
 }
-
-/* ---- Motion -------------------------------------------------------------- */
 
 @keyframes intro-artefact-arrive {
   to {
     opacity: 1;
-    filter: saturate(1) blur(0);
     transform: scale(1);
   }
 }
 
-@keyframes intro-lamp-warm {
-  0% { opacity: 0; }
-  18% { opacity: 0.22; }
-  100% { opacity: 1; }
-}
-
-@keyframes intro-lamp-strike {
-  0% { opacity: 0; }
-  20% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-@keyframes intro-exposure {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.86; }
-}
-
-@keyframes intro-fog-west {
-  to { transform: translate(18%, -6%); }
-}
-
-@keyframes intro-fog-east {
-  to { transform: translate(-22%, 5%); }
-}
-
-@keyframes intro-passing {
-  0% { opacity: 0; transform: translateX(-45vw); }
-  2% { opacity: 1; }
-  14% { opacity: 1; }
-  16% { opacity: 0; transform: translateX(110vw); }
-  100% { opacity: 0; transform: translateX(110vw); }
-}
-
-@keyframes intro-grain {
-  0% { transform: translate(0, 0); }
-  17% { transform: translate(-4%, 3%); }
-  33% { transform: translate(3%, -5%); }
-  50% { transform: translate(-6%, -2%); }
-  67% { transform: translate(5%, 4%); }
-  83% { transform: translate(-2%, 6%); }
-}
-
-@keyframes intro-choice-breathe {
-  0%, 100% { opacity: 0.46; }
-  50% { opacity: 0.2; }
-}
-
-@keyframes intro-gutter {
-  0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  22% { opacity: 0.25; }
-  38% { opacity: 0.85; }
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
-}
-
-/* ---- Responsive ----------------------------------------------------------- */
-
-/* The plate is a landscape object, so on a phone it is contained rather than
-   cropped and the night shows above and below it. At that size the printed
-   menu is a few pixels tall and the hit areas with it, so a tap anywhere
-   enters the city (IntroScreen keeps that fallback for coarse pointers) and
-   the assembly readout, which would be unreadable, is dropped. */
-@media (max-width: 760px) {
-  .intro__caption,
-  .intro__item,
-  .intro__controls {
-    display: none;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .intro__beam,
-  .intro__pool {
-    opacity: 1;
-    animation: none;
+  .intro,
+  .intro__plate,
+  .intro__progress-fill {
+    transition-duration: 1ms;
   }
 
-  .intro__pool::before,
-  .intro__fog::before,
-  .intro__fog::after,
-  .intro__passing,
-  .intro__grain,
-  .intro.is-ready .intro__choice--enter::before {
-    animation: none;
-  }
-
-  .intro__pool::before {
-    opacity: 0;
-  }
-
-  .intro.is-revealing .intro__plate {
-    filter: none;
-    transform: none;
-  }
-
-  .intro.is-entering .intro__light {
-    transform: none;
+  .intro__artefact {
+    animation-duration: 1ms;
+    animation-delay: 0ms;
   }
 }

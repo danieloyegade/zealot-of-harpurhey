@@ -16,91 +16,28 @@
   <body>
     <div id="app"></div>
 
-    <!-- Title card. See docs/TITLE_SCREEN.md; slots are filled by src/ui/title/marginalia.ts. -->
-    <div class="intro" data-intro role="dialog" aria-modal="true" aria-labelledby="intro-title">
-      <div class="intro__scrim" aria-hidden="true"></div>
-      <div class="intro__fog" aria-hidden="true"></div>
-      <div class="intro__light" aria-hidden="true">
-        <div class="intro__beam"></div>
-        <div class="intro__pool"></div>
-        <div class="intro__swell"></div>
-      </div>
-      <div class="intro__passing" aria-hidden="true"></div>
-      <div class="intro__grain" aria-hidden="true"></div>
-
-      <!--
-        The plate is a scanned print object, not a reconstruction from browser
-        primitives: it owns the title, the joust, the border and every piece of
-        marginalia. The box is locked to the artwork's aspect so the live
-        elements below can be positioned in per-cent of the plate and land on
-        the printed words at any window size.
-      -->
+    <!-- Loading plate. See docs/TITLE_SCREEN.md. -->
+    <div class="intro" data-intro role="status" aria-labelledby="intro-title">
       <div class="intro__plate">
         <img
           class="intro__artefact"
-          src="/ui/title/zealot-title-card.jpg"
+          src="/ui/title/zealot-loading-screen.png"
           alt=""
           aria-hidden="true"
           draggable="false"
+          fetchpriority="high"
         />
-
-        <!--
-          The printed title, restated for assistive technology only. It reads
-          what the plate is actually lettered with, which is "Harpurhey" and
-          not the "Harperhey" the codebase and the page <title> use. See
-          docs/TITLE_SCREEN.md § Known limits.
-        -->
         <h1 class="intro__title" id="intro-title">Zealot of Harpurhey</h1>
-
-        <!--
-          The menu is printed, so it cannot light up on its own. These are
-          transparent hit areas laid exactly over ENTER / SETTINGS / QUIT; the
-          hover and focus states are a pool of lamplight falling on the line,
-          which is the same language the rest of the card is lit in.
-        -->
-        <nav class="intro__menu" aria-label="Title menu">
-          <button
-            class="intro__choice intro__choice--enter"
-            type="button"
-            data-intro-action="enter"
-            data-intro-prompt
-            disabled
-          >
-            <span class="intro__choice-label">Enter</span>
-          </button>
-          <button
-            class="intro__choice intro__choice--settings"
-            type="button"
-            data-intro-action="settings"
-            aria-disabled="true"
-            disabled
-          >
-            <span class="intro__choice-label">Settings</span>
-          </button>
-          <button
-            class="intro__choice intro__choice--quit"
-            type="button"
-            data-intro-action="quit"
-            aria-disabled="true"
-            disabled
-          >
-            <span class="intro__choice-label">Quit</span>
-          </button>
-        </nav>
-
-        <!-- One line above the printed rule: the catalogue while loading, then
-             the controls, then whatever a chosen item has to say for itself. -->
-        <p class="intro__item" data-intro-item></p>
-        <p class="intro__controls" data-intro-slot="controls"></p>
-        <p class="intro__notice" data-intro-notice role="status"></p>
-
-        <!-- Assembly rides the plate's own bottom rule. -->
-        <div class="intro__status" aria-live="polite">
-          <div class="intro__rule" data-intro-rule><div class="intro__rule-fill"></div></div>
-          <p class="intro__caption">
-            <span data-intro-label>Assembling the city</span>
-            <span data-intro-count></span>
-          </p>
+        <div
+          class="intro__progress"
+          data-intro-progress
+          role="progressbar"
+          aria-label="Loading game"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+        >
+          <div class="intro__progress-fill"></div>
         </div>
       </div>
     </div>
@@ -113,19 +50,6 @@
           intro.remove();
           return;
         }
-        // Show the live marginalia only once EB Garamond is ready, so it never
-        // flashes in a fallback face beside the plate's own printed type.
-        const typeset = () => {
-          intro.dataset.typesetAt = String(performance.now());
-          intro.classList.add('is-typeset');
-        };
-        Promise.race([
-          Promise.all([
-            document.fonts.load('400 1em "EB Garamond"'),
-            document.fonts.load('italic 400 1em "EB Garamond"'),
-          ]),
-          new Promise((resolve) => setTimeout(resolve, 2500)),
-        ]).then(typeset, typeset);
       })();
     </script>
     <script type="module" src="/src/main.ts"></script>
