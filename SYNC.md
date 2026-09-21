@@ -22,6 +22,28 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-22 — Claude (building texture plan)
+**HEAD at session start:** `0a35f1a` (Move Bus Stop B…); `bde7fee` by the time this entry was written.
+**Did:**
+- Audited which in-world building GLBs have no embedded textures.
+- Wrote `docs/superpowers/plans/2026-09-22-building-textures.md`, a plan covering all 11 untextured buildings.
+- The plan generalises the Vinyl Exchange / Nice Things approach into three shared pieces:
+  - `commonSurfaces.py`: parameterised builders.
+  - `measurePatch.py`: palette measurement from reference photos.
+  - A post-process exporter that textures the *shipped* GLB and checks that node names are unchanged, driven by `config/building-textures.json` and a `npm test` contract.
+- No code changed.
+**Left uncommitted:** The Cass Art texture work (`cassArtTextures.py`, `textures/cass-art/`, `createWorld.ts` diff) belongs to another session. Not touched.
+**Flagged:**
+- The Hive, Come Through Lab, Village Books, Advanced Photo and Greek Gyros runtime policies set `material.map = null`, which would silently strip any new textures. The plan replaces this with a shared `profileAuthoredMaps()`.
+- Coral's policy swaps any `*brick`/`*concrete` material for world-prototype tiles, so Coral is not truly flat today.
+**Next:** Execute the plan from Task 1. Tasks 1–4 touch no shared files. Task 5 onwards waits until the Cass Art `createWorld.ts` diff has landed.
+**Open questions:** The four "Decisions to confirm" in the plan:
+1. Dreams: texture the greybox or revive the photographic GLB?
+2. Coral: go ahead with only two reference photos?
+3. Village Books upper wall and ABC end block: brick or render?
+4. Signage: defer it to an artwork pass?
+
+---
 ## 2026-09-22 — Claude (Nice Things in-game QA)
 **HEAD at session start:** `f0333fe`
 **Did:** QA'd the textured Nice Things in game. Added dev view `?view=nice-things`, the shopfront from the kerb.
