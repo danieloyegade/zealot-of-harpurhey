@@ -44,6 +44,19 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-21 — Claude (light pool + glass transmission fixes)
+**HEAD at session start:** `807f1e5` (Add bougainvillea fence scene…)
+**Did:** Daniel approved fixes 1 and 2 from the diagnosis below.
+- `LocalLightRegistry` now owns a fixed pool of `maximumActiveLocalLights` point lights that are always visible. Registered lights are hidden templates; each frame the pool copies position, colour, range, decay and faded intensity from the lit installations, and spare slots sit at intensity 0. A light keeps its slot while it fades. Installation selection, budget, fades and stats are unchanged.
+- `loadModel` converts any `KHR_materials_transmission` glass (8 materials, 114 meshes) to alpha blending: transmission 0, opacity ≤ 0.35, depthWrite off. Per-model policies still override the opacity afterwards.
+- Verified: typecheck clean. The Spice Cabin view has 0 transmissive items; with the same materials toggled in place, the scene went from 1,239 → 797 draw calls and ~35 → ~17–20 ms per render. Teleporting across 8 light areas compiled 0 new programs (it had been +77 programs and ~1 s per new light count). A direct registry test showed 4 lights visible at all times, correct fades and crossfades, and stable slots.
+**Left uncommitted (if any):** Other sessions' concurrent work (`createWorld.ts`, `worldLayout.ts`, `busShelterMaterials.ts`, title/camera files, bougainvillea). Not staged by me.
+**Flagged:** Not visually checked. The hidden Browser pane can't get past the title transition, and Playwright is held by another session. Daniel should look at shop glass (Nice Things, Renee, Real Camera) to confirm it still reads right. The trade-off is that lit shaders now always evaluate 4 point lights (MEDIUM), even when all are at 0, which is a small fixed GPU cost.
+**Next:** Distance culling/LOD (Codex's plan); walk-speed decision.
+**Open questions:** None new.
+
+---
+
 ## 2026-09-21 — Claude (lag diagnosis, no code changed)
 **HEAD at session start:** `b80ac9d` (Batch static hero meshes for rendering)
 **Did:** Daniel: the game feels "extremely laggy and slow". Diagnosed only; no code changed. Measured in the in-app browser at `?view=spice-cabin` by timing synchronous `renderer.render` + `gl.finish` (rAF-independent, so the hidden pane doesn't matter).

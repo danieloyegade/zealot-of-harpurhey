@@ -60,6 +60,14 @@ const FADE_OUT_SECONDS = 0.18;
 /**
  * Owns every real-time local point light in the world.
  *
+ * Registered lights are never rendered themselves. The scene holds a fixed
+ * pool of `maximumActiveLocalLights` point lights that are always visible, and
+ * each frame the pool copies the position, colour, range and faded intensity
+ * of the installations currently switched on; spare slots sit at intensity 0.
+ * Three.js keys every lit shader on the number of visible point lights, so
+ * letting that number change recompiled every lit material in view — a
+ * one-to-three-second freeze each time a new installation came on.
+ *
  * The selector ranks atomic lighting installations by either real point-light
  * reach at the player's torso or authored location relevance for thresholds
  * and facades. It avoids filling the budget with the nearest objects when
@@ -68,11 +76,21 @@ const FADE_OUT_SECONDS = 0.18;
 export class LocalLightRegistry {
   private readonly installations: RuntimeInstallation[] = [];
   private readonly registeredLights = new Set<PointLight>();
+  private readonly slots: PointLight[] = [];
+  private readonly slotOwners: (RuntimeLight | null)[] = [];
 
   constructor(
     private readonly root: Group,
     private readonly maximumActiveLocalLights: number,
-  ) {}
+  ) {
+    for (let index = 0; index < Math.max(0, maximumActiveLocalLights); index += 1) {
+      const slot = new PointLight(0xffffff, 0, 1, 2);
+      slot.name = `Local light slot ${index + 1}`;
+      root.add(slot);
+      this.slots.push(slot);
+      this.slotOwners.push(null);
+    }
+  }
 
   register(definition: LocalLightInstallationDefinition): void {
     if (definition.lights.length === 0) {
@@ -112,6 +130,7 @@ export class LocalLightRegistry {
         light,
         baseIntensity: light.intensity,
       };
+      // A template for the pool, not a scene light: it stays hidden for good.
       light.intensity = 0;
       light.visible = false;
       this.root.add(light);
@@ -193,9 +212,6 @@ export class LocalLightRegistry {
         : Math.max(0, installation.fade - step / FADE_OUT_SECONDS);
       if (installation.fade === 0 && !installation.desired) {
         installation.visible = false;
-        for (const { light } of installation.lights) {
-          light.visible = false;
-        }
       }
     }
 
@@ -211,9 +227,6 @@ export class LocalLightRegistry {
       }
       installation.visible = true;
       installation.fade = Math.min(1, step / FADE_IN_SECONDS);
-      for (const { light } of installation.lights) {
-        light.visible = true;
-      }
       visibleLightCount += cost;
     }
 
@@ -225,6 +238,8 @@ export class LocalLightRegistry {
           runtimeLight.baseIntensity * intensityScale;
       }
     }
+
+    this.updateSlots();
 
     if (import.meta.env.DEV) {
       console.assert(
@@ -281,6 +296,50 @@ export class LocalLightRegistry {
 
     installation.contributionRatio = contributionRatio;
     installation.horizontalDistance = Math.sqrt(horizontalDistanceSquared);
+  }
+
+  /**
+   * Keeps each lit installation on the slots it already holds, so a light
+   * never jumps between slots mid-fade, then hands free slots to newcomers.
+   */
+  private updateSlots(): void {
+    const lit = new Set<RuntimeLight>();
+    for (const installation of this.installations) {
+      if (installation.visible) {
+        installation.lights.forEach((runtimeLight) => lit.add(runtimeLight));
+      }
+    }
+
+    for (let index = 0; index < this.slots.length; index += 1) {
+      const owner = this.slotOwners[index];
+      if (owner && lit.has(owner)) {
+        lit.delete(owner);
+      } else {
+        this.slotOwners[index] = null;
+      }
+    }
+
+    const newcomers = lit.values();
+    for (let index = 0; index < this.slots.length; index += 1) {
+      if (this.slotOwners[index] === null) {
+        this.slotOwners[index] = newcomers.next().value ?? null;
+      }
+    }
+
+    for (let index = 0; index < this.slots.length; index += 1) {
+      const slot = this.slots[index];
+      const owner = this.slotOwners[index];
+      if (!owner) {
+        slot.intensity = 0;
+        continue;
+      }
+      const { light } = owner;
+      slot.position.copy(light.position);
+      slot.color.copy(light.color);
+      slot.distance = light.distance;
+      slot.decay = light.decay;
+      slot.intensity = light.intensity;
+    }
   }
 
   private countVisiblePointLights(): number {
