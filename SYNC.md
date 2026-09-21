@@ -23,6 +23,14 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-21 — Claude (ABC Building missing in game: runtime asset manifest)
+**HEAD at session start:** `dd45602`
+**Did:** Daniel couldn't see the ABC Building. Since `685e54d`, Vite serves `.runtime-public/`, which is built from `config/runtime-assets.json`. `abc_building.glb` was not in the `production` list, so production builds and deploys never shipped it. My verification `npm run build` (prebuild = production assets) had also rebuilt `.runtime-public/` without it, under any running dev server. Added it to `production`; `npm run check` passes and `dist/assets/models/abc_building.glb` exists. Re-ran `npm run assets:prepare:dev` so a running dev server has the full model set again.
+**Left uncommitted (if any):** None.
+**Flagged:** Any new runtime GLB must be added to `config/runtime-assets.json` (`production`). Running `npm run build` locally strips `.runtime-public/` to production assets; run `npm run assets:prepare:dev` or restart `npm run dev` afterwards.
+**Next:** Texture/emissive pass for the ABC Building.
+**Open questions:** None.
+
 ## 2026-09-21 — Claude (ABC Building placed in the game)
 **HEAD at session start:** `db563e0` (my detail-pass commit; other sessions' commits followed)
 **Did:**
