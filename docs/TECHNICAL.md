@@ -93,7 +93,7 @@ The camera collides with the same obstacle set as the player. When an obstacle s
 
 Movement is camera-relative, but the basis is **latched**: while a direction key is held, "forward" stays the yaw captured when the input started. It is re-captured only when the held keys change or the player orbits the camera themselves, so a camera that moves for any other reason — easing past a building, following a bike — cannot bend a walk into a curve. This is what makes a held direction trace a straight line.
 
-Walking is 2.4 m/s and running (Shift) is 4.5 m/s, the same in dev and production; `?fast=on` restores the old dev multipliers. Velocity reaches 90% of pace in about 0.12 s and settles to a stop in the same time, gliding under 7 cm after the key is released, with a snap below 0.12 m/s so idle never drifts. Space is deliberately unbound on foot.
+Walking is 2.4 m/s and running (Shift or Space) is 4.5 m/s, the same in dev and production; `?fast=on` restores the old dev multipliers. Velocity reaches 90% of pace in about 0.12 s and settles to a stop in the same time, gliding under 7 cm after the key is released, with a snap below 0.12 m/s so idle never drifts. Space is contextual: it runs on foot and boosts while riding.
 
 The figure faces the **input** direction, not its post-collision movement, so brushing a wall no longer swings it round to run along the wall.
 

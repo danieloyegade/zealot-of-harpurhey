@@ -9,7 +9,7 @@ import { createZealotStar } from '../identity/zealotStar';
 // Controls that exist today. Add E / Interact and a map key when those systems do.
 const CONTROLS = [
   ['WASD', 'Move'],
-  ['Shift', 'Run'],
+  ['Shift / Space', 'Run'],
   ['E', 'Use'],
   ['Drag', 'Look'],
   ['M', 'Music'],

@@ -80,10 +80,12 @@ export class InputController {
     return target.set(right - left, forward - backward);
   }
 
-  /** Shift alone. Space is left free on foot for a future shutter key. */
+  /** Shift or Space: run while the player is on foot. */
   get isRunning(): boolean {
     return (
-      this.pressedKeys.has('ShiftLeft') || this.pressedKeys.has('ShiftRight')
+      this.pressedKeys.has('ShiftLeft') ||
+      this.pressedKeys.has('ShiftRight') ||
+      this.pressedKeys.has('Space')
     );
   }
 

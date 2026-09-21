@@ -128,7 +128,7 @@ The target is a feel, not a copy. Concretely:
 |---|---|---|
 | W A S D | Move (camera-relative, latched) | W pedal, A/D steer, S brake |
 | Shift | Run | E-assist |
-| Space | *(unbound, reserved)* | Boost |
+| Space | Run | Boost |
 | E | Interact / mount | Interact / dock / dismount |
 | C | Recentre camera behind figure | Recentre |
 | ← → | Turn camera (yaw) | Turn camera (yaw; auto-follow resumes after 1.2 s) |
@@ -139,7 +139,7 @@ The target is a feel, not a copy. Concretely:
 **Conflicts with the branch, resolved above.**
 - `9d60c9d` binds Q/E to keyboard yaw and R/F to pitch. `main` now uses **E for interact**, so Q/E yaw can't be merged as it is. Arrow keys are the proposal instead: they currently only duplicate WASD, and "arrows turn the view" is a familiar convention.
 - `9d60c9d` also makes running the default, with Shift to walk. That goes against P4, and Shift is now e-assist on the bike, so it isn't adopted. Walking stays the default.
-- Space is currently a second run key on foot (`InputController.isRunning`). Unbind it on foot, so it can later become the shutter or photo key without retraining players.
+- Space remains a second run key on foot (`InputController.isRunning`) and is the bike boost while riding. The proposal to reserve it for a future shutter was reversed on 2026-09-21 to restore the established control.
 
 ### 4.3 Zoom: presets, not a free wheel
 Both branches add free wheel zoom (`9d60c9d`: 3.4–10.5 m; `625474d`: 2.5–12 m). Don't port it as is. Use a small set of **framing presets**, cycled with V and eased between over about 0.6 s, each keeping P1's eye-level lens:
@@ -291,7 +291,7 @@ Don't build it yet. Keep the camera code structured (presets, latch, pitch retur
    - Normalised orbit sensitivity.
    - iPad key hygiene.
    - Figure hide.
-   - Space unbound on foot.
+   - Space runs on foot and boosts while riding.
    - Re-tuned dev views.
 2. **Phase 2: look controls.**
    - Arrow-key look.
@@ -337,7 +337,7 @@ Also play it live on a desktop browser and on an iPad with a keyboard before cal
 ## 10. Open questions for Daniel
 
 1. **Arrow keys for camera look** instead of the branch's Q/E and R/F, which clash with E for interact. OK?
-2. **Walking by default**, with Shift to run and Space freed for a future shutter. OK?
+2. **Resolved 2026-09-21:** walking remains the default; Shift or Space runs on foot, and Space boosts while riding.
 3. **Framing presets on V**, rather than a free scroll-wheel zoom. OK? Are the three presets in §4.3 right?
 4. **Tripod settle** when standing still (§5.4): wanted, and how assertive should it be?
 5. **Touch-only iPad play** (no keyboard): in scope at some point, or keyboard only for now?
