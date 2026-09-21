@@ -23,6 +23,29 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-21 — Claude (ABC Building detail pass; Side Street position corrected)
+**HEAD at session start:** `c1c8908` (my blockout commit; later commits from other sessions landed during this one)
+**Did:**
+- Daniel confirmed the Quay St order: Every Man, ABC, The Dome, Tartuffe, Clints, ABC, ABC, then Side Street, which is the last frontage and wraps round onto Lower Byrom St. He also approved the tower height.
+- Layout fix in `createABCBuildingBlockout.py`:
+  - The Tartuffe bay now has an ordinary shopfront.
+  - Side Street's Quay St face (glazed door and black graphic panel) is now in the corner block.
+  - `main()` is split into `make_collections()` and `build_all()` so the detail pass can swap builders.
+  - The blockout `.blend` and renders were regenerated.
+- New `blender/scripts/createABCBuilding.py` (brief §49), which imports the blockout layout and replaces individual builders:
+  - Tower: split detail. The first three street-facing floors use a module with sill, sub-frame, mullion and drip; the lighter module is used above.
+  - Glazed core: mullions, transoms and spandrels, plus a coping. No rooftop plant was invented (§9).
+  - Podium and columns: sills and cornice; column plinths, head shadow gaps and canopy bearing plates.
+  - Canopy: inset underside panels between T-bars, per-tenant `ABC_SignSurface_*` plus end returns.
+  - Clints: frame profiles and glazing beads; the hinged leaf carries its handles, hinges, lock and closer. Threshold with drain strip, bulkhead and skirting in the shell.
+  - Side Street: sills, beads, door hardware and louvre blades.
+  - Rear wing: wave-pattern service grille modules.
+- Outputs: `blender/source/abc_building.blend`, `public/assets/models/abc_building.glb` (0.76 MB, 984 nodes, ~200 unique meshes), 11 renders in `renders/abc-building/`, and `docs/assets/abc-building.md`. The GLB reimport check passes: door hierarchy and all anchors survive, and no placeholder or review objects leak in.
+**Left uncommitted (if any):** None of mine. Another session had MCR1/bus-stop captures staged in the index; I committed through a temporary index and left their staging as it was.
+**Flagged:** Placeholder canopy lettering is excluded from the GLB (only the sign surfaces and anchors ship). The building is not yet placed in `createWorld.ts`.
+**Next:** Daniel to review `renders/abc-building/`. Then either Three.js placement or the texture/emissive pass (canopy panels, Clints neon), followed by the Clints interior.
+**Open questions:** Where does the ABC Building go in the world layout?
+
 ## 2026-09-21 — Claude (municipal streetlight family)
 **HEAD at session start:** `d2181e4` (Record branch cleanup in SYNC.md); `789bb94` and `c1c8908` landed from other sessions mid-session.
 **Did:** Replaced every streetlight in the game with four new real-scale council fixtures, built from scratch in Blender (brief: Daniel's 2026-09-21 streetlight request + photo board). Spec, hierarchy, materials and regen command are in `docs/assets/streetlights.md`.

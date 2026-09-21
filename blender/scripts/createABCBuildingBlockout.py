@@ -56,13 +56,17 @@ REAR_WING = (-18.0, 46.0, PODIUM_TOP + 5 * FLOOR_H)  # x extent, y extent, heigh
 BAYS = [
     ("Bay06_ABC_East", -49.9, -42.4),
     ("Bay05_Dome", -42.4, -34.9),
-    ("Bay04_Tartuffe_SideStreetQuay", -34.9, -27.4),
+    ("Bay04_Tartuffe", -34.9, -27.4),
     ("Bay03_CLINTS", -27.4, -19.9),
     ("Bay02_ABC", -19.9, -12.4),
     ("Bay01_ABC_Corner", -12.4, CORNER_X),
 ]
 END_BLOCK = (-61.9, -49.9)  # Every Man / Smolensky block with the ABC blade sign
 CANOPY_X = (-49.9, CORNER_X)
+# Side Street is the last frontage at the west end: a Quay St door + black
+# graphic panel in the corner block, wrapping onto Lower Byrom St.
+SS_QUAY_DOOR = (-4.7, -2.95)       # door + sidelight section
+SS_QUAY_PANEL = (-2.8, -0.4)       # recessed black signage panel
 
 # Clints bay (column faces at -27.1 and -20.2 → 6.9 m clear).
 CL_X = (-27.1, -20.2)
@@ -317,8 +321,9 @@ def build_tower(mats, cols):
             x = grid_x0 - TOWER_BAY_W * (i + 0.5)
             place_tower_bay(f"Quay_F{floor + 1:02d}_B{i + 1:02d}", bay_mesh, win_mesh,
                             (x, 0.0, z), 0.0, frames, glass_col)
-    box("ABC_Tower_CornerBlankWall_Quay", CORNER_X, 0.0, -GRID_PROUD, 0.0, 0.0, TOWER_TOP,
-        mats["white"], tower)
+    wall_with_openings("ABC_Tower_CornerBlankWall_Quay", "y", -GRID_PROUD, 0.0, CORNER_X, 0.0, 0.0,
+                       TOWER_TOP, [(*SS_QUAY_DOOR, 0.0, 3.2), (*SS_QUAY_PANEL, 0.3, 3.2)],
+                       mats["white"], tower)
 
     # Lower Byrom elevation: blank corner return, then grid above the glass box.
     lb_floors = int(round((TOWER_TOP - LB_GRID_START) / FLOOR_H))
@@ -493,6 +498,7 @@ def build_other_bays(mats, cols):
     layouts = {
         "Bay06_ABC_East": [("door", 1.3), ("glass", 2.8), ("glass", 2.8)],
         "Bay05_Dome": [("glass", 2.85), ("door", 1.2), ("glass", 2.85)],
+        "Bay04_Tartuffe": [("glass", 2.85), ("door", 1.2), ("glass", 2.85)],
         "Bay02_ABC": [("glass", 2.85), ("door", 1.2), ("glass", 2.85)],
         "Bay01_ABC_Corner": [("glass", 3.2), ("door", 1.2), ("glass", 2.8)],
     }
@@ -504,13 +510,6 @@ def build_other_bays(mats, cols):
             scale = (u1 - u0) / sum(w for _k, w in segs)
             shopfront(f"ABC_{name}", u0, u1, [(k, w * scale) for k, w in segs], mats, other,
                       glass_col, interiors)
-        elif name.startswith("Bay04"):
-            # Night photo: Side Street's black Quay Street panel beside a glazed
-            # door section, directly east of the Clints column. TARTUFFE above.
-            segs = [("panel", 4.3), ("glass", 1.15), ("door", 1.45)]
-            scale = (u1 - u0) / sum(w for _k, w in segs)
-            shopfront("SS_QuayStreet", u0, u1, [(k, w * scale) for k, w in segs], mats,
-                      cols["sidestreet"], cols["ss_glass"], interiors)
 
 
 def build_end_block(mats, cols):
@@ -601,6 +600,8 @@ def build_lower_byrom_and_side_street(mats, cols):
                    mullions=((u0 + u1) / 2,))
         glass(f"SS_Glass_Row_{i + 1:02d}", "x", 0.2, u0, u1, z0, z1, mats["glass"], ss_glass)
 
+    build_side_street_quay(mats, ss, ss_glass)
+
     # Interior-ready shell: tall, shallow visible depth, no fit-out.
     shell = child_collection("SS_InteriorShell_TEMP", ss)
     box("SS_Interior_Floor", -4.6, 0.0, 0.0, PODIUM_DEPTH - 0.4, 0.0, 0.02, mats["sidestreet"], shell)
@@ -626,6 +627,26 @@ def build_lower_byrom_and_side_street(mats, cols):
               gz1 - 0.35, mats["glass"], cols["tower_glass"])
     box("ABC_ProjectingGlassVolume_Interior", gx0, gx1 - 0.4, gy0 + 0.3, gy1 - 0.3, gz0 + 0.35, gz0 + 0.4,
         mats["interior"], tower)
+
+
+def build_side_street_quay(mats, ss, ss_glass):
+    """Side Street's Quay Street face: glazed door + sidelight, black graphic panel."""
+    d0, d1 = SS_QUAY_DOOR
+    split = d1 - 0.6
+    frame_rect("SS_QuayDoor_Frame", "y", -0.27, -0.13, d0, d1, 0.0, 3.2, mats["metal"], ss,
+               bar=0.09, mullions=(split,), transoms=(2.7,))
+    glass("SS_Glass_QuaySidelight", "y", -0.2, split + 0.035, d1 - 0.09, 0.09, 2.665, mats["glass"], ss_glass)
+    glass("SS_Glass_QuayTransom", "y", -0.2, d0 + 0.09, d1 - 0.09, 2.735, 3.11, mats["glass"], ss_glass)
+    leaf = boxes("SS_QuayDoor", [
+        (d0 + 0.09, d0 + 0.19, -0.23, -0.17, 0.02, 2.66),
+        (split - 0.135, split - 0.035, -0.23, -0.17, 0.02, 2.66),
+        (d0 + 0.19, split - 0.135, -0.23, -0.17, 0.02, 0.2),
+        (d0 + 0.19, split - 0.135, -0.23, -0.17, 2.54, 2.66),
+    ], mats["metal"], ss, origin=(d0 + 0.09, -0.2, 0.0))
+    leaf_glass = glass("SS_Glass_QuayDoor", "y", -0.2, d0 + 0.19, split - 0.135, 0.2, 2.54,
+                       mats["glass"], ss_glass)
+    parent_keep(leaf_glass, leaf)
+    box("SS_QuayPanel", *SS_QUAY_PANEL, -0.14, 0.0, 0.3, 3.2, mats["planter"], ss)
 
 
 # --- Clints hero storefront ------------------------------------------------
@@ -710,14 +731,15 @@ def build_signage(mats, cols):
     band_y = -CANOPY_DEPTH - 0.08
     band_z = CANOPY_UNDERSIDE + 0.57
     names = {"Bay06_ABC_East": "ABC", "Bay05_Dome": "THE DOME",
-             "Bay04_Tartuffe_SideStreetQuay": "TARTUFFE", "Bay03_CLINTS": "CLINTS",
+             "Bay04_Tartuffe": "TARTUFFE", "Bay03_CLINTS": "CLINTS",
              "Bay02_ABC": "ABC", "Bay01_ABC_Corner": "ABC"}
     for name, xa, xb in BAYS:
         cx = (xa + xb) / 2
         text_mesh(f"ABC_CanopySign_{name}_PLACEHOLDER", names[name], 0.5, 0.02,
                   (cx, band_y, band_z), FACING_NEG_Y, mats["letter"], sig)
     empty("CL_SignAnchor_Canopy", (-23.65, band_y, band_z), sig, "SINGLE_ARROW", 0.6)
-    empty("SS_SignAnchor", (-32.3, SHOPFRONT_Y - 0.12, 1.9), sig, "SINGLE_ARROW", 0.6)
+    empty("SS_SignAnchor", ((SS_QUAY_PANEL[0] + SS_QUAY_PANEL[1]) / 2, -0.2, 1.9), sig,
+          "SINGLE_ARROW", 0.6)
     empty("SS_LogoAnchor", (0.3, 2.2, 2.2), sig, "SINGLE_ARROW", 0.6)
     empty("ABC_EndBlock_SignAnchor_Smolensky", (-55.9, -0.15, 3.95), sig, "SINGLE_ARROW", 0.6)
     empty("ABC_EndBlock_SignAnchor_EveryMan", (-55.9, 0.4, 7.0), sig, "SINGLE_ARROW", 0.6)
@@ -878,8 +900,8 @@ def save_notes():
         "Source: references/architecture/buildings/clints/12_ABC_Building_Clints_Side_Street.txt\n"
         "Origin: ground-level Quay St / Lower Byrom St corner. Quay St faces -Y, Lower Byrom faces +X.\n"
         "Quay St sequence (east->west): Every Man/Smolensky end block + ABC blade, ABC, THE DOME,\n"
-        "TARTUFFE (Side Street's black Quay panel + door), CLINTS, ABC, ABC, blank corner wall.\n"
-        "Side Street main frontage: double-height window + door on Lower Byrom under the blank corner.\n"
+        "TARTUFFE, CLINTS, ABC, ABC, then Side Street (Quay door + black panel in the corner block).\n"
+        "Side Street wraps the corner: double-height window, door and row windows on Lower Byrom.\n"
         "Tower: 14 floors of 3.35 m over a 9.6 m podium, 1.95 m grid bays, glazed core at the east end,\n"
         "blank east side wall. Grid built from linked ABC_TowerBay_Module / ABC_TowerWindow_Module.\n"
         "All dimensions are photographic estimates. Placeholder lettering is composition evidence only.\n"
@@ -909,14 +931,7 @@ def render_reviews(cameras, clints_door):
     clints_door.rotation_euler.z = 0.0
 
 
-def main():
-    master = clear_scene()
-    scene = bpy.context.scene
-    scene.unit_settings.system = "METRIC"
-    scene.unit_settings.length_unit = "METERS"
-    scene.unit_settings.scale_length = 1.0
-    mats = create_materials()
-
+def make_collections(master):
     cols = {}
     cols["tower"] = child_collection("ABC_Tower", master)
     cols["podium"] = child_collection("ABC_Podium", master)
@@ -935,6 +950,11 @@ def main():
     cols["anchors"] = child_collection("ABC_InteractionAnchors", master)
     cols["props"] = child_collection("ABC_Props_Independent", master)
 
+    return cols
+
+
+def build_all(mats, cols):
+    """Every builder in order. The detail pass swaps individual builders."""
     build_tower(mats, cols)
     build_podium(mats, cols)
     build_canopy(mats, cols)
@@ -946,6 +966,19 @@ def main():
     build_signage(mats, cols)
     build_anchors(cols)
     build_props(mats, cols)
+    return door
+
+
+def main():
+    master = clear_scene()
+    scene = bpy.context.scene
+    scene.unit_settings.system = "METRIC"
+    scene.unit_settings.length_unit = "METERS"
+    scene.unit_settings.scale_length = 1.0
+    mats = create_materials()
+
+    cols = make_collections(master)
+    door = build_all(mats, cols)
     cameras = setup_review_scene(mats, master)
     bpy.context.view_layer.update()
     validate()
