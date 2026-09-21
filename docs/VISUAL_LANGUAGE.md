@@ -122,13 +122,16 @@ Palette:
 
 ## Public illumination
 
-Streetlights are six-sided poles with chunky rectangular heads. Each combines a
-luminous head, a textured additive ground pool and two fragmented reflection
-streaks. The former open eight-sided translucent cone meshes were removed: from
-distant angles their facets became enormous pyramids against the sky. They did
-not provide illumination. A single managed public-light proxy still moves to
-the current nearby pool so the player and immediate ground can respond to one
-pool at a time; the poles themselves do not each carry real-time spotlights.
+Streetlights are real-scale council fixtures (`docs/assets/streetlights.md`):
+seven- and eight-metre galvanised or painted columns, deliberately mundane by
+day. Only the lamp itself, its bowl and a faint spill on the housing underside
+carry the light colour; columns and casings stay unlit metal. Each lamp keeps
+a textured additive ground pool, centred under the lantern, and two fragmented
+reflection streaks. The former open eight-sided translucent cone meshes were
+removed: from distant angles their facets became enormous pyramids against the
+sky. A single managed public-light proxy moves to the lantern above the
+current nearby pool so the player and immediate ground respond to one pool at
+a time; the columns do not each carry real-time spotlights.
 Darkness between pools remains part of the composition.
 
 Selected façades receive small coloured accents, while low emissive brick contributions imitate lighting information embedded in a photographed or baked surface. Finished bus-shelter lights retain their stronger local colour treatment.

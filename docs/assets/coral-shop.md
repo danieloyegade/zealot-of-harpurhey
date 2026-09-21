@@ -31,7 +31,7 @@ All runtime files are self-contained GLB files in `public/assets/models/`.
 | `harperhey-coral-upper-block.glb` | Upper floors, windows, deck, rails and service block |
 | `harperhey-coral-window-module.glb` | Reusable upper-storey window bay |
 | `harperhey-coral-bin.glb` | Teal public bin with domed lid, opening, wheels and graffiti |
-| `harperhey-coral-streetlight.glb` | Black sodium-style streetlamp |
+| `harperhey-coral-streetlight.glb` | Black sodium-style streetlamp. No longer loaded: the game places `streetlight-warm-old-01.glb` here instead (see `streetlights.md`) |
 | `harperhey-coral-bollard.glb` | Black octagonal bollard with reflector band |
 
 ## Blender collections

@@ -23,6 +23,22 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-21 — Claude (municipal streetlight family)
+**HEAD at session start:** `d2181e4` (Record branch cleanup in SYNC.md); `789bb94` and `c1c8908` landed from other sessions mid-session.
+**Did:** Replaced every streetlight in the game with four new real-scale council fixtures, built from scratch in Blender (brief: Daniel's 2026-09-21 streetlight request + photo board). Spec, hierarchy, materials and regen command are in `docs/assets/streetlights.md`.
+- `blender/scripts/streetlightGeometry.py` + `createStreetlights.py` (stages `clay`, `build`, `renders`) → `public/assets/models/streetlight-{warm-old,led-modern,curved,weathered}-01.glb` (~0.4 MB each, 3 LODs, `LightEmitter` empty with extras), `blender/source/streetlights/*.blend` + textures, `renders/streetlights/` (clay line-up, night street, night head, overcast grey sky, base close-up per asset).
+- `blender/scripts/surfaceWeathering.py`: added opt-in `true_normal_ao` to `bake_buffers` (smooth-shaded thin tubes otherwise baked AO stripes at every facet edge). Default unchanged.
+- `src/world/createStreetlights.ts` (new): loads the GLBs, builds one `THREE.LOD` per lamp with opaque parts merged per material, recolours only emitter / bowl / reflector / baked housing spill mask per lamp colour.
+- `createWorld.ts`: `STREETLIGHTS` entries now name a fixture (assigned street by street); lanterns face the nearest road; the procedural pole + basic-colour head are gone (`addStreetlight` → `addStreetlightPool`); pool (radius 2.45 → 2.9) and the managed proxy sit under/at the lantern instead of the column. The Coral scene's streetlight uses `warm-old` (the old `harperhey-coral-streetlight.glb` is no longer loaded; file left in place because `createCoralShop.py` still exports it).
+- `visualStyle.ts`: proxy intensity 18 → 95, distance 7 → 12, because it now sits at ~7.7 m instead of 3.85 m. `main.ts`: new dev view `?view=streetlights`. Title catalogue labels for the new GLBs.
+- Verified: `tsc`, `npm run build`, in-game via `?view=streetlights`, `south-shops`, `public-light-pool` (all 21 fixtures load, no console errors).
+**Left uncommitted (if any):** Codex's Space-to-run files (`src/input/InputController.ts`, `src/ui/title/marginalia.ts`, `docs/TECHNICAL.md`, `docs/CAMERA_AND_MOVEMENT_BRIEF.md`) and the untracked `renders/game-*` / `references/title_screen/renders/ZEALOT6.PNG` belong to other sessions and were not touched.
+**Flagged:** `docs/superpowers/plans/2026-09-21-lighting-hierarchy.md` (`789bb94`, not yet executed) was written against the old code: its "merge streetlights" step is now done differently (LOD + per-material merge in `createStreetlights.ts`), `addStreetlight` no longer exists, and the proxy now reads `PUBLIC_LIGHTS[].emitter`. Re-base those tasks before running the plan. The brief lists "fake painted pools of light" under things to avoid; the painted pools were kept because the performance policy forbids one real light per lamp. The lighting plan's soft pool texture is the natural place to revisit them.
+**Next:** Daniel to review `renders/streetlights/` and the in-game `?view=streetlights`. Possible follow-ups: tune `EMITTER_INTENSITY` / proxy intensity against the lighting-plan captures; place more columns (the models are cheap) at real ~30 m spacing along South Road.
+**Open questions:** Keep the magenta / fluorescent-green casts on some physical LED lanterns, or reserve those casts for signage and give the lamps their real sodium/4000 K colours?
+
+---
+
 ## 2026-09-21 — Claude (ABC Building / Clints + Side Street blockout)
 **HEAD at session start:** `789bb94` (Plan the lighting hierarchy pass from the current in-game look)
 **Did:** Built the §47 review blockout from `references/architecture/buildings/clints/12_ABC_Building_Clints_Side_Street.txt`, the photos in `EXT/`, and Daniel's Street View captures.

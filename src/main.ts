@@ -122,6 +122,8 @@ if (import.meta.env.DEV) {
     'street-detail': [6.4, -27.2, 0.42, 0.16],
     'public-light-pool': [-20, -18.2, 0, 0.18],
     'between-light-pools': [-14.8, -19.7, 0, 0.18],
+    // A park north-edge sodium column seen from the park, head against the sky.
+    'streetlights': [-17.5, -12.5, 0.36, -0.12],
     'west-street': [-29.5, 25],
     'west-shops': [-29.5, 7],
     'east-shops': [29.5, 19],

@@ -127,8 +127,10 @@ export const VISUAL_STYLE = {
     // One budgeted proxy follows the nearest painted public-light pool. These
     // values are deliberately local: they should select a figure, not wash an
     // entire street or revive the old one-real-light-per-lamp system.
-    streetLightIntensity: 18,
-    streetLightDistance: 7,
+    // The proxy sits at the lantern, about 7.8 m up, so it needs roughly four
+    // times the old 3.85 m value to put the same light on the ground.
+    streetLightIntensity: 95,
+    streetLightDistance: 12,
     emissiveMultiplier: 1.15,
   },
   geometry: {

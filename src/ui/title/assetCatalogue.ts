@@ -8,7 +8,10 @@ export const UNIDENTIFIED_OBJECT = 'spectre / unidentified';
 const CATALOGUE: readonly (readonly [RegExp, string])[] = [
   [/^coral-shop/, 'coral / illuminated fascia'],
   [/^coral-bin/, 'litter bin / coral'],
-  [/^coral-streetlight/, 'street lamp / sodium'],
+  [/^streetlight-warm-old/, 'street lamp / low-pressure sodium'],
+  [/^streetlight-led-modern/, 'street lamp / led / 4000 k'],
+  [/^streetlight-curved/, 'street lamp / swan neck'],
+  [/^streetlight-weathered/, 'street lamp / galvanised / weathered'],
   [/^coral-bollard/, 'bollard / municipal'],
   [/^coral-photo/, 'coral / photograph'],
   [/^nice-things/, 'nice things / florist'],

@@ -475,11 +475,14 @@ def unwrap_atlas(objects, importance=None, margin=0.006):
 POSITION_OFFSET = 10.0
 
 
-def bake_buffers(objects, width, height, ao_distance=0.3, convex_distance=0.012, samples=6, margin=12):
+def bake_buffers(objects, width, height, ao_distance=0.3, convex_distance=0.012, samples=6, margin=12,
+                 true_normal_ao=False):
     """Bake world position, world normal and (object id, AO, convexity) grids.
 
     Returns position (H, W, 3), normal encoded in [0, 1] (H, W, 3), extra
     (H, W, 4) and an id -> object name table.  Grids are bottom-up.
+    `true_normal_ao` casts AO rays around the flat face normal instead of the
+    smooth one; use it for smooth-shaded low-segment cylinders.
     """
     import bpy
 
@@ -502,6 +505,10 @@ def bake_buffers(objects, width, height, ao_distance=0.3, convex_distance=0.012,
     # Rays per texel = scene samples x node samples; keep it near a hundred.
     ao.samples = 12
     ao.inputs["Distance"].default_value = ao_distance
+    if true_normal_ao:
+        # Smooth-shaded thin tubes: rays around the interpolated normal dip
+        # under the flat face near every edge and hit the tube's far wall.
+        nt.links.new(geometry.outputs["True Normal"], ao.inputs["Normal"])
     convex = nt.nodes.new("ShaderNodeAmbientOcclusion")
     convex.inside = True
     convex.only_local = True

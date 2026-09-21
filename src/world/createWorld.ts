@@ -54,6 +54,13 @@ import {
   addBougainvilleaSignLamp,
 } from './bougainvilleaFence';
 import { loadModel } from './loadModel';
+import {
+  addStreetlightFixtures,
+  createStreetlightFixture,
+  STREETLIGHT_MODELS,
+  streetlightEmitterWorld,
+  type StreetlightModel,
+} from './createStreetlights';
 import { LocalLightRegistry } from './localLighting';
 import { mergeStaticModelMeshes } from './mergeStaticModelMeshes';
 import { SterlingBike } from '../vehicles/SterlingBike';
@@ -115,7 +122,6 @@ const boxGeometryCache = new Map<string, BoxGeometry>();
 const cylinderGeometryCache = new Map<string, CylinderGeometry>();
 const circleGeometryCache = new Map<string, CircleGeometry>();
 const standardColorMaterialCache = new Map<number, MeshStandardMaterial>();
-const basicColorMaterialCache = new Map<number, MeshBasicMaterial>();
 const BUS_SHELTER_SCALE = 1.3;
 
 function createManagedPointLight(
@@ -187,15 +193,6 @@ function getStandardColorMaterial(color: number): MeshStandardMaterial {
   if (!material) {
     material = new MeshStandardMaterial({ color, roughness: 1 });
     standardColorMaterialCache.set(color, material);
-  }
-  return material;
-}
-
-function getBasicColorMaterial(color: number): MeshBasicMaterial {
-  let material = basicColorMaterialCache.get(color);
-  if (!material) {
-    material = new MeshBasicMaterial({ color });
-    basicColorMaterialCache.set(color, material);
   }
   return material;
 }
@@ -1186,19 +1183,27 @@ async function replaceCoralFallback(
   localLights: LocalLightRegistry,
 ): Promise<void> {
   try {
+    const streetlightX = location.x + 6.15;
+    const streetlightZ = location.z - 10.6;
     const [shop, bin, streetlight, bollard] = await Promise.all([
       loadModel('assets/models/harperhey-coral-shop.glb'),
       loadModel('assets/models/harperhey-coral-bin.glb'),
-      loadModel('assets/models/harperhey-coral-streetlight.glb'),
+      createStreetlightFixture({
+        name: 'Coral matching sodium streetlight',
+        x: streetlightX,
+        z: streetlightZ,
+        yaw: yawTowardNearestRoad(streetlightX, streetlightZ),
+        model: 'warm-old',
+        color: VISUAL_STYLE.lighting.sodium,
+      }),
       loadModel('assets/models/harperhey-coral-bollard.glb'),
     ]);
 
     applyCoralModelPolicy(shop);
     applyCoralModelPolicy(bin);
-    applyCoralModelPolicy(streetlight);
     applyCoralModelPolicy(bollard);
 
-    for (const model of [shop, bin, streetlight, bollard]) {
+    for (const model of [shop, bin, bollard]) {
       mergeStaticModelMeshes(model);
     }
 
@@ -1217,10 +1222,6 @@ async function replaceCoralFallback(
     bin.scale.setScalar(0.9);
     root.add(bin);
 
-    streetlight.name = 'Coral matching sodium streetlight';
-    streetlight.position.set(location.x + 6.15, 0, location.z - 10.6);
-    streetlight.rotation.y = Math.PI / 2;
-    streetlight.scale.setScalar(0.82);
     root.add(streetlight);
 
     for (const [index, zOffset] of [-7.2, 8.8].entries()) {
@@ -2964,28 +2965,71 @@ const ROADS: readonly RoadSpan[] = [
   { name: 'East outward connection', x: 61, z: 0, width: 8, depth: ROAD_WIDTH, centreLine: false },
 ];
 
+// Public streetlights: [x, z, light colour, fixture]. Fixtures change in
+// batches, street by street, the way a council replaces them: the park's north
+// edge and South Road keep the old sodium lanterns, half of the park's south
+// edge has been retrofitted with LED, the building pavements have painted
+// swan necks. The colours are the game's photographic casts, not the lamps'.
 const STREETLIGHTS = [
-  [-20, -19, VISUAL_STYLE.lighting.sodium],
-  [20, -19, VISUAL_STYLE.lighting.sodium],
-  [-18, 19, VISUAL_STYLE.lighting.sodium],
-  [-9, 19, VISUAL_STYLE.lighting.sodium],
-  [8, 19, VISUAL_STYLE.lighting.magenta],
-  [16, 19, VISUAL_STYLE.lighting.magenta],
-  [-25, -10, VISUAL_STYLE.lighting.coldWhite],
-  [-25, 10, VISUAL_STYLE.lighting.sodium],
-  [25, -10, VISUAL_STYLE.lighting.fluorescent],
-  [25, 10, VISUAL_STYLE.lighting.coldWhite],
-  [-9.6, -20.5, VISUAL_STYLE.lighting.sodium],
-  [12, -29, VISUAL_STYLE.lighting.magenta],
-  [-12, 29, VISUAL_STYLE.lighting.sodium],
-  [12, 29, VISUAL_STYLE.lighting.sodium],
-  [-34, 7, VISUAL_STYLE.lighting.sodium],
-  [34, 17, VISUAL_STYLE.lighting.coldWhite],
-  [-15, 55, VISUAL_STYLE.lighting.sodium],
-  [1, 55, VISUAL_STYLE.lighting.sodium],
-  [16.5, 55, VISUAL_STYLE.lighting.magenta],
-  [29, 55, VISUAL_STYLE.lighting.sodium],
-] as const;
+  [-20, -19, VISUAL_STYLE.lighting.sodium, 'warm-old'],
+  [20, -19, VISUAL_STYLE.lighting.sodium, 'warm-old'],
+  [-18, 19, VISUAL_STYLE.lighting.sodium, 'weathered'],
+  [-9, 19, VISUAL_STYLE.lighting.sodium, 'weathered'],
+  [8, 19, VISUAL_STYLE.lighting.magenta, 'led-modern'],
+  [16, 19, VISUAL_STYLE.lighting.magenta, 'led-modern'],
+  [-25, -10, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
+  [-25, 10, VISUAL_STYLE.lighting.sodium, 'weathered'],
+  [25, -10, VISUAL_STYLE.lighting.fluorescent, 'led-modern'],
+  [25, 10, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
+  [-9.6, -20.5, VISUAL_STYLE.lighting.sodium, 'warm-old'],
+  [12, -29, VISUAL_STYLE.lighting.magenta, 'curved'],
+  [-12, 29, VISUAL_STYLE.lighting.sodium, 'curved'],
+  [12, 29, VISUAL_STYLE.lighting.sodium, 'curved'],
+  [-34, 7, VISUAL_STYLE.lighting.sodium, 'curved'],
+  [34, 17, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
+  [-15, 55, VISUAL_STYLE.lighting.sodium, 'warm-old'],
+  [1, 55, VISUAL_STYLE.lighting.sodium, 'warm-old'],
+  [16.5, 55, VISUAL_STYLE.lighting.magenta, 'led-modern'],
+  [29, 55, VISUAL_STYLE.lighting.sodium, 'weathered'],
+] as const satisfies readonly (readonly [number, number, number, StreetlightModel])[];
+
+// Painted pool radius under an eight-metre lantern.
+const STREETLIGHT_POOL_RADIUS = 2.9;
+
+// Lanterns overhang the nearest carriageway: yaw turns the model's +X
+// outreach toward that road's centre line.
+function yawTowardNearestRoad(x: number, z: number): number {
+  let best = Number.POSITIVE_INFINITY;
+  let yaw = 0;
+  for (const road of ROADS) {
+    const alongX = road.width >= road.depth;
+    const halfLength = (alongX ? road.width : road.depth) / 2 + 2;
+    const along = alongX ? x - road.x : z - road.z;
+    if (Math.abs(along) > halfLength) {
+      continue;
+    }
+    const across = alongX ? road.z - z : road.x - x;
+    if (Math.abs(across) < best) {
+      best = Math.abs(across);
+      // Rotation about Y maps +X to (cos, -sin).
+      yaw = alongX ? (across > 0 ? -Math.PI / 2 : Math.PI / 2) : across > 0 ? 0 : Math.PI;
+    }
+  }
+  return yaw;
+}
+
+const PUBLIC_LIGHTS = STREETLIGHTS.map(([x, z, color, model], index) => {
+  const yaw = yawTowardNearestRoad(x, z);
+  return {
+    name: `Public streetlight ${index + 1} (${model})`,
+    x,
+    z,
+    yaw,
+    model,
+    color,
+    emitter: streetlightEmitterWorld({ x, z, yaw, model }),
+  };
+});
 
 const CROSSINGS: readonly RoadCrossing[] = [
   { name: 'South park crossing', x: 0, z: 25.5 },
@@ -3011,7 +3055,8 @@ const PAVEMENTS: readonly PavementSpan[] = [
 ];
 
 function addRoadAndPavementLayout(root: Group): void {
-  const streetlights = STREETLIGHTS.map(([x, z]) => ({ x, z }));
+  // Damp ground and worn paving gather under the lamp heads, not the columns.
+  const streetlights = PUBLIC_LIGHTS.map(({ emitter }) => ({ x: emitter.x, z: emitter.z }));
   const shopEntrances = WORLD_LOCATIONS
     .filter((location) => location.kind === 'building' && location.front)
     .map((location) => {
@@ -3451,36 +3496,19 @@ function addStreetDressing(root: Group, obstacles: CollisionObstacle[]): void {
   addReflectionPatch(root, 'Advanced Photo fascia spill', 12.1, 62, 3.8, 0.7, VISUAL_STYLE.lighting.coldWhite, 0.16, -0.04);
 }
 
-function addStreetlight(
+function addStreetlightPool(
   root: Group,
   x: number,
   z: number,
   color: number = VISUAL_STYLE.lighting.sodium,
 ): void {
+  // The fixture itself is a GLB (createStreetlights.ts). This is only its
+  // light on the ground, centred under the lantern.
   const lamp = new Group();
-  lamp.name = 'Public illumination streetlight';
+  lamp.name = 'Public illumination pool';
   lamp.position.set(x, 0, z);
-  const pole = new Mesh(
-    getCylinderGeometry(0.075, 0.105, 4.2, 6),
-    createWorldMaterial('metal-oxidised-overhaul', {
-      repeatX: 1,
-      repeatY: 3,
-      tint: 0x5c6063,
-    }),
-  );
-  pole.position.y = 2.1;
-  lamp.add(pole);
-  const head = createBox(
-    0.52,
-    0.16,
-    0.38,
-    getBasicColorMaterial(color),
-  );
-  head.position.y = 4.18;
-  lamp.add(head);
-
   const pool = new Mesh(
-    getCircleGeometry(2.45, 12),
+    getCircleGeometry(STREETLIGHT_POOL_RADIUS, 16),
     createAdditiveWorldMaterial('reflection-broken-overhaul', color, 0.23),
   );
   pool.name = 'Streetlight painted pool';
@@ -3796,12 +3824,13 @@ function addHeroLocalLights(localLights: LocalLightRegistry): void {
 function addPublicIlluminationResponse(
   localLights: LocalLightRegistry,
 ): (playerPosition: Vector3) => void {
+  const first = PUBLIC_LIGHTS[0];
   const light = createManagedPointLight(
     'Nearest public streetlight response',
-    STREETLIGHTS[0][0],
-    3.85,
-    STREETLIGHTS[0][1],
-    STREETLIGHTS[0][2],
+    first.emitter.x,
+    first.emitter.y,
+    first.emitter.z,
+    first.color,
     VISUAL_STYLE.lighting.streetLightIntensity,
     VISUAL_STYLE.lighting.streetLightDistance,
   );
@@ -3810,16 +3839,16 @@ function addPublicIlluminationResponse(
     name: 'Public illumination pool',
     lights: [light],
     priority: 1.7,
-    activationRadius: 4,
+    activationRadius: 5,
     intensityScale: () => proximityScale,
   });
 
   return (playerPosition: Vector3): void => {
-    let nearest: (typeof STREETLIGHTS)[number] = STREETLIGHTS[0];
+    let nearest = first;
     let nearestDistanceSquared = Number.POSITIVE_INFINITY;
-    for (const candidate of STREETLIGHTS) {
-      const deltaX = candidate[0] - playerPosition.x;
-      const deltaZ = candidate[1] - playerPosition.z;
+    for (const candidate of PUBLIC_LIGHTS) {
+      const deltaX = candidate.emitter.x - playerPosition.x;
+      const deltaZ = candidate.emitter.z - playerPosition.z;
       const distanceSquared = deltaX * deltaX + deltaZ * deltaZ;
       if (distanceSquared < nearestDistanceSquared) {
         nearest = candidate;
@@ -3827,15 +3856,16 @@ function addPublicIlluminationResponse(
       }
     }
 
-    light.position.set(nearest[0], 3.85, nearest[1]);
-    light.color.setHex(nearest[2]);
+    // The proxy sits at the lantern's real emitter, eight metres up.
+    light.position.set(nearest.emitter.x, nearest.emitter.y, nearest.emitter.z);
+    light.color.setHex(nearest.color);
 
-    // The point response is full across the painted 2.45 m pool, then falls to
-    // zero before the surrounding darkness. The graphic cone/pool remains the
-    // compositional layer; this proxy merely lets it affect real materials.
+    // Full across the painted pool, then zero before the surrounding
+    // darkness. The pool remains the compositional layer; this proxy merely
+    // lets it affect real materials.
     const distance = Math.sqrt(nearestDistanceSquared);
-    const fadeStart = 2.55;
-    const fadeEnd = 4;
+    const fadeStart = STREETLIGHT_POOL_RADIUS + 0.1;
+    const fadeEnd = STREETLIGHT_POOL_RADIUS + 1.6;
     const fade = Math.max(
       0,
       Math.min(1, (fadeEnd - distance) / (fadeEnd - fadeStart)),
@@ -3902,10 +3932,13 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
     addDevelopmentLabel(root, `${marker.name} →`, marker.x, 2.2, marker.z);
   }
 
-  for (const [x, z, color] of STREETLIGHTS) {
-    addStreetlight(root, x, z, color);
-    obstacles.push(circleObstacle('Streetlight pole', x, z, 0.12, 4.3));
+  for (const light of PUBLIC_LIGHTS) {
+    addStreetlightPool(root, light.emitter.x, light.emitter.z, light.color);
+    obstacles.push(
+      circleObstacle('Streetlight column', light.x, light.z, 0.11, STREETLIGHT_MODELS[light.model].height),
+    );
   }
+  void addStreetlightFixtures(root, PUBLIC_LIGHTS);
 
   if (import.meta.env.DEV) {
     root.add(createCollisionDebugOutlines(obstacles));
