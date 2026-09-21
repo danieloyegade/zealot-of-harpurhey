@@ -26,8 +26,8 @@ export const WORLD_BOUNDS = {
   minX: -64,
   maxX: 64,
   // Extended north for the ABC Building block on the far side of the Outer
-  // North Road: its tower, rear wing and Lower Byrom Street reach Z ≈ -100.
-  minZ: -106,
+  // North Road: its tower, rear wing and Lower Byrom Street reach Z ≈ -110.
+  minZ: -116,
   maxZ: 78,
 } as const;
 
@@ -40,10 +40,10 @@ export const PAVEMENT_WIDTH = 2.5;
 // ABC Building GLB origin: its ground-level Quay Street / Lower Byrom Street
 // corner. The Quay Street frontage (Blender -Y) imports facing +Z, so it faces
 // south across the Outer North Road, 6 m of pavement back from the kerb
-// (Z = -47.95). The 61.9 m frontage runs west from here to X = -42.25, 2 m
+// (Z = -57.95). The 61.9 m frontage runs west from here to X = -42.25, 2 m
 // short of the outer west street; Lower Byrom Street runs north past the
 // corner's east side, 3 m of pavement away.
-export const ABC_BUILDING_CORNER = { x: 19.65, z: -53.95 } as const;
+export const ABC_BUILDING_CORNER = { x: 19.65, z: -63.95 } as const;
 
 export const WORLD_LOCATIONS: readonly WorldLocation[] = [
   { id: 'florist', name: 'Nice Things', kind: 'building', status: 'geometry-wip', front: 'south', x: -16.9, z: -32, width: 6, depth: 7.5, height: 14.55, color: 0xb56f72 },
@@ -97,8 +97,8 @@ export const BUS_STOPS: readonly WorldMarker[] = [
   // flags and the roof's front edge is 0.63 m back from the kerb.
   { id: 'bus-stop-a', name: 'Bus Stop A', x: 0, z: 20.0 },
   // On the ABC Building's Quay Street pavement, east of Clints so the shop's
-  // entrance stays open; clear of the canopy edge at Z = -50.75.
-  { id: 'bus-stop-b', name: 'Bus Stop B', x: 7, z: -49 },
+  // entrance stays open; clear of the canopy edge at Z = -60.75.
+  { id: 'bus-stop-b', name: 'Bus Stop B', x: 7, z: -59 },
 ] as const;
 
 export interface FoodStandMarker extends WorldMarker {
@@ -193,7 +193,7 @@ export const SPECTER_GRAFFITI: readonly SpecterGraffitiMarker[] = [
 ] as const;
 
 export const FUTURE_EXITS: readonly WorldMarker[] = [
-  { id: 'north-road', name: 'North Road', x: 26.4, z: -102 },
+  { id: 'north-road', name: 'North Road', x: 26.4, z: -112 },
   { id: 'south-road', name: 'South Road', x: 0, z: 75 },
   { id: 'west-exit', name: 'West', x: -61, z: 25.5 },
   { id: 'east-exit', name: 'East', x: 61, z: 0 },

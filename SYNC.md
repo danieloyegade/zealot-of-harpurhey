@@ -23,6 +23,21 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 
 ---
 
+## 2026-09-21 — Claude (outer North Road moved north; Renee and Gulliver's off the road)
+**HEAD at session start:** `dd42163`
+**Did:**
+- Daniel noticed Renee sitting on the road. Measured in game, Renee reached Z -45.29 and Gulliver's reached Z -48.11, but the Outer North Road began at Z -40.45.
+- Moved the Outer North Road 10 m north (centre Z -44.2 to -54.2).
+- Extended the outer west and east streets' north ends to meet it.
+- Added a 2 m "North block rear pavement" along its south kerb (Z -50.45 to -48.45, clear of Gulliver's).
+- Shifted everything beyond the road north by 10 m: `ABC_BUILDING_CORNER` to (19.65, -63.95), Lower Byrom Street, both ABC pavements, the five ABC streetlights, Bus Stop B to (7, -59) and the North Road exit to (26.4, -112). Also moved `WORLD_BOUNDS.minZ` to -116 and extended the world ground.
+- New dev view `?view=north-block-rear`. `docs/WORLD_LAYOUT.md` and `docs/assets/abc-building.md` are updated.
+**Verified:** `tsc` passes. In game, measured model bounds show no north-block building reaching the road, and headless screenshots of `north-block-rear` and `abc` look right. `npm run check` passes.
+**Left uncommitted (if any):** None.
+**Flagged:** Bus Stop B's modelled trolley still sits about 0.7 m past the kerb, as before the move.
+**Next:** ABC texture/emissive pass.
+**Open questions:** None.
+
 ## 2026-09-21 — Claude (ABC Building missing in game: runtime asset manifest)
 **HEAD at session start:** `dd45602`
 **Did:** Daniel couldn't see the ABC Building. Since `685e54d`, Vite serves `.runtime-public/`, which is built from `config/runtime-assets.json`. `abc_building.glb` was not in the `production` list, so production builds and deploys never shipped it. My verification `npm run build` (prebuild = production assets) had also rebuilt `.runtime-public/` without it, under any running dev server. Added it to `production`; `npm run check` passes and `dist/assets/models/abc_building.glb` exists. Re-ran `npm run assets:prepare:dev` so a running dev server has the full model set again.

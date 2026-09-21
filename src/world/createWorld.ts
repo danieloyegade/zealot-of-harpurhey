@@ -3084,13 +3084,16 @@ const ROADS: readonly RoadSpan[] = [
   { name: 'South perimeter road', x: 0, z: 25.5, width: 72, depth: ROAD_WIDTH },
   { name: 'West perimeter road', x: -29.5, z: 0, width: ROAD_WIDTH, depth: 66 },
   { name: 'East perimeter road', x: 29.5, z: 0, width: ROAD_WIDTH, depth: 66 },
-  { name: 'Outer North Road', x: 0, z: -44.2, width: 114, depth: ROAD_WIDTH },
+  // Moved 10 m north (from Z = -44.2) so the north block is deep enough for
+  // Renee (back at Z = -45.2) and Gulliver's (Z = -48.1) to sit off the road.
+  { name: 'Outer North Road', x: 0, z: -54.2, width: 114, depth: ROAD_WIDTH },
   { name: 'Outer South Road', x: 0, z: 59.5, width: 114, depth: ROAD_WIDTH },
-  { name: 'Outer west street', x: -48, z: 0, width: ROAD_WIDTH, depth: 96 },
-  { name: 'Outer east street', x: 57, z: 0, width: ROAD_WIDTH, depth: 96 },
+  // North ends extended to meet the moved Outer North Road (Z = -57.95).
+  { name: 'Outer west street', x: -48, z: -4.975, width: ROAD_WIDTH, depth: 105.95 },
+  { name: 'Outer east street', x: 57, z: -4.975, width: ROAD_WIDTH, depth: 105.95 },
   // Lower Byrom Street: the north outward connection, moved from X = 0 to run
   // past the ABC Building's east corner (Side Street wraps onto it).
-  { name: 'Lower Byrom Street', x: 26.4, z: -76.975, width: ROAD_WIDTH, depth: 58.05 },
+  { name: 'Lower Byrom Street', x: 26.4, z: -86.975, width: ROAD_WIDTH, depth: 58.05 },
   { name: 'South Road outward connection', x: 0, z: 69.625, width: ROAD_WIDTH, depth: 12.75, centreLine: false },
   { name: 'West outward connection', x: -58, z: 25.5, width: 16, depth: ROAD_WIDTH, centreLine: false },
   { name: 'East outward connection', x: 61, z: 0, width: 8, depth: ROAD_WIDTH, centreLine: false },
@@ -3123,11 +3126,11 @@ const STREETLIGHTS = [
   [16.5, 55, VISUAL_STYLE.lighting.magenta, 'led-modern'],
   [29, 55, VISUAL_STYLE.lighting.sodium, 'weathered'],
   // ABC Building frontage and Lower Byrom Street: modern LED heads.
-  [-30, -48.5, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
-  [-12, -48.5, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
-  [15, -48.5, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
-  [22.2, -72, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
-  [22.2, -92, VISUAL_STYLE.lighting.sodium, 'weathered'],
+  [-30, -58.5, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
+  [-12, -58.5, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
+  [15, -58.5, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
+  [22.2, -82, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
+  [22.2, -102, VISUAL_STYLE.lighting.sodium, 'weathered'],
 ] as const satisfies readonly (readonly [number, number, number, StreetlightModel])[];
 
 // Painted pool radius under an eight-metre lantern.
@@ -3191,8 +3194,11 @@ const PAVEMENTS: readonly PavementSpan[] = [
   { name: 'South Road opposite pavement', x: 18.5, z: 64, width: 75, depth: 1.5, back: 'wall', damp: true },
   // ABC Building: a wide Quay Street pavement under the canopy, and the
   // Lower Byrom Street footway along its east side.
-  { name: 'ABC Quay Street pavement', x: -10.8, z: -50.95, width: 66.9, depth: 6, back: 'wall' },
-  { name: 'ABC Lower Byrom Street pavement', x: 21.15, z: -79.975, width: 3, depth: 52.05, back: 'wall', damp: true },
+  { name: 'ABC Quay Street pavement', x: -10.8, z: -60.95, width: 66.9, depth: 6, back: 'wall' },
+  { name: 'ABC Lower Byrom Street pavement', x: 21.15, z: -89.975, width: 3, depth: 52.05, back: 'wall', damp: true },
+  // Behind the north block (Renee, Gulliver's, MCR1, Nice Things), along the
+  // Outer North Road's south kerb, between the outer west and east streets.
+  { name: 'North block rear pavement', x: 4.5, z: -49.45, width: 97.5, depth: 2, back: 'wall', damp: true },
 ];
 
 function addRoadAndPavementLayout(root: Group): void {
@@ -3972,9 +3978,9 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
     root,
     'World ground',
     0,
-    -14,
+    -19,
     128,
-    184,
+    194,
     'concrete-cracked-overhaul',
     -0.12,
     5,

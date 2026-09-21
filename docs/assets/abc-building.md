@@ -59,7 +59,7 @@ The detail script validates the scene, renders, exports the GLB, saves the
 
 ## In game
 
-Loaded by `addAbcBuildingModel` in `src/world/createWorld.ts` at `ABC_BUILDING_CORNER` (19.65, -53.95) with no rotation. It faces south across the outer North Road, with Lower Byrom Street at X = 26.4 (see `docs/WORLD_LAYOUT.md`). The runtime policy `applyAbcBuildingModelPolicy`:
+Loaded by `addAbcBuildingModel` in `src/world/createWorld.ts` at `ABC_BUILDING_CORNER` (19.65, -63.95) with no rotation. It faces south across the outer North Road, with Lower Byrom Street at X = 26.4 (see `docs/WORLD_LAYOUT.md`). The runtime policy `applyAbcBuildingModelPolicy`:
 - makes the tower-window glass opaque (about one pane in nine lit sodium) so it merges into two draw calls;
 - keeps the shopfront glass transparent;
 - gives the canopy material a low warm emission.

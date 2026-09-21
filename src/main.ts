@@ -163,10 +163,12 @@ if (import.meta.env.DEV) {
     'delivery-dropoff': [-7, 55.35, 0, 0.16],
     // ABC Building across the Outer North Road: street view, Clints doorway,
     // Side Street on Lower Byrom Street, and the tower seen from the park.
-    'abc': [-4, -44.2, 0, 0.02],
-    'abc-clints': [-2.8, -50.6, 0.25, 0.1],
-    'abc-side-street': [25.4, -57.5, Math.PI / 2 - 0.35, 0.08],
+    'abc': [-4, -54.2, 0, 0.02],
+    'abc-clints': [-2.8, -60.6, 0.25, 0.1],
+    'abc-side-street': [25.4, -67.5, Math.PI / 2 - 0.35, 0.08],
     'abc-tower': [-4, -17.5, 0, -0.3],
+    // From the moved Outer North Road, looking south at the backs of Renee and Gulliver's.
+    'north-block-rear': [20, -54.2, Math.PI, 0.12],
     pickup: [5, 16.5],
   };
   const requestedPosition = requestedView
