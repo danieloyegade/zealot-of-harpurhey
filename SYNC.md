@@ -41,7 +41,7 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 - `CL_Entrance` is kept out of `mergeStaticModelMeshes`. The building ends up as 64 meshes. Multi-box collision.
 - Dev views `?view=abc`, `abc-clints`, `abc-side-street`, `abc-tower`. `docs/WORLD_LAYOUT.md` and `docs/assets/abc-building.md` are updated.
 **Verified:** `tsc` and `npm run build` pass. The game loaded with no console errors. Headless-Chromium screenshots of the four views look right: the canopy is lit, the Clints interior reads through the glass, and the tower rises behind the north block from the park.
-**Left uncommitted (if any):** None. **Not pushed:** `origin` refused the push because the earlier unpushed commit `685e54d` (another session) adds `.github/workflows/ci.yml`, and this machine's GitHub token lacks the `workflow` scope. Local `main` is 4 commits ahead of `origin/main` until Daniel pushes with a token that has that scope.
+**Left uncommitted (if any):** None. **Pushed** (`b1b77cd`) after Daniel ran `gh auth refresh -s workflow`. The first push was refused because the earlier commit `685e54d` adds `.github/workflows/ci.yml` and the token lacked the `workflow` scope.
 **Flagged:** The in-app Browser pane was hidden and Playwright was held by another session. Screenshots came from `chrome-headless-shell` (Playwright's cached binary, `--use-angle=swiftshader --screenshot`), which works for future captures. Gulliver's back wall pokes about 0.16 m into the Lower Byrom junction; it already did the same into the outer North Road.
 **Next:** Texture/emissive pass for the ABC Building, then making the Clints interior enterable.
 **Open questions:** None.
