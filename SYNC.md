@@ -34,6 +34,19 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ---
 
 
+## 2026-09-21 — Codex (urban night sky and atmosphere redesign)
+**HEAD at session start:** `807f1e5` (Add bougainvillea fence scene: signpost, fence, extension, tree and ground GLBs)
+**Did:** Replaced the bright cobalt two-colour dome and its 320 square stars plus 42 oversized warm stars with a modular, camera-centred urban atmosphere in `src/rendering/createNightAtmosphere.ts`.
+- The sky now moves from an almost-black charcoal-navy zenith through desaturated blue-grey to a restrained dirty mauve-grey horizon. Three extremely broad procedural waves add low-contrast, near-static density variation; a narrow directionally uneven pollution band sits at the horizon. Default star count is zero after visual testing, with an optional muted round 0–15-star layer retained for later tuning.
+- Fog moved from saturated cobalt `#07133b` / 44–108 m to darker desaturated `#081327` / 46–106 m so distant architecture loses detail into the lower atmosphere without lifting the black intervals between lights.
+- Identified the large translucent sky pyramids as the 20 public streetlights' open eight-sided additive cone meshes. Removed only those graphic meshes; the emissive heads, additive ground pools/reflections and managed real point-light proxy remain unchanged.
+- Exposed `window.zealot.atmosphere.getParameters()` / `.set({...})` in development and documented every tunable in `docs/VISUAL_LANGUAGE.md`. No ambient, hemisphere, moon, practical-light, exposure, tone-map or bloom values changed.
+- `npm run build` and `git diff --check` pass. Visually checked HIGH-quality bus-shelter and park-to-Dreams compositions at 1280 × 720 with no console warnings/errors; practicals dominate and zero stars does not read as an empty render. Runtime cost is one textureless sky draw; with stars hidden and 20 cone draws plus two old star draws removed, the net change is approximately −22 draw calls.
+**Left uncommitted (if any):** `src/rendering/createNightAtmosphere.ts`, `src/rendering/visualStyle.ts`, atmosphere integration in `src/world/createWorld.ts` / `src/main.ts`, `docs/VISUAL_LANGUAGE.md`, and this log entry. Concurrent staged bougainvillea work and all existing title/camera, Eastern Bloc/Flok, MCR1 and render/reference changes were preserved.
+**Flagged:** The sky's large-scale shader variation is intentionally very low contrast; final judgment should be made on the target Mac/iPad display because dark-tone separation varies with the panel and room light.
+**Next:** Daniel to review the frontal bus-stop composition in normal play. Tune via `zealot.atmosphere.set(...)` if desired; keep stars at zero unless the empty urban sky proves distracting across a wider set of shots.
+**Open questions:** None.
+
 ## 2026-09-21 — Codex (bus-stop gameplay captures)
 **HEAD at session start:** `b80ac9d` (Batch static hero meshes for rendering)
 **Did:** Ran the current development build at the dedicated `?view=bus-shelter` position on HIGH quality with the title and overlays disabled, then captured three 1280 × 720 in-game JPEGs: a clean front establishing view, an east-side street angle, and a west-side angle including Coral. Saved them under `renders/game-bus-stop-2026-09-21/`.

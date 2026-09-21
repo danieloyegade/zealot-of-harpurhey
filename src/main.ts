@@ -197,6 +197,7 @@ if (import.meta.env.DEV) {
     camera,
     player,
     collision: world.collision,
+    atmosphere: world.atmosphere,
     sterlingFleet: world.sterlingFleet,
     bikeInteraction,
     input,

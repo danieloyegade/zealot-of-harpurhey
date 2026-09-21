@@ -21,7 +21,7 @@ Current rendering values:
 - Shadow-weighted film grain: **0.042**
 - Edge vignette strength: **0.20**
 - Shadows: disabled
-- Fog: cobalt `#07133b`, near **44 m**, far **108 m**
+- Fog: desaturated cobalt `#081327`, near **46 m**, far **106 m**
 - Bloom: strength **0.34**, radius **0.32**, threshold **0.88**
 
 The canvas retains full CSS window dimensions. Only its internal 3D backing resolution is scaled; HTML development UI remains at display resolution.
@@ -86,12 +86,34 @@ Roads are layered rather than uniform. A photo-scanned asphalt (a CC0 stand-in u
 
 ## Sky, fog and palette
 
-The sky is a low-segment cobalt gradient dome with deliberately square, artificial stars. It is not astronomical. Distance fog shares its blue family so geometry dissolves into night rather than neutral grey.
+The sky is a camera-centred shader dome: almost-black charcoal navy at the
+zenith, desaturated navy and blue-grey below, and a restrained dirty
+mauve-grey pollution band at the horizon. Three broad procedural waves produce
+barely visible large-scale density changes; they are not readable cloud forms
+and move too slowly to announce themselves as animation. The shader is one draw
+call and uses no textures, HDRI, particles or volumetric simulation.
+
+The default urban sky contains **zero stars**. `createNightAtmosphere.ts` keeps
+an optional 0–15 point system for testing, but those points are round,
+sub-pixel-to-one-pixel, muted and below the bloom threshold. Distance fog uses
+a dark desaturated member of the same blue family so remote architecture loses
+detail into the atmosphere before the horizon, without lifting the black
+intervals between practical lights.
+
+In development, `window.zealot.atmosphere` exposes `getParameters()` and
+`set({...})`. Tunable values include the four sky colours, brightness,
+saturation, horizon glow colour/strength/height, star count/brightness/size,
+cloud-noise strength/scale/speed, and fog colour/near/far. For example:
+
+```js
+zealot.atmosphere.set({ horizonGlowStrength: 0.12, fogFar: 112 })
+```
 
 Palette:
 
-- cobalt night `#071c5a`
-- near-black blue horizon `#020817`
+- charcoal-navy zenith `#01040b`
+- desaturated lower sky `#09152a`
+- dirty mauve-grey horizon `#151722`
 - sodium amber `#ffa326`
 - fluorescent green `#70ff9b`
 - magenta `#ff3a9c`
@@ -100,7 +122,14 @@ Palette:
 
 ## Public illumination
 
-Streetlights are six-sided poles with chunky rectangular heads. Each combines a luminous head, a noisy translucent eight-sided cone, a textured additive ground pool and two fragmented reflection streaks. Colours are selected from the restricted sodium, fluorescent, magenta and cold-white palette. A single managed public-light proxy moves to the current nearby pool so the player and immediate ground can respond to one pool at a time; the poles themselves do not each carry real-time spotlights. Darkness between pools remains part of the composition.
+Streetlights are six-sided poles with chunky rectangular heads. Each combines a
+luminous head, a textured additive ground pool and two fragmented reflection
+streaks. The former open eight-sided translucent cone meshes were removed: from
+distant angles their facets became enormous pyramids against the sky. They did
+not provide illumination. A single managed public-light proxy still moves to
+the current nearby pool so the player and immediate ground can respond to one
+pool at a time; the poles themselves do not each carry real-time spotlights.
+Darkness between pools remains part of the composition.
 
 Selected façades receive small coloured accents, while low emissive brick contributions imitate lighting information embedded in a photographed or baked surface. Finished bus-shelter lights retain their stronger local colour treatment.
 
@@ -110,7 +139,7 @@ Park trees use five-sided trunks and clustered, textured, un-smoothed dodecahedr
 
 ## Post-processing limits
 
-The current composer applies restrained bloom, AgX tone mapping with display conversion, saturation/contrast adjustment, 32-level colour quantisation, subtle 4 × 4 ordered dithering, shadow-weighted film grain and a restrained vignette. It deliberately excludes scanlines, CRT curvature, chromatic aberration, tape damage, vertex wobble and aggressive pixelation.
+The current composer applies restrained bloom, AgX tone mapping with display conversion, saturation/contrast adjustment, 32-level colour quantisation, subtle 4 × 4 ordered dithering, shadow-weighted film grain and a restrained vignette. Sky and optional star values remain below the bloom threshold, leaving bloom to practical artificial sources. It deliberately excludes scanlines, CRT curvature, chromatic aberration, tape damage, vertex wobble and aggressive pixelation.
 
 ## Street-level density
 

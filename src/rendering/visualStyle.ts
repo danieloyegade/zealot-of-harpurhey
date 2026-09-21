@@ -88,15 +88,31 @@ export const VISUAL_STYLE = {
     graphicAnisotropy: 1,
   },
   sky: {
-    color: 0x071c5a,
-    horizonColor: 0x020817,
-    starColor: 0xdce5ff,
-    starCount: 320,
+    zenithColor: 0x01040b,
+    upperColor: 0x03091a,
+    lowerColor: 0x09152a,
+    horizonColor: 0x151722,
+    brightness: 0.82,
+    saturation: 0.76,
+    horizonGlowColor: 0x2a2023,
+    horizonGlowStrength: 0.17,
+    horizonGlowHeight: 0.2,
+    cloudNoiseStrength: 0.045,
+    cloudScale: 1.35,
+    cloudSpeed: 0.003,
+  },
+  stars: {
+    color: 0x8792a4,
+    // Begin with the urban sky empty. The atmosphere controller supports up
+    // to fifteen threshold-visible points if later compositions need them.
+    count: 0,
+    brightness: 0.24,
+    size: 1.15,
   },
   fog: {
-    color: 0x07133b,
-    near: 44,
-    far: 108,
+    color: 0x081327,
+    near: 46,
+    far: 106,
   },
   lighting: {
     ambientSky: 0x304e9b,

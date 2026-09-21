@@ -1,11 +1,8 @@
 import {
-  BackSide,
   Box3,
   BoxGeometry,
   CanvasTexture,
   CircleGeometry,
-  Color,
-  ConeGeometry,
   CylinderGeometry,
   DirectionalLight,
   Group,
@@ -18,10 +15,7 @@ import {
   Object3D,
   OctahedronGeometry,
   PointLight,
-  Points,
-  PointsMaterial,
   Scene,
-  ShaderMaterial,
   SphereGeometry,
   Sprite,
   SpriteMaterial,
@@ -29,8 +23,12 @@ import {
   TorusGeometry,
   Vector3,
 } from 'three';
-import { BufferAttribute, BufferGeometry, Fog } from 'three';
+import { BufferGeometry } from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import {
+  createNightAtmosphere,
+  type NightAtmosphere,
+} from '../rendering/createNightAtmosphere';
 import { applyTextureProfile, VISUAL_STYLE } from '../rendering/visualStyle';
 import {
   createGraffitiMaterial,
@@ -98,6 +96,7 @@ export interface World {
   readonly root: Group;
   readonly collision: CollisionWorld;
   readonly sterlingFleet: SterlingFleet;
+  readonly atmosphere: NightAtmosphere;
   readonly update: (deltaTime: number, playerPosition: Vector3) => void;
   readonly getLightingStats: () => LightingStats;
   readonly setDevelopmentOverlaysVisible: (visible: boolean) => void;
@@ -115,7 +114,6 @@ export interface LightingStats {
 const boxGeometryCache = new Map<string, BoxGeometry>();
 const cylinderGeometryCache = new Map<string, CylinderGeometry>();
 const circleGeometryCache = new Map<string, CircleGeometry>();
-const coneGeometryCache = new Map<string, ConeGeometry>();
 const standardColorMaterialCache = new Map<number, MeshStandardMaterial>();
 const basicColorMaterialCache = new Map<number, MeshBasicMaterial>();
 const BUS_SHELTER_SCALE = 1.3;
@@ -180,28 +178,6 @@ function getCircleGeometry(radius: number, segments: number): CircleGeometry {
   if (!geometry) {
     geometry = new CircleGeometry(radius, segments);
     circleGeometryCache.set(key, geometry);
-  }
-  return geometry;
-}
-
-function getConeGeometry(
-  radius: number,
-  height: number,
-  radialSegments: number,
-  heightSegments = 1,
-  openEnded = false,
-): ConeGeometry {
-  const key = [radius, height, radialSegments, heightSegments, openEnded].join(':');
-  let geometry = coneGeometryCache.get(key);
-  if (!geometry) {
-    geometry = new ConeGeometry(
-      radius,
-      height,
-      radialSegments,
-      heightSegments,
-      openEnded,
-    );
-    coneGeometryCache.set(key, geometry);
   }
   return geometry;
 }
@@ -3512,14 +3488,6 @@ function addStreetlight(
   pool.position.y = 0.035;
   lamp.add(pool);
 
-  const cone = new Mesh(
-    getConeGeometry(2.4, 4.05, 8, 1, true),
-    createAdditiveWorldMaterial('light-cone-noise-overhaul', color, 0.095),
-  );
-  cone.name = 'Visible sodium light cone';
-  cone.position.y = 2.1;
-  lamp.add(cone);
-
   const longReflection = createBox(
     0.7,
     0.018,
@@ -3542,86 +3510,6 @@ function addStreetlight(
   lamp.add(sideReflection);
 
   root.add(lamp);
-}
-
-function addStylizedSky(root: Group): void {
-  const skyDome = new Mesh(
-    new SphereGeometry(104, 16, 8),
-    new ShaderMaterial({
-      uniforms: {
-        horizonColor: { value: new Color(VISUAL_STYLE.sky.horizonColor) },
-        zenithColor: { value: new Color(VISUAL_STYLE.sky.color) },
-      },
-      vertexShader: `
-        varying vec3 vPosition;
-        void main() {
-          vPosition = position;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform vec3 horizonColor;
-        uniform vec3 zenithColor;
-        varying vec3 vPosition;
-        void main() {
-          float elevation = smoothstep(-0.08, 0.72, normalize(vPosition).y);
-          gl_FragColor = vec4(mix(horizonColor, zenithColor, elevation), 1.0);
-        }
-      `,
-      side: BackSide,
-      depthWrite: false,
-      fog: false,
-    }),
-  );
-  skyDome.name = 'Cobalt gradient sky dome';
-  skyDome.renderOrder = -10;
-  root.add(skyDome);
-
-  const geometry = new BufferGeometry();
-  const positions = new Float32Array(VISUAL_STYLE.sky.starCount * 3);
-  let seed = 9137;
-  const random = (): number => {
-    seed = (seed * 16807) % 2147483647;
-    return (seed - 1) / 2147483646;
-  };
-
-  for (let index = 0; index < VISUAL_STYLE.sky.starCount; index += 1) {
-    const angle = random() * Math.PI * 2;
-    const radius = 50 + random() * 38;
-    positions[index * 3] = Math.cos(angle) * radius;
-    positions[index * 3 + 1] = 9 + random() * 30;
-    positions[index * 3 + 2] = Math.sin(angle) * radius;
-  }
-
-  geometry.setAttribute('position', new BufferAttribute(positions, 3));
-  const stars = new Points(
-    geometry,
-    new PointsMaterial({
-      color: VISUAL_STYLE.sky.starColor,
-      size: 0.42,
-      sizeAttenuation: true,
-      fog: false,
-    }),
-  );
-  stars.name = 'Stylized star field';
-  root.add(stars);
-
-  const brightGeometry = new BufferGeometry();
-  brightGeometry.setAttribute(
-    'position',
-    new BufferAttribute(positions.slice(0, 42 * 3), 3),
-  );
-  const brightStars = new Points(
-    brightGeometry,
-    new PointsMaterial({
-      color: 0xffd9c3,
-      size: 0.94,
-      sizeAttenuation: true,
-      fog: false,
-    }),
-  );
-  brightStars.name = 'Sparse warm bright stars';
-  root.add(brightStars);
 }
 
 function addNorthEstateBackdrop(root: Group, obstacles: CollisionObstacle[]): void {
@@ -3957,12 +3845,7 @@ function addPublicIlluminationResponse(
 }
 
 export function createWorld(scene: Scene, maximumActiveLocalLights: number): World {
-  scene.background = new Color(VISUAL_STYLE.sky.color);
-  scene.fog = new Fog(
-    VISUAL_STYLE.fog.color,
-    VISUAL_STYLE.fog.near,
-    VISUAL_STYLE.fog.far,
-  );
+  const atmosphere = createNightAtmosphere(scene);
   const root = new Group();
   root.name = 'Canonical city layout Map v0.3';
   scene.add(root);
@@ -3970,8 +3853,6 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
     root,
     maximumActiveLocalLights,
   );
-  addStylizedSky(root);
-
   addEnvironmentSurface(
     root,
     'World ground',
@@ -4054,7 +3935,9 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
       obstacles,
     },
     sterlingFleet,
+    atmosphere,
     update: (deltaTime, playerPosition) => {
+      atmosphere.update(deltaTime);
       updatePickup(deltaTime);
       updatePublicIllumination(playerPosition);
       localLights.update(deltaTime, playerPosition);
