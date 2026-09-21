@@ -18,19 +18,6 @@
 
     <!-- Title card. See docs/TITLE_SCREEN.md; slots are filled by src/ui/title/marginalia.ts. -->
     <div class="intro" data-intro role="dialog" aria-modal="true" aria-labelledby="intro-title">
-      <svg class="intro__defs" aria-hidden="true" focusable="false">
-        <!-- Handwriting texture: slight edge wobble and ink breakup, found only on close inspection. -->
-        <filter id="intro-ink" x="-5%" y="-10%" width="110%" height="120%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="7" result="grain" />
-          <feDisplacementMap in="SourceGraphic" in2="grain" scale="2" xChannelSelector="R" yChannelSelector="G" result="wobble" />
-          <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="3" result="speckle" />
-          <feComponentTransfer in="speckle" result="breakup">
-            <feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 0.4 1" />
-          </feComponentTransfer>
-          <feComposite in="wobble" in2="breakup" operator="in" />
-        </filter>
-      </svg>
-
       <div class="intro__scrim" aria-hidden="true"></div>
       <div class="intro__fog" aria-hidden="true"></div>
       <div class="intro__light" aria-hidden="true">
@@ -41,51 +28,79 @@
       <div class="intro__passing" aria-hidden="true"></div>
       <div class="intro__grain" aria-hidden="true"></div>
 
-      <!-- The one calligraphic intervention: the idea behind the place name. -->
-      <p class="intro__script" aria-hidden="true">
-        <span class="intro__script-print">The Promised Land</span>
-        <span class="intro__script-ghost">The Promised Land</span>
-      </p>
+      <!--
+        The plate is a scanned print object, not a reconstruction from browser
+        primitives: it owns the title, the joust, the border and every piece of
+        marginalia. The box is locked to the artwork's aspect so the live
+        elements below can be positioned in per-cent of the plate and land on
+        the printed words at any window size.
+      -->
+      <div class="intro__plate">
+        <img
+          class="intro__artefact"
+          src="/ui/title/zealot-title-card.jpg"
+          alt=""
+          aria-hidden="true"
+          draggable="false"
+        />
 
-      <div class="intro__frame">
-        <div class="intro__corner intro__corner--top intro__corner--start intro__reveal">
-          <p class="intro__line intro__line--primary">The Spectres Are All Around Us</p>
-        </div>
-        <div class="intro__corner intro__corner--top intro__corner--end intro__reveal">
-          <p class="intro__line intro__line--primary">53°31′ N&ensp;2°13′ W</p>
-        </div>
-        <div class="intro__corner intro__corner--bottom intro__corner--start intro__reveal">
-          <p class="intro__line intro__line--secondary">Daniel Oyegade</p>
-        </div>
-        <div class="intro__corner intro__corner--bottom intro__corner--end intro__reveal">
-          <p class="intro__line intro__line--secondary">MMXXVI</p>
-        </div>
-        <p class="intro__controls" data-intro-slot="controls"></p>
-      </div>
+        <!--
+          The printed title, restated for assistive technology only. It reads
+          what the plate is actually lettered with, which is "Harpurhey" and
+          not the "Harperhey" the codebase and the page <title> use. See
+          docs/TITLE_SCREEN.md § Known limits.
+        -->
+        <h1 class="intro__title" id="intro-title">Zealot of Harpurhey</h1>
 
-      <div class="intro__beat intro__beat--rider z-tone--night" data-intro-slot="rider-beat" aria-hidden="true"></div>
-      <div class="intro__beat intro__beat--delivery z-tone--night" data-intro-slot="delivery-beat" aria-live="polite"></div>
-
-      <div class="intro__stage">
-        <h1 class="intro__title" id="intro-title">
-          <span class="intro__word">Zealot</span>
-          <span class="intro__of">of</span>
-          <span class="intro__word">Harperhey</span>
-        </h1>
-
-        <div class="intro__threshold">
-          <div class="intro__status" aria-live="polite">
-            <div class="intro__rule" data-intro-rule><div class="intro__rule-fill"></div></div>
-            <p class="intro__caption">
-              <span data-intro-label>Assembling the city</span>
-              <span data-intro-count></span>
-            </p>
-            <p class="intro__item" data-intro-item></p>
-          </div>
-          <button class="intro__prompt" type="button" data-intro-prompt disabled>
-            <span class="intro__prompt-action">Enter Harperhey</span>
-            <span class="intro__prompt-key" data-intro-key>[ Return ]</span>
+        <!--
+          The menu is printed, so it cannot light up on its own. These are
+          transparent hit areas laid exactly over ENTER / SETTINGS / QUIT; the
+          hover and focus states are a pool of lamplight falling on the line,
+          which is the same language the rest of the card is lit in.
+        -->
+        <nav class="intro__menu" aria-label="Title menu">
+          <button
+            class="intro__choice intro__choice--enter"
+            type="button"
+            data-intro-action="enter"
+            data-intro-prompt
+            disabled
+          >
+            <span class="intro__choice-label">Enter</span>
           </button>
+          <button
+            class="intro__choice intro__choice--settings"
+            type="button"
+            data-intro-action="settings"
+            aria-disabled="true"
+            disabled
+          >
+            <span class="intro__choice-label">Settings</span>
+          </button>
+          <button
+            class="intro__choice intro__choice--quit"
+            type="button"
+            data-intro-action="quit"
+            aria-disabled="true"
+            disabled
+          >
+            <span class="intro__choice-label">Quit</span>
+          </button>
+        </nav>
+
+        <!-- One line above the printed rule: the catalogue while loading, then
+             the controls, then whatever a chosen item has to say for itself. -->
+        <p class="intro__item" data-intro-item></p>
+        <p class="intro__controls" data-intro-slot="controls"></p>
+        <p class="intro__notice" data-intro-notice role="status"></p>
+
+        <!-- Assembly rides the plate's own bottom rule. -->
+        <div class="intro__status" aria-live="polite">
+          <div class="intro__rule" data-intro-rule><div class="intro__rule-fill"></div></div>
+          <p class="intro__caption">
+            <span data-intro-label>Assembling the city</span>
+            <span data-intro-count></span>
+          </p>
         </div>
       </div>
     </div>
@@ -98,7 +113,8 @@
           intro.remove();
           return;
         }
-        // Reveal the title only once EB Garamond is ready, so it never flashes in a fallback face.
+        // Show the live marginalia only once EB Garamond is ready, so it never
+        // flashes in a fallback face beside the plate's own printed type.
         const typeset = () => {
           intro.dataset.typesetAt = String(performance.now());
           intro.classList.add('is-typeset');
@@ -107,7 +123,6 @@
           Promise.all([
             document.fonts.load('400 1em "EB Garamond"'),
             document.fonts.load('italic 400 1em "EB Garamond"'),
-            document.fonts.load('400 1em "Herr Von Muellerhoff"'),
           ]),
           new Promise((resolve) => setTimeout(resolve, 2500)),
         ]).then(typeset, typeset);

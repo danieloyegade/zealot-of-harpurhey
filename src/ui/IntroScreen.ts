@@ -5,8 +5,8 @@ import { recordEntry } from './title/riderRecord';
 
 // The title card is authored in index.html and styled by ./intro.css so it
 // paints before the game bundle has parsed. This class feeds it the world's
-// asset loading, plays the beats between loading and entry, and runs the entry
-// into the city.
+// asset loading, plays the beats between loading and entry, drives the printed
+// menu, and runs the entry into the city.
 
 // A finished loading wave only counts as "loaded" if no new wave starts within
 // this window: several hero locations begin a second fetch after their first.
@@ -15,17 +15,16 @@ const LOAD_SETTLE_MS = 300;
 const TITLE_SETTLED_MS = 2200;
 // "City assembled", the star at the end of the line, a breath.
 const ASSEMBLED_HOLD_MS = 1400;
-// Dense, then sparse: the horse and rider alone, then the first delivery.
-const RIDER_BEAT_MS = 2600;
-const DELIVERY_BEAT_MS = 4600;
 // Each catalogue entry stays at least this long, so the list can be read in passing.
 const CATALOGUE_ENTRY_MS = 110;
 // Embedded textures have no name. Every so often one is admitted as such.
 const UNIDENTIFIED_EVERY = 9;
 const CONTROLS_VISIBLE_MS = 9000;
+// How long a chosen-but-unbuilt item's answer stays on the line.
+const NOTICE_VISIBLE_MS = 2600;
 
-// Entry, in order: marginalia and loading line fade, the lamp swells and the
-// city is heard, then the title dissolves into the world beneath it.
+// Entry, in order: the menu and assembly line fade, the lamp swells and the
+// city is heard, then the plate dissolves into the world beneath it.
 const CITY_HEARD_AT_MS = 900;
 const REVEAL_AT_MS = 2800;
 const REMOVE_AFTER_REVEAL_MS = 2800;
@@ -35,7 +34,7 @@ export interface IntroScreenOptions {
   readonly enterAutomatically: boolean;
 }
 
-type IntroState = 'loading' | 'assembled' | 'sequence' | 'ready' | 'entering' | 'gone';
+type IntroState = 'loading' | 'assembled' | 'ready' | 'entering' | 'gone';
 
 export class IntroScreen {
   /** Whether the card will hold the camera, resolution and sound until the player enters. */
@@ -46,8 +45,10 @@ export class IntroScreen {
   private readonly labelElement = this.find('[data-intro-label]');
   private readonly countElement = this.find('[data-intro-count]');
   private readonly itemElement = this.find('[data-intro-item]');
-  private readonly prompt = this.find<HTMLButtonElement>('[data-intro-prompt]');
-  private readonly promptKey = this.find('[data-intro-key]');
+  private readonly notice = this.find('[data-intro-notice]');
+  private readonly choices = Array.from(
+    this.element?.querySelectorAll<HTMLButtonElement>('[data-intro-action]') ?? [],
+  );
   private readonly touchOnly = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   private readonly assetsLoaded: Promise<void>;
   private readonly entering: Promise<void>;
@@ -62,6 +63,7 @@ export class IntroScreen {
   private anonymousAssets = 0;
   private pendingEntry: string | null = null;
   private entryTimer: number | undefined;
+  private noticeTimer: number | undefined;
 
   constructor(private readonly options: IntroScreenOptions) {
     this.assetsLoaded = new Promise((resolve) => {
@@ -97,8 +99,6 @@ export class IntroScreen {
       window.clearTimeout(this.settleTimer);
       this.settleTimer = window.setTimeout(this.resolveAssetsLoaded, LOAD_SETTLE_MS);
     };
-
-    if (this.touchOnly && this.promptKey) this.promptKey.textContent = '[ Touch ]';
   }
 
   /** Resolves once the world's initial models and textures have finished loading. */
@@ -137,27 +137,50 @@ export class IntroScreen {
     element.classList.add('is-assembled');
     await delay(ASSEMBLED_HOLD_MS);
 
-    // From here Return goes straight into the city; the beats are not a gate.
-    this.state = 'sequence';
+    // The card is one screen: the plate is never stepped away from, and the
+    // assembly line simply gives the frame back to the printed menu.
+    this.state = 'ready';
     window.addEventListener('keydown', this.handleKeyDown);
     if (this.touchOnly) element.addEventListener('pointerdown', this.enter);
-
-    element.classList.add('is-beat-rider');
-    await delay(RIDER_BEAT_MS);
-    if (this.state !== 'sequence') return;
-
-    element.classList.replace('is-beat-rider', 'is-beat-delivery');
-    await delay(DELIVERY_BEAT_MS);
-    if (this.state !== 'sequence') return;
-
-    element.classList.remove('is-beat-delivery');
-    this.state = 'ready';
     element.classList.add('is-ready', 'is-showing-controls');
     window.setTimeout(() => element.classList.remove('is-showing-controls'), CONTROLS_VISIBLE_MS);
-    if (this.prompt) {
-      this.prompt.disabled = false;
-      this.prompt.addEventListener('click', this.enter);
+
+    // The printed menu becomes live. Settings and Quit are chosen the same way
+    // Enter is; they simply have nothing behind them yet and say so.
+    for (const choice of this.choices) {
+      choice.disabled = false;
+      choice.addEventListener('click', this.handleChoice);
+      choice.addEventListener('pointerdown', stopPropagation);
     }
+  }
+
+  private readonly handleChoice = (event: MouseEvent): void => {
+    const choice = event.currentTarget as HTMLButtonElement;
+    if (choice.dataset.introAction === 'enter') {
+      this.enter();
+      return;
+    }
+    this.refuse(choice);
+  };
+
+  /** A line that has been chosen but has nothing behind it yet. */
+  private refuse(choice: HTMLButtonElement): void {
+    const element = this.element;
+    const label = choice.textContent?.trim() ?? '';
+    if (!element) return;
+
+    if (this.notice) this.notice.textContent = `${label} \u2014 not yet`;
+    element.classList.add('is-refusing');
+    choice.classList.remove('is-refused');
+    // Restart the gutter even when the same line is chosen twice running.
+    void choice.offsetWidth;
+    choice.classList.add('is-refused');
+
+    window.clearTimeout(this.noticeTimer);
+    this.noticeTimer = window.setTimeout(() => {
+      element.classList.remove('is-refusing');
+      choice.classList.remove('is-refused');
+    }, NOTICE_VISIBLE_MS);
   }
 
   private reportProgress(url: string, loaded: number, total: number): void {
@@ -194,27 +217,49 @@ export class IntroScreen {
   }
 
   private readonly handleKeyDown = (event: KeyboardEvent): void => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+    // Once the menu is live the arrows walk it, as a printed list is read.
+    if (this.state === 'ready' && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
+      event.preventDefault();
+      this.moveChoice(event.key === 'ArrowDown' ? 1 : -1);
+      return;
+    }
+
     // `key` covers Return and the numpad's Enter alike, whatever the layout.
-    if (event.key !== 'Enter') return;
-    if (event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
+    if (event.key !== 'Enter' || event.repeat) return;
+    // A focused line answers for itself: the button's own click does the work.
+    if (this.choices.some((choice) => choice === document.activeElement)) return;
     event.preventDefault();
     this.enter();
   };
 
+  private moveChoice(step: number): void {
+    const live = this.choices.filter((choice) => !choice.disabled);
+    if (live.length === 0) return;
+
+    const current = live.findIndex((choice) => choice === document.activeElement);
+    // Nothing chosen yet: the arrows start at Enter, where the lamp already is.
+    const next = current === -1 ? 0 : (current + step + live.length) % live.length;
+    live[next].focus();
+  }
+
   private readonly enter = (): void => {
     const element = this.element;
-    if (!element || (this.state !== 'sequence' && this.state !== 'ready')) return;
+    if (!element || this.state !== 'ready') return;
 
     this.state = 'entering';
+    window.clearTimeout(this.noticeTimer);
     window.removeEventListener('keydown', this.handleKeyDown);
     element.removeEventListener('pointerdown', this.enter);
-    if (this.prompt) {
-      this.prompt.blur();
-      this.prompt.disabled = true;
+    element.classList.remove('is-refusing');
+    for (const choice of this.choices) {
+      choice.blur();
+      choice.disabled = true;
+      choice.removeEventListener('click', this.handleChoice);
+      choice.removeEventListener('pointerdown', stopPropagation);
     }
     recordEntry();
-    // Entering from a beat brings the title back to dissolve into the city.
-    element.classList.remove('is-beat-rider', 'is-beat-delivery');
     element.classList.add('is-entering');
 
     window.setTimeout(this.resolveEntering, CITY_HEARD_AT_MS);
@@ -231,6 +276,12 @@ export class IntroScreen {
   private find<T extends HTMLElement = HTMLElement>(selector: string): T | null {
     return this.element?.querySelector<T>(selector) ?? null;
   }
+}
+
+// On a coarse pointer the whole card is a target for entering, so a deliberate
+// tap on one printed line must not also read as a tap on the card.
+function stopPropagation(event: Event): void {
+  event.stopPropagation();
 }
 
 function delay(milliseconds: number): Promise<void> {

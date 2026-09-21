@@ -33,8 +33,8 @@ import { createWorld } from './world/createWorld';
 import './style.css';
 
 // Title screen on/off. While false the game drops straight into the world once
-// it has loaded, with no card, prompt or entry sequence. Set back to true to restore it.
-const SHOW_TITLE_SCREEN = false;
+// it has loaded, with no card, prompt or entry sequence.
+const SHOW_TITLE_SCREEN = true;
 
 // Behind the title card the city is drawn at a fraction of its resolution: the
 // browser's upscale is the defocus, and it costs less than the game itself.

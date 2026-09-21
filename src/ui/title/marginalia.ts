@@ -1,11 +1,10 @@
-import { createDeliveryCard, createPrintedScript, ensureIdentityDefs } from '../identity/compositions';
-import { createHorseEmblem } from '../identity/emblems';
+import { ensureIdentityDefs } from '../identity/compositions';
 import { createZealotStar } from '../identity/zealotStar';
 
-// What the title card shows besides the title itself: the star on the loading
-// line, the two sparse beats between the city assembling and the invitation to
-// enter, and the controls line. The rest of the graphic vocabulary is withheld
-// for play. Layout lives in index.html (`data-intro-slot`) and intro.css.
+// What the title card shows besides the printed plate: the star riding the
+// assembly line, and the controls line. Everything else in the graphic
+// vocabulary is either printed on the plate or withheld for play. Layout lives
+// in index.html (`data-intro-slot`) and intro.css.
 
 // Controls that exist today. Add E / Interact and a map key when those systems do.
 const CONTROLS = [
@@ -19,25 +18,11 @@ const CONTROLS = [
 export function mountTitleContent(root: HTMLElement): void {
   ensureIdentityDefs();
 
-  // The one small symbol on the card: a red star riding the loading line.
+  // The one live symbol on the card: a star riding the plate's printed rule.
   root.querySelector('[data-intro-rule]')?.append(createZealotStar('intro__rule-star'));
 
-  // Sparse: a small horse, the rider's number, and far below, where.
-  slot(root, 'rider-beat')?.replaceChildren(
-    createHorseEmblem('z-emblem intro__beat-horse'),
-    line('Rider 01', 'intro__line intro__line--primary intro__beat-rider'),
-    line('53°31′ N / 2°13′ W', 'intro__line intro__line--tertiary intro__beat-coordinates'),
-  );
-
-  // The first delivery, announced by typography alone: the romance in the
-  // hand, the record in the cartouche.
-  slot(root, 'delivery-beat')?.replaceChildren(
-    createPrintedScript('Flowers', 'z-beat__script intro__beat-script'),
-    createDeliveryCard('night'),
-  );
-
   slot(root, 'controls')?.replaceChildren(
-    ...CONTROLS.map(([key, action]) => line(`${key} / ${action}`, '', 'span')),
+    ...CONTROLS.map(([key, action]) => span(`${key} / ${action}`)),
   );
 }
 
@@ -45,9 +30,8 @@ function slot(root: HTMLElement, name: string): HTMLElement | null {
   return root.querySelector<HTMLElement>(`[data-intro-slot="${name}"]`);
 }
 
-function line(text: string, className: string, tag: 'p' | 'span' = 'p'): HTMLElement {
-  const element = document.createElement(tag);
-  if (className) element.className = className;
+function span(text: string): HTMLElement {
+  const element = document.createElement('span');
   element.textContent = text;
   return element;
 }

@@ -2,22 +2,16 @@
  * Title card for Zealot of Harperhey.
  *
  * Linked from index.html rather than imported by main.ts, so it paints before
- * the game bundle has parsed. One sodium streetlight falls on a civic-
- * inscription title over the live city.
+ * the game bundle has parsed. The card is one scanned print object held over
+ * the live city: an oxblood plate, a knight on horseback running at a courier
+ * on a hire bike, and a printed menu.
  *
- * The card introduces only part of the graphic identity: the classical serif,
- * archival microtype, one calligraphic intervention ("The Promised Land") and
- * one small symbol (the red star on the loading line). Between loading and
- * entry come two sparse beats, the horse and rider and then the first delivery.
- * Everything else is withheld for play. See docs/TITLE_SCREEN.md and
+ * Because the menu is printed, it cannot light up on its own. Transparent hit
+ * areas are laid over ENTER / SETTINGS / QUIT in per-cent of the plate, and
+ * pointing at one brings the card's single lamp onto that line. Assembly rides
+ * the plate's own bottom rule. See docs/TITLE_SCREEN.md and
  * docs/GRAPHIC_IDENTITY.md.
  */
-
-@property --intro-develop {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: 130%;
-}
 
 .intro {
   --intro-ink: #efe6d2;
@@ -50,6 +44,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   user-select: none;
+  background: transparent;
 }
 
 /* Vignette, matching the game's own edge falloff. */
@@ -59,14 +54,8 @@
   inset: 0;
   background: radial-gradient(ellipse at 50% 48%, transparent 52%, rgb(0 0 0 / 62%) 100%);
   pointer-events: none;
+  opacity: 0;
   transition: opacity 2400ms ease;
-}
-
-.intro__defs {
-  position: absolute;
-  width: 0;
-  height: 0;
-  overflow: hidden;
 }
 
 /* ---- Night: scrim over the live city, fog, lamp, passing light, grain ---- */
@@ -222,421 +211,320 @@
   transition: opacity 2400ms ease;
 }
 
-/* ---- The calligraphic intervention ----------------------------------------
-   The Promised Land is an idea, so it is written in the hand behind HARPERHEY,
-   a place set in the institution's capitals. It develops like a photograph
-   rather than being drawn: exposure spreading unevenly, the second print pass
-   arriving later. */
+/* ---- The printed plate ----------------------------------------------------
+   The plate owns the static title, the joust, the border and every piece of
+   marginalia. It was authored as one reproduced object so the ink, the paper
+   and the registration fail together, and it is deliberately not rebuilt from
+   browser primitives.
 
-.intro__script {
-  position: absolute;
-  top: 55%;
-  left: 50%;
+   The box is locked to the artwork's aspect and contained in the window, so
+   every live element below can be placed in per-cent of the plate and land on
+   the printed words at any size. `container-type` makes 1cqw one per-cent of
+   the plate's width, so the live type scales with the print rather than with
+   the window. Browser text remains only for assembly, entry and accessibility. */
+
+.intro__plate {
+  position: relative;
   z-index: 1;
-  margin: 0;
-  color: var(--intro-ink);
-  font-family: var(--intro-hand);
-  font-size: clamp(5.5rem, 15vw, 16rem);
-  font-weight: 400;
-  line-height: 1;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transform: translate(-50%, -50%) rotate(-6deg);
-  transition: opacity 900ms ease;
+  width: min(100vw, calc(100vh * 1672 / 940));
+  width: min(100dvw, calc(100dvh * 1672 / 940));
+  aspect-ratio: 1672 / 940;
+  container-type: inline-size;
+  transition:
+    opacity 900ms ease,
+    filter 2200ms ease,
+    transform 3200ms var(--intro-ease);
 }
 
-.intro__script-print {
-  display: block;
-  opacity: 0.1;
-  filter: url(#intro-ink);
-  mask-image: radial-gradient(
-    ellipse 130% 110% at 30% 60%,
-    #000 var(--intro-develop),
-    transparent calc(var(--intro-develop) + 40%)
-  );
-}
-
-/* A second pass slightly out of register, as in a two-colour print. */
-.intro__script-ghost {
+.intro__artefact {
   position: absolute;
   inset: 0;
-  color: var(--intro-sodium);
-  opacity: 0.045;
-  filter: url(#intro-ink);
-  transform: translate(0.012em, -0.008em);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  filter: saturate(0.94) blur(1.5px);
+  opacity: 0;
+  transform: scale(1.008);
+  animation: intro-artefact-arrive 1800ms var(--intro-ease) 120ms forwards;
 }
 
-.intro.is-typeset .intro__script {
-  opacity: 1;
-}
-
-.intro.is-typeset .intro__script-print {
-  animation: intro-develop 5200ms cubic-bezier(0.3, 0.1, 0.3, 1) 1400ms both;
-}
-
-.intro.is-typeset .intro__script-ghost {
-  animation: intro-arrive 3000ms ease 3600ms both;
-}
-
-/* ---- Plate frame and marginalia ------------------------------------------ */
-
-.intro__frame {
-  --tick: 18px;
-  --tick-colour: rgb(239 230 210 / 30%);
-
+/* The printed title, restated for assistive technology only. */
+.intro__title {
   position: absolute;
-  inset: var(--intro-gutter);
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- The printed menu -----------------------------------------------------
+   Nothing here draws a word: the words are on the plate. These are hit areas
+   measured off the artwork, and the states are lamplight arriving on the line
+   being pointed at. Settings and Quit are `aria-disabled` rather than
+   `disabled`, because they are meant to be clickable and to answer for
+   themselves — they just have nothing behind them yet. */
+
+.intro__menu {
+  position: absolute;
+  inset: 0;
   z-index: 2;
   pointer-events: none;
-  background:
-    linear-gradient(var(--tick-colour), var(--tick-colour)) top left / var(--tick) 1px no-repeat,
-    linear-gradient(var(--tick-colour), var(--tick-colour)) top left / 1px var(--tick) no-repeat,
-    linear-gradient(var(--tick-colour), var(--tick-colour)) top right / var(--tick) 1px no-repeat,
-    linear-gradient(var(--tick-colour), var(--tick-colour)) top right / 1px var(--tick) no-repeat,
-    linear-gradient(var(--tick-colour), var(--tick-colour)) bottom left / var(--tick) 1px no-repeat,
-    linear-gradient(var(--tick-colour), var(--tick-colour)) bottom left / 1px var(--tick) no-repeat,
-    linear-gradient(var(--tick-colour), var(--tick-colour)) bottom right / var(--tick) 1px no-repeat,
-    linear-gradient(var(--tick-colour), var(--tick-colour)) bottom right / 1px var(--tick) no-repeat;
   transition: opacity 800ms ease;
 }
 
-.intro__reveal {
-  opacity: 0;
-  transition: opacity 1600ms ease var(--intro-reveal-delay, 1700ms);
-}
-
-.intro__line {
-  margin: 0;
-  line-height: 1;
-  text-transform: uppercase;
-  white-space: nowrap;
-  font-variant-numeric: lining-nums tabular-nums;
-}
-
-.intro__line--primary {
-  color: var(--intro-ink-1);
-  font-size: var(--intro-meta-1);
-  letter-spacing: 0.24em;
-}
-
-.intro__line--secondary {
-  color: var(--intro-ink-2);
-  font-size: var(--intro-meta-2);
-  letter-spacing: 0.22em;
-}
-
-.intro__line--tertiary {
-  color: var(--intro-ink-3);
-  font-size: var(--intro-meta-3);
-  letter-spacing: 0.2em;
-}
-
-.intro__corner {
+.intro__choice {
   position: absolute;
-  display: flex;
-  flex-direction: column;
+  left: 50%;
+  display: block;
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  transform: translateX(-50%);
+  -webkit-tap-highlight-color: transparent;
 }
 
-.intro__corner--start {
-  left: 0;
-  align-items: flex-start;
-  padding-left: calc(var(--tick) + 12px);
+.intro__choice[disabled] {
+  cursor: default;
+  pointer-events: none;
 }
 
-.intro__corner--end {
-  right: 0;
-  align-items: flex-end;
-  padding-right: calc(var(--tick) + 12px);
+/* Measured off the plate: the printed words sit inside these boxes. */
+.intro__choice--enter {
+  top: 84.6%;
+  width: 8.6%;
+  height: 3.4%;
 }
 
-/* Tracking trails the last letter; pull right-aligned lines back to the tick. */
-.intro__corner--end .intro__line {
-  margin-right: -0.22em;
+.intro__choice--settings {
+  top: 88.2%;
+  width: 8.6%;
+  height: 2.6%;
 }
 
-/* Each corner's line sits on the frame's tick arm rather than beside it. */
-.intro__corner--top {
-  top: 0;
-  transform: translateY(calc(var(--intro-meta-1) * -0.5));
+.intro__choice--quit {
+  top: 90.9%;
+  width: 6%;
+  height: 2.3%;
 }
 
-.intro__corner--bottom {
-  --intro-reveal-delay: 2100ms;
+.intro__choice-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
-  bottom: 0;
-  transform: translateY(calc(var(--intro-meta-2) * 0.5));
+/* The lamp finding the line. Feathered to nothing at its edges, so no
+   rectangle ever shows against the printed ground, and additive, so it lifts
+   the silver out of the oxblood instead of laying a film over both. */
+.intro__choice::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 176%;
+  height: 270%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgb(255 238 212 / 30%),
+    rgb(255 214 168 / 11%) 48%,
+    transparent 100%
+  );
+  filter: blur(2px);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.7);
+  transition:
+    opacity 420ms ease,
+    transform 520ms var(--intro-ease);
+}
+
+/* A rule struck under the chosen line, in the plate's own hand. */
+.intro__choice::after {
+  content: '';
+  position: absolute;
+  bottom: -6%;
+  left: 50%;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(250 238 216 / 72%), transparent);
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: width 460ms var(--intro-ease);
+}
+
+.intro__choice:is(:hover, :focus-visible)::before {
+  opacity: 1;
+  animation: none;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.intro__choice:is(:hover, :focus-visible)::after {
+  width: 76%;
+}
+
+.intro__choice:focus {
+  outline: none;
+}
+
+.intro__choice:focus-visible {
+  outline: 1px solid rgb(250 238 216 / 38%);
+  outline-offset: 2px;
+}
+
+/* Chosen, and nothing behind it: the lamp gutters and falls back. */
+.intro__choice.is-refused::before {
+  animation: intro-gutter 1000ms ease both;
+}
+
+/* Once the city is ready, Enter is the line already under the lamp. The
+   exclusion keeps this off whatever is being pointed at, which would otherwise
+   outrank the hover state and hold it at a breath. */
+.intro.is-ready .intro__choice--enter:not(:hover, :focus-visible)::before {
+  opacity: 0.46;
+  transform: translate(-50%, -50%) scale(0.9);
+  animation: intro-choice-breathe 5200ms ease-in-out 1400ms infinite;
+}
+
+/* ---- The line above the rule ----------------------------------------------
+   One line carries three things in turn: the catalogue while the city loads,
+   the controls once it is ready, and whatever a chosen item has to say. */
+
+.intro__item,
+.intro__controls,
+.intro__notice {
+  position: absolute;
+  top: 93.5%;
+  left: 50%;
+  z-index: 2;
+  width: 62%;
+  margin: 0;
+  overflow: hidden;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: opacity 700ms ease;
+}
+
+.intro__item {
+  color: rgb(250 238 216 / 40%);
+  font-size: clamp(8px, 0.68cqw, 12px);
+  font-style: italic;
+  letter-spacing: 0.02em;
 }
 
 .intro__controls {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
   display: flex;
   gap: 2.4em;
-  margin: 0;
-  color: rgb(239 230 210 / 36%);
-  font-size: var(--intro-meta-3);
+  justify-content: center;
+  color: rgb(250 238 216 / 34%);
+  font-size: clamp(7px, 0.6cqw, 10.5px);
   letter-spacing: 0.2em;
-  line-height: 1;
   text-transform: uppercase;
-  white-space: nowrap;
   opacity: 0;
-  transform: translate(-50%, calc(var(--intro-meta-3) * 0.5));
-  transition: opacity 1600ms ease;
 }
 
-/* ---- Beats: dense, then sparse ------------------------------------------- */
+.intro__notice {
+  color: rgb(250 238 216 / 62%);
+  font-size: clamp(7px, 0.6cqw, 10.5px);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  opacity: 0;
+}
 
-.intro__beat {
+.intro.is-showing-controls .intro__controls {
+  opacity: 1;
+}
+
+.intro.is-refusing .intro__controls,
+.intro.is-refusing .intro__item {
+  opacity: 0;
+}
+
+.intro.is-refusing .intro__notice {
+  opacity: 1;
+}
+
+/* ---- Assembly, riding the plate's own rule -------------------------------- */
+
+.intro__status {
   position: absolute;
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  container-type: inline-size;
   opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 900ms ease,
-    visibility 0s linear 900ms;
+  transition: opacity 1200ms ease 900ms;
 }
 
-.intro__beat-horse {
-  position: absolute;
-  top: 46%;
-  left: 50%;
-  width: clamp(46px, 3.6vw, 70px);
-  transform: translate(-50%, -50%);
-}
-
-.intro__beat-rider {
-  position: absolute;
-  top: calc(46% + clamp(36px, 3vw, 54px));
-  left: 50%;
-  padding-left: 0.24em;
-  transform: translateX(-50%);
-}
-
-.intro__beat-coordinates {
-  position: absolute;
-  bottom: 14%;
-  left: 50%;
-  padding-left: 0.2em;
-  transform: translateX(-50%);
-}
-
-.intro__beat-script .z-printed__ink {
-  opacity: 0.46;
-  mask-image: radial-gradient(
-    ellipse 130% 110% at 30% 60%,
-    #000 var(--intro-develop),
-    transparent calc(var(--intro-develop) + 40%)
-  );
-}
-
-.intro__beat-script .z-printed__ghost {
-  opacity: 0.12;
-}
-
-/* The record set against the romance needs a little night behind it to be read. */
-.intro__beat .z-delivery {
-  background: radial-gradient(closest-side, rgb(2 8 23 / 72%), rgb(2 8 23 / 40%) 70%, transparent);
-}
-
-/* ---- Title --------------------------------------------------------------- */
-
-.intro__stage {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: -5vh;
-  padding-inline: var(--intro-gutter);
-  transition: opacity 800ms ease;
-}
-
-.intro__title {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0;
-  font-size: clamp(2.4rem, 8.4vw, 7.4rem);
-  font-weight: 400;
-  line-height: 0.9;
-  letter-spacing: 0.11em;
-  text-align: center;
-  text-transform: uppercase;
-  text-shadow: 0 0 0.6em rgb(255 163 38 / 16%);
-}
-
-.intro__word {
-  display: block;
-  /* Letter-spacing trails the final letter; balance it so the word centres optically. */
-  padding-left: 0.11em;
-  opacity: 0;
-  filter: blur(12px);
-  transform: translateY(0.05em);
-  transition:
-    opacity 1700ms ease,
-    filter 1700ms var(--intro-ease),
-    transform 1700ms var(--intro-ease);
-}
-
-.intro__word + .intro__of + .intro__word {
-  transition-delay: 450ms;
-}
-
-.intro__of {
-  display: flex;
-  align-items: center;
-  gap: 0.7em;
-  margin: 0.34em 0 0.42em;
-  color: var(--intro-sodium-lit);
-  font-size: 0.3em;
-  font-style: italic;
-  letter-spacing: 0.02em;
-  line-height: 1;
-  text-transform: none;
-  opacity: 0;
-  transition: opacity 1600ms ease 1050ms;
-}
-
-.intro__of::before,
-.intro__of::after {
-  content: '';
-  width: 2.6em;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.5;
-}
-
-/* ---- Threshold: loading, then entry, stacked in one cell ------------------ */
-
-.intro__threshold {
-  display: grid;
-  width: min(21rem, 72vw);
-  margin-top: clamp(2.8rem, 8vh, 5rem);
-}
-
-.intro__threshold > * {
-  grid-area: 1 / 1;
-}
-
-.intro__status {
-  opacity: 0;
-  transition: opacity 1200ms ease 1900ms;
-}
-
+/* The plate already prints a rule here; this only lights the part reached. */
 .intro__rule {
-  position: relative;
-  height: 1px;
-  background: var(--intro-hairline);
+  position: absolute;
+  top: 95.74%;
+  left: 7%;
+  width: 86%;
+  height: 0.22%;
+  background: none;
 }
 
 .intro__rule-fill {
   height: 100%;
-  background: rgb(239 230 210 / 55%);
+  background: linear-gradient(90deg, rgb(255 242 218 / 8%), rgb(255 242 218 / 76%));
   transform: scaleX(var(--intro-progress, 0));
   transform-origin: left;
   transition: transform 700ms var(--intro-ease);
 }
 
-/* The Zealot star as the loading line's head: where the assembly has reached. */
+/* The Zealot star as the rule's head: where the assembly has reached. Struck
+   in the plate's silver rather than the identity's red, which the oxblood
+   ground would swallow. */
 .intro__rule-star {
   position: absolute;
   top: 50%;
   left: calc(var(--intro-progress, 0) * 100%);
-  width: 5px;
-  height: 12.5px;
+  width: clamp(3px, 0.3cqw, 5px);
+  height: clamp(8px, 0.75cqw, 12.5px);
   overflow: visible;
-  color: var(--intro-red);
+  color: rgb(255 240 214 / 82%);
   transform: translate(-50%, -50%);
   transition: left 700ms var(--intro-ease);
 }
 
 .intro__caption {
+  position: absolute;
+  top: 97.1%;
+  left: 7%;
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  margin: 0.8rem 0 0;
-  color: var(--intro-ink-2);
-  font-size: var(--intro-meta-2);
+  width: 86%;
+  margin: 0;
+  color: rgb(250 238 216 / 44%);
+  font-size: clamp(7px, 0.6cqw, 10.5px);
+  font-variant-numeric: lining-nums tabular-nums;
   letter-spacing: 0.24em;
   line-height: 1;
   text-transform: uppercase;
-  font-variant-numeric: lining-nums tabular-nums;
-}
-
-.intro__item {
-  min-height: 1.3em;
-  margin: 0.6rem 0 0;
-  overflow: hidden;
-  color: rgb(239 230 210 / 40%);
-  font-size: clamp(0.92rem, 0.8rem + 0.18vw, 1.1rem);
-  font-style: italic;
-  line-height: 1.3;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: opacity 600ms ease;
-}
-
-.intro__prompt {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  align-self: center;
-  justify-self: center;
-  gap: 0.95rem;
-  padding: 0.8rem 1.6rem;
-  color: var(--intro-ink);
-  background: none;
-  border: 0;
-  font: inherit;
-  cursor: pointer;
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 1200ms ease,
-    visibility 0s linear 1200ms;
-}
-
-.intro__prompt-action {
-  padding-left: 0.36em;
-  font-size: clamp(12px, 0.56rem + 0.2vw, 15px);
-  letter-spacing: 0.36em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.intro__prompt-key {
-  padding-left: 0.26em;
-  color: rgb(239 230 210 / 42%);
-  font-size: var(--intro-meta-3);
-  letter-spacing: 0.26em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.intro__prompt:focus {
-  outline: none;
-}
-
-.intro__prompt:focus-visible .intro__prompt-action {
-  color: var(--intro-sodium-lit);
 }
 
 /* ---- States -------------------------------------------------------------- */
 
 /* Added by the inline script in index.html once EB Garamond is ready. */
-.intro.is-typeset .intro__word {
-  opacity: 1;
-  filter: none;
-  transform: none;
-}
-
-.intro.is-typeset .intro__of,
-.intro.is-typeset .intro__reveal,
 .intro.is-typeset .intro__status {
   opacity: 1;
 }
@@ -649,61 +537,16 @@
   opacity: 0;
 }
 
-/* During a beat the title card steps back entirely. */
-.intro.is-beat-rider :is(.intro__stage, .intro__frame, .intro__script),
-.intro.is-beat-delivery :is(.intro__stage, .intro__frame, .intro__script) {
-  opacity: 0;
-}
-
-.intro.is-beat-rider .intro__beat--rider,
-.intro.is-beat-delivery .intro__beat--delivery {
-  opacity: 1;
-  visibility: visible;
-  transition:
-    opacity 1100ms ease 600ms,
-    visibility 0s;
-}
-
-.intro.is-beat-delivery .intro__beat-script .z-printed__ink {
-  animation: intro-develop-delivery 3800ms cubic-bezier(0.3, 0.1, 0.3, 1) 700ms both;
-}
-
-.intro.is-beat-delivery .intro__beat-script .z-printed__ghost {
-  animation: intro-arrive 2600ms ease 2000ms both;
-}
-
 .intro.is-ready .intro__status {
   opacity: 0;
   transition: opacity 700ms ease 0ms;
 }
 
-.intro.is-ready .intro__prompt {
-  opacity: 1;
-  visibility: visible;
-  transition:
-    opacity 1400ms ease 900ms,
-    visibility 0s;
-}
-
-.intro.is-ready .intro__prompt-key {
-  animation: intro-breathe 3600ms ease-in-out 2400ms infinite;
-}
-
-.intro.is-showing-controls .intro__controls {
-  opacity: 1;
-}
-
-/* Entry, in order: marginalia and the loading line fade; the lamp swells and
-   the scrim thins; then the title and its script dissolve into the city. */
-.intro.is-entering .intro__reveal,
-.intro.is-entering .intro__controls {
+/* Entry, in order: the live marginalia and the assembly line fade; the lamp
+   swells and the scrim thins; then the plate dissolves into the city. */
+.intro.is-entering :is(.intro__status, .intro__item, .intro__controls, .intro__notice, .intro__menu) {
   opacity: 0;
   transition: opacity 800ms ease 0ms;
-}
-
-.intro.is-entering .intro__threshold {
-  opacity: 0;
-  transition: opacity 700ms ease 300ms;
 }
 
 .intro.is-entering .intro__scrim {
@@ -731,29 +574,24 @@
   opacity: 0;
 }
 
-.intro.is-revealing :is(.intro__title, .intro__script) {
+.intro.is-revealing .intro__plate {
   opacity: 0;
-  filter: blur(6px);
+  filter: saturate(0.72) blur(8px);
+  transform: scale(1.018);
   transition:
     opacity 2400ms ease,
-    filter 2400ms ease;
+    filter 2400ms ease,
+    transform 2400ms ease;
 }
 
 /* ---- Motion -------------------------------------------------------------- */
 
-@keyframes intro-develop {
-  0% { --intro-develop: -45%; opacity: 0; filter: url(#intro-ink) blur(10px); }
-  35% { opacity: 0.06; }
-  100% { --intro-develop: 130%; opacity: 0.1; filter: url(#intro-ink) blur(0); }
-}
-
-@keyframes intro-develop-delivery {
-  0% { --intro-develop: -45%; opacity: 0; filter: url(#z-ink) blur(12px); }
-  100% { --intro-develop: 130%; opacity: 0.46; filter: url(#z-ink) blur(0); }
-}
-
-@keyframes intro-arrive {
-  from { opacity: 0; }
+@keyframes intro-artefact-arrive {
+  to {
+    opacity: 1;
+    filter: saturate(1) blur(0);
+    transform: scale(1);
+  }
 }
 
 @keyframes intro-lamp-warm {
@@ -771,11 +609,6 @@
 @keyframes intro-exposure {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.86; }
-}
-
-@keyframes intro-breathe {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.45; }
 }
 
 @keyframes intro-fog-west {
@@ -803,31 +636,30 @@
   83% { transform: translate(-2%, 6%); }
 }
 
-/* ---- Responsive ---------------------------------------------------------- */
+@keyframes intro-choice-breathe {
+  0%, 100% { opacity: 0.46; }
+  50% { opacity: 0.2; }
+}
 
+@keyframes intro-gutter {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  22% { opacity: 0.25; }
+  38% { opacity: 0.85; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+}
+
+/* ---- Responsive ----------------------------------------------------------- */
+
+/* The plate is a landscape object, so on a phone it is contained rather than
+   cropped and the night shows above and below it. At that size the printed
+   menu is a few pixels tall and the hit areas with it, so a tap anywhere
+   enters the city (IntroScreen keeps that fallback for coarse pointers) and
+   the assembly readout, which would be unreadable, is dropped. */
 @media (max-width: 760px) {
-  .intro__corner--end,
+  .intro__caption,
+  .intro__item,
   .intro__controls {
     display: none;
-  }
-
-  .intro__corner--start {
-    left: 50%;
-    align-items: center;
-    padding-left: 0;
-  }
-
-  .intro__corner--start.intro__corner--top {
-    transform: translate(-50%, calc(var(--intro-meta-1) * -0.5));
-  }
-
-  .intro__corner--start.intro__corner--bottom {
-    transform: translate(-50%, calc(var(--intro-meta-2) * 0.5));
-  }
-
-  .intro__line {
-    font-size: 10px;
-    letter-spacing: 0.16em;
   }
 }
 
@@ -843,11 +675,7 @@
   .intro__fog::after,
   .intro__passing,
   .intro__grain,
-  .intro.is-ready .intro__prompt-key,
-  .intro.is-typeset .intro__script-print,
-  .intro.is-typeset .intro__script-ghost,
-  .intro.is-beat-delivery .intro__beat-script .z-printed__ink,
-  .intro.is-beat-delivery .intro__beat-script .z-printed__ghost {
+  .intro.is-ready .intro__choice--enter::before {
     animation: none;
   }
 
@@ -855,8 +683,7 @@
     opacity: 0;
   }
 
-  .intro__word,
-  .intro.is-revealing :is(.intro__title, .intro__script) {
+  .intro.is-revealing .intro__plate {
     filter: none;
     transform: none;
   }
