@@ -802,6 +802,13 @@ function applyDreamsModelPolicy(model: Group): void {
         continue;
       }
       profileAuthoredMaps(material);
+      if (material.name === 'Dreams_Greybox_Light_Tube') {
+        // The greybox's fluorescent tubes over the signboard and shutters.
+        material.emissive.set(0xd9fff8);
+        material.emissiveIntensity = 1.25 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        material.roughness = 0.24;
+        continue;
+      }
       if (material.name.includes('mat-dreams-photographic-front')) {
         material.emissive.set(0xc7dce0);
         material.emissiveMap = material.map;
@@ -3786,9 +3793,15 @@ function addHeroLocalLights(localLights: LocalLightRegistry): void {
     priority?: number,
   ];
 
+  // Dreams faces north, away from the moonlight, so this is its frontage's only
+  // real light. Centre it on the plot, just proud of the fascia and signboard.
+  const dreams = WORLD_LOCATIONS.find((location) => location.id === 'dreams');
+  const dreamsFrontX = dreams?.x ?? -3;
+  const dreamsFrontZ = dreams ? dreams.z - dreams.depth / 2 - 1.8 : 33.2;
+
   const definitions: HeroLightDefinition[] = [
     ['Bus Stop A hero light', BUS_STOPS[0].x, 2.35, BUS_STOPS[0].z, 0xb9ffe7, 8, 8, 18, 1.1],
-    ['Dreams hero light', -3, 4.5, 33.2, VISUAL_STYLE.lighting.coldWhite, 1.8, 10, 16, 1.05],
+    ['Dreams hero light', dreamsFrontX, 4.2, dreamsFrontZ, VISUAL_STYLE.lighting.coldWhite, 9, 13, 18, 1.05],
     ['Renee hero light', 17, 2.5, -30.8, VISUAL_STYLE.lighting.magenta, 7, 9, 15],
     ['Florist hero light', -16.9, 2.7, -27, VISUAL_STYLE.lighting.sodium, 7.5, 9, 15],
     ['Bus Stop B hero light', BUS_STOPS[1].x, 2.35, BUS_STOPS[1].z, 0xb9ffe7, 8, 8, 16, 1.1],
