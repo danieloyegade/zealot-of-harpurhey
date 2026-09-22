@@ -313,7 +313,16 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 **Left uncommitted (if any):** None.
 **Flagged:** Pressing Enter on the title card did not start the game in the preview browser; clicking "Enter" did. May be intentional.
 **Cleanup done:** Deleted `codex/tone-mapping` (local + remote, and its `.worktrees/` worktree), `codex/performance-recovery` (local), `claude/game-improvement-ideas-vkan3h` and `claude/local-game-startup-qjn3f1` (remote). `codex/tone-mapping` (which contains `625474d`) is preserved as the pushed tag `archive/tone-mapping` for salvage.
-**Next:** Rebuild the listed unique features on short branches off main one at a time. Do not create new long-lived side branches.
+**Branch consolidation status:** Both remaining branches (`engineer-communication-workflow-uex7id` and `local-cloud-workflow-h6ivy0`) have severe merge conflicts with main because they split off 12–14 commits ago. Main now has its own camera occlusion handling, transmission glass removal, and other overlapping changes.
+
+Merging them directly would lose main's Sep 20-21 camera follow retunes. Safe options:
+1. Rebase each branch on main and resolve conflicts manually.
+2. Cherry-pick specific commits from the tags/branches.
+3. Manually rebuild the unique features (LocationLabel, LoadingVeil, typecheck CI, assetUrl helper, pointer-lock camera).
+
+For now these branches remain unmerged; they are tagged for reference (`archive/tone-mapping`) or preserved on GitHub.
+
+**Next:** Daniel's call on whether to spend effort rebasing/rebuilding these features or consider them deprioritized the listed unique features on short branches off main one at a time. Do not create new long-lived side branches.
 **Open questions:** None.
 
 ---
