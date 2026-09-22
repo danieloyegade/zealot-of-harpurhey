@@ -1,0 +1,20 @@
+{
+  "buildings": [
+    {
+      "building": "vinyl-exchange",
+      "glb": "assets/models/vinyl-exchange-blockout.glb",
+      "legacyExporter": "blender/scripts/exportVinylExchangeBlockout.py",
+      "surfacePrefix": "MAT_VE_Surface_",
+      "textureDir": "blender/source/textures/vinyl-exchange",
+      "placeholders": {},
+      "untexturedAllowed": [
+        "MAT_VE_Interior_PLACEHOLDER",
+        "MAT_VE_DisplaySurface_PLACEHOLDER",
+        "MAT_VE_Glass_PLACEHOLDER",
+        "MAT_VE_Plaque_PLACEHOLDER"
+      ],
+      "expectedSurfaces": 10,
+      "maxBytes": 16000000
+    }
+  ]
+}
