@@ -22,6 +22,22 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-22 — Claude (The Hive textured)
+**HEAD at session start:** `ff86429`
+**Did:**
+- Plan Task 6 (`79f8253`): The Hive now has 6 measured sets (charcoal brick, buff brick, concrete, bronze metal, white render, interior oak). The GLB is 4.80 MB.
+- Checked in game with a new `?view=the-hive`: textured, no console errors.
+**Shared changes:**
+- `measurePatch.py` takes an optional luminance percentile. The buff tower's pale joints are too fine to box, so mortar = p85 of a brick-and-joint patch.
+- `brick()` gains `overburnt` (default 0.08, so CTL regenerates byte-identical, verified). The Hive uses 0 because its brick is modern and machine-made.
+- `concrete` / `painted_render` now default to 512 px. At 1024 their incompressible fine-grain normals pushed the Hive to 8.45 MB.
+**Flagged:**
+- Pale-brick colour is measured as a neutral buff-grey (`#B4A8A3`). All three photos are overcast, so it may read cooler than the real sand brick. It's kept as measured rather than hand-tuned.
+- The bird-motif screens (`MAT_MetalScreen_PLACEHOLDER`) are untextured; they need their own artwork pass.
+**Left uncommitted:** the other session's Cass Art `createWorld.ts` diff, still untouched. My hunk was staged against `HEAD` again.
+**Next:** Task 7, Gulliver's.
+
+---
 ## 2026-09-22 — Claude (texture pipeline + Come Through Lab)
 **HEAD at session start:** `f596889`
 **Did:**
