@@ -142,6 +142,8 @@ if (import.meta.env.DEV) {
     'west-street': [-29.5, 25],
     'west-shops': [-29.5, 7],
     'east-shops': [29.5, 19],
+    // Renee's Thomas Street frontage from across the road (surface pass).
+    'renee': [17, -25.5, 0, 0.04],
     // Gulliver's tiled Oldham Street frontage from across the road (surface pass).
     'gullivers': [27.9, -25.5, 0, 0.04],
     // The Hive's west frontage from across Lever Street (surface pass).

@@ -1,0 +1,276 @@
+{
+  "black facade": {
+    "albedo": "#22282C",
+    "samples": [
+      {
+        "box": [
+          1164,
+          337,
+          2420,
+          465
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+        "srgb": "#24282B"
+      },
+      {
+        "box": [
+          698,
+          517,
+          2420,
+          554
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+        "srgb": "#1C1E20"
+      },
+      {
+        "box": [
+          0,
+          0,
+          560,
+          45
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/2028.photo.2.jpg",
+        "srgb": "#27333A"
+      }
+    ]
+  },
+  "brick face": {
+    "albedo": "#AC816E",
+    "samples": [
+      {
+        "box": [
+          919,
+          35,
+          1117,
+          256
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+        "srgb": "#B08470"
+      },
+      {
+        "box": [
+          1396,
+          47,
+          1559,
+          256
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+        "srgb": "#A27A67"
+      },
+      {
+        "box": [
+          1839,
+          47,
+          2071,
+          256
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+        "srgb": "#B18674"
+      }
+    ]
+  },
+  "brick mortar": {
+    "albedo": "#CA9E8A",
+    "samples": [
+      {
+        "box": [
+          919,
+          35,
+          1117,
+          256
+        ],
+        "light": "overcast",
+        "percentile": 85,
+        "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+        "srgb": "#C69A86"
+      },
+      {
+        "box": [
+          1839,
+          47,
+          2071,
+          256
+        ],
+        "light": "overcast",
+        "percentile": 85,
+        "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+        "srgb": "#CDA28E"
+      }
+    ]
+  },
+  "concrete": {
+    "albedo": "#A99C8E",
+    "samples": [
+      {
+        "box": [
+          230,
+          560,
+          500,
+          650
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_4910-1200x675.jpg",
+        "srgb": "#B3A794"
+      },
+      {
+        "box": [
+          660,
+          660,
+          900,
+          720
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_0932-1470x770.jpg",
+        "srgb": "#9F9287"
+      }
+    ]
+  },
+  "dark wall": {
+    "albedo": "#182B3C",
+    "samples": [
+      {
+        "box": [
+          45,
+          360,
+          150,
+          430
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_4910-1200x675.jpg",
+        "srgb": "#071E34"
+      },
+      {
+        "box": [
+          440,
+          390,
+          640,
+          540
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_0932-1470x770.jpg",
+        "srgb": "#2A3843"
+      }
+    ]
+  },
+  "metal": {
+    "albedo": "#464E4E",
+    "samples": [
+      {
+        "box": [
+          532,
+          450,
+          605,
+          620
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_0932-1470x770.jpg",
+        "srgb": "#464E4E"
+      }
+    ]
+  },
+  "stone": {
+    "albedo": "#FAFCFC",
+    "samples": [
+      {
+        "box": [
+          680,
+          326,
+          903,
+          351
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+        "srgb": "#FAFCFC"
+      },
+      {
+        "box": [
+          1564,
+          291,
+          1820,
+          319
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+        "srgb": "#FAFCFC"
+      }
+    ]
+  },
+  "timber dark": {
+    "albedo": "#AD7F55",
+    "samples": [
+      {
+        "box": [
+          450,
+          10,
+          760,
+          80
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_0932-1470x770.jpg",
+        "srgb": "#AD7F55"
+      }
+    ]
+  },
+  "timber light": {
+    "albedo": "#D8BC96",
+    "samples": [
+      {
+        "box": [
+          760,
+          220,
+          1100,
+          320
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_4910-1200x675.jpg",
+        "srgb": "#D6C3A4"
+      },
+      {
+        "box": [
+          300,
+          20,
+          600,
+          100
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/renae/IMG_4910-1200x675.jpg",
+        "srgb": "#DAB587"
+      }
+    ]
+  },
+  "window frame": {
+    "albedo": "#F8FAFB",
+    "samples": [
+      {
+        "box": [
+          698,
+          70,
+          884,
+          326
+        ],
+        "light": "overcast",
+        "percentile": 85,
+        "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+        "srgb": "#F8FAFA"
+      },
+      {
+        "box": [
+          1583,
+          12,
+          1804,
+          291
+        ],
+        "light": "overcast",
+        "percentile": 85,
+        "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+        "srgb": "#F7FBFC"
+      }
+    ]
+  }
+}

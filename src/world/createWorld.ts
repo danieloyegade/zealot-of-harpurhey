@@ -1004,8 +1004,9 @@ function applyCassArtModelPolicy(model: Group): void {
 }
 
 function applyReneeBlockoutPolicy(model: Group): void {
-  // Renee is at the geometry approval gate. Preserve its authored material-ID
-  // palette and prevent the clay blockout from inheriting emissive treatment.
+  // Renee carries the measured PBR sets from reneeTextures.py (brick, black
+  // fascia, white frames and sills, oak, navy walls, concrete). Runtime keeps the
+  // maps, prevents stray emissive treatment and configures the glazing.
   model.traverse((child) => {
     if (!(child instanceof Mesh)) {
       return;
@@ -1019,6 +1020,7 @@ function applyReneeBlockoutPolicy(model: Group): void {
       if (!(material instanceof MeshStandardMaterial)) {
         continue;
       }
+      profileAuthoredMaps(material);
       material.emissive.set(0x000000);
       material.emissiveIntensity = 0;
       if (material.name === 'MAT_REN_Glass_PLACEHOLDER') {
@@ -1026,7 +1028,7 @@ function applyReneeBlockoutPolicy(model: Group): void {
         material.opacity = 0.22;
         material.depthWrite = false;
         material.roughness = 0.28;
-      } else {
+      } else if (!material.map) {
         material.roughness = Math.max(material.roughness, 0.58);
       }
     }
@@ -1525,11 +1527,11 @@ async function replaceReneeFallback(
 ): Promise<void> {
   try {
     const renee = await loadModel(
-      'assets/models/renee-blockout.glb?v=geometry-wip-20260911',
+      'assets/models/renee-blockout.glb?v=textured-20260922',
     );
     applyReneeBlockoutPolicy(renee);
     mergeStaticModelMeshes(renee);
-    renee.name = 'Renee geometry blockout — textures pending';
+    renee.name = 'Renee textured asset';
     // Blender -Y becomes Three.js +Z, matching this south-facing plot. The
     // plot centre is shifted north so the deeper model keeps the old frontage.
     renee.position.set(location.x, 0, location.z);

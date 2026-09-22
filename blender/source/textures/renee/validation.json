@@ -1,0 +1,912 @@
+{
+  "asset": "renee",
+  "pass": "surface materials (commonSurfaces)",
+  "convention": {
+    "maps": "<slug>-{basecolor,orm,normal}.png",
+    "orm": "R occlusion, G roughness, B metallic (glTF)",
+    "normal": "OpenGL tangent space (+Y up)",
+    "unit": "1 Blender unit = 1 m; coverage_m is what one tile spans"
+  },
+  "measured_reference_patches": {
+    "black facade": {
+      "albedo": "#22282C",
+      "samples": [
+        {
+          "box": [
+            1164,
+            337,
+            2420,
+            465
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+          "srgb": "#24282B"
+        },
+        {
+          "box": [
+            698,
+            517,
+            2420,
+            554
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+          "srgb": "#1C1E20"
+        },
+        {
+          "box": [
+            0,
+            0,
+            560,
+            45
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/2028.photo.2.jpg",
+          "srgb": "#27333A"
+        }
+      ]
+    },
+    "brick face": {
+      "albedo": "#AC816E",
+      "samples": [
+        {
+          "box": [
+            919,
+            35,
+            1117,
+            256
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+          "srgb": "#B08470"
+        },
+        {
+          "box": [
+            1396,
+            47,
+            1559,
+            256
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+          "srgb": "#A27A67"
+        },
+        {
+          "box": [
+            1839,
+            47,
+            2071,
+            256
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+          "srgb": "#B18674"
+        }
+      ]
+    },
+    "brick mortar": {
+      "albedo": "#CA9E8A",
+      "samples": [
+        {
+          "box": [
+            919,
+            35,
+            1117,
+            256
+          ],
+          "light": "overcast",
+          "percentile": 85,
+          "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+          "srgb": "#C69A86"
+        },
+        {
+          "box": [
+            1839,
+            47,
+            2071,
+            256
+          ],
+          "light": "overcast",
+          "percentile": 85,
+          "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+          "srgb": "#CDA28E"
+        }
+      ]
+    },
+    "concrete": {
+      "albedo": "#A99C8E",
+      "samples": [
+        {
+          "box": [
+            230,
+            560,
+            500,
+            650
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_4910-1200x675.jpg",
+          "srgb": "#B3A794"
+        },
+        {
+          "box": [
+            660,
+            660,
+            900,
+            720
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_0932-1470x770.jpg",
+          "srgb": "#9F9287"
+        }
+      ]
+    },
+    "dark wall": {
+      "albedo": "#182B3C",
+      "samples": [
+        {
+          "box": [
+            45,
+            360,
+            150,
+            430
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_4910-1200x675.jpg",
+          "srgb": "#071E34"
+        },
+        {
+          "box": [
+            440,
+            390,
+            640,
+            540
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_0932-1470x770.jpg",
+          "srgb": "#2A3843"
+        }
+      ]
+    },
+    "metal": {
+      "albedo": "#464E4E",
+      "samples": [
+        {
+          "box": [
+            532,
+            450,
+            605,
+            620
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_0932-1470x770.jpg",
+          "srgb": "#464E4E"
+        }
+      ]
+    },
+    "stone": {
+      "albedo": "#FAFCFC",
+      "samples": [
+        {
+          "box": [
+            680,
+            326,
+            903,
+            351
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+          "srgb": "#FAFCFC"
+        },
+        {
+          "box": [
+            1564,
+            291,
+            1820,
+            319
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+          "srgb": "#FAFCFC"
+        }
+      ]
+    },
+    "timber dark": {
+      "albedo": "#AD7F55",
+      "samples": [
+        {
+          "box": [
+            450,
+            10,
+            760,
+            80
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_0932-1470x770.jpg",
+          "srgb": "#AD7F55"
+        }
+      ]
+    },
+    "timber light": {
+      "albedo": "#D8BC96",
+      "samples": [
+        {
+          "box": [
+            760,
+            220,
+            1100,
+            320
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_4910-1200x675.jpg",
+          "srgb": "#D6C3A4"
+        },
+        {
+          "box": [
+            300,
+            20,
+            600,
+            100
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/renae/IMG_4910-1200x675.jpg",
+          "srgb": "#DAB587"
+        }
+      ]
+    },
+    "window frame": {
+      "albedo": "#F8FAFB",
+      "samples": [
+        {
+          "box": [
+            698,
+            70,
+            884,
+            326
+          ],
+          "light": "overcast",
+          "percentile": 85,
+          "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+          "srgb": "#F8FAFA"
+        },
+        {
+          "box": [
+            1583,
+            12,
+            1804,
+            291
+          ],
+          "light": "overcast",
+          "percentile": 85,
+          "photo": "references/architecture/buildings/renae/IMG_8039-1-scaled.jpg",
+          "srgb": "#F7FBFC"
+        }
+      ]
+    }
+  },
+  "materials": [
+    {
+      "slug": "ren-brick",
+      "description": "Red-brown brick upper floors",
+      "coverage_m": [
+        1.8,
+        1.8
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        1.7578,
+        1.7578
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.84,
+        0.95
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -4.763,
+        0.247
+      ],
+      "base_srgb_mean": [
+        171,
+        129,
+        111
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ren-brick-basecolor.png",
+          "bytes": 360979
+        },
+        "orm": {
+          "file": "ren-brick-orm.png",
+          "bytes": 50435
+        },
+        "normal": {
+          "file": "ren-brick-normal.png",
+          "bytes": 708954
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.06,
+          "typical": 0.56
+        },
+        "basecolor_v": {
+          "wrap": 0.04,
+          "typical": 1.5
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.66
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 2.11
+        },
+        "normal_u": {
+          "wrap": 0.36,
+          "typical": 1.72
+        },
+        "normal_v": {
+          "wrap": 0.23,
+          "typical": 4.62
+        }
+      }
+    },
+    {
+      "slug": "ren-facade-black",
+      "description": "Matte black fascia, shutter box and shopfront",
+      "coverage_m": [
+        2.4,
+        2.4
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        4.6875,
+        4.6875
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.641,
+        0.773
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.375,
+        0.407
+      ],
+      "base_srgb_mean": [
+        35,
+        41,
+        45
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ren-facade-black-basecolor.png",
+          "bytes": 25065
+        },
+        "orm": {
+          "file": "ren-facade-black-orm.png",
+          "bytes": 31311
+        },
+        "normal": {
+          "file": "ren-facade-black-normal.png",
+          "bytes": 327314
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.05
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.06
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        },
+        "normal_u": {
+          "wrap": 0.71,
+          "typical": 0.7
+        },
+        "normal_v": {
+          "wrap": 0.67,
+          "typical": 0.7
+        }
+      }
+    },
+    {
+      "slug": "ren-stone",
+      "description": "White-painted sills",
+      "coverage_m": [
+        1.2,
+        1.2
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        2.3438,
+        2.3438
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.729,
+        0.821
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.398,
+        0.385
+      ],
+      "base_srgb_mean": [
+        248,
+        250,
+        250
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ren-stone-basecolor.png",
+          "bytes": 30415
+        },
+        "orm": {
+          "file": "ren-stone-orm.png",
+          "bytes": 19344
+        },
+        "normal": {
+          "file": "ren-stone-normal.png",
+          "bytes": 383619
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.05
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.02
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        },
+        "normal_u": {
+          "wrap": 1.03,
+          "typical": 1.24
+        },
+        "normal_v": {
+          "wrap": 1.09,
+          "typical": 1.24
+        }
+      }
+    },
+    {
+      "slug": "ren-concrete",
+      "description": "Polished concrete floor",
+      "coverage_m": [
+        2.0,
+        2.0
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        3.9062,
+        3.9062
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.55,
+        0.689
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.976,
+        0.194
+      ],
+      "base_srgb_mean": [
+        167,
+        155,
+        141
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ren-concrete-basecolor.png",
+          "bytes": 293827
+        },
+        "orm": {
+          "file": "ren-concrete-orm.png",
+          "bytes": 115964
+        },
+        "normal": {
+          "file": "ren-concrete-normal.png",
+          "bytes": 388121
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.6,
+          "typical": 1.73
+        },
+        "basecolor_v": {
+          "wrap": 0.67,
+          "typical": 1.71
+        },
+        "orm_u": {
+          "wrap": 0.44,
+          "typical": 1.37
+        },
+        "orm_v": {
+          "wrap": 0.51,
+          "typical": 1.31
+        },
+        "normal_u": {
+          "wrap": 0.96,
+          "typical": 1.38
+        },
+        "normal_v": {
+          "wrap": 0.92,
+          "typical": 1.37
+        }
+      }
+    },
+    {
+      "slug": "ren-metal",
+      "description": "Dark metal fixtures",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.483,
+        0.649
+      ],
+      "metallic_range": [
+        0.0,
+        0.581
+      ],
+      "relief_mm": [
+        -0.183,
+        0.097
+      ],
+      "base_srgb_mean": [
+        70,
+        78,
+        78
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ren-metal-basecolor.png",
+          "bytes": 30973
+        },
+        "orm": {
+          "file": "ren-metal-orm.png",
+          "bytes": 59773
+        },
+        "normal": {
+          "file": "ren-metal-normal.png",
+          "bytes": 148202
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.03
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.03
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.08
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.08
+        },
+        "normal_u": {
+          "wrap": 0.13,
+          "typical": 0.16
+        },
+        "normal_v": {
+          "wrap": 0.16,
+          "typical": 0.17
+        }
+      }
+    },
+    {
+      "slug": "ren-frame-paint",
+      "description": "White uPVC window frames",
+      "coverage_m": [
+        0.3,
+        0.3
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.5859,
+        0.5859
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.35,
+        0.479
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.118,
+        0.106
+      ],
+      "base_srgb_mean": [
+        247,
+        249,
+        251
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ren-frame-paint-basecolor.png",
+          "bytes": 19430
+        },
+        "orm": {
+          "file": "ren-frame-paint-orm.png",
+          "bytes": 59356
+        },
+        "normal": {
+          "file": "ren-frame-paint-normal.png",
+          "bytes": 35858
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.16,
+          "typical": 0.29
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        },
+        "orm_u": {
+          "wrap": 0.17,
+          "typical": 0.66
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.03
+        },
+        "normal_u": {
+          "wrap": 1.4,
+          "typical": 0.66
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        }
+      }
+    },
+    {
+      "slug": "ren-timber",
+      "description": "Pale oak slats, ceiling panels and shelving",
+      "coverage_m": [
+        0.6,
+        1.2
+      ],
+      "pixels": [
+        512,
+        1024
+      ],
+      "mm_per_texel": [
+        1.1719,
+        1.1719
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.55,
+        0.55
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.16,
+        0.06
+      ],
+      "base_srgb_mean": [
+        205,
+        174,
+        136
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ren-timber-basecolor.png",
+          "bytes": 335067
+        },
+        "orm": {
+          "file": "ren-timber-orm.png",
+          "bytes": 11353
+        },
+        "normal": {
+          "file": "ren-timber-normal.png",
+          "bytes": 162770
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 4.1,
+          "typical": 8.41
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.18
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "normal_u": {
+          "wrap": 0.84,
+          "typical": 1.16
+        },
+        "normal_v": {
+          "wrap": 0.02,
+          "typical": 0.04
+        }
+      }
+    },
+    {
+      "slug": "ren-wall-dark",
+      "description": "Navy-painted interior walls",
+      "coverage_m": [
+        2.0,
+        2.0
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        3.9062,
+        3.9062
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.9,
+        0.9
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.097,
+        0.097
+      ],
+      "base_srgb_mean": [
+        24,
+        43,
+        60
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ren-wall-dark-basecolor.png",
+          "bytes": 13201
+        },
+        "orm": {
+          "file": "ren-wall-dark-orm.png",
+          "bytes": 5806
+        },
+        "normal": {
+          "file": "ren-wall-dark-normal.png",
+          "bytes": 151071
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.01
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "normal_u": {
+          "wrap": 0.12,
+          "typical": 0.13
+        },
+        "normal_v": {
+          "wrap": 0.12,
+          "typical": 0.13
+        }
+      }
+    }
+  ]
+}

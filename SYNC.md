@@ -44,6 +44,16 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 **Open questions:** None.
 
 ---
+## 2026-09-22 — Claude (Renee textured; Codex's Cass Art committed)
+**HEAD at session start:** `55bb200`
+**Did:**
+- Committed Codex's uncommitted Cass Art pass as `ca84bdb`, at Daniel's request. `npm run check` passed. The unrelated `references/.../Busses/` images were left untracked.
+- Plan Task 8: Renee now has 8 measured sets. The GLB is 4.04 MB. It's visible in game at the new `?view=renee` with no console errors.
+**Measurement notes:** exterior colour is from `IMG_8039` (the same frontage in overcast light). `renae-NQ` is sunny, and its shaded facade takes a strong blue sky cast: the brick measures a neutral mauve-grey there. The white frames and sills sample near clipping.
+**Flagged:** Daniel's dev server on 5173 had stopped; I restarted it via the preview tool.
+**Next:** Real Camera (plan Task 9).
+
+---
 ## 2026-09-22 — Claude (Dreams lighting, Gulliver's textured)
 **HEAD at session start:** `e8956ce`
 **Did:**

@@ -149,6 +149,28 @@
       ],
       "expectedSurfaces": 9,
       "maxBytes": 5000000
+    },
+    {
+      "building": "renee",
+      "glb": "assets/models/renee-blockout.glb",
+      "surfacePrefix": "MAT_REN_Surface_",
+      "textureDir": "blender/source/textures/renee",
+      "placeholders": {
+        "MAT_REN_Brick_PLACEHOLDER": "ren-brick",
+        "MAT_REN_BlackFacade_PLACEHOLDER": "ren-facade-black",
+        "MAT_REN_Stone_PLACEHOLDER": "ren-stone",
+        "MAT_REN_Concrete_PLACEHOLDER": "ren-concrete",
+        "MAT_REN_Metal_PLACEHOLDER": "ren-metal",
+        "MAT_REN_WindowFrame_PLACEHOLDER": "ren-frame-paint",
+        "MAT_REN_Timber_PLACEHOLDER": "ren-timber",
+        "MAT_REN_DarkWall_PLACEHOLDER": "ren-wall-dark"
+      },
+      "untexturedAllowed": [
+        "MAT_REN_Upholstery_PLACEHOLDER",
+        "MAT_REN_Glass_PLACEHOLDER"
+      ],
+      "expectedSurfaces": 8,
+      "maxBytes": 5000000
     }
   ]
 }
