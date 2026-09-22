@@ -840,8 +840,9 @@ function applyDreamsModelPolicy(model: Group): void {
 }
 
 function applyGulliversModelPolicy(model: Group): void {
-  // This is the geometry-approval asset. Preserve its deliberately simple
-  // material-ID palette until the dedicated PBR texture pass is complete.
+  // The approved geometry carries the measured PBR sets from gulliversTextures.py
+  // (green, cream and plinth glazed tile, brick, painted joinery). Runtime keeps
+  // the maps; lettering, plaques and glazing stay placeholders.
   model.traverse((child) => {
     if (!(child instanceof Mesh)) {
       return;
@@ -855,7 +856,10 @@ function applyGulliversModelPolicy(model: Group): void {
       if (!(material instanceof MeshStandardMaterial)) {
         continue;
       }
-      material.roughness = Math.max(material.roughness, 0.58);
+      profileAuthoredMaps(material);
+      if (!material.map) {
+        material.roughness = Math.max(material.roughness, 0.58);
+      }
     }
   });
 }
@@ -1366,11 +1370,11 @@ async function addGulliversModel(
 ): Promise<void> {
   try {
     const gullivers = await loadModel(
-      'assets/models/harperhey-gullivers.glb?v=geometry-wip-20260911',
+      'assets/models/harperhey-gullivers.glb?v=textured-20260922',
     );
     applyGulliversModelPolicy(gullivers);
     mergeStaticModelMeshes(gullivers);
-    gullivers.name = 'Gullivers geometry WIP — textures pending';
+    gullivers.name = 'Gullivers textured asset';
     gullivers.position.set(location.x, 0, location.z);
     // Blender front (-Y) imports facing +Z, aligning the Oldham Street
     // frontage south beside Renee while retaining the full side return.

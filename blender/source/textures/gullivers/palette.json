@@ -1,0 +1,269 @@
+{
+  "black metal": {
+    "albedo": "#363032",
+    "samples": [
+      {
+        "box": [
+          4353,
+          3682,
+          4609,
+          3884
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+        "srgb": "#363032"
+      }
+    ]
+  },
+  "brick face": {
+    "albedo": "#836060",
+    "samples": [
+      {
+        "box": [
+          4145,
+          11,
+          5400,
+          273
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06339.JPG",
+        "srgb": "#836060"
+      }
+    ]
+  },
+  "brick mortar": {
+    "albedo": "#B68687",
+    "samples": [
+      {
+        "box": [
+          4145,
+          11,
+          5400,
+          273
+        ],
+        "light": "overcast",
+        "percentile": 95,
+        "photo": "references/architecture/buildings/gullivers/DSC06339.JPG",
+        "srgb": "#B68687"
+      }
+    ]
+  },
+  "cream joinery": {
+    "albedo": "#E4D2C4",
+    "samples": [
+      {
+        "box": [
+          545,
+          938,
+          4364,
+          1025
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+        "srgb": "#D9C2AA"
+      },
+      {
+        "box": [
+          2400,
+          2684,
+          4255,
+          2755
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06339.JPG",
+        "srgb": "#EFE3DE"
+      }
+    ]
+  },
+  "cream tile glaze": {
+    "albedo": "#E4D6D1",
+    "samples": [
+      {
+        "box": [
+          1647,
+          2073,
+          1909,
+          3436
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+        "srgb": "#F2E7E2"
+      },
+      {
+        "box": [
+          4484,
+          2073,
+          4773,
+          3436
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+        "srgb": "#F3E6DE"
+      },
+      {
+        "box": [
+          4735,
+          2045,
+          5127,
+          3218
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06339.JPG",
+        "srgb": "#C6B6B3"
+      }
+    ]
+  },
+  "dark green": {
+    "albedo": "#2D412F",
+    "samples": [
+      {
+        "box": [
+          2193,
+          1200,
+          2247,
+          3818
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+        "srgb": "#2D412F"
+      }
+    ]
+  },
+  "door paint": {
+    "albedo": "#274F3E",
+    "samples": [
+      {
+        "box": [
+          240,
+          600,
+          330,
+          840
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/gullivers-manchester.jpg",
+        "srgb": "#274F3E"
+      }
+    ]
+  },
+  "green tile glaze": {
+    "albedo": "#021D0F",
+    "samples": [
+      {
+        "box": [
+          1391,
+          3055,
+          1593,
+          3409
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+        "srgb": "#012110"
+      },
+      {
+        "box": [
+          4211,
+          3055,
+          4445,
+          3491
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+        "srgb": "#022312"
+      },
+      {
+        "box": [
+          2727,
+          3327,
+          3545,
+          3545
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06339.JPG",
+        "srgb": "#04140C"
+      }
+    ]
+  },
+  "green trim": {
+    "albedo": "#3B4842",
+    "samples": [
+      {
+        "box": [
+          3491,
+          436,
+          4582,
+          818
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+        "srgb": "#4A584E"
+      },
+      {
+        "box": [
+          2509,
+          655,
+          5455,
+          873
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06339.JPG",
+        "srgb": "#2B3936"
+      }
+    ]
+  },
+  "plinth tile glaze": {
+    "albedo": "#1C1C23",
+    "samples": [
+      {
+        "box": [
+          2345,
+          3845,
+          4364,
+          3955
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06339.JPG",
+        "srgb": "#1C1C20"
+      },
+      {
+        "box": [
+          2345,
+          3845,
+          4145,
+          3982
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+        "srgb": "#1D1D26"
+      }
+    ]
+  },
+  "tile grout": {
+    "albedo": "#76776E",
+    "samples": [
+      {
+        "box": [
+          1391,
+          3055,
+          1593,
+          3409
+        ],
+        "light": "overcast",
+        "percentile": 90,
+        "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+        "srgb": "#70726B"
+      },
+      {
+        "box": [
+          4211,
+          3055,
+          4445,
+          3491
+        ],
+        "light": "overcast",
+        "percentile": 90,
+        "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+        "srgb": "#7B7C72"
+      }
+    ]
+  }
+}

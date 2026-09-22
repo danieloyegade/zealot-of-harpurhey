@@ -311,9 +311,8 @@ def glazed_tile(slug, description, glaze, grout, *, seed, tile_size=(0.152, 0.07
     # Grout lines are offset half a module from the tile edges: the normal is a
     # gradient of relief, and a grout groove straddling the wrap reads as a seam.
     gx, gy = s.x + tile_w * 0.5, s.y + tile_h * 0.5
-    centre_x = (np.floor(gx / tile_w) + 0.5) * tile_w - tile_w * 0.5
-    centre_y = (np.floor(gy / tile_h) + 0.5) * tile_h - tile_h * 0.5
-    tone = s.noise(tile_size, seed, warp=(centre_x - s.x, centre_y - s.y))
+    # One glaze tone per tile, hashed so neighbours are independent.
+    tone = _unit_random(s, gx, gy, tile_w, tile_h, 0.0, seed)
     s.base *= (1.0 - spread * 0.5 + spread * tone)[..., None]
 
     # 0 at the grout line, 1 at the tile centre.

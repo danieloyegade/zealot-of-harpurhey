@@ -121,6 +121,34 @@
       ],
       "expectedSurfaces": 9,
       "maxBytes": 5000000
+    },
+    {
+      "building": "gullivers",
+      "glb": "assets/models/harperhey-gullivers.glb",
+      "surfacePrefix": "MAT_GUL_Surface_",
+      "textureDir": "blender/source/textures/gullivers",
+      "placeholders": {
+        "Gullivers_Placeholder_Green_Tile": "gul-tile-green",
+        "Gullivers_Placeholder_Cream_Tile_Inlay": "gul-tile-cream",
+        "Gullivers_Placeholder_Dark_Tile_Plinth": "gul-tile-plinth",
+        "Gullivers_Placeholder_Brick": "gul-brick",
+        "Gullivers_Placeholder_Brick_Infill": "gul-brick",
+        "Gullivers_Placeholder_Cream_Joinery": "gul-joinery-cream",
+        "Gullivers_Placeholder_Green_Trim": "gul-paint-green-trim",
+        "Gullivers_Placeholder_Dark_Green": "gul-paint-green-dark",
+        "Gullivers_Placeholder_Door": "gul-door",
+        "Gullivers_Placeholder_Door_Panels": "gul-door",
+        "Gullivers_Placeholder_Black_Metal": "gul-metal-black"
+      },
+      "untexturedAllowed": [
+        "Gullivers_Placeholder_Cornice_Shadow",
+        "Gullivers_Placeholder_Interior",
+        "Gullivers_Placeholder_Roof",
+        "Gullivers_Placeholder_Dark_Glass",
+        "Gullivers_Placeholder_Clerestory_Glass"
+      ],
+      "expectedSurfaces": 9,
+      "maxBytes": 5000000
     }
   ]
 }

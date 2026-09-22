@@ -1,0 +1,983 @@
+{
+  "asset": "gullivers",
+  "pass": "surface materials (commonSurfaces)",
+  "convention": {
+    "maps": "<slug>-{basecolor,orm,normal}.png",
+    "orm": "R occlusion, G roughness, B metallic (glTF)",
+    "normal": "OpenGL tangent space (+Y up)",
+    "unit": "1 Blender unit = 1 m; coverage_m is what one tile spans"
+  },
+  "measured_reference_patches": {
+    "black metal": {
+      "albedo": "#363032",
+      "samples": [
+        {
+          "box": [
+            4353,
+            3682,
+            4609,
+            3884
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+          "srgb": "#363032"
+        }
+      ]
+    },
+    "brick face": {
+      "albedo": "#836060",
+      "samples": [
+        {
+          "box": [
+            4145,
+            11,
+            5400,
+            273
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06339.JPG",
+          "srgb": "#836060"
+        }
+      ]
+    },
+    "brick mortar": {
+      "albedo": "#B68687",
+      "samples": [
+        {
+          "box": [
+            4145,
+            11,
+            5400,
+            273
+          ],
+          "light": "overcast",
+          "percentile": 95,
+          "photo": "references/architecture/buildings/gullivers/DSC06339.JPG",
+          "srgb": "#B68687"
+        }
+      ]
+    },
+    "cream joinery": {
+      "albedo": "#E4D2C4",
+      "samples": [
+        {
+          "box": [
+            545,
+            938,
+            4364,
+            1025
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+          "srgb": "#D9C2AA"
+        },
+        {
+          "box": [
+            2400,
+            2684,
+            4255,
+            2755
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06339.JPG",
+          "srgb": "#EFE3DE"
+        }
+      ]
+    },
+    "cream tile glaze": {
+      "albedo": "#E4D6D1",
+      "samples": [
+        {
+          "box": [
+            1647,
+            2073,
+            1909,
+            3436
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+          "srgb": "#F2E7E2"
+        },
+        {
+          "box": [
+            4484,
+            2073,
+            4773,
+            3436
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+          "srgb": "#F3E6DE"
+        },
+        {
+          "box": [
+            4735,
+            2045,
+            5127,
+            3218
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06339.JPG",
+          "srgb": "#C6B6B3"
+        }
+      ]
+    },
+    "dark green": {
+      "albedo": "#2D412F",
+      "samples": [
+        {
+          "box": [
+            2193,
+            1200,
+            2247,
+            3818
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+          "srgb": "#2D412F"
+        }
+      ]
+    },
+    "door paint": {
+      "albedo": "#274F3E",
+      "samples": [
+        {
+          "box": [
+            240,
+            600,
+            330,
+            840
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/gullivers-manchester.jpg",
+          "srgb": "#274F3E"
+        }
+      ]
+    },
+    "green tile glaze": {
+      "albedo": "#021D0F",
+      "samples": [
+        {
+          "box": [
+            1391,
+            3055,
+            1593,
+            3409
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+          "srgb": "#012110"
+        },
+        {
+          "box": [
+            4211,
+            3055,
+            4445,
+            3491
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+          "srgb": "#022312"
+        },
+        {
+          "box": [
+            2727,
+            3327,
+            3545,
+            3545
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06339.JPG",
+          "srgb": "#04140C"
+        }
+      ]
+    },
+    "green trim": {
+      "albedo": "#3B4842",
+      "samples": [
+        {
+          "box": [
+            3491,
+            436,
+            4582,
+            818
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+          "srgb": "#4A584E"
+        },
+        {
+          "box": [
+            2509,
+            655,
+            5455,
+            873
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06339.JPG",
+          "srgb": "#2B3936"
+        }
+      ]
+    },
+    "plinth tile glaze": {
+      "albedo": "#1C1C23",
+      "samples": [
+        {
+          "box": [
+            2345,
+            3845,
+            4364,
+            3955
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06339.JPG",
+          "srgb": "#1C1C20"
+        },
+        {
+          "box": [
+            2345,
+            3845,
+            4145,
+            3982
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+          "srgb": "#1D1D26"
+        }
+      ]
+    },
+    "tile grout": {
+      "albedo": "#76776E",
+      "samples": [
+        {
+          "box": [
+            1391,
+            3055,
+            1593,
+            3409
+          ],
+          "light": "overcast",
+          "percentile": 90,
+          "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+          "srgb": "#70726B"
+        },
+        {
+          "box": [
+            4211,
+            3055,
+            4445,
+            3491
+          ],
+          "light": "overcast",
+          "percentile": 90,
+          "photo": "references/architecture/buildings/gullivers/DSC06338.JPG",
+          "srgb": "#7B7C72"
+        }
+      ]
+    }
+  },
+  "materials": [
+    {
+      "slug": "gul-tile-green",
+      "description": "Bottle-green glazed tiles, 6 in square",
+      "coverage_m": [
+        0.912,
+        0.912
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        0.8906,
+        0.8906
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.12,
+        0.95
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -2.0,
+        1.5
+      ],
+      "base_srgb_mean": [
+        12,
+        36,
+        22
+      ],
+      "files": {
+        "basecolor": {
+          "file": "gul-tile-green-basecolor.png",
+          "bytes": 138535
+        },
+        "orm": {
+          "file": "gul-tile-green-orm.png",
+          "bytes": 207518
+        },
+        "normal": {
+          "file": "gul-tile-green-normal.png",
+          "bytes": 45366
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 1.16
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 1.16
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 1.22
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 1.22
+        },
+        "normal_u": {
+          "wrap": 0.0,
+          "typical": 1.06
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 1.06
+        }
+      }
+    },
+    {
+      "slug": "gul-tile-cream",
+      "description": "Cream inlay tiles, 6 in square",
+      "coverage_m": [
+        0.912,
+        0.912
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        1.7812,
+        1.7812
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.12,
+        0.95
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -1.999,
+        1.5
+      ],
+      "base_srgb_mean": [
+        220,
+        207,
+        202
+      ],
+      "files": {
+        "basecolor": {
+          "file": "gul-tile-cream-basecolor.png",
+          "bytes": 71891
+        },
+        "orm": {
+          "file": "gul-tile-cream-orm.png",
+          "bytes": 74839
+        },
+        "normal": {
+          "file": "gul-tile-cream-normal.png",
+          "bytes": 17926
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.02,
+          "typical": 2.72
+        },
+        "basecolor_v": {
+          "wrap": 0.03,
+          "typical": 2.71
+        },
+        "orm_u": {
+          "wrap": 0.01,
+          "typical": 2.44
+        },
+        "orm_v": {
+          "wrap": 0.01,
+          "typical": 2.44
+        },
+        "normal_u": {
+          "wrap": 0.0,
+          "typical": 1.37
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 1.37
+        }
+      }
+    },
+    {
+      "slug": "gul-tile-plinth",
+      "description": "Near-black plinth tiles, 9x6 in",
+      "coverage_m": [
+        0.912,
+        0.912
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        1.7812,
+        1.7812
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.12,
+        0.95
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -1.999,
+        1.5
+      ],
+      "base_srgb_mean": [
+        34,
+        34,
+        40
+      ],
+      "files": {
+        "basecolor": {
+          "file": "gul-tile-plinth-basecolor.png",
+          "bytes": 51383
+        },
+        "orm": {
+          "file": "gul-tile-plinth-orm.png",
+          "bytes": 73206
+        },
+        "normal": {
+          "file": "gul-tile-plinth-normal.png",
+          "bytes": 12725
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 1.35
+        },
+        "basecolor_v": {
+          "wrap": 0.01,
+          "typical": 2.01
+        },
+        "orm_u": {
+          "wrap": 0.01,
+          "typical": 1.66
+        },
+        "orm_v": {
+          "wrap": 0.01,
+          "typical": 2.47
+        },
+        "normal_u": {
+          "wrap": 0.0,
+          "typical": 0.88
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 1.37
+        }
+      }
+    },
+    {
+      "slug": "gul-brick",
+      "description": "Victorian brick above the pub front",
+      "coverage_m": [
+        1.8,
+        1.8
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        1.7578,
+        1.7578
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.84,
+        0.95
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -4.81,
+        0.243
+      ],
+      "base_srgb_mean": [
+        134,
+        98,
+        98
+      ],
+      "files": {
+        "basecolor": {
+          "file": "gul-brick-basecolor.png",
+          "bytes": 339507
+        },
+        "orm": {
+          "file": "gul-brick-orm.png",
+          "bytes": 45953
+        },
+        "normal": {
+          "file": "gul-brick-normal.png",
+          "bytes": 701498
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.04,
+          "typical": 0.71
+        },
+        "basecolor_v": {
+          "wrap": 0.06,
+          "typical": 2.03
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.66
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 2.12
+        },
+        "normal_u": {
+          "wrap": 0.27,
+          "typical": 1.71
+        },
+        "normal_v": {
+          "wrap": 0.42,
+          "typical": 4.61
+        }
+      }
+    },
+    {
+      "slug": "gul-joinery-cream",
+      "description": "Cream cornice, consoles and window frames",
+      "coverage_m": [
+        0.6,
+        0.6
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        1.1719,
+        1.1719
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.42,
+        0.772
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.213,
+        0.128
+      ],
+      "base_srgb_mean": [
+        227,
+        210,
+        195
+      ],
+      "files": {
+        "basecolor": {
+          "file": "gul-joinery-cream-basecolor.png",
+          "bytes": 30102
+        },
+        "orm": {
+          "file": "gul-joinery-cream-orm.png",
+          "bytes": 81276
+        },
+        "normal": {
+          "file": "gul-joinery-cream-normal.png",
+          "bytes": 47697
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.29,
+          "typical": 0.42
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.03
+        },
+        "orm_u": {
+          "wrap": 0.84,
+          "typical": 1.13
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.05
+        },
+        "normal_u": {
+          "wrap": 0.53,
+          "typical": 0.61
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 0.02
+        }
+      }
+    },
+    {
+      "slug": "gul-paint-green-trim",
+      "description": "Grey-green painted fascia",
+      "coverage_m": [
+        0.6,
+        0.6
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        1.1719,
+        1.1719
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.42,
+        0.754
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.174,
+        0.122
+      ],
+      "base_srgb_mean": [
+        59,
+        72,
+        66
+      ],
+      "files": {
+        "basecolor": {
+          "file": "gul-paint-green-trim-basecolor.png",
+          "bytes": 14032
+        },
+        "orm": {
+          "file": "gul-paint-green-trim-orm.png",
+          "bytes": 79291
+        },
+        "normal": {
+          "file": "gul-paint-green-trim-normal.png",
+          "bytes": 48233
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.23,
+          "typical": 0.16
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.02
+        },
+        "orm_u": {
+          "wrap": 0.98,
+          "typical": 1.24
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.05
+        },
+        "normal_u": {
+          "wrap": 0.73,
+          "typical": 0.64
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 0.02
+        }
+      }
+    },
+    {
+      "slug": "gul-paint-green-dark",
+      "description": "Dark green doorway surrounds",
+      "coverage_m": [
+        0.6,
+        0.6
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        1.1719,
+        1.1719
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.42,
+        0.746
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.196,
+        0.107
+      ],
+      "base_srgb_mean": [
+        45,
+        65,
+        47
+      ],
+      "files": {
+        "basecolor": {
+          "file": "gul-paint-green-dark-basecolor.png",
+          "bytes": 15974
+        },
+        "orm": {
+          "file": "gul-paint-green-dark-orm.png",
+          "bytes": 87067
+        },
+        "normal": {
+          "file": "gul-paint-green-dark-normal.png",
+          "bytes": 47634
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.04,
+          "typical": 0.14
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.02
+        },
+        "orm_u": {
+          "wrap": 0.52,
+          "typical": 1.11
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.07
+        },
+        "normal_u": {
+          "wrap": 0.74,
+          "typical": 0.62
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        }
+      }
+    },
+    {
+      "slug": "gul-door",
+      "description": "Green panelled doors",
+      "coverage_m": [
+        0.6,
+        0.6
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        1.1719,
+        1.1719
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.42,
+        0.777
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.242,
+        0.13
+      ],
+      "base_srgb_mean": [
+        39,
+        79,
+        62
+      ],
+      "files": {
+        "basecolor": {
+          "file": "gul-door-basecolor.png",
+          "bytes": 19920
+        },
+        "orm": {
+          "file": "gul-door-orm.png",
+          "bytes": 90858
+        },
+        "normal": {
+          "file": "gul-door-normal.png",
+          "bytes": 48495
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.06,
+          "typical": 0.16
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.03
+        },
+        "orm_u": {
+          "wrap": 0.57,
+          "typical": 1.08
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.07
+        },
+        "normal_u": {
+          "wrap": 0.79,
+          "typical": 0.64
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 0.02
+        }
+      }
+    },
+    {
+      "slug": "gul-metal-black",
+      "description": "Vents and brackets",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.476,
+        0.837
+      ],
+      "metallic_range": [
+        0.0,
+        0.555
+      ],
+      "relief_mm": [
+        -0.206,
+        0.126
+      ],
+      "base_srgb_mean": [
+        54,
+        48,
+        50
+      ],
+      "files": {
+        "basecolor": {
+          "file": "gul-metal-black-basecolor.png",
+          "bytes": 47139
+        },
+        "orm": {
+          "file": "gul-metal-black-orm.png",
+          "bytes": 79389
+        },
+        "normal": {
+          "file": "gul-metal-black-normal.png",
+          "bytes": 149574
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.06
+        },
+        "basecolor_v": {
+          "wrap": 0.01,
+          "typical": 0.06
+        },
+        "orm_u": {
+          "wrap": 0.01,
+          "typical": 0.13
+        },
+        "orm_v": {
+          "wrap": 0.02,
+          "typical": 0.13
+        },
+        "normal_u": {
+          "wrap": 0.16,
+          "typical": 0.17
+        },
+        "normal_v": {
+          "wrap": 0.15,
+          "typical": 0.17
+        }
+      }
+    }
+  ]
+}
