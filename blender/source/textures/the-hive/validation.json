@@ -1,0 +1,717 @@
+{
+  "asset": "the-hive",
+  "pass": "surface materials (commonSurfaces)",
+  "convention": {
+    "maps": "<slug>-{basecolor,orm,normal}.png",
+    "orm": "R occlusion, G roughness, B metallic (glTF)",
+    "normal": "OpenGL tangent space (+Y up)",
+    "unit": "1 Blender unit = 1 m; coverage_m is what one tile spans"
+  },
+  "measured_reference_patches": {
+    "black brick face": {
+      "albedo": "#535359",
+      "samples": [
+        {
+          "box": [
+            205,
+            300,
+            280,
+            440
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+          "srgb": "#50525D"
+        },
+        {
+          "box": [
+            140,
+            265,
+            180,
+            330
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/arts-council/hive5.jpg",
+          "srgb": "#515054"
+        },
+        {
+          "box": [
+            300,
+            300,
+            320,
+            420
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/arts-council/hive1.jpg",
+          "srgb": "#57575B"
+        }
+      ]
+    },
+    "black brick mortar": {
+      "albedo": "#3E3F4A",
+      "samples": [
+        {
+          "box": [
+            20,
+            420,
+            50,
+            500
+          ],
+          "light": "shaded",
+          "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+          "srgb": "#363740"
+        }
+      ]
+    },
+    "concrete": {
+      "albedo": "#928C80",
+      "samples": [
+        {
+          "box": [
+            200,
+            540,
+            240,
+            720
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+          "srgb": "#938B7E"
+        },
+        {
+          "box": [
+            350,
+            540,
+            395,
+            720
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+          "srgb": "#928C81"
+        }
+      ]
+    },
+    "dark metal": {
+      "albedo": "#342926",
+      "samples": [
+        {
+          "box": [
+            275,
+            2100,
+            525,
+            3200
+          ],
+          "light": "shaded",
+          "photo": "references/architecture/buildings/arts-council/DSC06330.JPG",
+          "srgb": "#2D2421"
+        }
+      ]
+    },
+    "pale brick face": {
+      "albedo": "#B4A8A3",
+      "samples": [
+        {
+          "box": [
+            262,
+            90,
+            278,
+            135
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/arts-council/hive1.jpg",
+          "srgb": "#BFB0A9"
+        },
+        {
+          "box": [
+            700,
+            125,
+            714,
+            140
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+          "srgb": "#B0A6A2"
+        },
+        {
+          "box": [
+            728,
+            120,
+            742,
+            140
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+          "srgb": "#AEA39E"
+        }
+      ]
+    },
+    "pale brick mortar": {
+      "albedo": "#C5B9B3",
+      "samples": [
+        {
+          "box": [
+            262,
+            90,
+            278,
+            135
+          ],
+          "light": "overcast",
+          "percentile": 85,
+          "photo": "references/architecture/buildings/arts-council/hive1.jpg",
+          "srgb": "#C9BBB3"
+        },
+        {
+          "box": [
+            700,
+            125,
+            714,
+            140
+          ],
+          "light": "overcast",
+          "percentile": 85,
+          "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+          "srgb": "#C3BAB5"
+        },
+        {
+          "box": [
+            728,
+            120,
+            742,
+            140
+          ],
+          "light": "overcast",
+          "percentile": 85,
+          "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+          "srgb": "#C2B7B2"
+        }
+      ]
+    },
+    "timber dark": {
+      "albedo": "#816A51",
+      "samples": [
+        {
+          "box": [
+            205,
+            700,
+            225,
+            1280
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/arts-council/1-1-13.jpg.webp",
+          "srgb": "#816A51"
+        }
+      ]
+    },
+    "timber light": {
+      "albedo": "#997B62",
+      "samples": [
+        {
+          "box": [
+            882,
+            730,
+            900,
+            1220
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/arts-council/1-1-13.jpg.webp",
+          "srgb": "#997B62"
+        }
+      ]
+    },
+    "white wall": {
+      "albedo": "#CDCCD0",
+      "samples": [
+        {
+          "box": [
+            330,
+            20,
+            390,
+            80
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+          "srgb": "#D2D0D6"
+        },
+        {
+          "box": [
+            255,
+            260,
+            270,
+            300
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/arts-council/hive1.jpg",
+          "srgb": "#C8C7CB"
+        }
+      ]
+    }
+  },
+  "materials": [
+    {
+      "slug": "hive-brick-black",
+      "description": "Charcoal engineering brick, recessed dark joints",
+      "coverage_m": [
+        1.8,
+        1.8
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        1.7578,
+        1.7578
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.84,
+        0.95
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -4.741,
+        0.249
+      ],
+      "base_srgb_mean": [
+        80,
+        80,
+        86
+      ],
+      "files": {
+        "basecolor": {
+          "file": "hive-brick-black-basecolor.png",
+          "bytes": 225869
+        },
+        "orm": {
+          "file": "hive-brick-black-orm.png",
+          "bytes": 41042
+        },
+        "normal": {
+          "file": "hive-brick-black-normal.png",
+          "bytes": 709174
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.03,
+          "typical": 0.33
+        },
+        "basecolor_v": {
+          "wrap": 0.04,
+          "typical": 0.91
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.66
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 2.13
+        },
+        "normal_u": {
+          "wrap": 0.33,
+          "typical": 1.72
+        },
+        "normal_v": {
+          "wrap": 0.39,
+          "typical": 4.62
+        }
+      }
+    },
+    {
+      "slug": "hive-brick-pale",
+      "description": "Buff brick upper towers, fine pale joint",
+      "coverage_m": [
+        1.8,
+        1.8
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        1.7578,
+        1.7578
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.84,
+        0.95
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -4.813,
+        0.243
+      ],
+      "base_srgb_mean": [
+        181,
+        170,
+        164
+      ],
+      "files": {
+        "basecolor": {
+          "file": "hive-brick-pale-basecolor.png",
+          "bytes": 344961
+        },
+        "orm": {
+          "file": "hive-brick-pale-orm.png",
+          "bytes": 41579
+        },
+        "normal": {
+          "file": "hive-brick-pale-normal.png",
+          "bytes": 701928
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.07,
+          "typical": 0.37
+        },
+        "basecolor_v": {
+          "wrap": 0.06,
+          "typical": 0.89
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.66
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 2.13
+        },
+        "normal_u": {
+          "wrap": 0.34,
+          "typical": 1.71
+        },
+        "normal_v": {
+          "wrap": 0.34,
+          "typical": 4.61
+        }
+      }
+    },
+    {
+      "slug": "hive-concrete",
+      "description": "In-situ concrete columns",
+      "coverage_m": [
+        2.0,
+        2.0
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        3.9062,
+        3.9062
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.88,
+        0.908
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.977,
+        0.194
+      ],
+      "base_srgb_mean": [
+        145,
+        139,
+        127
+      ],
+      "files": {
+        "basecolor": {
+          "file": "hive-concrete-basecolor.png",
+          "bytes": 274818
+        },
+        "orm": {
+          "file": "hive-concrete-orm.png",
+          "bytes": 110640
+        },
+        "normal": {
+          "file": "hive-concrete-normal.png",
+          "bytes": 387902
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.55,
+          "typical": 1.54
+        },
+        "basecolor_v": {
+          "wrap": 0.74,
+          "typical": 1.53
+        },
+        "orm_u": {
+          "wrap": 0.45,
+          "typical": 1.32
+        },
+        "orm_v": {
+          "wrap": 0.66,
+          "typical": 1.3
+        },
+        "normal_u": {
+          "wrap": 1.09,
+          "typical": 1.37
+        },
+        "normal_v": {
+          "wrap": 1.18,
+          "typical": 1.37
+        }
+      }
+    },
+    {
+      "slug": "hive-metal-dark",
+      "description": "Bronze-brown powder-coated portal and frames",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.45,
+        0.584
+      ],
+      "metallic_range": [
+        0.0,
+        0.596
+      ],
+      "relief_mm": [
+        -0.213,
+        0.101
+      ],
+      "base_srgb_mean": [
+        52,
+        41,
+        38
+      ],
+      "files": {
+        "basecolor": {
+          "file": "hive-metal-dark-basecolor.png",
+          "bytes": 36451
+        },
+        "orm": {
+          "file": "hive-metal-dark-orm.png",
+          "bytes": 69225
+        },
+        "normal": {
+          "file": "hive-metal-dark-normal.png",
+          "bytes": 148652
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.04
+        },
+        "basecolor_v": {
+          "wrap": 0.11,
+          "typical": 0.05
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.11
+        },
+        "orm_v": {
+          "wrap": 0.1,
+          "typical": 0.12
+        },
+        "normal_u": {
+          "wrap": 0.15,
+          "typical": 0.16
+        },
+        "normal_v": {
+          "wrap": 0.18,
+          "typical": 0.17
+        }
+      }
+    },
+    {
+      "slug": "hive-render-white",
+      "description": "White render set-back level",
+      "coverage_m": [
+        2.4,
+        2.4
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        4.6875,
+        4.6875
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.727,
+        0.845
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.396,
+        0.384
+      ],
+      "base_srgb_mean": [
+        204,
+        202,
+        206
+      ],
+      "files": {
+        "basecolor": {
+          "file": "hive-render-white-basecolor.png",
+          "bytes": 48461
+        },
+        "orm": {
+          "file": "hive-render-white-orm.png",
+          "bytes": 27850
+        },
+        "normal": {
+          "file": "hive-render-white-normal.png",
+          "bytes": 327221
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.01,
+          "typical": 0.1
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.02
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.05
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        },
+        "normal_u": {
+          "wrap": 0.67,
+          "typical": 0.7
+        },
+        "normal_v": {
+          "wrap": 0.68,
+          "typical": 0.7
+        }
+      }
+    },
+    {
+      "slug": "hive-timber-interior",
+      "description": "Pale oak frames seen through the glazing",
+      "coverage_m": [
+        0.6,
+        1.2
+      ],
+      "pixels": [
+        512,
+        1024
+      ],
+      "mm_per_texel": [
+        1.1719,
+        1.1719
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.55,
+        0.55
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.16,
+        0.06
+      ],
+      "base_srgb_mean": [
+        147,
+        119,
+        94
+      ],
+      "files": {
+        "basecolor": {
+          "file": "hive-timber-interior-basecolor.png",
+          "bytes": 220102
+        },
+        "orm": {
+          "file": "hive-timber-interior-orm.png",
+          "bytes": 11353
+        },
+        "normal": {
+          "file": "hive-timber-interior-normal.png",
+          "bytes": 164060
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 3.63,
+          "typical": 3.04
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.08
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "normal_u": {
+          "wrap": 1.14,
+          "typical": 1.14
+        },
+        "normal_v": {
+          "wrap": 0.02,
+          "typical": 0.04
+        }
+      }
+    }
+  ]
+}

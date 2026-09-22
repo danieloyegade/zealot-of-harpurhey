@@ -67,6 +67,27 @@
       ],
       "expectedSurfaces": 4,
       "maxBytes": 5000000
+    },
+    {
+      "building": "the-hive",
+      "glb": "assets/models/the_hive.glb",
+      "surfacePrefix": "MAT_HIVE_Surface_",
+      "textureDir": "blender/source/textures/the-hive",
+      "placeholders": {
+        "MAT_DarkBrick_PLACEHOLDER": "hive-brick-black",
+        "MAT_PaleBrick_PLACEHOLDER": "hive-brick-pale",
+        "MAT_Concrete_PLACEHOLDER": "hive-concrete",
+        "MAT_DarkMetal_PLACEHOLDER": "hive-metal-dark",
+        "MAT_WhiteWall_PLACEHOLDER": "hive-render-white",
+        "MAT_InteriorTimber_PLACEHOLDER": "hive-timber-interior"
+      },
+      "untexturedAllowed": [
+        "MAT_Glass_PLACEHOLDER",
+        "MAT_MetalScreen_PLACEHOLDER",
+        "MAT_Interior_PLACEHOLDER"
+      ],
+      "expectedSurfaces": 6,
+      "maxBytes": 5000000
     }
   ]
 }

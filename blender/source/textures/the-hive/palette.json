@@ -1,0 +1,237 @@
+{
+  "black brick face": {
+    "albedo": "#535359",
+    "samples": [
+      {
+        "box": [
+          205,
+          300,
+          280,
+          440
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+        "srgb": "#50525D"
+      },
+      {
+        "box": [
+          140,
+          265,
+          180,
+          330
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/arts-council/hive5.jpg",
+        "srgb": "#515054"
+      },
+      {
+        "box": [
+          300,
+          300,
+          320,
+          420
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/arts-council/hive1.jpg",
+        "srgb": "#57575B"
+      }
+    ]
+  },
+  "black brick mortar": {
+    "albedo": "#3E3F4A",
+    "samples": [
+      {
+        "box": [
+          20,
+          420,
+          50,
+          500
+        ],
+        "light": "shaded",
+        "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+        "srgb": "#363740"
+      }
+    ]
+  },
+  "concrete": {
+    "albedo": "#928C80",
+    "samples": [
+      {
+        "box": [
+          200,
+          540,
+          240,
+          720
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+        "srgb": "#938B7E"
+      },
+      {
+        "box": [
+          350,
+          540,
+          395,
+          720
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+        "srgb": "#928C81"
+      }
+    ]
+  },
+  "dark metal": {
+    "albedo": "#342926",
+    "samples": [
+      {
+        "box": [
+          275,
+          2100,
+          525,
+          3200
+        ],
+        "light": "shaded",
+        "photo": "references/architecture/buildings/arts-council/DSC06330.JPG",
+        "srgb": "#2D2421"
+      }
+    ]
+  },
+  "pale brick face": {
+    "albedo": "#B4A8A3",
+    "samples": [
+      {
+        "box": [
+          262,
+          90,
+          278,
+          135
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/arts-council/hive1.jpg",
+        "srgb": "#BFB0A9"
+      },
+      {
+        "box": [
+          700,
+          125,
+          714,
+          140
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+        "srgb": "#B0A6A2"
+      },
+      {
+        "box": [
+          728,
+          120,
+          742,
+          140
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+        "srgb": "#AEA39E"
+      }
+    ]
+  },
+  "pale brick mortar": {
+    "albedo": "#C5B9B3",
+    "samples": [
+      {
+        "box": [
+          262,
+          90,
+          278,
+          135
+        ],
+        "light": "overcast",
+        "percentile": 85,
+        "photo": "references/architecture/buildings/arts-council/hive1.jpg",
+        "srgb": "#C9BBB3"
+      },
+      {
+        "box": [
+          700,
+          125,
+          714,
+          140
+        ],
+        "light": "overcast",
+        "percentile": 85,
+        "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+        "srgb": "#C3BAB5"
+      },
+      {
+        "box": [
+          728,
+          120,
+          742,
+          140
+        ],
+        "light": "overcast",
+        "percentile": 85,
+        "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+        "srgb": "#C2B7B2"
+      }
+    ]
+  },
+  "timber dark": {
+    "albedo": "#816A51",
+    "samples": [
+      {
+        "box": [
+          205,
+          700,
+          225,
+          1280
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/arts-council/1-1-13.jpg.webp",
+        "srgb": "#816A51"
+      }
+    ]
+  },
+  "timber light": {
+    "albedo": "#997B62",
+    "samples": [
+      {
+        "box": [
+          882,
+          730,
+          900,
+          1220
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/arts-council/1-1-13.jpg.webp",
+        "srgb": "#997B62"
+      }
+    ]
+  },
+  "white wall": {
+    "albedo": "#CDCCD0",
+    "samples": [
+      {
+        "box": [
+          330,
+          20,
+          390,
+          80
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/arts-council/thehive.jpg",
+        "srgb": "#D2D0D6"
+      },
+      {
+        "box": [
+          255,
+          260,
+          270,
+          300
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/arts-council/hive1.jpg",
+        "srgb": "#C8C7CB"
+      }
+    ]
+  }
+}

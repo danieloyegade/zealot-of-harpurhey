@@ -17,7 +17,7 @@ Run:
 
     /Applications/Blender.app/Contents/MacOS/Blender --background --factory-startup \
         --python blender/scripts/measurePatch.py -- \
-        <palette.json> "<key>" <photo> <x0> <y0> <x1> <y1> <sunlit|shaded|overcast>
+        <palette.json> "<key>" <photo> <x0> <y0> <x1> <y1> <sunlit|shaded|overcast> [percentile]
 """
 
 import json
@@ -40,8 +40,14 @@ def from_hex(value):
     return np.array([int(value[i:i + 2], 16) for i in (0, 2, 4)], float) / 255.0
 
 
-def patch_median(photo, box):
-    """Median sRGB (0-1) of box = (x0, y0, x1, y1), y from the top."""
+def patch_median(photo, box, percentile=None):
+    """Median sRGB (0-1) of box = (x0, y0, x1, y1), y from the top.
+
+    With `percentile`, return the median of the pixels at or above that
+    luminance percentile instead: joints too fine to box on their own (pale
+    mortar between buff bricks) are the brightest part of a brick-and-joint
+    patch, so `percentile=85` isolates them.
+    """
     image = bpy.data.images.load(str(photo), check_existing=False)
     width, height = image.size
     x0, y0, x1, y1 = box
@@ -51,22 +57,28 @@ def patch_median(photo, box):
     image.pixels.foreach_get(pixels)
     bpy.data.images.remove(image)
     grid = pixels.reshape(height, width, 4)[::-1]  # top row first
-    return np.median(grid[y0:y1, x0:x1, :3].reshape(-1, 3), axis=0)
+    patch = grid[y0:y1, x0:x1, :3].reshape(-1, 3)
+    if percentile is not None:
+        luminance = patch @ np.array([0.2126, 0.7152, 0.0722], np.float32)
+        patch = patch[luminance >= np.percentile(luminance, percentile)]
+    return np.median(patch, axis=0)
 
 
-def record_sample(palette_path, key, photo, box, light):
+def record_sample(palette_path, key, photo, box, light, percentile=None):
     if light not in LIGHT_SCALE:
         raise SystemExit(f"light must be one of {', '.join(LIGHT_SCALE)}")
     palette_path, photo = Path(palette_path), Path(photo)
     data = json.loads(palette_path.read_text()) if palette_path.exists() else {}
-    srgb = patch_median(photo, box)
+    srgb = patch_median(photo, box, percentile)
     try:
         shown = str(photo.resolve().relative_to(PROJECT_ROOT))
     except ValueError:
         shown = photo.name
     entry = data.setdefault(key, {"samples": []})
-    entry["samples"].append({"photo": shown, "box": list(box), "light": light,
-                             "srgb": to_hex(srgb)})
+    sample = {"photo": shown, "box": list(box), "light": light, "srgb": to_hex(srgb)}
+    if percentile is not None:
+        sample["percentile"] = percentile
+    entry["samples"].append(sample)
     corrected = [np.clip(from_hex(s["srgb"]) * LIGHT_SCALE[s["light"]], 0, 1)
                  for s in entry["samples"]]
     entry["albedo"] = to_hex(np.mean(corrected, axis=0))
@@ -77,11 +89,12 @@ def record_sample(palette_path, key, photo, box, light):
 
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
-    if len(argv) != 8:
+    if len(argv) not in (8, 9):
         raise SystemExit(__doc__)
     palette, key, photo = argv[0], argv[1], argv[2]
     box = tuple(int(v) for v in argv[3:7])
-    albedo = record_sample(palette, key, photo, box, argv[7])
+    percentile = float(argv[8]) if len(argv) == 9 else None
+    albedo = record_sample(palette, key, photo, box, argv[7], percentile)
     print(f"{key}: albedo {albedo}", flush=True)
 
 

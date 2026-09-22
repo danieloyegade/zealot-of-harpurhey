@@ -142,6 +142,8 @@ if (import.meta.env.DEV) {
     'west-street': [-29.5, 25],
     'west-shops': [-29.5, 7],
     'east-shops': [29.5, 19],
+    // The Hive's west frontage from across Lever Street (surface pass).
+    'the-hive': [24, 24, -Math.PI / 2 - 0.2, -0.3],
     'south-shops': [0, 22],
     'cass-art': [-16.6, 27.5, Math.PI, 0.08],
     'south-road': [0, 53.5, Math.PI, 0.24],

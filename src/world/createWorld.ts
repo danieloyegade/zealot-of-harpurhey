@@ -981,8 +981,10 @@ function applyReneeBlockoutPolicy(model: Group): void {
 }
 
 function applyTheHiveModelPolicy(model: Group): void {
-  // The Hive is currently a geometry-only asset. Preserve its authored
-  // material-region palette while configuring its layered transparent systems.
+  // The Hive carries the measured PBR sets from theHiveTextures.py (black and
+  // buff brick, concrete, bronze metal, white render, interior oak). Runtime
+  // keeps the maps and configures its layered transparent systems; the
+  // perforated screens stay a placeholder.
   model.traverse((child) => {
     if (!(child instanceof Mesh)) {
       return;
@@ -996,7 +998,7 @@ function applyTheHiveModelPolicy(model: Group): void {
       if (!(material instanceof MeshStandardMaterial)) {
         continue;
       }
-      material.map = null;
+      profileAuthoredMaps(material);
       material.emissiveMap = null;
       material.emissive.set(0x000000);
       material.emissiveIntensity = 0;
@@ -1495,7 +1497,7 @@ async function addTheHiveModel(
 ): Promise<void> {
   try {
     const hive = await loadModel(
-      'assets/models/the_hive.glb?v=geometry-20260911',
+      'assets/models/the_hive.glb?v=textured-20260922',
     );
     applyTheHiveModelPolicy(hive);
     mergeStaticModelMeshes(hive);

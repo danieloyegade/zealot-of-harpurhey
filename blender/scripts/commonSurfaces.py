@@ -99,12 +99,14 @@ def _soot(s, seed, colour, amount):
 
 def brick(slug, description, face, mortar, soot, *, seed, soot_amount=0.30,
           tile=1.80, px=1024, pitch=0.225, course=0.075, joint=0.010, face_spread=0.14,
-          accent=None, accent_share=0.5):
+          accent=None, accent_share=0.5, overburnt=0.08):
     """Stretcher-bond clay brick.  Pitches include the joint: 1.80 m = 8 x 24.
 
     `accent` is an optional second brick colour given to about `accent_share`
     of the bricks, chosen per brick: polychrome work such as the alternating
-    red and blue-grey arches of the Victorian Northern Quarter.
+    red and blue-grey arches of the Victorian Northern Quarter.  `overburnt`
+    is the share of clamp-fired bricks darkened by the kiln; modern
+    machine-made brick is even, so pass 0.
     """
     _check_tiles(tile, pitch, course)
     _check_even_courses(tile, course)
@@ -119,8 +121,8 @@ def brick(slug, description, face, mortar, soot, *, seed, soot_amount=0.30,
     s.base *= (1.0 - face_spread * 0.5 + face_spread * tone)[..., None]
     # Firing varies across one brick too: a soft cloud, not a flat fill.
     s.base *= (0.95 + 0.10 * s.noise(0.08, seed + 7, 2))[..., None]
-    overburnt = (_unit_random(s, gx, gy, pitch, course, stagger, seed + 1) > 0.92).astype(F)
-    s.shade(overburnt, 0.72)
+    burnt = (_unit_random(s, gx, gy, pitch, course, stagger, seed + 1) > 1.0 - overburnt).astype(F)
+    s.shade(burnt, 0.72)
 
     pits = smoothstep(0.78, 0.95, s.noise(0.006, seed + 2, 2))
     s.shade(pits, 0.80, 0.7)
@@ -224,8 +226,12 @@ def painted_timber(slug, description, paint, *, seed, primer="#8A7A62", tile=0.6
 
 
 def painted_render(slug, description, colour, dirt, *, seed, dirt_amount=0.30,
-                   tile=2.40, px=1024, roughness=0.80):
-    """Painted smooth render: float marks, fresher repair patches, run-down dirt."""
+                   tile=2.40, px=512, roughness=0.80):
+    """Painted smooth render: float marks, fresher repair patches, run-down dirt.
+
+    512 px by default for the same reason as `concrete`: float grain is
+    incompressible and reads only as smoothness at street distance.
+    """
     s = Surface(slug, description, tile, tile, px, px)
     s.fill(lin(colour), roughness)
     s.base *= (0.95 + 0.10 * s.noise(0.8, seed, 3))[..., None]
@@ -260,8 +266,13 @@ def timber(slug, description, light, dark, *, seed, tile=(0.60, 1.20), px=(512, 
 
 
 def concrete(slug, description, colour, *, seed, stain="#4A4A46", stain_amount=0.25,
-             tile=2.00, px=1024, roughness=0.88):
-    """Cast concrete: aggregate mottle, blowholes, water staining."""
+             tile=2.00, px=512, roughness=0.88):
+    """Cast concrete: aggregate mottle, blowholes, water staining.
+
+    512 px (3.9 mm/texel on the 2 m tile) by default: the fine aggregate grain
+    is noise PNG cannot compress, and at 1024 the normal map alone runs to
+    1.5 MB for detail that is invisible from the street.
+    """
     s = Surface(slug, description, tile, tile, px, px)
     s.fill(lin(colour), roughness)
     s.base *= (0.90 + 0.20 * s.noise(0.35, seed, 4))[..., None]

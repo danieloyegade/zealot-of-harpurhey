@@ -39,6 +39,11 @@ def main():
     bottom = np.round(patch_median(photo, (0, 10, 40, 20)) * 255)
     assert bottom.tolist() == [10, 20, 30], bottom
 
+    # A box straddling both halves: the median lands on one half, the 85th
+    # luminance percentile isolates the brighter (top) half, as for pale mortar.
+    bright = np.round(patch_median(photo, (0, 4, 40, 20), percentile=85) * 255)
+    assert bright.tolist() == [128, 64, 32], bright
+
     palette = work / "palette.json"
     assert record_sample(palette, "brick face", photo, (0, 0, 40, 10), "overcast") == "#804020"
     # A sunlit sample is scaled by 0.85, and the albedo is the mean of both samples:
