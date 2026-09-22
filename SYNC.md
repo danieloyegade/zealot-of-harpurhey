@@ -22,6 +22,17 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-22 — Claude (Dreams lighting, Gulliver's textured)
+**HEAD at session start:** `e8956ce`
+**Did:**
+- `d2ada0c`: lit the Dreams frontage, following Codex's diagnosis. `Dreams_Greybox_Light_Tube` now glows (verified in game). The Dreams hero light follows the plot (`x = dreams.x`, 1.8 m proud of the fascia) at intensity 9 / 13 m. It's still one light, so the budget is unchanged. The light's fade-in couldn't be confirmed in the in-app pane: the game timer reports FPS 0 there, so fades never advance. Check it in a real browser.
+- `a6af152`: Gulliver's is textured, 9 sets, 3.84 MB, with a new `?view=gullivers`. The green tiles are square (6 in), not 6×3 as the plan assumed. `glazed_tile` now takes one hashed tone per tile.
+**Incident:** at 09:35 a `git stash` (not mine; Codex was active) removed every uncommitted change, both Codex's Cass Art work and my in-progress Gulliver's files. Daniel chose to pop it; everything came back intact, and the stash was dropped. Please don't stash a shared working tree: the two tools share it, and a stash silently takes the other tool's work with it.
+**Measurement notes:** `gullivers-manchester.jpg` has a magenta/blue cast, so it's used only for the side door. The green glaze body is very dark (`#021D0F`); its visible variety is reflection.
+**Left uncommitted:** Codex's Cass Art work and Codex's two `SYNC.md` entries, both untouched.
+**Next:** Renee (plan Task 8).
+
+---
 ## 2026-09-22 — Claude (Dreams textured)
 **HEAD at session start:** `462f057`
 **Did:**
