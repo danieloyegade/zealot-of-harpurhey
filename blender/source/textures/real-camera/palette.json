@@ -1,0 +1,183 @@
+{
+  "awning red": {
+    "albedo": "#894B50",
+    "samples": [
+      {
+        "box": [
+          640,
+          382,
+          845,
+          412
+        ],
+        "light": "shaded",
+        "photo": "rc.jpg",
+        "srgb": "#774146"
+      }
+    ]
+  },
+  "dark sandstone": {
+    "albedo": "#695349",
+    "samples": [
+      {
+        "box": [
+          605,
+          400,
+          625,
+          560
+        ],
+        "light": "shaded",
+        "photo": "rc.jpg",
+        "srgb": "#53423A"
+      },
+      {
+        "box": [
+          935,
+          400,
+          955,
+          560
+        ],
+        "light": "shaded",
+        "photo": "rc.jpg",
+        "srgb": "#634F45"
+      }
+    ]
+  },
+  "display wood": {
+    "albedo": "#AD7342",
+    "samples": [],
+    "source": "approved blockout colour of MAT_RC_DisplayWood: counter/display barely visible through glazing"
+  },
+  "frame paint": {
+    "albedo": "#433E3A",
+    "samples": [
+      {
+        "box": [
+          450,
+          170,
+          465,
+          290
+        ],
+        "light": "overcast",
+        "photo": "rc.jpg",
+        "srgb": "#433E3A"
+      }
+    ]
+  },
+  "interior wall": {
+    "albedo": "#E6E5DA",
+    "samples": [],
+    "source": "approved blockout colour of MAT_RC_InteriorWalls: not visible in the references"
+  },
+  "light sandstone": {
+    "albedo": "#C88D7A",
+    "samples": [
+      {
+        "box": [
+          100,
+          0,
+          160,
+          80
+        ],
+        "light": "overcast",
+        "photo": "rc.jpg",
+        "srgb": "#CD9281"
+      },
+      {
+        "box": [
+          315,
+          0,
+          390,
+          90
+        ],
+        "light": "overcast",
+        "photo": "rc.jpg",
+        "srgb": "#C28873"
+      }
+    ]
+  },
+  "metal": {
+    "albedo": "#7C7E7C",
+    "samples": [],
+    "source": "approved blockout colour of MAT_RC_Metal: no clean isolated sample in the references"
+  },
+  "plinth granite": {
+    "albedo": "#877A6C",
+    "samples": [
+      {
+        "box": [
+          0,
+          565,
+          45,
+          635
+        ],
+        "light": "shaded",
+        "photo": "rc.jpg",
+        "srgb": "#756A5E"
+      }
+    ]
+  },
+  "red sandstone": {
+    "albedo": "#927463",
+    "samples": [
+      {
+        "box": [
+          60,
+          555,
+          120,
+          635
+        ],
+        "light": "shaded",
+        "photo": "rc.jpg",
+        "srgb": "#7F6556"
+      }
+    ]
+  },
+  "shopfront black": {
+    "albedo": "#463626",
+    "samples": [
+      {
+        "box": [
+          995,
+          405,
+          1015,
+          540
+        ],
+        "light": "shaded",
+        "photo": "rc.jpg",
+        "srgb": "#3D2F21"
+      }
+    ]
+  },
+  "shutter": {
+    "albedo": "#BEC3BF",
+    "samples": [
+      {
+        "box": [
+          655,
+          555,
+          845,
+          635
+        ],
+        "light": "overcast",
+        "photo": "rc.jpg",
+        "srgb": "#BEC3BF"
+      }
+    ]
+  },
+  "trim door": {
+    "albedo": "#7A756B",
+    "samples": [
+      {
+        "box": [
+          150,
+          565,
+          225,
+          630
+        ],
+        "light": "overcast",
+        "photo": "rc.jpg",
+        "srgb": "#7A756B"
+      }
+    ]
+  }
+}

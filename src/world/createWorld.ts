@@ -1114,9 +1114,10 @@ function applyComeThroughLabModelPolicy(model: Group): void {
 }
 
 function applyRealCameraModelPolicy(model: Group): void {
-  // Real Camera authors its own sandstone/shopfront palette rather than clay
-  // placeholders, so the colours are kept. Only the glazing and the interior
-  // fluorescents need runtime treatment so the shop reads through the windows.
+  // Real Camera carries the measured PBR sets from realCameraTextures.py
+  // (light/dark/red sandstone, painted frames, shopfront joinery, shutter).
+  // Runtime keeps the maps; the glazing and interior fluorescents still need
+  // their own treatment so the shop reads through the windows.
   model.traverse((child) => {
     if (!(child instanceof Mesh)) {
       return;
@@ -1130,6 +1131,7 @@ function applyRealCameraModelPolicy(model: Group): void {
       if (!(material instanceof MeshStandardMaterial)) {
         continue;
       }
+      profileAuthoredMaps(material);
       material.emissive.set(0x000000);
       material.emissiveIntensity = 0;
       if (material.name === 'MAT_RC_Fluorescent') {
@@ -1154,7 +1156,7 @@ function applyRealCameraModelPolicy(model: Group): void {
       } else if (material.name === 'MAT_RC_LensGlass') {
         material.roughness = 0.14;
         material.metalness = 0.35;
-      } else {
+      } else if (!material.map) {
         material.roughness = Math.max(material.roughness, 0.55);
       }
     }
@@ -2109,11 +2111,11 @@ async function addRealCameraModel(
 ): Promise<void> {
   try {
     const realCamera = await loadModel(
-      'assets/models/real_camera.glb?v=geometry-20260912',
+      'assets/models/real_camera.glb?v=textured-20260922',
     );
     applyRealCameraModelPolicy(realCamera);
     mergeStaticModelMeshes(realCamera);
-    realCamera.name = 'Real Camera geometry asset — textures pending';
+    realCamera.name = 'Real Camera textured asset';
     // Blender's -Y Dale Street frontage imports facing +Z. Rotate it to face
     // north, then sit the authored metric envelope on the plot with the
     // shopfront flush to the plot's north edge so it meets the pavement.

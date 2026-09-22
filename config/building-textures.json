@@ -171,6 +171,40 @@
       ],
       "expectedSurfaces": 8,
       "maxBytes": 5000000
+    },
+    {
+      "building": "real-camera",
+      "glb": "assets/models/real_camera.glb",
+      "surfacePrefix": "MAT_RC_Surface_",
+      "textureDir": "blender/source/textures/real-camera",
+      "placeholders": {
+        "MAT_RC_LightSandstone": "rc-sandstone-light",
+        "MAT_RC_DarkSandstone": "rc-sandstone-dark",
+        "MAT_RC_RedSandstone": "rc-sandstone-red",
+        "MAT_RC_PaintedWindowFrames": "rc-frame-paint",
+        "MAT_RC_ShopTrimGreen": "rc-trim-green",
+        "MAT_RC_Black": "rc-shopfront-black",
+        "MAT_RC_Shutter": "rc-shutter",
+        "MAT_RC_Metal": "rc-metal",
+        "MAT_RC_DisplayWood": "rc-display-wood",
+        "MAT_RC_CounterBase": "rc-display-wood",
+        "MAT_RC_InteriorWalls": "rc-interior-wall"
+      },
+      "untexturedAllowed": [
+        "MAT_RC_ShopGlass",
+        "MAT_RC_WindowGlass",
+        "MAT_RC_LensGlass",
+        "MAT_RC_Fluorescent",
+        "MAT_RC_SignWhite",
+        "MAT_RC_PosterBlue",
+        "MAT_RC_PosterYellow",
+        "MAT_RC_ShelfRed",
+        "MAT_RC_GreyCarpet",
+        "MAT_RC_CeilingTiles",
+        "MAT_RC_AwningRed"
+      ],
+      "expectedSurfaces": 10,
+      "maxBytes": 21000000
     }
   ]
 }

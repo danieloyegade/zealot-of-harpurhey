@@ -1,0 +1,975 @@
+{
+  "asset": "real-camera",
+  "pass": "surface materials (commonSurfaces)",
+  "convention": {
+    "maps": "<slug>-{basecolor,orm,normal}.png",
+    "orm": "R occlusion, G roughness, B metallic (glTF)",
+    "normal": "OpenGL tangent space (+Y up)",
+    "unit": "1 Blender unit = 1 m; coverage_m is what one tile spans"
+  },
+  "measured_reference_patches": {
+    "awning red": {
+      "albedo": "#894B50",
+      "samples": [
+        {
+          "box": [
+            640,
+            382,
+            845,
+            412
+          ],
+          "light": "shaded",
+          "photo": "rc.jpg",
+          "srgb": "#774146"
+        }
+      ]
+    },
+    "dark sandstone": {
+      "albedo": "#695349",
+      "samples": [
+        {
+          "box": [
+            605,
+            400,
+            625,
+            560
+          ],
+          "light": "shaded",
+          "photo": "rc.jpg",
+          "srgb": "#53423A"
+        },
+        {
+          "box": [
+            935,
+            400,
+            955,
+            560
+          ],
+          "light": "shaded",
+          "photo": "rc.jpg",
+          "srgb": "#634F45"
+        }
+      ]
+    },
+    "display wood": {
+      "albedo": "#AD7342",
+      "samples": [],
+      "source": "approved blockout colour of MAT_RC_DisplayWood: counter/display barely visible through glazing"
+    },
+    "frame paint": {
+      "albedo": "#433E3A",
+      "samples": [
+        {
+          "box": [
+            450,
+            170,
+            465,
+            290
+          ],
+          "light": "overcast",
+          "photo": "rc.jpg",
+          "srgb": "#433E3A"
+        }
+      ]
+    },
+    "interior wall": {
+      "albedo": "#E6E5DA",
+      "samples": [],
+      "source": "approved blockout colour of MAT_RC_InteriorWalls: not visible in the references"
+    },
+    "light sandstone": {
+      "albedo": "#C88D7A",
+      "samples": [
+        {
+          "box": [
+            100,
+            0,
+            160,
+            80
+          ],
+          "light": "overcast",
+          "photo": "rc.jpg",
+          "srgb": "#CD9281"
+        },
+        {
+          "box": [
+            315,
+            0,
+            390,
+            90
+          ],
+          "light": "overcast",
+          "photo": "rc.jpg",
+          "srgb": "#C28873"
+        }
+      ]
+    },
+    "metal": {
+      "albedo": "#7C7E7C",
+      "samples": [],
+      "source": "approved blockout colour of MAT_RC_Metal: no clean isolated sample in the references"
+    },
+    "plinth granite": {
+      "albedo": "#877A6C",
+      "samples": [
+        {
+          "box": [
+            0,
+            565,
+            45,
+            635
+          ],
+          "light": "shaded",
+          "photo": "rc.jpg",
+          "srgb": "#756A5E"
+        }
+      ]
+    },
+    "red sandstone": {
+      "albedo": "#927463",
+      "samples": [
+        {
+          "box": [
+            60,
+            555,
+            120,
+            635
+          ],
+          "light": "shaded",
+          "photo": "rc.jpg",
+          "srgb": "#7F6556"
+        }
+      ]
+    },
+    "shopfront black": {
+      "albedo": "#463626",
+      "samples": [
+        {
+          "box": [
+            995,
+            405,
+            1015,
+            540
+          ],
+          "light": "shaded",
+          "photo": "rc.jpg",
+          "srgb": "#3D2F21"
+        }
+      ]
+    },
+    "shutter": {
+      "albedo": "#BEC3BF",
+      "samples": [
+        {
+          "box": [
+            655,
+            555,
+            845,
+            635
+          ],
+          "light": "overcast",
+          "photo": "rc.jpg",
+          "srgb": "#BEC3BF"
+        }
+      ]
+    },
+    "trim door": {
+      "albedo": "#7A756B",
+      "samples": [
+        {
+          "box": [
+            150,
+            565,
+            225,
+            630
+          ],
+          "light": "overcast",
+          "photo": "rc.jpg",
+          "srgb": "#7A756B"
+        }
+      ]
+    }
+  },
+  "materials": [
+    {
+      "slug": "rc-sandstone-light",
+      "description": "Upper facade: pale salmon sandstone",
+      "coverage_m": [
+        2.4,
+        2.4
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        2.3438,
+        2.3438
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.86,
+        0.911
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -2.487,
+        0.249
+      ],
+      "base_srgb_mean": [
+        195,
+        139,
+        120
+      ],
+      "files": {
+        "basecolor": {
+          "file": "rc-sandstone-light-basecolor.png",
+          "bytes": 378117
+        },
+        "orm": {
+          "file": "rc-sandstone-light-orm.png",
+          "bytes": 35779
+        },
+        "normal": {
+          "file": "rc-sandstone-light-normal.png",
+          "bytes": 525867
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.04,
+          "typical": 0.47
+        },
+        "basecolor_v": {
+          "wrap": 0.1,
+          "typical": 1.07
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.36
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.72
+        },
+        "normal_u": {
+          "wrap": 0.11,
+          "typical": 0.45
+        },
+        "normal_v": {
+          "wrap": 0.2,
+          "typical": 0.85
+        }
+      }
+    },
+    {
+      "slug": "rc-sandstone-dark",
+      "description": "Ground-floor piers and reveals, in shadow",
+      "coverage_m": [
+        2.4,
+        2.4
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        2.3438,
+        2.3438
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.86,
+        0.913
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -2.402,
+        0.246
+      ],
+      "base_srgb_mean": [
+        105,
+        83,
+        73
+      ],
+      "files": {
+        "basecolor": {
+          "file": "rc-sandstone-dark-basecolor.png",
+          "bytes": 221111
+        },
+        "orm": {
+          "file": "rc-sandstone-dark-orm.png",
+          "bytes": 43677
+        },
+        "normal": {
+          "file": "rc-sandstone-dark-normal.png",
+          "bytes": 530207
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.02,
+          "typical": 0.06
+        },
+        "basecolor_v": {
+          "wrap": 0.08,
+          "typical": 0.2
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.36
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.72
+        },
+        "normal_u": {
+          "wrap": 0.12,
+          "typical": 0.45
+        },
+        "normal_v": {
+          "wrap": 0.28,
+          "typical": 0.85
+        }
+      }
+    },
+    {
+      "slug": "rc-sandstone-red",
+      "description": "Moulded string course and dressings",
+      "coverage_m": [
+        2.4,
+        2.4
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        2.3438,
+        2.3438
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.86,
+        0.912
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -2.442,
+        0.24
+      ],
+      "base_srgb_mean": [
+        144,
+        114,
+        98
+      ],
+      "files": {
+        "basecolor": {
+          "file": "rc-sandstone-red-basecolor.png",
+          "bytes": 426881
+        },
+        "orm": {
+          "file": "rc-sandstone-red-orm.png",
+          "bytes": 40485
+        },
+        "normal": {
+          "file": "rc-sandstone-red-normal.png",
+          "bytes": 533205
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.04,
+          "typical": 0.28
+        },
+        "basecolor_v": {
+          "wrap": 0.09,
+          "typical": 0.64
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.36
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.72
+        },
+        "normal_u": {
+          "wrap": 0.15,
+          "typical": 0.45
+        },
+        "normal_v": {
+          "wrap": 0.17,
+          "typical": 0.85
+        }
+      }
+    },
+    {
+      "slug": "rc-frame-paint",
+      "description": "Painted upper-window frames",
+      "coverage_m": [
+        0.3,
+        0.3
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.5859,
+        0.5859
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.42,
+        0.742
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.205,
+        0.134
+      ],
+      "base_srgb_mean": [
+        67,
+        62,
+        58
+      ],
+      "files": {
+        "basecolor": {
+          "file": "rc-frame-paint-basecolor.png",
+          "bytes": 12838
+        },
+        "orm": {
+          "file": "rc-frame-paint-orm.png",
+          "bytes": 50498
+        },
+        "normal": {
+          "file": "rc-frame-paint-normal.png",
+          "bytes": 39156
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.02,
+          "typical": 0.12
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.03
+        },
+        "orm_u": {
+          "wrap": 0.4,
+          "typical": 0.7
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.03
+        },
+        "normal_u": {
+          "wrap": 0.97,
+          "typical": 0.65
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 0.02
+        }
+      }
+    },
+    {
+      "slug": "rc-trim-green",
+      "description": "Entrance doors: measured sage-grey",
+      "coverage_m": [
+        0.6,
+        0.6
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        1.1719,
+        1.1719
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.42,
+        0.777
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.196,
+        0.135
+      ],
+      "base_srgb_mean": [
+        122,
+        117,
+        107
+      ],
+      "files": {
+        "basecolor": {
+          "file": "rc-trim-green-basecolor.png",
+          "bytes": 22220
+        },
+        "orm": {
+          "file": "rc-trim-green-orm.png",
+          "bytes": 85365
+        },
+        "normal": {
+          "file": "rc-trim-green-normal.png",
+          "bytes": 48029
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.1,
+          "typical": 0.24
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        },
+        "orm_u": {
+          "wrap": 0.69,
+          "typical": 1.21
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.06
+        },
+        "normal_u": {
+          "wrap": 1.0,
+          "typical": 0.64
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 0.02
+        }
+      }
+    },
+    {
+      "slug": "rc-shopfront-black",
+      "description": "Dark shopfront joinery",
+      "coverage_m": [
+        0.6,
+        0.6
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        0.5859,
+        0.5859
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.42,
+        0.763
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.223,
+        0.121
+      ],
+      "base_srgb_mean": [
+        71,
+        54,
+        38
+      ],
+      "files": {
+        "basecolor": {
+          "file": "rc-shopfront-black-basecolor.png",
+          "bytes": 34588
+        },
+        "orm": {
+          "file": "rc-shopfront-black-orm.png",
+          "bytes": 205494
+        },
+        "normal": {
+          "file": "rc-shopfront-black-normal.png",
+          "bytes": 145699
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.02,
+          "typical": 0.08
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        },
+        "orm_u": {
+          "wrap": 0.29,
+          "typical": 0.71
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.03
+        },
+        "normal_u": {
+          "wrap": 1.24,
+          "typical": 0.63
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        }
+      }
+    },
+    {
+      "slug": "rc-shutter",
+      "description": "Pale grey aluminium roller shutter",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        0.4883,
+        0.4883
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.35,
+        0.551
+      ],
+      "metallic_range": [
+        0.0,
+        0.594
+      ],
+      "relief_mm": [
+        -0.239,
+        0.104
+      ],
+      "base_srgb_mean": [
+        191,
+        194,
+        191
+      ],
+      "files": {
+        "basecolor": {
+          "file": "rc-shutter-basecolor.png",
+          "bytes": 145055
+        },
+        "orm": {
+          "file": "rc-shutter-orm.png",
+          "bytes": 233347
+        },
+        "normal": {
+          "file": "rc-shutter-normal.png",
+          "bytes": 377751
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.04
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.04
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.08
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.08
+        },
+        "normal_u": {
+          "wrap": 0.07,
+          "typical": 0.09
+        },
+        "normal_v": {
+          "wrap": 0.08,
+          "typical": 0.09
+        }
+      }
+    },
+    {
+      "slug": "rc-metal",
+      "description": "Ironwork and window security bars",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.475,
+        0.736
+      ],
+      "metallic_range": [
+        0.0,
+        0.562
+      ],
+      "relief_mm": [
+        -0.229,
+        0.138
+      ],
+      "base_srgb_mean": [
+        124,
+        126,
+        124
+      ],
+      "files": {
+        "basecolor": {
+          "file": "rc-metal-basecolor.png",
+          "bytes": 49418
+        },
+        "orm": {
+          "file": "rc-metal-orm.png",
+          "bytes": 68460
+        },
+        "normal": {
+          "file": "rc-metal-normal.png",
+          "bytes": 147351
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.05
+        },
+        "basecolor_v": {
+          "wrap": 0.01,
+          "typical": 0.05
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.1
+        },
+        "orm_v": {
+          "wrap": 0.02,
+          "typical": 0.11
+        },
+        "normal_u": {
+          "wrap": 0.16,
+          "typical": 0.16
+        },
+        "normal_v": {
+          "wrap": 0.15,
+          "typical": 0.16
+        }
+      }
+    },
+    {
+      "slug": "rc-display-wood",
+      "description": "Counter and display woodwork",
+      "coverage_m": [
+        0.6,
+        1.2
+      ],
+      "pixels": [
+        512,
+        1024
+      ],
+      "mm_per_texel": [
+        1.1719,
+        1.1719
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.6,
+        0.6
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.16,
+        0.06
+      ],
+      "base_srgb_mean": [
+        173,
+        115,
+        66
+      ],
+      "files": {
+        "basecolor": {
+          "file": "rc-display-wood-basecolor.png",
+          "bytes": 65195
+        },
+        "orm": {
+          "file": "rc-display-wood-orm.png",
+          "bytes": 11354
+        },
+        "normal": {
+          "file": "rc-display-wood-normal.png",
+          "bytes": 213113
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.06,
+          "typical": 0.12
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.02
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "normal_u": {
+          "wrap": 1.05,
+          "typical": 1.19
+        },
+        "normal_v": {
+          "wrap": 0.01,
+          "typical": 0.06
+        }
+      }
+    },
+    {
+      "slug": "rc-interior-wall",
+      "description": "Interior walls seen through the glazing",
+      "coverage_m": [
+        2.0,
+        2.0
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        3.9062,
+        3.9062
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.9,
+        0.9
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.098,
+        0.096
+      ],
+      "base_srgb_mean": [
+        230,
+        229,
+        218
+      ],
+      "files": {
+        "basecolor": {
+          "file": "rc-interior-wall-basecolor.png",
+          "bytes": 32898
+        },
+        "orm": {
+          "file": "rc-interior-wall-orm.png",
+          "bytes": 5806
+        },
+        "normal": {
+          "file": "rc-interior-wall-normal.png",
+          "bytes": 151092
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.02
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.02
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "normal_u": {
+          "wrap": 0.14,
+          "typical": 0.13
+        },
+        "normal_v": {
+          "wrap": 0.13,
+          "typical": 0.13
+        }
+      }
+    }
+  ]
+}
