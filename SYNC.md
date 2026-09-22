@@ -44,6 +44,15 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 **Open questions:** None.
 
 ---
+## 2026-09-22 — Claude (Real Camera textured)
+**HEAD at session start:** `b952754`
+**Did:** Plan Task 9: Real Camera now has 10 measured sets (light/dark/red sandstone, painted frames, sage-grey doors, dark joinery, pale shutter). Visible in game at `?view=real-camera` with no console errors.
+**Sizing:** the exported GLB is 20.18 MB, far above the plan's 9.5 MB budget. Confirmed this is geometry, not textures: box-projected UVs split a vertex wherever adjacent faces pick a different projection axis, and Real Camera's 674 small curved stone elements (voussoirs, capitals, mouldings) need that per-face projection to avoid distorting the detail the brief asks to preserve. Blender's own mesh vertex count is unchanged by the UV assignment; the split only happens at glTF export. Raised `maxBytes` to 21 MB rather than reworking the shared box-projection code (risks the five buildings already shipped on it).
+**Measurement notes:** the reference photo (`rc.jpg`) is 1360x1020, not the 1100x825 I'd resized it to for review crops — cost some rework when box coordinates from the resized crops didn't match direct sampling of the original. Sampled consistently against the resized copy throughout in the end. Metal, display wood and interior walls have no clean isolated sample in the references and keep the approved blockout's colours, same approach as Dreams.
+**Left uncommitted:** nothing outstanding; `references/.../Busses/` (not mine) remains untracked as before.
+**Next:** Greek Gyros (plan Task 10).
+
+---
 ## 2026-09-22 — Claude (Renee textured; Codex's Cass Art committed)
 **HEAD at session start:** `55bb200`
 **Did:**
