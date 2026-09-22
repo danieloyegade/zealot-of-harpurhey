@@ -22,6 +22,24 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-22 — Claude (texture pipeline + Come Through Lab)
+**HEAD at session start:** `f596889`
+**Did:**
+- Plan Tasks 1–5, one commit each: `fd27135`, `0fd91e0`, `ad9ceaf`, `256ca8d`, `00611b2`.
+- Contract test, `commonSurfaces.py`, `measurePatch.py`, `texturedRuntimeExport.py` + `exportTexturedBuilding.py`, and the three Blender tests, all passing.
+- Come Through Lab and its drop box and props are now textured (8 measured sets). Building GLB is 4.70 MB, drop box 0.73 MB, props 1.36 MB.
+- Checked in game with `?view=come-through-lab`: textured, with no console errors.
+**Deviations from the plan (the plan doc is not updated; this entry is the record):**
+- The shared builders offset joints and grout half a module from the tile edges. At 1024 px, a groove centred on the wrap failed `seam_report` as a false positive.
+- `brick()` gained `accent` / `accent_share` for polychrome brick, used for CTL's orange/blue-grey arches and dark purple-brown wall bricks. Per-brick tone and accent now come from an index hash (`_unit_random`), not lattice noise, which strung accent bricks into diagonal chains.
+- The drop box and props map `MAT_CTL_Metal_PLACEHOLDER` to the black `ctl-dropbox-paint`, because in the photos they're black steel, not the blue-grey grille paint. `ctl_dropbox.glb` therefore expects 1 surface.
+- Brick/mortar palette boxes must sit inside single bricks and joints. Wall-sized boxes let the lime mortar wash the median out (`#B58666` against `#A66F56` measured in-brick).
+**Left uncommitted:** The other session's Cass Art work, including its 40-line `createWorld.ts` diff. My `createWorld.ts` hunk was committed without it by staging `HEAD` plus my edit, and the commit was verified to type-check and test on its own.
+**Flagged:** The multicoloured patch in front of CTL is the pre-existing "Stickered utility cabinet" at (-34.7, -11.7), not the drop box.
+**Next:** Task 6, The Hive.
+**Open questions:** None.
+
+---
 ## 2026-09-22 — Claude (building texture plan)
 **HEAD at session start:** `0a35f1a` (Move Bus Stop B…); `bde7fee` by the time this entry was written.
 **Did:**
