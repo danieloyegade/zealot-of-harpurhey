@@ -1,0 +1,962 @@
+{
+  "asset": "come-through-lab",
+  "pass": "surface materials (commonSurfaces)",
+  "convention": {
+    "maps": "<slug>-{basecolor,orm,normal}.png",
+    "orm": "R occlusion, G roughness, B metallic (glTF)",
+    "normal": "OpenGL tangent space (+Y up)",
+    "unit": "1 Blender unit = 1 m; coverage_m is what one tile spans"
+  },
+  "measured_reference_patches": {
+    "arch brick face": {
+      "albedo": "#CA8052",
+      "samples": [
+        {
+          "box": [
+            651,
+            281,
+            657,
+            291
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+          "srgb": "#CA7F4D"
+        },
+        {
+          "box": [
+            677,
+            302,
+            684,
+            330
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+          "srgb": "#C98157"
+        }
+      ]
+    },
+    "blue brick": {
+      "albedo": "#7C7E86",
+      "samples": [
+        {
+          "box": [
+            640,
+            285,
+            646,
+            313
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+          "srgb": "#737279"
+        },
+        {
+          "box": [
+            664,
+            280,
+            671,
+            310
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+          "srgb": "#858B94"
+        }
+      ]
+    },
+    "brick face": {
+      "albedo": "#A66F56",
+      "samples": [
+        {
+          "box": [
+            1145,
+            582,
+            1188,
+            591
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+          "srgb": "#AF6942"
+        },
+        {
+          "box": [
+            1202,
+            586,
+            1252,
+            598
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+          "srgb": "#9D634B"
+        },
+        {
+          "box": [
+            1174,
+            604,
+            1225,
+            612
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+          "srgb": "#AE7E66"
+        },
+        {
+          "box": [
+            40,
+            135,
+            250,
+            195
+          ],
+          "light": "sunlit",
+          "photo": "references/architecture/buildings/come-through-lab/hgfcx.jpg",
+          "srgb": "#BA8876"
+        }
+      ]
+    },
+    "brick mortar": {
+      "albedo": "#BDAC99",
+      "samples": [
+        {
+          "box": [
+            1192,
+            622,
+            1196,
+            635
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+          "srgb": "#C3AD9B"
+        },
+        {
+          "box": [
+            160,
+            104,
+            300,
+            110
+          ],
+          "light": "sunlit",
+          "photo": "references/architecture/buildings/come-through-lab/hgfcx.jpg",
+          "srgb": "#D7C9B1"
+        }
+      ]
+    },
+    "dark brick": {
+      "albedo": "#71584D",
+      "samples": [
+        {
+          "box": [
+            310,
+            130,
+            540,
+            200
+          ],
+          "light": "sunlit",
+          "photo": "references/architecture/buildings/come-through-lab/hgfcx.jpg",
+          "srgb": "#85685B"
+        }
+      ]
+    },
+    "door timber dark": {
+      "albedo": "#5A4A35",
+      "samples": [
+        {
+          "box": [
+            330,
+            570,
+            520,
+            608
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/unnamed.jpg",
+          "srgb": "#5A4A35"
+        }
+      ]
+    },
+    "door timber light": {
+      "albedo": "#84542B",
+      "samples": [
+        {
+          "box": [
+            345,
+            290,
+            500,
+            340
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/unnamed.jpg",
+          "srgb": "#945D2E"
+        },
+        {
+          "box": [
+            320,
+            340,
+            410,
+            400
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+          "srgb": "#734C28"
+        }
+      ]
+    },
+    "dropbox paint": {
+      "albedo": "#2C2F2E",
+      "samples": [
+        {
+          "box": [
+            180,
+            690,
+            210,
+            880
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/hgfcx.jpg",
+          "srgb": "#363835"
+        },
+        {
+          "box": [
+            468,
+            460,
+            530,
+            472
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+          "srgb": "#222526"
+        }
+      ]
+    },
+    "frame paint": {
+      "albedo": "#4A5A4A",
+      "samples": [
+        {
+          "box": [
+            330,
+            242,
+            510,
+            262
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/unnamed.jpg",
+          "srgb": "#495743"
+        },
+        {
+          "box": [
+            727,
+            300,
+            737,
+            600
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/unnamed.jpg",
+          "srgb": "#4A5D52"
+        }
+      ]
+    },
+    "grime": {
+      "albedo": "#605E44",
+      "samples": [
+        {
+          "box": [
+            530,
+            652,
+            760,
+            688
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+          "srgb": "#605E44"
+        }
+      ]
+    },
+    "metal paint": {
+      "albedo": "#8D9592",
+      "samples": [
+        {
+          "box": [
+            600,
+            380,
+            730,
+            460
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+          "srgb": "#87969F"
+        },
+        {
+          "box": [
+            740,
+            320,
+            930,
+            440
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/unnamed.jpg",
+          "srgb": "#939484"
+        }
+      ]
+    },
+    "stone": {
+      "albedo": "#CFBF97",
+      "samples": [
+        {
+          "box": [
+            300,
+            245,
+            430,
+            290
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+          "srgb": "#D0BB8E"
+        },
+        {
+          "box": [
+            330,
+            160,
+            510,
+            225
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/unnamed.jpg",
+          "srgb": "#E1D2A4"
+        },
+        {
+          "box": [
+            820,
+            92,
+            1140,
+            118
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+          "srgb": "#BCB093"
+        }
+      ]
+    }
+  },
+  "materials": [
+    {
+      "slug": "ctl-brick",
+      "description": "Historic frontage: orange-red stretcher-bond brick, lime mortar",
+      "coverage_m": [
+        1.8,
+        1.8
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        1.7578,
+        1.7578
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.84,
+        0.95
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -4.794,
+        0.247
+      ],
+      "base_srgb_mean": [
+        156,
+        114,
+        92
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ctl-brick-basecolor.png",
+          "bytes": 349777
+        },
+        "orm": {
+          "file": "ctl-brick-orm.png",
+          "bytes": 50948
+        },
+        "normal": {
+          "file": "ctl-brick-normal.png",
+          "bytes": 703674
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.07,
+          "typical": 0.86
+        },
+        "basecolor_v": {
+          "wrap": 0.06,
+          "typical": 2.51
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.66
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 2.1
+        },
+        "normal_u": {
+          "wrap": 0.47,
+          "typical": 1.71
+        },
+        "normal_v": {
+          "wrap": 0.44,
+          "typical": 4.61
+        }
+      }
+    },
+    {
+      "slug": "ctl-arch-brick",
+      "description": "Polychrome arches and band: orange and blue-grey brick",
+      "coverage_m": [
+        0.9,
+        0.9
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        0.8789,
+        0.8789
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.84,
+        0.95
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -4.707,
+        0.236
+      ],
+      "base_srgb_mean": [
+        162,
+        131,
+        112
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ctl-arch-brick-basecolor.png",
+          "bytes": 223875
+        },
+        "orm": {
+          "file": "ctl-arch-brick-orm.png",
+          "bytes": 33060
+        },
+        "normal": {
+          "file": "ctl-arch-brick-normal.png",
+          "bytes": 461602
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.02,
+          "typical": 0.36
+        },
+        "basecolor_v": {
+          "wrap": 0.02,
+          "typical": 1.03
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.33
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 1.05
+        },
+        "normal_u": {
+          "wrap": 0.44,
+          "typical": 1.24
+        },
+        "normal_v": {
+          "wrap": 0.38,
+          "typical": 3.23
+        }
+      }
+    },
+    {
+      "slug": "ctl-stone",
+      "description": "Buff sandstone surround, cornice and sills",
+      "coverage_m": [
+        1.2,
+        1.2
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        1.1719,
+        1.1719
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.861,
+        0.911
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -2.466,
+        0.237
+      ],
+      "base_srgb_mean": [
+        202,
+        186,
+        146
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ctl-stone-basecolor.png",
+          "bytes": 444635
+        },
+        "orm": {
+          "file": "ctl-stone-orm.png",
+          "bytes": 29227
+        },
+        "normal": {
+          "file": "ctl-stone-normal.png",
+          "bytes": 422858
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.03,
+          "typical": 0.37
+        },
+        "basecolor_v": {
+          "wrap": 0.06,
+          "typical": 0.75
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.18
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.36
+        },
+        "normal_u": {
+          "wrap": 0.14,
+          "typical": 0.49
+        },
+        "normal_v": {
+          "wrap": 0.24,
+          "typical": 0.89
+        }
+      }
+    },
+    {
+      "slug": "ctl-frame-paint",
+      "description": "Grey-green painted frames and fanlight panel",
+      "coverage_m": [
+        0.3,
+        0.3
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.5859,
+        0.5859
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.468,
+        0.794
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.196,
+        0.108
+      ],
+      "base_srgb_mean": [
+        73,
+        89,
+        73
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ctl-frame-paint-basecolor.png",
+          "bytes": 14089
+        },
+        "orm": {
+          "file": "ctl-frame-paint-orm.png",
+          "bytes": 51259
+        },
+        "normal": {
+          "file": "ctl-frame-paint-normal.png",
+          "bytes": 39855
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.01,
+          "typical": 0.12
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.02
+        },
+        "orm_u": {
+          "wrap": 0.02,
+          "typical": 0.43
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.03
+        },
+        "normal_u": {
+          "wrap": 0.75,
+          "typical": 0.66
+        },
+        "normal_v": {
+          "wrap": 0.0,
+          "typical": 0.02
+        }
+      }
+    },
+    {
+      "slug": "ctl-door-timber",
+      "description": "Oak plank entrance door",
+      "coverage_m": [
+        0.6,
+        1.2
+      ],
+      "pixels": [
+        512,
+        1024
+      ],
+      "mm_per_texel": [
+        1.1719,
+        1.1719
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.55,
+        0.55
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.16,
+        0.06
+      ],
+      "base_srgb_mean": [
+        122,
+        81,
+        46
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ctl-door-timber-basecolor.png",
+          "bytes": 257374
+        },
+        "orm": {
+          "file": "ctl-door-timber-orm.png",
+          "bytes": 11353
+        },
+        "normal": {
+          "file": "ctl-door-timber-normal.png",
+          "bytes": 183064
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 2.26,
+          "typical": 3.16
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.09
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "normal_u": {
+          "wrap": 0.92,
+          "typical": 1.16
+        },
+        "normal_v": {
+          "wrap": 0.02,
+          "typical": 0.05
+        }
+      }
+    },
+    {
+      "slug": "ctl-door-timber-dark",
+      "description": "Door plank seams and shadowed timber",
+      "coverage_m": [
+        0.6,
+        1.2
+      ],
+      "pixels": [
+        256,
+        512
+      ],
+      "mm_per_texel": [
+        2.3438,
+        2.3438
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.55,
+        0.55
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.16,
+        0.06
+      ],
+      "base_srgb_mean": [
+        90,
+        74,
+        53
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ctl-door-timber-dark-basecolor.png",
+          "bytes": 17999
+        },
+        "orm": {
+          "file": "ctl-door-timber-dark-orm.png",
+          "bytes": 3436
+        },
+        "normal": {
+          "file": "ctl-door-timber-dark-normal.png",
+          "bytes": 54364
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.06,
+          "typical": 0.08
+        },
+        "basecolor_v": {
+          "wrap": 0.01,
+          "typical": 0.02
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.0
+        },
+        "normal_u": {
+          "wrap": 0.62,
+          "typical": 0.7
+        },
+        "normal_v": {
+          "wrap": 0.04,
+          "typical": 0.06
+        }
+      }
+    },
+    {
+      "slug": "ctl-metal-paint",
+      "description": "Pale blue-grey grilles and door furniture",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.47,
+        0.731
+      ],
+      "metallic_range": [
+        0.0,
+        0.597
+      ],
+      "relief_mm": [
+        -0.243,
+        0.132
+      ],
+      "base_srgb_mean": [
+        142,
+        149,
+        146
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ctl-metal-paint-basecolor.png",
+          "bytes": 62802
+        },
+        "orm": {
+          "file": "ctl-metal-paint-orm.png",
+          "bytes": 73614
+        },
+        "normal": {
+          "file": "ctl-metal-paint-normal.png",
+          "bytes": 148455
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.07
+        },
+        "basecolor_v": {
+          "wrap": 0.01,
+          "typical": 0.07
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.11
+        },
+        "orm_v": {
+          "wrap": 0.01,
+          "typical": 0.12
+        },
+        "normal_u": {
+          "wrap": 0.15,
+          "typical": 0.17
+        },
+        "normal_v": {
+          "wrap": 0.14,
+          "typical": 0.17
+        }
+      }
+    },
+    {
+      "slug": "ctl-dropbox-paint",
+      "description": "Black powder-coated drop box and holder",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        0.4883,
+        0.4883
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.465,
+        0.622
+      ],
+      "metallic_range": [
+        0.0,
+        0.576
+      ],
+      "relief_mm": [
+        -0.214,
+        0.114
+      ],
+      "base_srgb_mean": [
+        44,
+        47,
+        46
+      ],
+      "files": {
+        "basecolor": {
+          "file": "ctl-dropbox-paint-basecolor.png",
+          "bytes": 108640
+        },
+        "orm": {
+          "file": "ctl-dropbox-paint-orm.png",
+          "bytes": 205067
+        },
+        "normal": {
+          "file": "ctl-dropbox-paint-normal.png",
+          "bytes": 382139
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.02
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.03
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.06
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.06
+        },
+        "normal_u": {
+          "wrap": 0.08,
+          "typical": 0.09
+        },
+        "normal_v": {
+          "wrap": 0.09,
+          "typical": 0.09
+        }
+      }
+    }
+  ]
+}

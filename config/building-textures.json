@@ -15,6 +15,58 @@
       ],
       "expectedSurfaces": 10,
       "maxBytes": 16000000
+    },
+    {
+      "building": "come-through-lab",
+      "glb": "assets/models/come_through_lab.glb",
+      "surfacePrefix": "MAT_CTL_Surface_",
+      "textureDir": "blender/source/textures/come-through-lab",
+      "placeholders": {
+        "MAT_CTL_Brick_PLACEHOLDER": "ctl-brick",
+        "MAT_CTL_ArchBrick_PLACEHOLDER": "ctl-arch-brick",
+        "MAT_CTL_Stone_PLACEHOLDER": "ctl-stone",
+        "MAT_CTL_WindowFrame_PLACEHOLDER": "ctl-frame-paint",
+        "MAT_CTL_Wood_PLACEHOLDER": "ctl-door-timber",
+        "MAT_CTL_WoodDark_PLACEHOLDER": "ctl-door-timber-dark",
+        "MAT_CTL_Metal_PLACEHOLDER": "ctl-metal-paint"
+      },
+      "untexturedAllowed": [
+        "MAT_CTL_Glass_PLACEHOLDER",
+        "MAT_CTL_Paper_PLACEHOLDER"
+      ],
+      "expectedSurfaces": 7,
+      "maxBytes": 5000000
+    },
+    {
+      "building": "come-through-lab",
+      "glb": "assets/models/ctl_dropbox.glb",
+      "surfacePrefix": "MAT_CTL_Surface_",
+      "textureDir": "blender/source/textures/come-through-lab",
+      "placeholders": {
+        "MAT_CTL_Metal_PLACEHOLDER": "ctl-dropbox-paint",
+        "MAT_CTL_DropBox_PLACEHOLDER": "ctl-dropbox-paint"
+      },
+      "untexturedAllowed": [],
+      "expectedSurfaces": 1,
+      "maxBytes": 5000000
+    },
+    {
+      "building": "come-through-lab",
+      "glb": "assets/models/ctl_dropoff_props.glb",
+      "surfacePrefix": "MAT_CTL_Surface_",
+      "textureDir": "blender/source/textures/come-through-lab",
+      "placeholders": {
+        "MAT_CTL_WindowFrame_PLACEHOLDER": "ctl-frame-paint",
+        "MAT_CTL_Wood_PLACEHOLDER": "ctl-door-timber",
+        "MAT_CTL_WoodDark_PLACEHOLDER": "ctl-door-timber-dark",
+        "MAT_CTL_Metal_PLACEHOLDER": "ctl-dropbox-paint"
+      },
+      "untexturedAllowed": [
+        "MAT_CTL_Glass_PLACEHOLDER",
+        "MAT_CTL_Paper_PLACEHOLDER"
+      ],
+      "expectedSurfaces": 4,
+      "maxBytes": 5000000
     }
   ]
 }

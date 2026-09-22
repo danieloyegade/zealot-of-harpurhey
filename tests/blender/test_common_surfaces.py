@@ -32,6 +32,8 @@ def cases():
         # Production size: joints on the tile edge only showed up as a seam at 1024.
         (ashlar("t-ashlar-full", "t", "#BBA48A", "#6C5B4F", "#3A332C", seed=2), "#BBA48A"),
         (brick("t-brick-full", "t", "#8A4A3A", "#9A958C", "#3A3632", seed=1), "#8A4A3A"),
+        (brick("t-brick-accent", "t", "#8A4A3A", "#9A958C", "#3A3632", seed=1, px=256,
+               accent="#8A4A3A"), "#8A4A3A"),
     ]
 
 

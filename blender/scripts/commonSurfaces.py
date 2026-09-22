@@ -52,7 +52,7 @@ def _chips(s, count, seed, size=(0.0010, 0.0038)):
 
 
 def _bond(s, pitch, course):
-    """Stretcher-bond layout: bond coordinates, unit-centre offsets, row stagger.
+    """Stretcher-bond layout: bond coordinates and the per-row stagger.
 
     The bond is shifted a quarter unit across and half a course up, so no joint
     lies on a tile edge.  A groove centred on the wrap is seamless but mirrors
@@ -61,9 +61,22 @@ def _bond(s, pitch, course):
     gx, gy = s.x + pitch * 0.25, s.y + course * 0.5
     row = np.floor(gy / course)
     stagger = np.where(np.mod(row, 2) > 0.5, pitch * 0.5, 0.0).astype(F)
-    centre_x = (np.floor((gx + stagger) / pitch) + 0.5) * pitch - stagger
-    centre_y = (row + 0.5) * course
-    return gx, gy, (centre_x - gx, centre_y - gy), stagger
+    return gx, gy, stagger
+
+
+def _unit_random(s, gx, gy, pitch, course, stagger, seed):
+    """One independent value in [0, 1) per brick or block, wrapped to the tile.
+
+    Lattice noise sampled at unit centres correlates neighbours (they share
+    lattice corners), which strings accent bricks into diagonal chains.  A
+    hash of the unit's integer index does not.
+    """
+    columns = int(round(s.width / pitch))
+    rows = int(round(s.height / course))
+    ix = np.mod(np.floor((gx + stagger) / pitch), columns)
+    iy = np.mod(np.floor(gy / course), rows)
+    h = np.sin(ix * 12.9898 + iy * 78.233 + seed * 37.719) * 43758.5453
+    return (h - np.floor(h)).astype(F)
 
 
 def _joints(s, gx, gy, pitch, course, stagger, joint):
@@ -85,17 +98,28 @@ def _soot(s, seed, colour, amount):
 # ----------------------------------------------------------------- masonry
 
 def brick(slug, description, face, mortar, soot, *, seed, soot_amount=0.30,
-          tile=1.80, px=1024, pitch=0.225, course=0.075, joint=0.010, face_spread=0.14):
-    """Stretcher-bond clay brick.  Pitches include the joint: 1.80 m = 8 x 24."""
+          tile=1.80, px=1024, pitch=0.225, course=0.075, joint=0.010, face_spread=0.14,
+          accent=None, accent_share=0.5):
+    """Stretcher-bond clay brick.  Pitches include the joint: 1.80 m = 8 x 24.
+
+    `accent` is an optional second brick colour given to about `accent_share`
+    of the bricks, chosen per brick: polychrome work such as the alternating
+    red and blue-grey arches of the Victorian Northern Quarter.
+    """
     _check_tiles(tile, pitch, course)
     _check_even_courses(tile, course)
     s = Surface(slug, description, tile, tile, px, px)
     s.fill(lin(face), 0.84)
 
-    gx, gy, at_centre, stagger = _bond(s, pitch, course)
-    tone = s.noise((pitch, course), seed, warp=at_centre)
+    gx, gy, stagger = _bond(s, pitch, course)
+    if accent is not None:
+        pick = _unit_random(s, gx, gy, pitch, course, stagger, seed + 6)
+        s.tint((pick < accent_share).astype(F), lin(accent))
+    tone = _unit_random(s, gx, gy, pitch, course, stagger, seed)
     s.base *= (1.0 - face_spread * 0.5 + face_spread * tone)[..., None]
-    overburnt = smoothstep(0.82, 0.97, s.noise((pitch, course), seed + 1, warp=at_centre))
+    # Firing varies across one brick too: a soft cloud, not a flat fill.
+    s.base *= (0.95 + 0.10 * s.noise(0.08, seed + 7, 2))[..., None]
+    overburnt = (_unit_random(s, gx, gy, pitch, course, stagger, seed + 1) > 0.92).astype(F)
     s.shade(overburnt, 0.72)
 
     pits = smoothstep(0.78, 0.95, s.noise(0.006, seed + 2, 2))
@@ -121,8 +145,8 @@ def ashlar(slug, description, stone, joint_colour, soot, *, seed, soot_amount=0.
     s = Surface(slug, description, tile, tile, px, px)
     s.fill(lin(stone), 0.86)
 
-    gx, gy, at_centre, stagger = _bond(s, block, course)
-    tone = s.noise((block, course), seed, warp=at_centre)
+    gx, gy, stagger = _bond(s, block, course)
+    tone = _unit_random(s, gx, gy, block, course, stagger, seed)
     s.base *= (0.93 + 0.14 * tone)[..., None]
     # Sedimentary bedding runs along each block.
     beds = s.noise((0.9, 0.012), seed + 1, 3)

@@ -54,6 +54,7 @@ import {
   addBougainvilleaSignLamp,
 } from './bougainvilleaFence';
 import { loadModel } from './loadModel';
+import { profileAuthoredMaps } from './buildingMaterials';
 import {
   addStreetlightFixtures,
   createStreetlightFixture,
@@ -1020,9 +1021,11 @@ function applyTheHiveModelPolicy(model: Group): void {
 }
 
 function applyComeThroughLabModelPolicy(model: Group): void {
-  // Come Through Lab is a geometry-only detail pass (no textures, decals or
-  // QR code yet). Keep its authored placeholder palette and only configure
-  // the glazing so the shopfront reads through the grilles.
+  // Come Through Lab carries the measured PBR sets from
+  // comeThroughLabTextures.py (brick, polychrome arches, sandstone, oak,
+  // painted metal). Decals, lettering and the QR code are still pending.
+  // Runtime keeps the maps and configures the glazing so the shopfront reads
+  // through the grilles.
   model.traverse((child) => {
     if (!(child instanceof Mesh)) {
       return;
@@ -1036,7 +1039,7 @@ function applyComeThroughLabModelPolicy(model: Group): void {
       if (!(material instanceof MeshStandardMaterial)) {
         continue;
       }
-      material.map = null;
+      profileAuthoredMaps(material);
       material.emissiveMap = null;
       material.emissive.set(0x000000);
       material.emissiveIntensity = 0;
@@ -1522,14 +1525,14 @@ async function addComeThroughLabModel(
 ): Promise<void> {
   try {
     const [lab, dropbox, props] = await Promise.all([
-      loadModel('assets/models/come_through_lab.glb?v=geometry-20260912'),
-      loadModel('assets/models/ctl_dropbox.glb?v=geometry-20260912'),
-      loadModel('assets/models/ctl_dropoff_props.glb?v=geometry-20260912'),
+      loadModel('assets/models/come_through_lab.glb?v=textured-20260922'),
+      loadModel('assets/models/ctl_dropbox.glb?v=textured-20260922'),
+      loadModel('assets/models/ctl_dropoff_props.glb?v=textured-20260922'),
     ]);
     applyComeThroughLabModelPolicy(lab);
     applyComeThroughLabModelPolicy(dropbox);
     applyComeThroughLabModelPolicy(props);
-    lab.name = 'Come Through Lab geometry asset — textures pending';
+    lab.name = 'Come Through Lab textured asset';
     dropbox.name = 'Come Through Lab drop box (independent hero prop)';
     props.name = 'Come Through Lab supply holder + envelope + pencil';
     // Blender's -Y frontage imports facing +Z. Rotate that frontage east, then

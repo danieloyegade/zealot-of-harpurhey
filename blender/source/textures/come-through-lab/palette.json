@@ -1,0 +1,326 @@
+{
+  "arch brick face": {
+    "albedo": "#CA8052",
+    "samples": [
+      {
+        "box": [
+          651,
+          281,
+          657,
+          291
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+        "srgb": "#CA7F4D"
+      },
+      {
+        "box": [
+          677,
+          302,
+          684,
+          330
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+        "srgb": "#C98157"
+      }
+    ]
+  },
+  "blue brick": {
+    "albedo": "#7C7E86",
+    "samples": [
+      {
+        "box": [
+          640,
+          285,
+          646,
+          313
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+        "srgb": "#737279"
+      },
+      {
+        "box": [
+          664,
+          280,
+          671,
+          310
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+        "srgb": "#858B94"
+      }
+    ]
+  },
+  "brick face": {
+    "albedo": "#A66F56",
+    "samples": [
+      {
+        "box": [
+          1145,
+          582,
+          1188,
+          591
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+        "srgb": "#AF6942"
+      },
+      {
+        "box": [
+          1202,
+          586,
+          1252,
+          598
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+        "srgb": "#9D634B"
+      },
+      {
+        "box": [
+          1174,
+          604,
+          1225,
+          612
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+        "srgb": "#AE7E66"
+      },
+      {
+        "box": [
+          40,
+          135,
+          250,
+          195
+        ],
+        "light": "sunlit",
+        "photo": "references/architecture/buildings/come-through-lab/hgfcx.jpg",
+        "srgb": "#BA8876"
+      }
+    ]
+  },
+  "brick mortar": {
+    "albedo": "#BDAC99",
+    "samples": [
+      {
+        "box": [
+          1192,
+          622,
+          1196,
+          635
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+        "srgb": "#C3AD9B"
+      },
+      {
+        "box": [
+          160,
+          104,
+          300,
+          110
+        ],
+        "light": "sunlit",
+        "photo": "references/architecture/buildings/come-through-lab/hgfcx.jpg",
+        "srgb": "#D7C9B1"
+      }
+    ]
+  },
+  "dark brick": {
+    "albedo": "#71584D",
+    "samples": [
+      {
+        "box": [
+          310,
+          130,
+          540,
+          200
+        ],
+        "light": "sunlit",
+        "photo": "references/architecture/buildings/come-through-lab/hgfcx.jpg",
+        "srgb": "#85685B"
+      }
+    ]
+  },
+  "door timber dark": {
+    "albedo": "#5A4A35",
+    "samples": [
+      {
+        "box": [
+          330,
+          570,
+          520,
+          608
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/unnamed.jpg",
+        "srgb": "#5A4A35"
+      }
+    ]
+  },
+  "door timber light": {
+    "albedo": "#84542B",
+    "samples": [
+      {
+        "box": [
+          345,
+          290,
+          500,
+          340
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/unnamed.jpg",
+        "srgb": "#945D2E"
+      },
+      {
+        "box": [
+          320,
+          340,
+          410,
+          400
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+        "srgb": "#734C28"
+      }
+    ]
+  },
+  "dropbox paint": {
+    "albedo": "#2C2F2E",
+    "samples": [
+      {
+        "box": [
+          180,
+          690,
+          210,
+          880
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/hgfcx.jpg",
+        "srgb": "#363835"
+      },
+      {
+        "box": [
+          468,
+          460,
+          530,
+          472
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+        "srgb": "#222526"
+      }
+    ]
+  },
+  "frame paint": {
+    "albedo": "#4A5A4A",
+    "samples": [
+      {
+        "box": [
+          330,
+          242,
+          510,
+          262
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/unnamed.jpg",
+        "srgb": "#495743"
+      },
+      {
+        "box": [
+          727,
+          300,
+          737,
+          600
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/unnamed.jpg",
+        "srgb": "#4A5D52"
+      }
+    ]
+  },
+  "grime": {
+    "albedo": "#605E44",
+    "samples": [
+      {
+        "box": [
+          530,
+          652,
+          760,
+          688
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+        "srgb": "#605E44"
+      }
+    ]
+  },
+  "metal paint": {
+    "albedo": "#8D9592",
+    "samples": [
+      {
+        "box": [
+          600,
+          380,
+          730,
+          460
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+        "srgb": "#87969F"
+      },
+      {
+        "box": [
+          740,
+          320,
+          930,
+          440
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/unnamed.jpg",
+        "srgb": "#939484"
+      }
+    ]
+  },
+  "stone": {
+    "albedo": "#CFBF97",
+    "samples": [
+      {
+        "box": [
+          300,
+          245,
+          430,
+          290
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+        "srgb": "#D0BB8E"
+      },
+      {
+        "box": [
+          330,
+          160,
+          510,
+          225
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/unnamed.jpg",
+        "srgb": "#E1D2A4"
+      },
+      {
+        "box": [
+          820,
+          92,
+          1140,
+          118
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/come-through-lab/ct.jpg",
+        "srgb": "#BCB093"
+      }
+    ]
+  }
+}
