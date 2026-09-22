@@ -779,6 +779,8 @@ function applyAdvancedPhotoBlockoutPolicy(model: Group): void {
 }
 
 function applyDreamsModelPolicy(model: Group): void {
+  // The greybox carries the PBR sets from dreamsGreyboxTextures.py; the
+  // photographic-era branches below match only the retired photographic GLB.
   applyPhotographicModelPolicy(model);
   model.traverse((child) => {
     if (!(child instanceof Mesh)) {
@@ -786,6 +788,12 @@ function applyDreamsModelPolicy(model: Group): void {
     }
     child.castShadow = true;
     child.receiveShadow = true;
+    if (!Array.isArray(child.material) && child.material.name === 'Dreams_Greybox_Mortar') {
+      // The greybox modelled each brick joint as a strip so brick scale could be
+      // approved before texturing; drm-brick now carries its own joints.
+      child.visible = false;
+      return;
+    }
     const materials = Array.isArray(child.material)
       ? child.material
       : [child.material];
@@ -793,6 +801,7 @@ function applyDreamsModelPolicy(model: Group): void {
       if (!(material instanceof MeshStandardMaterial)) {
         continue;
       }
+      profileAuthoredMaps(material);
       if (material.name.includes('mat-dreams-photographic-front')) {
         material.emissive.set(0xc7dce0);
         material.emissiveMap = material.map;
@@ -1325,7 +1334,7 @@ async function replaceDreamsFallback(
   fallback.visible = false;
   try {
     const dreams = await loadModel(
-      'assets/models/harperhey-dreams-greybox.glb?v=geometry-approved-20260911',
+      'assets/models/harperhey-dreams-greybox.glb?v=textured-20260922',
     );
     applyDreamsModelPolicy(dreams);
     mergeStaticModelMeshes(dreams);

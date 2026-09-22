@@ -1,0 +1,163 @@
+{
+  "brick face": {
+    "albedo": "#8B4419",
+    "samples": [
+      {
+        "box": [
+          2152,
+          1380,
+          2240,
+          1766
+        ],
+        "light": "shaded",
+        "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+        "srgb": "#793B19"
+      },
+      {
+        "box": [
+          290,
+          1793,
+          1048,
+          1827
+        ],
+        "light": "shaded",
+        "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+        "srgb": "#783B12"
+      }
+    ]
+  },
+  "brick mortar": {
+    "albedo": "#A26435",
+    "samples": [
+      {
+        "box": [
+          2505,
+          1380,
+          2600,
+          1700
+        ],
+        "light": "shaded",
+        "percentile": 99.5,
+        "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+        "srgb": "#8D572E"
+      }
+    ]
+  },
+  "cladding": {
+    "albedo": "#B1B3B0",
+    "samples": [
+      {
+        "box": [
+          304,
+          1131,
+          414,
+          1255
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+        "srgb": "#C2BFBC"
+      },
+      {
+        "box": [
+          2180,
+          938,
+          2594,
+          1242
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+        "srgb": "#A0A8A3"
+      }
+    ]
+  },
+  "concrete": {
+    "albedo": "#A6A6A2",
+    "samples": [],
+    "source": "approved greybox colour of Dreams_Greybox_Concrete: unlit or not visible in Dreams.jpg"
+  },
+  "rail": {
+    "albedo": "#CBCFCB",
+    "samples": [
+      {
+        "box": [
+          1435,
+          1584,
+          1931,
+          1598
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+        "srgb": "#CBCFCB"
+      }
+    ]
+  },
+  "roof": {
+    "albedo": "#596169",
+    "samples": [],
+    "source": "approved greybox colour of Dreams_Greybox_Roof: unlit or not visible in Dreams.jpg"
+  },
+  "roof trim": {
+    "albedo": "#6F797E",
+    "samples": [],
+    "source": "approved greybox colour of Dreams_Greybox_Roof_Trim: unlit or not visible in Dreams.jpg"
+  },
+  "shutter": {
+    "albedo": "#CECCC2",
+    "samples": [
+      {
+        "box": [
+          1228,
+          1380,
+          1518,
+          1766
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+        "srgb": "#CECCC2"
+      }
+    ]
+  },
+  "shutter frame": {
+    "albedo": "#D1DCE3",
+    "samples": [
+      {
+        "box": [
+          304,
+          1297,
+          2097,
+          1341
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+        "srgb": "#D1DCE3"
+      }
+    ]
+  },
+  "signboard": {
+    "albedo": "#E8F2F2",
+    "samples": [
+      {
+        "box": [
+          635,
+          910,
+          993,
+          993
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+        "srgb": "#EFF4F3"
+      },
+      {
+        "box": [
+          1766,
+          1159,
+          2097,
+          1242
+        ],
+        "light": "overcast",
+        "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+        "srgb": "#E2F1F1"
+      }
+    ]
+  }
+}

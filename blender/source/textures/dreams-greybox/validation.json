@@ -1,0 +1,877 @@
+{
+  "asset": "dreams-greybox",
+  "pass": "surface materials (commonSurfaces)",
+  "convention": {
+    "maps": "<slug>-{basecolor,orm,normal}.png",
+    "orm": "R occlusion, G roughness, B metallic (glTF)",
+    "normal": "OpenGL tangent space (+Y up)",
+    "unit": "1 Blender unit = 1 m; coverage_m is what one tile spans"
+  },
+  "measured_reference_patches": {
+    "brick face": {
+      "albedo": "#8B4419",
+      "samples": [
+        {
+          "box": [
+            2152,
+            1380,
+            2240,
+            1766
+          ],
+          "light": "shaded",
+          "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+          "srgb": "#793B19"
+        },
+        {
+          "box": [
+            290,
+            1793,
+            1048,
+            1827
+          ],
+          "light": "shaded",
+          "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+          "srgb": "#783B12"
+        }
+      ]
+    },
+    "brick mortar": {
+      "albedo": "#A26435",
+      "samples": [
+        {
+          "box": [
+            2505,
+            1380,
+            2600,
+            1700
+          ],
+          "light": "shaded",
+          "percentile": 99.5,
+          "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+          "srgb": "#8D572E"
+        }
+      ]
+    },
+    "cladding": {
+      "albedo": "#B1B3B0",
+      "samples": [
+        {
+          "box": [
+            304,
+            1131,
+            414,
+            1255
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+          "srgb": "#C2BFBC"
+        },
+        {
+          "box": [
+            2180,
+            938,
+            2594,
+            1242
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+          "srgb": "#A0A8A3"
+        }
+      ]
+    },
+    "concrete": {
+      "albedo": "#A6A6A2",
+      "samples": [],
+      "source": "approved greybox colour of Dreams_Greybox_Concrete: unlit or not visible in Dreams.jpg"
+    },
+    "rail": {
+      "albedo": "#CBCFCB",
+      "samples": [
+        {
+          "box": [
+            1435,
+            1584,
+            1931,
+            1598
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+          "srgb": "#CBCFCB"
+        }
+      ]
+    },
+    "roof": {
+      "albedo": "#596169",
+      "samples": [],
+      "source": "approved greybox colour of Dreams_Greybox_Roof: unlit or not visible in Dreams.jpg"
+    },
+    "roof trim": {
+      "albedo": "#6F797E",
+      "samples": [],
+      "source": "approved greybox colour of Dreams_Greybox_Roof_Trim: unlit or not visible in Dreams.jpg"
+    },
+    "shutter": {
+      "albedo": "#CECCC2",
+      "samples": [
+        {
+          "box": [
+            1228,
+            1380,
+            1518,
+            1766
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+          "srgb": "#CECCC2"
+        }
+      ]
+    },
+    "shutter frame": {
+      "albedo": "#D1DCE3",
+      "samples": [
+        {
+          "box": [
+            304,
+            1297,
+            2097,
+            1341
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+          "srgb": "#D1DCE3"
+        }
+      ]
+    },
+    "signboard": {
+      "albedo": "#E8F2F2",
+      "samples": [
+        {
+          "box": [
+            635,
+            910,
+            993,
+            993
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+          "srgb": "#EFF4F3"
+        },
+        {
+          "box": [
+            1766,
+            1159,
+            2097,
+            1242
+          ],
+          "light": "overcast",
+          "photo": "references/architecture/buildings/dreams/Dreams.jpg",
+          "srgb": "#E2F1F1"
+        }
+      ]
+    }
+  },
+  "materials": [
+    {
+      "slug": "drm-cladding",
+      "description": "Off-white profiled cladding: gable, wings, upper wall",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.463,
+        0.626
+      ],
+      "metallic_range": [
+        0.0,
+        0.572
+      ],
+      "relief_mm": [
+        -0.21,
+        0.096
+      ],
+      "base_srgb_mean": [
+        177,
+        179,
+        176
+      ],
+      "files": {
+        "basecolor": {
+          "file": "drm-cladding-basecolor.png",
+          "bytes": 47277
+        },
+        "orm": {
+          "file": "drm-cladding-orm.png",
+          "bytes": 63485
+        },
+        "normal": {
+          "file": "drm-cladding-normal.png",
+          "bytes": 147371
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.05
+        },
+        "basecolor_v": {
+          "wrap": 0.09,
+          "typical": 0.06
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.09
+        },
+        "orm_v": {
+          "wrap": 0.12,
+          "typical": 0.1
+        },
+        "normal_u": {
+          "wrap": 0.16,
+          "typical": 0.16
+        },
+        "normal_v": {
+          "wrap": 0.18,
+          "typical": 0.16
+        }
+      }
+    },
+    {
+      "slug": "drm-signboard",
+      "description": "White signboard backing",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.4,
+        0.574
+      ],
+      "metallic_range": [
+        0.0,
+        0.549
+      ],
+      "relief_mm": [
+        -0.213,
+        0.096
+      ],
+      "base_srgb_mean": [
+        232,
+        242,
+        242
+      ],
+      "files": {
+        "basecolor": {
+          "file": "drm-signboard-basecolor.png",
+          "bytes": 48214
+        },
+        "orm": {
+          "file": "drm-signboard-orm.png",
+          "bytes": 64179
+        },
+        "normal": {
+          "file": "drm-signboard-normal.png",
+          "bytes": 146553
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.05
+        },
+        "basecolor_v": {
+          "wrap": 0.01,
+          "typical": 0.05
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.1
+        },
+        "orm_v": {
+          "wrap": 0.01,
+          "typical": 0.09
+        },
+        "normal_u": {
+          "wrap": 0.14,
+          "typical": 0.16
+        },
+        "normal_v": {
+          "wrap": 0.14,
+          "typical": 0.16
+        }
+      }
+    },
+    {
+      "slug": "drm-shutter",
+      "description": "Cream coated-steel roller shutters",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.476,
+        0.667
+      ],
+      "metallic_range": [
+        0.0,
+        0.556
+      ],
+      "relief_mm": [
+        -0.243,
+        0.115
+      ],
+      "base_srgb_mean": [
+        206,
+        204,
+        194
+      ],
+      "files": {
+        "basecolor": {
+          "file": "drm-shutter-basecolor.png",
+          "bytes": 64967
+        },
+        "orm": {
+          "file": "drm-shutter-orm.png",
+          "bytes": 67868
+        },
+        "normal": {
+          "file": "drm-shutter-normal.png",
+          "bytes": 148540
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.01,
+          "typical": 0.09
+        },
+        "basecolor_v": {
+          "wrap": 0.02,
+          "typical": 0.09
+        },
+        "orm_u": {
+          "wrap": 0.01,
+          "typical": 0.09
+        },
+        "orm_v": {
+          "wrap": 0.01,
+          "typical": 0.1
+        },
+        "normal_u": {
+          "wrap": 0.14,
+          "typical": 0.16
+        },
+        "normal_v": {
+          "wrap": 0.15,
+          "typical": 0.17
+        }
+      }
+    },
+    {
+      "slug": "drm-shutter-frame",
+      "description": "White shutter guides, head boxes and fascia",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.471,
+        0.657
+      ],
+      "metallic_range": [
+        0.0,
+        0.592
+      ],
+      "relief_mm": [
+        -0.237,
+        0.102
+      ],
+      "base_srgb_mean": [
+        209,
+        220,
+        227
+      ],
+      "files": {
+        "basecolor": {
+          "file": "drm-shutter-frame-basecolor.png",
+          "bytes": 64037
+        },
+        "orm": {
+          "file": "drm-shutter-frame-orm.png",
+          "bytes": 63977
+        },
+        "normal": {
+          "file": "drm-shutter-frame-normal.png",
+          "bytes": 148267
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.08
+        },
+        "basecolor_v": {
+          "wrap": 0.11,
+          "typical": 0.08
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.09
+        },
+        "orm_v": {
+          "wrap": 0.1,
+          "typical": 0.09
+        },
+        "normal_u": {
+          "wrap": 0.15,
+          "typical": 0.17
+        },
+        "normal_v": {
+          "wrap": 0.2,
+          "typical": 0.16
+        }
+      }
+    },
+    {
+      "slug": "drm-brick",
+      "description": "Red brick plinth, return and platform base",
+      "coverage_m": [
+        1.8,
+        1.8
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        1.7578,
+        1.7578
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.841,
+        0.95
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -4.75,
+        0.243
+      ],
+      "base_srgb_mean": [
+        140,
+        73,
+        35
+      ],
+      "files": {
+        "basecolor": {
+          "file": "drm-brick-basecolor.png",
+          "bytes": 295320
+        },
+        "orm": {
+          "file": "drm-brick-orm.png",
+          "bytes": 46383
+        },
+        "normal": {
+          "file": "drm-brick-normal.png",
+          "bytes": 703981
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.03,
+          "typical": 0.46
+        },
+        "basecolor_v": {
+          "wrap": 0.03,
+          "typical": 1.26
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.66
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 2.11
+        },
+        "normal_u": {
+          "wrap": 0.43,
+          "typical": 1.72
+        },
+        "normal_v": {
+          "wrap": 0.36,
+          "typical": 4.62
+        }
+      }
+    },
+    {
+      "slug": "drm-roof",
+      "description": "Dark roof sheet",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.473,
+        0.76
+      ],
+      "metallic_range": [
+        0.0,
+        0.589
+      ],
+      "relief_mm": [
+        -0.237,
+        0.146
+      ],
+      "base_srgb_mean": [
+        89,
+        97,
+        105
+      ],
+      "files": {
+        "basecolor": {
+          "file": "drm-roof-basecolor.png",
+          "bytes": 59579
+        },
+        "orm": {
+          "file": "drm-roof-orm.png",
+          "bytes": 79341
+        },
+        "normal": {
+          "file": "drm-roof-normal.png",
+          "bytes": 148129
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.05
+        },
+        "basecolor_v": {
+          "wrap": 0.01,
+          "typical": 0.05
+        },
+        "orm_u": {
+          "wrap": 0.01,
+          "typical": 0.13
+        },
+        "orm_v": {
+          "wrap": 0.02,
+          "typical": 0.13
+        },
+        "normal_u": {
+          "wrap": 0.16,
+          "typical": 0.16
+        },
+        "normal_v": {
+          "wrap": 0.15,
+          "typical": 0.16
+        }
+      }
+    },
+    {
+      "slug": "drm-roof-trim",
+      "description": "Fascia, ridge cap and gutters",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.471,
+        0.701
+      ],
+      "metallic_range": [
+        0.0,
+        0.6
+      ],
+      "relief_mm": [
+        -0.2,
+        0.107
+      ],
+      "base_srgb_mean": [
+        112,
+        122,
+        127
+      ],
+      "files": {
+        "basecolor": {
+          "file": "drm-roof-trim-basecolor.png",
+          "bytes": 53758
+        },
+        "orm": {
+          "file": "drm-roof-trim-orm.png",
+          "bytes": 68384
+        },
+        "normal": {
+          "file": "drm-roof-trim-normal.png",
+          "bytes": 147190
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.04
+        },
+        "basecolor_v": {
+          "wrap": 0.01,
+          "typical": 0.04
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.1
+        },
+        "orm_v": {
+          "wrap": 0.01,
+          "typical": 0.1
+        },
+        "normal_u": {
+          "wrap": 0.16,
+          "typical": 0.16
+        },
+        "normal_v": {
+          "wrap": 0.15,
+          "typical": 0.16
+        }
+      }
+    },
+    {
+      "slug": "drm-rail",
+      "description": "Pale grey painted handrails",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.477,
+        0.704
+      ],
+      "metallic_range": [
+        0.0,
+        0.554
+      ],
+      "relief_mm": [
+        -0.212,
+        0.135
+      ],
+      "base_srgb_mean": [
+        203,
+        207,
+        203
+      ],
+      "files": {
+        "basecolor": {
+          "file": "drm-rail-basecolor.png",
+          "bytes": 62065
+        },
+        "orm": {
+          "file": "drm-rail-orm.png",
+          "bytes": 59347
+        },
+        "normal": {
+          "file": "drm-rail-normal.png",
+          "bytes": 148487
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.1
+        },
+        "basecolor_v": {
+          "wrap": 0.01,
+          "typical": 0.11
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.09
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.1
+        },
+        "normal_u": {
+          "wrap": 0.17,
+          "typical": 0.17
+        },
+        "normal_v": {
+          "wrap": 0.15,
+          "typical": 0.17
+        }
+      }
+    },
+    {
+      "slug": "drm-concrete",
+      "description": "Ramp and landing concrete",
+      "coverage_m": [
+        2.0,
+        2.0
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        3.9062,
+        3.9062
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.88,
+        0.908
+      ],
+      "metallic_range": [
+        0.0,
+        0.0
+      ],
+      "relief_mm": [
+        -0.993,
+        0.197
+      ],
+      "base_srgb_mean": [
+        164,
+        164,
+        160
+      ],
+      "files": {
+        "basecolor": {
+          "file": "drm-concrete-basecolor.png",
+          "bytes": 223460
+        },
+        "orm": {
+          "file": "drm-concrete-orm.png",
+          "bytes": 114537
+        },
+        "normal": {
+          "file": "drm-concrete-normal.png",
+          "bytes": 387773
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.75,
+          "typical": 1.79
+        },
+        "basecolor_v": {
+          "wrap": 0.6,
+          "typical": 1.79
+        },
+        "orm_u": {
+          "wrap": 0.53,
+          "typical": 1.31
+        },
+        "orm_v": {
+          "wrap": 0.4,
+          "typical": 1.3
+        },
+        "normal_u": {
+          "wrap": 1.03,
+          "typical": 1.36
+        },
+        "normal_v": {
+          "wrap": 0.91,
+          "typical": 1.37
+        }
+      }
+    }
+  ]
+}

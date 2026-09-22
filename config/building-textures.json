@@ -88,6 +88,39 @@
       ],
       "expectedSurfaces": 6,
       "maxBytes": 5000000
+    },
+    {
+      "building": "dreams",
+      "glb": "assets/models/harperhey-dreams-greybox.glb",
+      "surfacePrefix": "MAT_DRM_Surface_",
+      "textureDir": "blender/source/textures/dreams-greybox",
+      "placeholders": {
+        "Dreams_Greybox_Brick": "drm-brick",
+        "Dreams_Greybox_Concrete": "drm-concrete",
+        "Dreams_Greybox_Wall": "drm-cladding",
+        "Dreams_Greybox_Cladding": "drm-cladding",
+        "Dreams_Greybox_Cladding_Joint": "drm-cladding",
+        "Dreams_Greybox_Signboard": "drm-signboard",
+        "Dreams_Greybox_Shutter": "drm-shutter",
+        "Dreams_Greybox_Shutter_Corrugation": "drm-shutter",
+        "Dreams_Greybox_Shutter_Frame": "drm-shutter-frame",
+        "Dreams_Greybox_Roof": "drm-roof",
+        "Dreams_Greybox_Roof_Trim": "drm-roof-trim",
+        "Dreams_Greybox_Gutter": "drm-roof-trim",
+        "Dreams_Greybox_Rail": "drm-rail"
+      },
+      "untexturedAllowed": [
+        "Dreams_Greybox_Alarm",
+        "Dreams_Greybox_Recess",
+        "Dreams_Greybox_Mortar",
+        "Dreams_Greybox_Fixture",
+        "Dreams_Greybox_Light_Tube",
+        "Dreams_Greybox_Noticeboard",
+        "Dreams_Greybox_Notice_Accent",
+        "Dreams_Greybox_Lettering"
+      ],
+      "expectedSurfaces": 9,
+      "maxBytes": 5000000
     }
   ]
 }
