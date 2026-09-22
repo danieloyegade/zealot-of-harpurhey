@@ -61,7 +61,7 @@ export const WORLD_LOCATIONS: readonly WorldLocation[] = [
   { id: 'village-books', name: 'Village Books', kind: 'building', status: 'geometry-wip', front: 'east', x: -38.12, z: -3.5, width: 8.24, depth: 7.88, height: 10.2, color: 0x4d4541 },
   { id: 'mcr1', name: 'MCR1', kind: 'building', status: 'finished', front: 'south', x: -29, z: -36, width: 12, depth: 7, height: 9.8, color: 0x4b5052 },
   { id: 'coral', name: 'Coral', kind: 'building', status: 'finished', front: 'east', x: -39, z: 17, width: 10, depth: 23, height: 13.7, color: 0x51434d },
-  { id: 'cass-art', name: 'Cass Art', kind: 'building', status: 'geometry-wip', front: 'north', x: -16.6, z: 39, width: 18.2, depth: 11.93, height: 6.19, color: 0x303538 },
+  { id: 'cass-art', name: 'Cass Art', kind: 'building', status: 'finished', front: 'north', x: -16.6, z: 39, width: 18.2, depth: 11.93, height: 6.19, color: 0x303538 },
 
   { id: 'gullivers', name: "Gulliver's Pub", kind: 'building', status: 'geometry-wip', front: 'south', x: 27.9, z: -40, width: 8, depth: 16.6, height: 12.2 },
   // Authored body footprint: the Oldham Street frontage faces south on Z = 54,

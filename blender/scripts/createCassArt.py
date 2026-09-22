@@ -1,11 +1,8 @@
-"""Build the geometry-only Cass Art Northern Quarter game asset.
-
-The reconstruction is inferred from the supplied photographs.  It deliberately
-uses placeholder materials and blank signage surfaces: final graphics, products,
-weathering, graffiti, and lighting belong to later passes.
-"""
+"""Build Cass Art with reference-derived surfaces and traced raised lettering."""
 
 import os
+import json
+import struct
 from math import radians
 from pathlib import Path
 
@@ -19,6 +16,7 @@ BLEND_PATH = PROJECT_ROOT / "blender" / "source" / "cass_art.blend"
 GLB_PATH = PROJECT_ROOT / "public" / "assets" / "models" / "cass_art.glb"
 BLOCKOUT_RENDER_DIR = PROJECT_ROOT / "renders" / "cass-art-blockout"
 FINAL_RENDER_DIR = PROJECT_ROOT / "renders" / "cass-art"
+TEXTURE_DIR = PROJECT_ROOT / "blender" / "source" / "textures" / "cass-art"
 
 WIDTH = 18.0
 DEPTH = 11.8
@@ -64,6 +62,50 @@ def material(name, color, roughness=0.78, metallic=0.0, alpha=1.0):
     return result
 
 
+def image_texture(nodes, path, color_space="sRGB"):
+    image = bpy.data.images.load(str(path), check_existing=True)
+    image.colorspace_settings.name = color_space
+    node = nodes.new("ShaderNodeTexImage")
+    node.image = image
+    node.interpolation = "Linear"
+    return node
+
+
+def textured_material(name, albedo, roughness, normal, base_roughness=0.72):
+    result = material(name, (1.0, 1.0, 1.0), base_roughness)
+    nodes = result.node_tree.nodes
+    links = result.node_tree.links
+    bsdf = nodes.get("Principled BSDF")
+    albedo_node = image_texture(nodes, TEXTURE_DIR / albedo)
+    links.new(albedo_node.outputs["Color"], bsdf.inputs["Base Color"])
+    if roughness:
+        roughness_node = image_texture(nodes, TEXTURE_DIR / roughness, "Non-Color")
+        links.new(roughness_node.outputs["Color"], bsdf.inputs["Roughness"])
+    if normal:
+        normal_tex = image_texture(nodes, TEXTURE_DIR / normal, "Non-Color")
+        normal_node = nodes.new("ShaderNodeNormalMap")
+        normal_node.inputs["Strength"].default_value = 0.34
+        links.new(normal_tex.outputs["Color"], normal_node.inputs["Color"])
+        links.new(normal_node.outputs["Normal"], bsdf.inputs["Normal"])
+    return result
+
+
+def decal_material(name, texture, roughness=0.48, emission=0.0):
+    result = material(name, (1.0, 1.0, 1.0), roughness, alpha=0.0)
+    result.surface_render_method = "DITHERED"
+    result.use_transparency_overlap = False
+    nodes = result.node_tree.nodes
+    links = result.node_tree.links
+    bsdf = nodes.get("Principled BSDF")
+    texture_node = image_texture(nodes, TEXTURE_DIR / texture)
+    links.new(texture_node.outputs["Color"], bsdf.inputs["Base Color"])
+    links.new(texture_node.outputs["Alpha"], bsdf.inputs["Alpha"])
+    if emission > 0:
+        links.new(texture_node.outputs["Color"], bsdf.inputs["Emission Color"])
+        bsdf.inputs["Emission Strength"].default_value = emission
+    return result
+
+
 def move_to(obj, target):
     for source in list(obj.users_collection):
         source.objects.unlink(obj)
@@ -80,7 +122,28 @@ def edge_treatment(obj, width=0.015):
     return obj
 
 
-def box(name, dimensions, location, mat, target, bevel=0.0, rotation=(0.0, 0.0, 0.0)):
+def planar_uv(obj, horizontal_axis="X", vertical_axis="Z", flip_u=False):
+    """Map each face from local bounds; used by exported glTF texture surfaces."""
+    axes = {"X": 0, "Y": 1, "Z": 2}
+    hi = axes[horizontal_axis]
+    vi = axes[vertical_axis]
+    coords_h = [vertex.co[hi] for vertex in obj.data.vertices]
+    coords_v = [vertex.co[vi] for vertex in obj.data.vertices]
+    min_h, max_h = min(coords_h), max(coords_h)
+    min_v, max_v = min(coords_v), max(coords_v)
+    span_h = max(max_h - min_h, 1e-6)
+    span_v = max(max_v - min_v, 1e-6)
+    uv_layer = obj.data.uv_layers.active or obj.data.uv_layers.new(name="UVMap")
+    for polygon in obj.data.polygons:
+        for loop_index in polygon.loop_indices:
+            vertex = obj.data.vertices[obj.data.loops[loop_index].vertex_index]
+            u = (vertex.co[hi] - min_h) / span_h
+            v = (vertex.co[vi] - min_v) / span_v
+            uv_layer.data[loop_index].uv = (1.0 - u if flip_u else u, v)
+    return obj
+
+
+def box(name, dimensions, location, mat, target, bevel=0.0, rotation=(0.0, 0.0, 0.0), uv_axes=None, flip_u=False):
     bpy.ops.mesh.primitive_cube_add(size=1.0, location=location, rotation=rotation)
     obj = bpy.context.object
     obj.name = name
@@ -89,6 +152,8 @@ def box(name, dimensions, location, mat, target, bevel=0.0, rotation=(0.0, 0.0, 
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     if mat:
         obj.data.materials.append(mat)
+    if uv_axes:
+        planar_uv(obj, uv_axes[0], uv_axes[1], flip_u)
     edge_treatment(obj, bevel)
     return move_to(obj, target)
 
@@ -110,7 +175,7 @@ def linked_box(source, name, location, target):
     return obj
 
 
-def create_materials():
+def create_blockout_materials():
     return {
         "facade": material("MAT_CASS_DarkFacade_PLACEHOLDER", (0.155, 0.17, 0.18)),
         "facade_alt": material("MAT_CASS_DarkFacadePanel_PLACEHOLDER", (0.205, 0.22, 0.225)),
@@ -120,9 +185,44 @@ def create_materials():
         "floor": material("MAT_CASS_Floor_PLACEHOLDER", (0.38, 0.37, 0.35)),
         "shelving": material("MAT_CASS_Shelving_PLACEHOLDER", (0.52, 0.49, 0.43)),
         "wood": material("MAT_CASS_Wood_PLACEHOLDER", (0.43, 0.32, 0.23)),
-        "sign": material("MAT_CASS_SignSurface_PLACEHOLDER", (0.48, 0.49, 0.47)),
+        "fixture": material("MAT_CASS_PaintedFixture_PLACEHOLDER", (0.48, 0.49, 0.47)),
+        "slogan": material("MAT_CASS_SloganSurface_PLACEHOLDER", (0.48, 0.49, 0.47)),
+        "logo": material("MAT_CASS_LogoSurface_PLACEHOLDER", (0.48, 0.49, 0.47)),
+        "address": material("MAT_CASS_AddressSurface_PLACEHOLDER", (0.48, 0.49, 0.47)),
+        "window_display": material("MAT_CASS_WindowDisplaySurface_PLACEHOLDER", (0.22, 0.34, 0.39), alpha=0.0),
         "light": material("MAT_CASS_LightFixture_PLACEHOLDER", (0.88, 0.80, 0.64), 0.28),
     }
+
+
+def create_final_materials():
+    return {
+        "facade": textured_material("MAT_CASS_DarkFacade", "cass-facade-albedo.png", "cass-facade-roughness.png", "cass-facade-normal.png"),
+        "facade_alt": textured_material("MAT_CASS_DarkFacadePanel", "cass-facade-albedo.png", "cass-facade-roughness.png", "cass-facade-normal.png"),
+        "glass": material("MAT_CASS_Glass", (0.34, 0.36, 0.35), 0.12, alpha=0.12),
+        "metal": material("MAT_CASS_Metal", (0.035, 0.042, 0.046), 0.32, 0.58),
+        "interior": material("MAT_CASS_InteriorWall", (0.78, 0.75, 0.68), 0.80),
+        "floor": textured_material("MAT_CASS_Floor", "cass-floor-albedo.png", "cass-floor-roughness.png", "cass-floor-normal.png", 0.67),
+        "shelving": material("MAT_CASS_Shelving", (0.68, 0.62, 0.52), 0.66),
+        "wood": material("MAT_CASS_Wood", (0.48, 0.32, 0.18), 0.62),
+        "fixture": material("MAT_CASS_PaintedFixture", (0.48, 0.49, 0.47), 0.70),
+        "slogan": material("MAT_CASS_Slogan", (0.88, 0.235, 0.048), 0.42),
+        "logo": decal_material("MAT_CASS_LogoSign", "cass-logo-sign.png", 0.52),
+        "address": decal_material("MAT_CASS_Address", "cass-address.png", 0.44, 0.12),
+        "window_display": decal_material("MAT_CASS_WindowDisplay", "cass-window-display-reference.png", 0.58),
+        "right_display": decal_material("MAT_CASS_RightWindowDisplay", "cass-right-display-reference.png", 0.58),
+        "light": material("MAT_CASS_LightFixture", (0.88, 0.80, 0.64), 0.28),
+    }
+
+
+def replace_blockout_materials(blockout_mats, final_mats):
+    for obj in bpy.context.scene.objects:
+        if obj.type != "MESH":
+            continue
+        for slot in obj.material_slots:
+            for key, old_material in blockout_mats.items():
+                if slot.material == old_material:
+                    slot.material = final_mats[key]
+                    break
 
 
 def create_hierarchy():
@@ -151,14 +251,14 @@ def create_hierarchy():
 
 def build_blockout(mats, groups):
     # The photographed building reads as a long, low, panel-clad frontage.
-    box("CASS_InteriorFloor", (WIDTH - 0.34, DEPTH, 0.12), (0, DEPTH / 2, 0.0), mats["floor"], groups["interior"])
+    box("CASS_InteriorFloor", (WIDTH - 0.34, DEPTH, 0.12), (0, DEPTH / 2, 0.0), mats["floor"], groups["interior"], uv_axes=("X", "Y"))
     box("CASS_InteriorCeiling", (WIDTH - 0.34, DEPTH, 0.14), (0, DEPTH / 2, 4.28), mats["interior"], groups["interior"])
     box("CASS_InteriorWall_Back", (WIDTH - 0.34, 0.16, 4.28), (0, DEPTH - 0.08, 2.14), mats["interior"], groups["interior"])
     box("CASS_InteriorWall_Left", (0.18, DEPTH, 4.28), (-WIDTH / 2 + 0.09, DEPTH / 2, 2.14), mats["interior"], groups["interior"])
     box("CASS_InteriorWall_Right", (0.18, DEPTH, 4.28), (WIDTH / 2 - 0.09, DEPTH / 2, 2.14), mats["interior"], groups["interior"])
 
     # Fascia, end returns, plinth, and principal piers are separate depth layers.
-    box("CASS_Fascia_Back", (WIDTH, 0.42, 1.20), (0, 0.17, 3.72), mats["facade"], groups["fascia"], 0.018)
+    box("CASS_Fascia_Back", (WIDTH, 0.42, 1.20), (0, 0.17, 3.72), mats["facade"], groups["fascia"], 0.018, uv_axes=("X", "Z"))
     box("CASS_Fascia_Cap", (WIDTH + 0.12, 0.54, 0.16), (0, 0.10, 4.34), mats["metal"], groups["fascia"])
     box("CASS_LowerPlinth", (WIDTH, 0.50, 0.36), (0, 0.12, 0.18), mats["facade"], groups["exterior"], 0.012)
     pier_specs = (
@@ -169,7 +269,7 @@ def build_blockout(mats, groups):
         ("RightBoundary", 8.70, 0.60),
     )
     for label, x, width in pier_specs:
-        box(f"CASS_FacadePier_{label}", (width, 0.54, 3.18), (x, 0.10, 1.76), mats["facade_alt"], groups["panels"], 0.012)
+        box(f"CASS_FacadePier_{label}", (width, 0.54, 3.18), (x, 0.10, 1.76), mats["facade_alt"], groups["panels"], 0.012, uv_axes=("X", "Z"))
 
     # Narrow left bay, dominant central display, entrance, and right display bay.
     glazing = (
@@ -191,8 +291,8 @@ def build_blockout(mats, groups):
     box("CASS_DoorFrame_Head", (1.51, 0.34, 0.12), (2.15, 0.01, 3.02), mats["metal"], groups["entrance"])
 
     # Blank physical surfaces carry exact signage later; no words are geometry.
-    box("CASS_Slogan_DecalSurface", (9.90, 0.018, 0.54), (-1.55, -0.062, 3.82), mats["sign"], groups["slogan"])
-    box("CASS_Address_DecalSurface", (0.78, 0.018, 0.46), (-8.12, -0.162, 3.78), mats["sign"], groups["slogan"])
+    box("CASS_Slogan_DecalSurface", (9.90, 0.018, 0.54), (-1.55, -0.062, 3.82), mats["slogan"], groups["slogan"], uv_axes=("X", "Z"))
+    box("CASS_Address_DecalSurface", (0.78, 0.018, 0.46), (-8.12, -0.162, 3.78), mats["address"], groups["slogan"], uv_axes=("X", "Z"))
 
     # Balcony platform blockout and building return above the facade.
     box("CASS_Balcony_LowerBeam", (WIDTH + 0.18, 0.72, 0.24), (0, 0.20, BALCONY_SLAB_Z), mats["metal"], groups["balcony"], 0.012)
@@ -210,12 +310,92 @@ def build_blockout(mats, groups):
     box("CASS_PaperRack_Blockout_02", (1.20, 0.70, 1.78), (5.70, 1.30, 0.89), mats["shelving"], groups["paper"], 0.025)
 
 
+def add_window_display(mats, groups):
+    # Preserve the artwork's aspect ratio; the older full-pane fit flattened
+    # the record into an ellipse. The logo is supplied by the real photo below.
+    for index, (u0, v0, u1, v1) in enumerate(((0, 0, .22, .69), (.22, 0, 1, 1))):
+        width, height = 3.96, 2.64
+        mesh = bpy.data.meshes.new(f"CASS_WindowDisplay_{index}_Mesh")
+        mesh.from_pydata([(-3.40+u*width, -.235, .35+v*height)
+                          for u,v in ((u0,v0),(u1,v0),(u1,v1),(u0,v1))], [], [(0,1,2,3)])
+        mesh.materials.append(mats["window_display"])
+        uv = mesh.uv_layers.new(name="UVMap")
+        for loop, coords in zip(uv.data, ((u0,v0),(u1,v0),(u1,v1),(u0,v1))):
+            loop.uv = coords
+        obj = bpy.data.objects.new(f"CASS_WindowDisplay_DecalSurface_{index}", mesh)
+        groups["glass"].objects.link(obj)
+    box("CASS_RightWindowDisplay_DecalSurface", (2.47, .008, 2.47), (5.93, -.239, 1.64), mats["right_display"], groups["glass"], uv_axes=("X", "Z"))
+
+
+def add_reference_details(mats, groups):
+    """Use the actual photographed outlines and surfaces, not substitute text."""
+    old = bpy.data.objects.get("CASS_Slogan_DecalSurface")
+    bpy.data.objects.remove(old, do_unlink=True)
+    data = json.loads((TEXTURE_DIR / "cass-lettering-contours.json").read_text())
+    xmin, ymin, xmax, ymax = data["bounds_px"]
+    scale = 9.90 / (xmax - xmin)
+    curve = bpy.data.curves.new("CASS_PhotographedLetterOutlines", "CURVE")
+    curve.dimensions = "2D"
+    curve.resolution_u = 1
+    curve.fill_mode = "BOTH"
+    curve.extrude = 0.012
+    for contour in data["contours"]:
+        spline = curve.splines.new("POLY")
+        points = contour[:-1]
+        spline.points.add(len(points) - 1)
+        for vertex, (x, y) in zip(spline.points, points):
+            vertex.co = ((x - xmin) * scale, (ymax - y) * scale, 0, 1)
+        spline.use_cyclic_u = True
+    letters = bpy.data.objects.new("CASS_Slogan_DecalSurface", curve)
+    groups["slogan"].objects.link(letters)
+    letters.location = (-6.5, -0.12, 3.39)
+    letters.rotation_euler.x = radians(90)
+    curve.materials.append(mats["slogan"])
+    bpy.ops.object.select_all(action="DESELECT")
+    letters.select_set(True)
+    bpy.context.view_layer.objects.active = letters
+    bpy.ops.object.convert(target="MESH")
+    box("CASS_Slogan_MountingRail", (9.94, 0.028, 0.035), (-1.55, -0.087, 3.57), mats["metal"], groups["slogan"])
+
+    # Shared photograph sampled with UVs: sticker pier, chalk tag and alarm.
+    # No people, pavement or window reflections enter these selected regions.
+    photo = bpy.data.images.load(str(PROJECT_ROOT / "references/architecture/buildings/cass-art/DSC06343.JPG"), check_existing=True)
+    photo.scale(3072, 2048)
+    photo.pack()
+    surface = material("MAT_CASS_PhotographedDetails", (1, 1, 1), 0.78)
+    node = surface.node_tree.nodes.new("ShaderNodeTexImage")
+    node.image = photo
+    surface.node_tree.links.new(node.outputs["Color"], surface.node_tree.nodes.get("Principled BSDF").inputs["Base Color"])
+
+    def photo_face(name, width, height, x, y, z, rect):
+        # rect uses coordinates in the 1920 x 1280 review of the source photo.
+        left, top, right, bottom = rect
+        mesh = bpy.data.meshes.new(name + "_Mesh")
+        mesh.from_pydata([(x-width/2,y,z-height/2), (x+width/2,y,z-height/2),
+                         (x+width/2,y,z+height/2), (x-width/2,y,z+height/2)], [], [(0,1,2,3)])
+        mesh.materials.append(surface)
+        uv = mesh.uv_layers.new(name="UVMap")
+        for item, coords in zip(uv.data, [(left/1920,1-bottom/1280), (right/1920,1-bottom/1280),
+                                         (right/1920,1-top/1280), (left/1920,1-top/1280)]):
+            item.uv = coords
+        obj = bpy.data.objects.new(name, mesh)
+        groups["panels"].objects.link(obj)
+        return obj
+
+    photo_face("CASS_FasciaWeathering_Photo", 18.0, 1.20, 0, -0.043, 3.72, (170,75,1690,231))
+    photo_face("CASS_StickeredPier_Photo", 0.38, 3.12, -7.18, -0.177, 1.76, (2,323,166,1056))
+    photo_face("CASS_TaggedPier_Photo", 0.38, 3.12, 3.16, -0.177, 1.76, (1587,323,1802,1056))
+    photo_face("CASS_AlarmLabel_Photo", 0.39, 0.27, 7.10, -0.225, 4.06, (1749,96,1826,144))
+    photo_face("CASS_LogoAndPoster_Photo", 1.18, 2.30, -5.65, -0.231, 1.73, (318,354,512,780))
+    photo_face("CASS_DoorPopcorn_Photo", 1.10, 2.03, 2.10, -0.235, 1.47, (1270,498,1468,950))
+    # Recessed vent/kick strip beneath the large display, sampled from the same photo.
+    photo_face("CASS_KickVents_Photo", 7.82, .27, -2.99, -0.145, .16, (215,995,1234,1052))
+
+
 def add_panel_divisions(mats, groups):
     for index, x in enumerate((-8.35, -6.65, -4.35, -2.05, 0.25, 3.65, 5.55, 7.45)):
         box(f"CASS_FacadePanelJoint_V_{index:02d}", (0.026, 0.025, 1.08), (x, -0.055, 3.74), mats["metal"], groups["panels"])
-    box("CASS_FacadePanelJoint_H", (WIDTH - 0.25, 0.025, 0.026), (0, -0.055, 3.60), mats["metal"], groups["panels"])
-    for index, x in enumerate((-5.75, -3.00, -0.25, 4.72, 6.40)):
-        box(f"CASS_WindowMullion_{index:02d}", (0.095, 0.12, 2.68), (x, -0.24, 1.68), mats["metal"], groups["exterior"], 0.006)
+    # The main display is a single uninterrupted pane in the photographs.
     # High transom on entrance/right-hand glazing.
     box("CASS_Entrance_Transom", (1.49, 0.12, 0.10), (2.15, -0.24, 2.63), mats["metal"], groups["entrance"])
     box("CASS_RightWindow_Transom", (4.92, 0.12, 0.10), (5.93, -0.24, 2.63), mats["metal"], groups["exterior"])
@@ -225,10 +405,10 @@ def add_panel_divisions(mats, groups):
 def add_projecting_sign_and_fixtures(mats, groups):
     box("CASS_LogoSign_Bracket", (0.16, 0.82, 0.12), (7.80, -0.43, 4.03), mats["metal"], groups["logo"])
     box("CASS_LogoSign_Housing", (0.18, 0.86, 0.68), (7.80, -0.76, 3.87), mats["metal"], groups["logo"], 0.025)
-    box("CASS_LogoSign_DecalSurface", (0.185, 0.66, 0.52), (7.696, -0.80, 3.87), mats["sign"], groups["logo"])
+    box("CASS_LogoSign_DecalSurface", (0.185, 0.66, 0.52), (7.696, -0.80, 3.87), mats["logo"], groups["logo"], uv_axes=("Y", "Z"), flip_u=True)
     for index, x in enumerate((-5.9, -0.6, 5.3)):
         box(f"CASS_ExteriorLight_{index + 1:02d}", (0.42, 0.34, 0.16), (x, -0.19, 4.43), mats["metal"], groups["fixtures"], 0.02, rotation=(radians(-12), 0, 0))
-    box("CASS_AlarmBox", (0.42, 0.16, 0.30), (7.10, -0.14, 4.06), mats["sign"], groups["fixtures"], 0.025)
+    box("CASS_AlarmBox", (0.42, 0.16, 0.30), (7.10, -0.14, 4.06), mats["fixture"], groups["fixtures"], 0.025)
 
 
 def replace_balcony_blockout(mats, groups):
@@ -441,13 +621,20 @@ def export_glb():
         object_name = f"CASS_Runtime_{clean_name}"
         vertices = []
         faces = []
+        texcoords = []
         for source in objects:
             vertex_offset = len(vertices)
             vertices.extend(tuple(source.matrix_world @ vertex.co) for vertex in source.data.vertices)
             faces.extend(tuple(vertex_offset + index for index in polygon.vertices) for polygon in source.data.polygons)
+            source_uv = source.data.uv_layers.active
+            texcoords.extend(tuple(source_uv.data[i].uv) if source_uv else (0.0, 0.0)
+                             for polygon in source.data.polygons for i in polygon.loop_indices)
         mesh = bpy.data.meshes.new(f"{object_name}_Mesh")
         mesh.from_pydata(vertices, [], faces)
         mesh.update()
+        uv = mesh.uv_layers.new(name="UVMap")
+        for loop, coords in zip(uv.data, texcoords):
+            loop.uv = coords
         mat = bpy.data.materials.get(material_name)
         if mat:
             mesh.materials.append(mat)
@@ -480,9 +667,20 @@ def export_glb():
         export_yup=True,
         export_cameras=False,
         export_lights=False,
+        export_image_format="WEBP",
+        export_image_quality=88,
     )
     bpy.ops.object.select_all(action="DESELECT")
     print(f"Exported runtime GLB: {GLB_PATH} ({len(runtime_meshes)} consolidated meshes, {len(runtime_anchors)} anchors)")
+    with GLB_PATH.open("rb") as handle:
+        handle.seek(12)
+        length, kind = struct.unpack("<II", handle.read(8))
+        gltf = json.loads(handle.read(length))
+    for mesh in gltf["meshes"]:
+        for primitive in mesh["primitives"]:
+            mat = gltf["materials"][primitive["material"]]
+            if mat.get("pbrMetallicRoughness", {}).get("baseColorTexture"):
+                assert "TEXCOORD_0" in primitive["attributes"], f"Lost UVs: {mat['name']}"
     bpy.data.collections.remove(runtime, do_unlink=True)
 
 
@@ -514,7 +712,7 @@ def main():
     scene.unit_settings.system = "METRIC"
     scene.unit_settings.scale_length = 1.0
     scene.unit_settings.length_unit = "METERS"
-    mats = create_materials()
+    mats = create_blockout_materials()
     groups = create_hierarchy()
 
     build_blockout(mats, groups)
@@ -526,8 +724,14 @@ def main():
         remove_render_helpers(helpers)
     print(f"Saved Cass Art blockout: {BLOCKOUT_PATH}")
 
+    final_mats = create_final_materials()
+    replace_blockout_materials(mats, final_mats)
+    mats = final_mats
+
     add_panel_divisions(mats, groups)
+    add_window_display(mats, groups)
     add_projecting_sign_and_fixtures(mats, groups)
+    add_reference_details(mats, groups)
     replace_balcony_blockout(mats, groups)
     replace_shelf_blockouts(mats, groups)
     refine_paper_racks_and_counter(mats, groups)

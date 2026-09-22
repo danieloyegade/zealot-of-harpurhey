@@ -946,23 +946,56 @@ function applyCassArtModelPolicy(model: Group): void {
       if (!(material instanceof MeshStandardMaterial)) {
         continue;
       }
+      for (const texture of [
+        material.map,
+        material.roughnessMap,
+        material.metalnessMap,
+        material.aoMap,
+        material.normalMap,
+        material.emissiveMap,
+      ]) {
+        if (texture) {
+          applyTextureProfile(texture, 'PHOTO_ENVIRONMENT');
+        }
+      }
       material.emissive.set(0x000000);
       material.emissiveIntensity = 0;
-      if (material.name === 'MAT_CASS_LightFixture_PLACEHOLDER') {
+      if (material.name === 'MAT_CASS_LightFixture') {
         material.color.set(0xffe0a3);
         material.emissive.set(0xffc56c);
         material.emissiveIntensity = 2.2 * VISUAL_STYLE.lighting.emissiveMultiplier;
         material.roughness = 0.24;
-      } else if (material.name === 'MAT_CASS_InteriorWall_PLACEHOLDER') {
+      } else if (material.name === 'MAT_CASS_InteriorWall') {
         material.emissive.set(0x2c1a0d);
         material.emissiveIntensity = 0.16 * VISUAL_STYLE.lighting.emissiveMultiplier;
         material.roughness = Math.max(material.roughness, 0.68);
-      } else if (material.name === 'MAT_CASS_Glass_PLACEHOLDER') {
+      } else if (material.name === 'MAT_CASS_Glass') {
         material.transparent = true;
-        material.opacity = 0.20;
+        material.opacity = 0.18;
         material.depthWrite = false;
-        material.roughness = 0.18;
+        material.roughness = 0.12;
         material.metalness = 0.05;
+      } else if (material.name === 'MAT_CASS_Slogan') {
+        // Opaque raised letter outlines traced from Daniel's reference photo.
+        material.transparent = false;
+        material.depthWrite = true;
+        material.roughness = 0.42;
+        material.emissive.set(0xf47c35);
+        material.emissiveIntensity = 0.24 * VISUAL_STYLE.lighting.emissiveMultiplier;
+      } else if (material.name === 'MAT_CASS_Address') {
+        material.transparent = true;
+        material.depthWrite = false;
+        material.emissive.set(0xf05b23);
+        material.emissiveMap = material.map;
+        material.emissiveIntensity = 0.16 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        material.roughness = 0.42;
+      } else if (material.name === 'MAT_CASS_WindowDisplay' || material.name === 'MAT_CASS_RightWindowDisplay') {
+        material.transparent = true;
+        material.depthWrite = false;
+        material.emissive.set(0xffffff);
+        material.emissiveMap = material.map;
+        material.emissiveIntensity = 0.12 * VISUAL_STYLE.lighting.emissiveMultiplier;
+        material.roughness = 0.34;
       } else {
         material.roughness = Math.max(material.roughness, 0.58);
       }
@@ -1463,11 +1496,11 @@ async function replaceCassArtFallback(
 ): Promise<void> {
   try {
     const cassArt = await loadModel(
-      'assets/models/cass_art.glb?v=geometry-wip-20260911',
+      'assets/models/cass_art.glb?v=reference-lettering-20260922',
     );
     applyCassArtModelPolicy(cassArt);
     mergeStaticModelMeshes(cassArt);
-    cassArt.name = 'Cass Art geometry WIP — textures pending';
+    cassArt.name = 'Cass Art textured building';
     const scale = location.width / 18;
     // Blender -Y imports as Three.js +Z. Rotate the facade north and align its
     // authored front plane with the north edge of the former Real Camera plot.

@@ -22,6 +22,28 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-22 — Codex (Cass Art / Dreams darkness diagnosis)
+**HEAD at session start:** `e8956ce` (Record the Dreams texture pass and the full disk in SYNC.md)
+**Did:** Read-only diagnosis at Daniel's request. Both shopfronts face north (-Z), away from the directional moonlight at (-8,14,+10), leaving their vertical fronts dependent on dark blue hemisphere fill. Cass Art's three registered lights are inside the building, so they do not light the outward-facing opaque fascia. Dreams has a weak 1.8-intensity, inverse-square point light at the old fixed X=-3 while its plot centre is X=1.5. Confirmed the shipped `Dreams_Greybox_Light_Tube` has no emissive factor, and the runtime tube-light branches only match the retired `mat-dreams-*` material names. Painted streetlight pools/reflections do not illuminate facades; the one real public-light proxy is player-proximity gated.
+**Left uncommitted:** Existing Cass Art work untouched; this log entry only.
+**Flagged:** Prior Cass texture QA corrected sign visibility but did not resolve facade illumination. The dark blue fill also suppresses Dreams' red brick.
+**Next:** A scoped facade-lighting correction: align and tune real frontage illumination within the existing local-light budget, connect Dreams' actual tube material, preserve the night contrast elsewhere.
+**Open questions:** None. No lighting changes made in this diagnostic turn.
+
+---
+## 2026-09-22 — Codex (Cass Art reference textures and raised lettering)
+**HEAD at session start:** `462f057` (Record The Hive in-game check in SYNC.md)
+**Did:**
+- Continued the existing uncommitted Cass Art pass. Traced the actual orange `LETS FILL THIS TOWN WITH ARTISTS` letter contours from Daniel's DSC06343 photograph (27 letters/3 counters, no apostrophe), extruded in Blender with a mounting rail. Added restrained runtime emission for legibility in the night scene.
+- Added photo-UV fascia weathering, stickered pier, chalk tag, alarm label, logo/poster, entrance popcorn panel and kick vents. Built-in ImageGen reconstructed main/right transparent window artwork; retained aspect ratios and removed unsupported glazing mullions. Provenance and exact prompts are in `docs/assets/cass-art-texture-provenance.md`.
+- Fixed the existing Cass runtime consolidation losing every UV layer. GLB now preserves UV loops, embeds WebP maps, is ~2.6 MB with 16 material meshes and 8 anchors. Updated source blend, runtime policy/cache key, asset docs and reproducible scripts.
+- Added a regression test for usable exported UVs, opaque raised lettering, anchors and a 5 MB budget. `npm run check` passed (11 tests), `git diff --check` passed. Rendered the actual exported GLB in six views including a lettering close-up under `renders/cass-art-textures/`. Verified final lettering/art in the game, restored development assets, and checked identical public/runtime/dist GLB hashes.
+**Left uncommitted:** All Cass Art work, including the inherited Cass changes. No commit/push requested. Unrelated bus references untouched; Claude's concurrent Dreams commits were preserved.
+**Flagged:** Window artwork is a reconstruction, not pixel-exact photographic extraction. Existing envelope/interior proportions and shelving remain inferred; foliage and detailed stock are outside this texture pass. Earlier browser loads during asset preparation logged streetlight warnings; final reload showed the new Cass asset and no new warnings in the captured log. Disk is still near full (about 1.2 GiB free); the requested exports/build succeeded.
+**Next:** Daniel can review `renders/cass-art-textures/lettering-closeup.png` and `?view=cass-art`. Full architectural reproportioning/interior stock would be a separate geometry pass.
+**Open questions:** None.
+
+---
 ## 2026-09-22 — Claude (Dreams lighting, Gulliver's textured)
 **HEAD at session start:** `e8956ce`
 **Did:**
