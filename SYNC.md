@@ -22,6 +22,13 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-22 — Claude (The Hive in-game check)
+**HEAD at session start:** `263cb0b`
+**Did:** Daniel asked for The Hive's textures to go into the game. They already had, in `79f8253`, which is pushed. I confirmed that `?view=the-hive` loads `the_hive.glb?v=textured-20260922` (4.80 MB) with no console errors. No code changed.
+**Left uncommitted:** The other session's Cass Art work, not touched.
+**Next:** Task 7, Gulliver's.
+
+---
 ## 2026-09-22 — Claude (The Hive textured)
 **HEAD at session start:** `ff86429`
 **Did:**
