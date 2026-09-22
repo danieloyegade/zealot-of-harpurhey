@@ -22,6 +22,24 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-22 — Claude (Dreams textured)
+**HEAD at session start:** `462f057`
+**Did:**
+- Plan Task 14 (`6b7e82c`), taken out of order because Daniel asked for Dreams next.
+- The Dreams greybox now has 9 sets. The GLB is 4.64 MB.
+- It loads textured on Daniel's dev server (5173) with no console errors.
+- The greybox's 96 per-joint mortar strips are hidden at runtime (`Dreams_Greybox_Mortar`), because `drm-brick` carries its own joints. The strips are still in the GLB and the approved `.blend`.
+**Measurement notes:**
+- `Dreams.jpg` is the only photograph of the building. The other references are a render, a Veo still and a textile, and are not colour witnesses.
+- The roof, fascia, gutters and ramp concrete are unlit or out of frame, so they use the approved greybox colours. `palette.json` has `source` fields saying so.
+- Brick comes from the two best-lit patches (`#8B4419`, a dark red); the first, dimmer sample rendered near-black under the blue night light. Brick mortar is a p99.5 lower bound (the joints are blurred into the brick).
+- The contract mapping differs slightly from the plan: Wall goes to cladding, Gutter to roof trim, and Shutter_Frame has its own white set.
+**Pipeline note:** the dev server serves `.runtime-public/`, which is copied only by `assets:prepare`. After exporting, run `npm run assets:prepare:dev` or a running server keeps the old GLB.
+**Flagged:** the disk is full (1.6 GB free, data volume 100%). The isolated-worktree check of `6b7e82c` failed with ENOSPC, although the working-tree build passed with the same hunk. Daniel needs to free space before much more texture work.
+**Left uncommitted:** the other session's Cass Art work, untouched.
+**Next:** Task 7, Gulliver's, once there's disk space.
+
+---
 ## 2026-09-22 — Claude (The Hive in-game check)
 **HEAD at session start:** `263cb0b`
 **Did:** Daniel asked for The Hive's textures to go into the game. They already had, in `79f8253`, which is pushed. I confirmed that `?view=the-hive` loads `the_hive.glb?v=textured-20260922` (4.80 MB) with no console errors. No code changed.
