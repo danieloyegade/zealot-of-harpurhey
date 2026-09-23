@@ -194,6 +194,14 @@ export class InputController {
       return;
     }
 
+    // Embedded on danieloye.com, a click on the canvas does not reliably hand
+    // keyboard focus to this frame (observed: document.activeElement on the
+    // parent stays <body> after the click, so WASD never arrives here even
+    // though the click itself lands correctly). Claiming focus explicitly
+    // from within our own frame sidesteps whatever the host page is doing,
+    // rather than depending on it.
+    window.focus();
+
     this.isDragging = true;
     this.activePointerId = event.pointerId;
     this.lastPointerPosition.set(event.clientX, event.clientY);
