@@ -91,7 +91,7 @@
     },
     {
       "building": "dreams",
-      "glb": "assets/models/harperhey-dreams-greybox.glb",
+      "glb": "assets/models/harpurhey-dreams-greybox.glb",
       "surfacePrefix": "MAT_DRM_Surface_",
       "textureDir": "blender/source/textures/dreams-greybox",
       "placeholders": {
@@ -124,7 +124,7 @@
     },
     {
       "building": "gullivers",
-      "glb": "assets/models/harperhey-gullivers.glb",
+      "glb": "assets/models/harpurhey-gullivers.glb",
       "surfacePrefix": "MAT_GUL_Surface_",
       "textureDir": "blender/source/textures/gullivers",
       "placeholders": {
