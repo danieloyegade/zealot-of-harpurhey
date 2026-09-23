@@ -82,10 +82,12 @@ canvas.is-dragging {
 
 .interaction-hint {
   bottom: clamp(8px, 4vh, 44px);
+  width: min(36rem, calc(100vw - 24px));
   font-size: clamp(13px, 1.1vw, 15px);
   font-style: italic;
   color: rgb(239 230 210 / 72%);
-  white-space: nowrap;
+  line-height: 1.25;
+  text-align: center;
 }
 
 .interaction-prompt.is-visible,

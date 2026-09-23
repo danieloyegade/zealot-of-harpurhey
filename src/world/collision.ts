@@ -113,32 +113,74 @@ interface BoxFrame {
   sin: number;
 }
 
-const boxFrame: BoxFrame = {
-  centreX: 0,
-  centreZ: 0,
-  halfWidth: 0,
-  halfDepth: 0,
-  cos: 1,
-  sin: 0,
-};
+interface ObstacleBounds {
+  readonly minX: number;
+  readonly maxX: number;
+  readonly minZ: number;
+  readonly maxZ: number;
+}
+
+const obstacleBoundsCache = new WeakMap<CollisionObstacle, ObstacleBounds>();
+const boxFrameCache = new WeakMap<BoxObstacle | OrientedBoxObstacle, BoxFrame>();
+
+function loadObstacleBounds(obstacle: CollisionObstacle): ObstacleBounds {
+  const cached = obstacleBoundsCache.get(obstacle);
+  if (cached) return cached;
+
+  let bounds: ObstacleBounds;
+  if (obstacle.shape === 'circle') {
+    bounds = {
+      minX: obstacle.x - obstacle.radius,
+      maxX: obstacle.x + obstacle.radius,
+      minZ: obstacle.z - obstacle.radius,
+      maxZ: obstacle.z + obstacle.radius,
+    };
+  } else if (obstacle.shape === 'oriented-box') {
+    const frame = loadBoxFrame(obstacle);
+    const extentX = Math.abs(frame.cos) * obstacle.halfWidth
+      + Math.abs(frame.sin) * obstacle.halfDepth;
+    const extentZ = Math.abs(frame.sin) * obstacle.halfWidth
+      + Math.abs(frame.cos) * obstacle.halfDepth;
+    bounds = {
+      minX: obstacle.x - extentX,
+      maxX: obstacle.x + extentX,
+      minZ: obstacle.z - extentZ,
+      maxZ: obstacle.z + extentZ,
+    };
+  } else {
+    bounds = obstacle;
+  }
+
+  obstacleBoundsCache.set(obstacle, bounds);
+  return bounds;
+}
 
 function loadBoxFrame(obstacle: BoxObstacle | OrientedBoxObstacle): BoxFrame {
+  const cached = boxFrameCache.get(obstacle);
+  if (cached) return cached;
+
+  let frame: BoxFrame;
   if (obstacle.shape === 'oriented-box') {
-    boxFrame.centreX = obstacle.x;
-    boxFrame.centreZ = obstacle.z;
-    boxFrame.halfWidth = obstacle.halfWidth;
-    boxFrame.halfDepth = obstacle.halfDepth;
-    boxFrame.cos = Math.cos(obstacle.rotationY);
-    boxFrame.sin = Math.sin(obstacle.rotationY);
+    frame = {
+      centreX: obstacle.x,
+      centreZ: obstacle.z,
+      halfWidth: obstacle.halfWidth,
+      halfDepth: obstacle.halfDepth,
+      cos: Math.cos(obstacle.rotationY),
+      sin: Math.sin(obstacle.rotationY),
+    };
   } else {
-    boxFrame.centreX = (obstacle.minX + obstacle.maxX) / 2;
-    boxFrame.centreZ = (obstacle.minZ + obstacle.maxZ) / 2;
-    boxFrame.halfWidth = (obstacle.maxX - obstacle.minX) / 2;
-    boxFrame.halfDepth = (obstacle.maxZ - obstacle.minZ) / 2;
-    boxFrame.cos = 1;
-    boxFrame.sin = 0;
+    frame = {
+      centreX: (obstacle.minX + obstacle.maxX) / 2,
+      centreZ: (obstacle.minZ + obstacle.maxZ) / 2,
+      halfWidth: (obstacle.maxX - obstacle.minX) / 2,
+      halfDepth: (obstacle.maxZ - obstacle.minZ) / 2,
+      cos: 1,
+      sin: 0,
+    };
   }
-  return boxFrame;
+  boxFrameCache.set(obstacle, frame);
+  return frame;
 }
 
 /**
@@ -151,6 +193,20 @@ function findContact(
   radius: number,
   obstacle: CollisionObstacle,
 ): boolean {
+  // Most world obstacles are nowhere near a given player/bike probe. Reject
+  // those before any square roots or local-space transforms. Bounds and box
+  // trigonometry are cached because obstacle objects are immutable; moving
+  // parked-bike footprints are replaced rather than mutated.
+  const bounds = loadObstacleBounds(obstacle);
+  if (
+    x + radius <= bounds.minX
+    || x - radius >= bounds.maxX
+    || z + radius <= bounds.minZ
+    || z - radius >= bounds.maxZ
+  ) {
+    return false;
+  }
+
   if (obstacle.shape === 'circle') {
     const offsetX = x - obstacle.x;
     const offsetZ = z - obstacle.z;

@@ -22,6 +22,18 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-23 — Codex (visual, input and collision-performance fixes)
+**HEAD at session start:** `8bf80f0` (Record the Real Camera texture pass in SYNC.md)
+**Did:**
+- Created `codex/three-issue-fixes` and fixed three independently identified issues: the riding control hint now fits narrow viewports; focus loss discards queued E/C/H actions and camera drag delta as well as held movement; and collision probes use cached immutable obstacle bounds/box frames with an AABB rejection before narrow-phase work.
+- Added input regression coverage for stale one-shot actions/orbit delta and collision coverage for player movement and camera casts against oriented boxes. A synthetic 500-obstacle check confirmed the cache performs no trigonometric recomputation across 60,000 warm collision checks.
+- Verified the game at 320 × 568 (the hint remains inside 12 px side margins) with no browser warnings/errors. The 17-test suite, `tsc --noEmit`, and `git diff --check` passed before concurrent Greek Gyros files appeared.
+**Left uncommitted (if any):** None from this task after this entry is committed. Existing untracked Playwright/reference-image directories and concurrent Greek Gyros config/texture work were not touched.
+**Flagged:** The collision optimisation preserves the current linear obstacle scan; a spatial index would be the next step only if profiling shows collision remains material. The final `npm run check` was interrupted by concurrent Greek Gyros work adding a five-surface contract before its GLB export existed (0/5 surfaces); this task's tests remained green.
+**Next:** Profile an ordinary boosted ride through the busiest street view on target hardware before considering a spatial grid.
+**Open questions:** None.
+
+---
 ## 2026-09-22 — Codex (Cass Art / Dreams darkness diagnosis)
 **HEAD at session start:** `e8956ce` (Record the Dreams texture pass and the full disk in SYNC.md)
 **Did:** Read-only diagnosis at Daniel's request. Both shopfronts face north (-Z), away from the directional moonlight at (-8,14,+10), leaving their vertical fronts dependent on dark blue hemisphere fill. Cass Art's three registered lights are inside the building, so they do not light the outward-facing opaque fascia. Dreams has a weak 1.8-intensity, inverse-square point light at the old fixed X=-3 while its plot centre is X=1.5. Confirmed the shipped `Dreams_Greybox_Light_Tube` has no emissive factor, and the runtime tube-light branches only match the retired `mat-dreams-*` material names. Painted streetlight pools/reflections do not illuminate facades; the one real public-light proxy is player-proximity gated.

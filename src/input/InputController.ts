@@ -46,6 +46,7 @@ function resolveCode(event: KeyboardEvent): string {
 export class InputController {
   readonly orbitDelta = new Vector2();
 
+  private readonly element: HTMLCanvasElement;
   private readonly pressedKeys = new Set<string>();
   private readonly pendingOrbitDelta = new Vector2();
   private readonly lastPointerPosition = new Vector2();
@@ -55,7 +56,8 @@ export class InputController {
   private interactQueued = false;
   private recenterQueued = false;
 
-  constructor(private readonly element: HTMLCanvasElement) {
+  constructor(element: HTMLCanvasElement) {
+    this.element = element;
     window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('keyup', this.handleKeyUp);
     window.addEventListener('blur', this.handleBlur);
@@ -164,14 +166,28 @@ export class InputController {
 
   private readonly handleVisibilityChange = (): void => {
     if (document.hidden) {
-      this.pressedKeys.clear();
+      this.resetTransientInput();
     }
   };
 
   private readonly handleBlur = (): void => {
-    this.pressedKeys.clear();
-    this.endDrag();
+    this.resetTransientInput();
   };
+
+  /**
+   * Focus loss is a boundary between input sessions. Discard both held state
+   * and one-shot work so a queued interaction or pointer movement cannot fire
+   * after the player returns to the tab.
+   */
+  private resetTransientInput(): void {
+    this.pressedKeys.clear();
+    this.pendingOrbitDelta.set(0, 0);
+    this.orbitDelta.set(0, 0);
+    this.overlayToggleQueued = false;
+    this.interactQueued = false;
+    this.recenterQueued = false;
+    this.endDrag();
+  }
 
   private readonly handlePointerDown = (event: PointerEvent): void => {
     if (event.button !== 0) {
