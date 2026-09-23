@@ -63,6 +63,15 @@ const RECENTER_RESPONSIVENESS = 10;
 // 0.1 m near plane, so no wall face is ever sliced open on screen.
 const CAMERA_COLLISION_RADIUS = 0.3;
 
+// The boom is otherwise allowed to shorten all the way onto the pivot when an
+// obstruction is right at the player, but the pivot and the look target sit
+// at the same point (both anchor + ORBIT_PIVOT_HEIGHT). A camera placed
+// exactly there looks at its own position: lookAt() has nothing to aim at,
+// the view matrix degenerates, and the screen goes black until the player
+// turns away from the wall. Keeping the lens at least this far from the
+// pivot guarantees a real look direction always exists.
+const MINIMUM_BOOM_DISTANCE = 0.6;
+
 // When a building stands between the player and the camera, the boom first
 // rises a little, keeping its length, and is only cut short if that does not
 // clear. Shortening the boom reads as an unasked-for zoom. The lift is capped
@@ -350,10 +359,12 @@ export class ThirdPersonCamera {
       this.boomFraction += (clearFraction - this.boomFraction)
         * (1 - Math.exp(-OCCLUSION_RECOVERY_RESPONSIVENESS * deltaTime));
     }
+    // Never let the lens reach the pivot itself: see MINIMUM_BOOM_DISTANCE.
+    const minimumFraction = Math.min(1, MINIMUM_BOOM_DISTANCE / this.distance);
     this.camera.position.lerpVectors(
       this.pivot,
       this.followPosition,
-      this.boomFraction,
+      Math.max(this.boomFraction, minimumFraction),
     );
   }
 
