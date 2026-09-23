@@ -22,6 +22,20 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-24 — Claude (found and fixed the real cause of the live embed being unplayable)
+**HEAD at session start:** `2ffdcaa` (Fix black screen when the camera boom collapses onto its pivot near walls)
+**Did:**
+- Daniel asked to check the live embed at `danieloye.com/zealot-of-harpurhey/` via Chrome. It never rendered anything — solid black indefinitely, confirmed on repeated fresh loads waited out past 30s, while the direct `workers.dev` URL always loaded fine within a few seconds.
+- Root-caused it: cross-origin requests (fetch and, critically, the iframe's own navigation) to the `*.workers.dev` URL returned 503, reproduced identically from three unrelated origins (`danieloye.com`, `example.com`, raw `fetch()`), while same-origin top-level navigation and even `curl` always succeeded. Ruled out Cloudflare Access (confirmed disabled via API) and X-Frame-Options/CSP (confirmed absent via `curl -D -`). Landed on: the Worker was only ever deployed on the shared `workers.dev` subdomain, which Cloudflare's own docs describe as a restricted free/hobby tier — this was already flagged as an unfinished step in the 2026-09-23 "Harperhey→Harpurhey" entry below and never done.
+- Fix: attached a real Cloudflare Custom Domain, `game.danieloye.com`, to this Worker (Daniel ran the actual `wrangler deploy` himself after the MCP tool and a local `wrangler deploy` both correctly hit a DNS/cert-change permission gate). Verified the fix directly — not just assumed — by embedding `game.danieloye.com` in a real cross-origin iframe on a third-party page and watching it render.
+- Found the `danieloye.com` site's own repo (**not this one** — it's `~/GitHub/WXVERI2`, GitHub `danieloyegade/wxvei`, Worker name `daniel-oyegade`) and updated its iframe `src` in `src/pages/zealot-of-harpurhey.astro` from the old `workers.dev` URL to `https://game.danieloye.com/`. Built locally to confirm, committed, pushed to `main`, watched that repo's own CI deploy it. Confirmed live: `danieloye.com/zealot-of-harpurhey/` now actually renders the title screen.
+- Committed the `game.danieloye.com` custom-domain route into this repo's `wrangler.jsonc` (it had only been attached live, never declared in config — a future deploy from a clean checkout would otherwise have silently dropped it).
+**Left uncommitted (if any):** None from this task — everything above is committed and pushed on both repos.
+**Flagged:** The old `workers.dev` URL still works standalone and is still the Worker's default route (Custom Domains add to, not replace, the `workers.dev` route) — not a problem, just noting both URLs are live. Also: automated browser tooling (both Claude's built-in browser pane and the Chrome extension) reports `document.hidden = true` for tabs it drives, which makes the game's own (correct) `InputController.resetTransientInput()` discard held-key state — so held-key movement/collision/camera-near-wall testing isn't possible through this automation. Not a game bug; a prior session (2026-09-23) hit and documented the same thing. A real interactive playtest is still owed on this "boom collapse near walls" fix from earlier today, since it was only verified via code + unit tests, never actually played.
+**Next:** Daniel to do a real playthrough of the live `danieloye.com` embed (movement, camera near shopfront walls, bike riding, delivery loop) — first proper interactive check since the embed actually started working. Otherwise the still-unresolved branch consolidation (`claude/engineer-communication-workflow-uex7id`, `claude/local-cloud-workflow-h6ivy0`) from the 2026-09-23 entries further down remains open and untouched by this session.
+**Open questions:** None.
+
+---
 ## 2026-09-23 — Claude (diagnosed the live "black screen when turning" report)
 **HEAD at session start:** `6692d64` (Fix the Sterling Bike's lopsided rear cover and add a materials/texture pass), on `main`, with the same enormous working-tree changes already present at session start (confirmed untouched, not mine).
 **Did:**
