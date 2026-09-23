@@ -10,7 +10,7 @@
 - **Primary runtime 3D asset format:** `.glb` (binary glTF)
 - **Version control:** Git and GitHub
 - **Deployment:** static browser build
-- **Target public path:** `/zealot-of-harperhey/`
+- **Target public path:** `/zealot-of-harpurhey/`
 - **Initial hosting:** GitHub Pages, through the existing website
 - **Possible later asset hosting:** Cloudflare R2, if asset volume or delivery requirements justify it
 - **Initial platform:** desktop browser MVP
@@ -75,7 +75,7 @@ The default desktop quality is **MEDIUM**. Use `?quality=low`, `?quality=medium`
 
 Tone mapping defaults to **AgX**, applied by `OutputPass` in linear HDR after bloom and before the display grade. Use `?tonemap=agx`, `?tonemap=neutral`, `?tonemap=aces`, or `?tonemap=off` to compare curves; `off` reproduces the earlier uncurved image. Each curve has its own exposure in `VISUAL_STYLE.render.exposure`, calibrated so midtone brightness matches `off`, so a comparison shows highlight rolloff and colour rather than a brightness change. When a curve is active the grade pass's own exposure is 1, so exposure is never applied twice. Combine with `?view=<name>&quality=high&overlays=off` for repeatable comparisons.
 
-Most environmental illumination in Zealot of Harperhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights. The normal local-light budget is four on MEDIUM, with five available on HIGH and two on LOW. `LocalLightRegistry` owns the real-time local point lights, keeps multi-light fixtures atomic, includes asset-loaded shop lights in the same budget, and uses one moving public-light proxy for the current streetlight pool. Streetlights do not use real-time spotlights.
+Most environmental illumination in Zealot of Harpurhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights. The normal local-light budget is four on MEDIUM, with five available on HIGH and two on LOW. `LocalLightRegistry` owns the real-time local point lights, keeps multi-light fixtures atomic, includes asset-loaded shop lights in the same budget, and uses one moving public-light proxy for the current streetlight pool. Streetlights do not use real-time spotlights.
 
 ### Camera
 
@@ -125,7 +125,7 @@ Building footprints come from `worldLayout.ts` plots. Where a GLB's solid body-h
 
 ### Assets
 
-- Use lowercase `kebab-case` filenames, for example `harperhey-bus-stop.glb`.
+- Use lowercase `kebab-case` filenames, for example `harpurhey-bus-stop.glb`.
 - Use ASCII letters, numbers, and hyphens only; do not use spaces.
 - Add a meaningful variant suffix where needed, for example `brick-wall-wet-albedo.jpg`.
 - Use conventional texture suffixes: `-albedo`, `-normal`, `-roughness`, `-metalness`, `-emissive`, and `-ao`.
@@ -171,7 +171,7 @@ The game loads the texture pass instead, built on the same geometry by `blender/
 - Object names are descriptive lowercase kebab-case. Asset filenames use the project-wide lowercase kebab-case convention.
 - Runtime exports use binary glTF (`.glb`) with selected asset objects only and Y-up conversion enabled.
 
-Three.js loads runtime models with `GLTFLoader`. Model URLs are built from `import.meta.env.BASE_URL`, followed by the path beneath `public/`; this preserves both Vite development and deployment beneath `/zealot-of-harperhey/`.
+Three.js loads runtime models with `GLTFLoader`. Model URLs are built from `import.meta.env.BASE_URL`, followed by the path beneath `public/`; this preserves both Vite development and deployment beneath `/zealot-of-harpurhey/`.
 
 `.blend` source files belong under `blender/source/` and are not copied into production builds. Runtime-ready GLBs belong under `public/assets/models/` and are copied into the static build. Preview renders remain under `renders/` and are development-only.
 
@@ -240,11 +240,11 @@ Build vehicle systems in `src/vehicles/` around reusable vehicle controllers. In
 - `BusController`
 - `BusStop`
 
-Buses initially use deterministic spline/node routes rather than general traffic AI. The initial network is **Harperhey ⇄ The Promised Land**: two buses circulate between two stops.
+Buses initially use deterministic spline/node routes rather than general traffic AI. The initial network is **Harpurhey ⇄ The Promised Land**: two buses circulate between two stops.
 
 Existing pieces to extend rather than duplicate:
 
-- `BUS_STOPS` in `src/world/worldLayout.ts` already defines Bus Stop A and Bus Stop B. Both are inside the current map, and neither is yet assigned to Harperhey or The Promised Land.
+- `BUS_STOPS` in `src/world/worldLayout.ts` already defines Bus Stop A and Bus Stop B. Both are inside the current map, and neither is yet assigned to Harpurhey or The Promised Land.
 - The Sterling hire bikes (`docs/assets/sterling-bike.md`) already expose articulated wheel, steering, crank and pedal nodes and a future `SD_InteractionAnchor`. A `BicycleController` should be able to drive that rig as well as the player's own bike.
 - Vehicles should advance on `FixedStepClock` like the player, so rendering performance never changes their speed.
 

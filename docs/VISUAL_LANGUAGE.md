@@ -2,7 +2,7 @@
 
 ## Central principle
 
-Zealot of Harperhey should look like photographs of Manchester reconstructed imperfectly inside an ambitious late-1990s or early-2000s console game. The style comes first from low-resolution photographic information, economical geometry, embedded lighting and a restricted palette. Post-processing is a restrained finishing layer, not the source of the retro character.
+Zealot of Harpurhey should look like photographs of Manchester reconstructed imperfectly inside an ambitious late-1990s or early-2000s console game. The style comes first from low-resolution photographic information, economical geometry, embedded lighting and a restricted palette. Post-processing is a restrained finishing layer, not the source of the retro character.
 
 The finished bus shelter remains the primary benchmark: recognisable photographic surfaces coexist with simple geometry, imperfect reflections, saturated colour and emissive practical light. Its geometry and embedded textures are preserved.
 

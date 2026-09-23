@@ -1,4 +1,4 @@
-"""Zealot of Harperhey — player character, geometry/silhouette blockout pass.
+"""Zealot of Harpurhey — player character, geometry/silhouette blockout pass.
 
 Builds the hero playable character described in the player-character asset brief:
 a young Black British man in an oversized dark indigo denim jacket and enormous
@@ -1378,7 +1378,7 @@ def render_views(rig):
 def blockout_notes():
     text = bpy.data.texts.new("PC_BLOCKOUT_NOTES")
     text.write(
-        "Zealot of Harperhey - player character, blockout geometry pass.\n"
+        "Zealot of Harpurhey - player character, blockout geometry pass.\n"
         "\n"
         "Delivered: silhouette, proportion, garment/armour relationship, material\n"
         "hierarchy, modular collection split, review renders.\n"

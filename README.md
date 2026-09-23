@@ -1,6 +1,6 @@
-# Zealot of Harperhey
+# Zealot of Harpurhey
 
-Zealot of Harperhey is a desktop-first, browser-based Three.js exploration game and artwork. Its fictional-collage Manchester is shaped by Daniel Oyegade's photography and filmmaking, especially *The Spectres Are All Around Us*: municipal architecture, streetlight pools, surveillance distance and deadpan attention to ordinary objects. The current visual target is uncanny realism suspended between the photographic and the obviously constructed.
+Zealot of Harpurhey is a desktop-first, browser-based Three.js exploration game and artwork. Its fictional-collage Manchester is shaped by Daniel Oyegade's photography and filmmaking, especially *The Spectres Are All Around Us*: municipal architecture, streetlight pools, surveillance distance and deadpan attention to ordinary objects. The current visual target is uncanny realism suspended between the photographic and the obviously constructed.
 
 ## Status
 
@@ -45,7 +45,7 @@ Create a production build:
 npm run build
 ```
 
-The static production files are written to `dist/`. The build uses `/zealot-of-harperhey/` as its public base path so it can be deployed beneath that path on the existing website. Before Vite runs, `config/runtime-assets.json` generates a clean production-only public directory; workshop assets and uncleared audio are not copied.
+The static production files are written to `dist/`. The build is rooted at `/` and deploys to its own Cloudflare Worker (`zealot-of-harpurhey`), embedded on danieloye.com via an iframe rather than being served as a literal subpath of that site. Before Vite runs, `config/runtime-assets.json` generates a clean production-only public directory; workshop assets and uncleared audio are not copied.
 
 To inspect a production build locally:
 
@@ -69,9 +69,9 @@ Asset-specific files use a stable lowercase slug such as `mcr1`:
 
 - Immutable source photography: `references/architecture/<asset-slug>/`
 - Reproducible Blender builders: `blender/scripts/create<Name>.py`
-- Editable masters: `blender/source/harperhey-<asset-slug>[-stage].blend`
+- Editable masters: `blender/source/harpurhey-<asset-slug>[-stage].blend`
 - Review renders: `renders/<asset-slug>/`
-- Runtime exports: `public/assets/models/harperhey-<asset-slug>[-stage].glb`
+- Runtime exports: `public/assets/models/harpurhey-<asset-slug>[-stage].glb`
 - Source and output manifests: `docs/assets/<asset-slug>.md`
 
 Keep reference photography and review renders outside `public/`; only files required by the shipped application belong there. Avoid spaces and case-only distinctions in new asset directory names so paths remain portable across macOS, Linux, CI and web hosting.

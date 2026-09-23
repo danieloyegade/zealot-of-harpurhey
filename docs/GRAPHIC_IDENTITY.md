@@ -1,6 +1,6 @@
 # Graphic identity
 
-Zealot of Harperhey has two graphic personalities at once:
+Zealot of Harpurhey has two graphic personalities at once:
 
 - **"This is a record"**: coordinates, money, distance, time, deliveries, maps, catalogue numbers, bus routes.
 - **"This is a romance"**: calligraphy, horses, swords, flowers, stars, ornament, myth, poetry, the Promised Land.
@@ -16,7 +16,7 @@ Reveal it gradually. The vocabulary unfolds through play the way the city does, 
 | Voice | Belongs to | Face | Treatment |
 | --- | --- | --- | --- |
 | Municipal / archival | The record | EB Garamond capitals (`.z-caps`) | Small and tracked 0.2–0.26em. Opacity carries the hierarchy: primary is read when looked for, secondary through attention, tertiary is almost forensic. |
-| Mythic / literary | The title | EB Garamond at display size | Monumental spaced capitals: ZEALOT of HARPERHEY. |
+| Mythic / literary | The title | EB Garamond at display size | Monumental spaced capitals: ZEALOT of HARPURHEY. |
 | The hand | The romance | Herr Von Muellerhoff (`--z-hand`), provisional | Often one of the largest objects on screen: 40–80% of the viewport width, crossing other type, running off the edges, read as shape before language. |
 
 ### The hand
@@ -29,7 +29,7 @@ Reveal it gradually. The vocabulary unfolds through play the way the city does, 
 
 ### Place and idea
 
-**HARPERHEY is a place**: serif capitals, coordinates, municipal type. **The Promised Land is an idea**: always in the hand, romantic and unstable. The distinction holds wherever the two meet: the bus destination, the ticket, the title card.
+**HARPURHEY is a place**: serif capitals, coordinates, municipal type. **The Promised Land is an idea**: always in the hand, romantic and unstable. The distinction holds wherever the two meet: the bus destination, the ticket, the title card.
 
 ## Two palettes
 
@@ -94,12 +94,12 @@ Don't fear empty space. A tiny heraldic image in a large empty field can outweig
 
 - **Chapter cards** (`createChapterCard`): night numeral in serif capitals, either an institutional title in capitals (FIGURES ISOLATED WITHIN MUNICIPAL ARCHITECTURE) or a romantic title in the hand (*Flowers for a Stranger*, *Before the Night Is Spent*). They carry an emblem (optionally in the cartouche), a tiny municipal footer, and large negative space. They should feel like album sleeves, fashion campaigns and art-film intertitles, in either world.
 - **Delivery card** (`createDeliveryCard`): DELIVERY 001 in the cartouche with the rose. On the title card it sits under an enormous handwritten *Flowers*.
-- **Bus destination and ticket** (`createBusDestination`, `createBusTicket`): SERVICE 01, HARPERHEY in serif, a calligraphic route, *The Promised Land* in the hand.
-- **The night so far** (`createNightSoFar`): the pause menu as a record set as an artwork. ZEALOT, *The Night So Far* in the hand, a ledger (deliveries, earned, film, time, last bus), a tiny horse, HARPERHEY and MMXXVI. It is not wired to a pause system yet; it is laid out to receive `RiderRecord` values.
+- **Bus destination and ticket** (`createBusDestination`, `createBusTicket`): SERVICE 01, HARPURHEY in serif, a calligraphic route, *The Promised Land* in the hand.
+- **The night so far** (`createNightSoFar`): the pause menu as a record set as an artwork. ZEALOT, *The Night So Far* in the hand, a ledger (deliveries, earned, film, time, last bus), a tiny horse, HARPURHEY and MMXXVI. It is not wired to a pause system yet; it is laid out to receive `RiderRecord` values.
 
 ## The title card's share
 
-The title card shows only the classical serif, archival microtype, one calligraphic intervention (*The Promised Land* behind HARPERHEY) and one small symbol (the red star on the loading line). Its two beats then introduce the horse and the rose. Map, bus route, ledgers, sword, frames and patterns are withheld for play. See `docs/TITLE_SCREEN.md`.
+The title card shows only the classical serif, archival microtype, one calligraphic intervention (*The Promised Land* behind HARPURHEY) and one small symbol (the red star on the loading line). Its two beats then introduce the horse and the rose. Map, bus route, ledgers, sword, frames and patterns are withheld for play. See `docs/TITLE_SCREEN.md`.
 
 ## Pattern library (planned)
 

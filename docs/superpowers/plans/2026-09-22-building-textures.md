@@ -34,23 +34,23 @@ Audit of `public/assets/models/*.glb` as loaded by `src/world/createWorld.ts` on
 |---|---|---|---|
 | Come Through Lab | `come_through_lab.glb`, `ctl_dropbox.glb`, `ctl_dropoff_props.glb` | 0 images | Task 5 |
 | The Hive | `the_hive.glb` | 0 images | Task 6 |
-| Gulliver's | `harperhey-gullivers.glb` | 0 images | Task 7 |
+| Gulliver's | `harpurhey-gullivers.glb` | 0 images | Task 7 |
 | Renee | `renee-blockout.glb` | 0 images | Task 8 |
 | Real Camera | `real_camera.glb` | 0 images | Task 9 |
 | Greek Gyros | `greek_gyros.glb` | 0 images | Task 10 |
 | Village Books | `village-books-blockout.glb` | 0 images | Task 11 |
 | Advanced Photo | `advanced-photo-blockout.glb` | 0 images | Task 12 |
 | ABC Building | `abc_building.glb` | 0 images, **no UVs** | Task 13 |
-| Dreams | `harperhey-dreams-greybox.glb` | 0 images | Task 14 |
-| Coral | `harperhey-coral-shop.glb` | 0 images; brick and concrete replaced at runtime by world-prototype tiles | Task 15 |
+| Dreams | `harpurhey-dreams-greybox.glb` | 0 images | Task 14 |
+| Coral | `harpurhey-coral-shop.glb` | 0 images; brick and concrete replaced at runtime by world-prototype tiles | Task 15 |
 | Nice Things | `nice-things-blockout.glb` | **in flight in another session** (`niceThingsTextures.py`, `exportNiceThings.py` uncommitted) | Excluded |
 | Cass Art | `cass_art.glb` | **in flight in another session** (`cassArtTextures.py` uncommitted) | Excluded |
 | MCR1, Spice Cabin, Vinyl Exchange | — | already textured | — |
-| Florist (legacy) | `harperhey-florist.glb` | not loaded; superseded by Nice Things | Excluded |
+| Florist (legacy) | `harpurhey-florist.glb` | not loaded; superseded by Nice Things | Excluded |
 
 ## Decisions (confirmed by Daniel, 2026-09-22)
 
-1. **Dreams:** texture the approved greybox. The older photographic `harperhey-dreams.glb` stays retired.
+1. **Dreams:** texture the approved greybox. The older photographic `harpurhey-dreams.glb` stays retired.
 2. **Coral:** proceed with the two reference photos.
 3. **Village Books and ABC:** left to Claude's judgement from the photographs:
    - **Village Books upper wall:** off-white painted render with dark window frames (`DSC06337.JPG`, `bbc76082…jpeg`), so `painted_render`. The shop floor is dark and hard, so `concrete`, not timber.
@@ -1496,8 +1496,8 @@ git push
 ### Task 7: Gulliver's
 
 **Files:**
-- Create: `blender/scripts/gulliversTextures.py`, `blender/source/textures/gullivers/`, `renders/gullivers-textures/`, `blender/source/runtime-untextured/harperhey-gullivers.glb`
-- Modify: `config/building-textures.json`, `src/world/createWorld.ts` (`applyGulliversModelPolicy`, `harperhey-gullivers.glb?v=geometry-wip-20260911`), `public/assets/models/harperhey-gullivers.glb`
+- Create: `blender/scripts/gulliversTextures.py`, `blender/source/textures/gullivers/`, `renders/gullivers-textures/`, `blender/source/runtime-untextured/harpurhey-gullivers.glb`
+- Modify: `config/building-textures.json`, `src/world/createWorld.ts` (`applyGulliversModelPolicy`, `harpurhey-gullivers.glb?v=geometry-wip-20260911`), `public/assets/models/harpurhey-gullivers.glb`
 
 **Interfaces:**
 - Consumes: `profileAuthoredMaps` (Task 5), the builders (Task 2), and the exporter (Task 4).
@@ -1507,7 +1507,7 @@ git push
 ```json
 {
   "building": "gullivers",
-  "glb": "assets/models/harperhey-gullivers.glb",
+  "glb": "assets/models/harpurhey-gullivers.glb",
   "surfacePrefix": "MAT_GUL_Surface_",
   "textureDir": "blender/source/textures/gullivers",
   "placeholders": {
@@ -1535,7 +1535,7 @@ git push
 }
 ```
 
-Run `npm test`. Expected: FAIL for `harperhey-gullivers.glb`.
+Run `npm test`. Expected: FAIL for `harpurhey-gullivers.glb`.
 
 - [ ] **Step 2: Measure the palette**
 
@@ -1610,18 +1610,18 @@ Expected: `wrote 9 materials to …/gullivers`. The green faience is the buildin
 - [ ] **Step 5: Export**
 
 Run: `/Applications/Blender.app/Contents/MacOS/Blender --background --factory-startup --python-exit-code 1 --python blender/scripts/exportTexturedBuilding.py -- gullivers`
-Expected: `harperhey-gullivers.glb: 9 surface materials …`. Gulliver's merges each component collection into one multi-material mesh, which the per-slot UVs handle.
+Expected: `harpurhey-gullivers.glb: 9 surface materials …`. Gulliver's merges each component collection into one multi-material mesh, which the per-slot UVs handle.
 
 - [ ] **Step 6: Runtime policy and cache-buster**
 
-In `applyGulliversModelPolicy`, insert `profileAuthoredMaps(material);` as the first statement after the `instanceof MeshStandardMaterial` guard. Change `harperhey-gullivers.glb?v=geometry-wip-20260911` to `?v=textured-YYYYMMDD`.
+In `applyGulliversModelPolicy`, insert `profileAuthoredMaps(material);` as the first statement after the `instanceof MeshStandardMaterial` guard. Change `harpurhey-gullivers.glb?v=geometry-wip-20260911` to `?v=textured-YYYYMMDD`.
 
 - [ ] **Step 7: Verify.** Run `npm test && npm run build` (expected PASS), then the in-game check.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add config/building-textures.json src/world/createWorld.ts blender/scripts/gulliversTextures.py blender/source/textures/gullivers blender/source/runtime-untextured/harperhey-gullivers.glb renders/gullivers-textures public/assets/models/harperhey-gullivers.glb
+git add config/building-textures.json src/world/createWorld.ts blender/scripts/gulliversTextures.py blender/source/textures/gullivers blender/source/runtime-untextured/harpurhey-gullivers.glb renders/gullivers-textures public/assets/models/harpurhey-gullivers.glb
 git commit -m "Texture Gulliver's"
 git push
 ```
@@ -2329,8 +2329,8 @@ git push
 ### Task 14: Dreams (greybox)
 
 **Files:**
-- Create: `blender/scripts/dreamsGreyboxTextures.py`, `blender/source/textures/dreams-greybox/`, `renders/dreams-greybox-textures/`, `blender/source/runtime-untextured/harperhey-dreams-greybox.glb`
-- Modify: `config/building-textures.json`, `src/world/createWorld.ts` (`applyDreamsModelPolicy`, `harperhey-dreams-greybox.glb?v=geometry-approved-20260911`), `public/assets/models/harperhey-dreams-greybox.glb`
+- Create: `blender/scripts/dreamsGreyboxTextures.py`, `blender/source/textures/dreams-greybox/`, `renders/dreams-greybox-textures/`, `blender/source/runtime-untextured/harpurhey-dreams-greybox.glb`
+- Modify: `config/building-textures.json`, `src/world/createWorld.ts` (`applyDreamsModelPolicy`, `harpurhey-dreams-greybox.glb?v=geometry-approved-20260911`), `public/assets/models/harpurhey-dreams-greybox.glb`
 
 **Interfaces:**
 - Consumes: `profileAuthoredMaps` (Task 5), the builders (Task 2), and the exporter (Task 4).
@@ -2342,7 +2342,7 @@ Daniel confirmed (Decision 1) that the approved greybox is the one to texture.
 ```json
 {
   "building": "dreams",
-  "glb": "assets/models/harperhey-dreams-greybox.glb",
+  "glb": "assets/models/harpurhey-dreams-greybox.glb",
   "surfacePrefix": "MAT_DRM_Surface_",
   "textureDir": "blender/source/textures/dreams-greybox",
   "placeholders": {
@@ -2370,7 +2370,7 @@ Daniel confirmed (Decision 1) that the approved greybox is the one to texture.
 }
 ```
 
-Run `npm test`. Expected: FAIL for `harperhey-dreams-greybox.glb`.
+Run `npm test`. Expected: FAIL for `harpurhey-dreams-greybox.glb`.
 
 - [ ] **Step 2: Measure the palette**
 
@@ -2441,18 +2441,18 @@ Expected: `wrote 9 materials to …/dreams-greybox`.
 - [ ] **Step 5: Export**
 
 Run: `/Applications/Blender.app/Contents/MacOS/Blender --background --factory-startup --python-exit-code 1 --python blender/scripts/exportTexturedBuilding.py -- dreams`
-Expected: `harperhey-dreams-greybox.glb: 9 surface materials …`.
+Expected: `harpurhey-dreams-greybox.glb: 9 surface materials …`.
 
 - [ ] **Step 6: Runtime policy and cache-buster**
 
-In `applyDreamsModelPolicy`, insert `profileAuthoredMaps(material);` as the first statement after the `instanceof MeshStandardMaterial` guard (`applyPhotographicModelPolicy` only profiles `map`, `emissiveMap` and `alphaMap`). Change `harperhey-dreams-greybox.glb?v=geometry-approved-20260911` to `?v=textured-YYYYMMDD`.
+In `applyDreamsModelPolicy`, insert `profileAuthoredMaps(material);` as the first statement after the `instanceof MeshStandardMaterial` guard (`applyPhotographicModelPolicy` only profiles `map`, `emissiveMap` and `alphaMap`). Change `harpurhey-dreams-greybox.glb?v=geometry-approved-20260911` to `?v=textured-YYYYMMDD`.
 
 - [ ] **Step 7: Verify.** Run `npm test && npm run build` (expected PASS), then the in-game check. The light tubes must still glow.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add config/building-textures.json src/world/createWorld.ts blender/scripts/dreamsGreyboxTextures.py blender/source/textures/dreams-greybox blender/source/runtime-untextured/harperhey-dreams-greybox.glb renders/dreams-greybox-textures public/assets/models/harperhey-dreams-greybox.glb
+git add config/building-textures.json src/world/createWorld.ts blender/scripts/dreamsGreyboxTextures.py blender/source/textures/dreams-greybox blender/source/runtime-untextured/harpurhey-dreams-greybox.glb renders/dreams-greybox-textures public/assets/models/harpurhey-dreams-greybox.glb
 git commit -m "Texture the Dreams greybox"
 git push
 ```
@@ -2460,8 +2460,8 @@ git push
 ### Task 15: Coral
 
 **Files:**
-- Create: `blender/scripts/coralTextures.py`, `blender/source/textures/coral/`, `renders/coral-textures/`, `blender/source/runtime-untextured/harperhey-coral-shop.glb`
-- Modify: `config/building-textures.json`, `src/world/createWorld.ts` (`applyCoralModelPolicy`, `loadModel('assets/models/harperhey-coral-shop.glb')`), `public/assets/models/harperhey-coral-shop.glb`
+- Create: `blender/scripts/coralTextures.py`, `blender/source/textures/coral/`, `renders/coral-textures/`, `blender/source/runtime-untextured/harpurhey-coral-shop.glb`
+- Modify: `config/building-textures.json`, `src/world/createWorld.ts` (`applyCoralModelPolicy`, `loadModel('assets/models/harpurhey-coral-shop.glb')`), `public/assets/models/harpurhey-coral-shop.glb`
 
 **Interfaces:**
 - Consumes: `profileAuthoredMaps` (Task 5), the builders (Task 2), and the exporter (Task 4).
@@ -2473,7 +2473,7 @@ Daniel confirmed (Decision 2) that two photos are enough. Coral's policy current
 ```json
 {
   "building": "coral",
-  "glb": "assets/models/harperhey-coral-shop.glb",
+  "glb": "assets/models/harpurhey-coral-shop.glb",
   "surfacePrefix": "MAT_COR_Surface_",
   "textureDir": "blender/source/textures/coral",
   "placeholders": {
@@ -2511,7 +2511,7 @@ Daniel confirmed (Decision 2) that two photos are enough. Coral's policy current
 
 (`maxBytes` is 7 MB because the untextured GLB is already 4.8 MB of geometry.)
 
-Run `npm test`. Expected: FAIL for `harperhey-coral-shop.glb`.
+Run `npm test`. Expected: FAIL for `harpurhey-coral-shop.glb`.
 
 - [ ] **Step 2: Measure the palette**
 
@@ -2589,7 +2589,7 @@ Expected: `wrote 10 materials to …/coral`.
 - [ ] **Step 5: Export**
 
 Run: `/Applications/Blender.app/Contents/MacOS/Blender --background --factory-startup --python-exit-code 1 --python blender/scripts/exportTexturedBuilding.py -- coral`
-Expected: `harperhey-coral-shop.glb: 10 surface materials …`.
+Expected: `harpurhey-coral-shop.glb: 10 surface materials …`.
 
 - [ ] **Step 6: Runtime policy and cache-buster**
 
@@ -2603,14 +2603,14 @@ In `applyCoralModelPolicy`, the `sourceMaterials.map((source) => { … })` callb
       }
 ```
 
-Then delete the now-unreachable `brick` and `concrete` branches and the `brick` / `concrete` world-material constants they return (declared at the top of `applyCoralModelPolicy`). Change `loadModel('assets/models/harperhey-coral-shop.glb')` to `loadModel('assets/models/harperhey-coral-shop.glb?v=textured-YYYYMMDD')`.
+Then delete the now-unreachable `brick` and `concrete` branches and the `brick` / `concrete` world-material constants they return (declared at the top of `applyCoralModelPolicy`). Change `loadModel('assets/models/harpurhey-coral-shop.glb')` to `loadModel('assets/models/harpurhey-coral-shop.glb?v=textured-YYYYMMDD')`.
 
 - [ ] **Step 7: Verify.** Run `npm test && npm run build` (expected PASS), then the in-game check. The fluorescent, lamp, sign and terminal glows must be unchanged.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add config/building-textures.json src/world/createWorld.ts blender/scripts/coralTextures.py blender/source/textures/coral blender/source/runtime-untextured/harperhey-coral-shop.glb renders/coral-textures public/assets/models/harperhey-coral-shop.glb
+git add config/building-textures.json src/world/createWorld.ts blender/scripts/coralTextures.py blender/source/textures/coral blender/source/runtime-untextured/harpurhey-coral-shop.glb renders/coral-textures public/assets/models/harpurhey-coral-shop.glb
 git commit -m "Texture Coral with authored surfaces in place of the world-prototype tiles"
 git push
 ```

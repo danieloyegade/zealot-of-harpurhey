@@ -2,13 +2,13 @@ RENAE
 
 RENEE, 45-47 THOMAS STREET, NORTHERN QUARTER, MANCHESTER
 
-Untextured Blender reconstruction for Zealot of Harperhey
+Untextured Blender reconstruction for Zealot of Harpurhey
 
 Create an accurate, game-ready Blender reconstruction of Renee, 45-47
 Thomas Street, Northern Quarter, Manchester, using ALL supplied
 reference images.
 
-This asset is for Zealot of Harperhey, a Three.js game.
+This asset is for Zealot of Harpurhey, a Three.js game.
 
 This task is GEOMETRY ONLY.
 

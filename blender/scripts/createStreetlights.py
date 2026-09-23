@@ -1,4 +1,4 @@
-"""Harperhey municipal streetlight family: build, texture, export and night-test.
+"""Harpurhey municipal streetlight family: build, texture, export and night-test.
 
 Four fresh assets (geometry in streetlightGeometry.py), each exported as its own
 GLB with three LODs and a `LightEmitter` empty at the real light source:
@@ -167,7 +167,7 @@ def build_asset(spec, body_materials, strengths, lods=(0, 1, 2)):
     root["assetHeightM"] = round(max(v.co.z for v in parts[lods[0]]["Arm"].data.vertices)
                                  + parts[lods[0]]["Arm"].location.z, 3)
     root["lodDistancesM"] = [0.0, 26.0, 60.0]
-    root["family"] = "harperhey-municipal-streetlight"
+    root["family"] = "harpurhey-municipal-streetlight"
     return root, parts, light
 
 

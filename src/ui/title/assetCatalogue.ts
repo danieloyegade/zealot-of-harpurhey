@@ -4,7 +4,7 @@
 
 export const UNIDENTIFIED_OBJECT = 'spectre / unidentified';
 
-// Matched against the lowercased filename, without extension or `harperhey-`.
+// Matched against the lowercased filename, without extension or `harpurhey-`.
 const CATALOGUE: readonly (readonly [RegExp, string])[] = [
   [/^coral-shop/, 'coral / illuminated fascia'],
   [/^coral-bin/, 'litter bin / coral'],
@@ -98,5 +98,5 @@ function assetName(url: string): string {
   return name
     .toLowerCase()
     .replace(/\.[a-z0-9]+$/, '')
-    .replace(/^harperhey[-_]/, '');
+    .replace(/^harpurhey[-_]/, '');
 }

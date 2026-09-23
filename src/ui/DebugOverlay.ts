@@ -67,7 +67,7 @@ export class DebugOverlay {
     }
 
     this.element.textContent = [
-      'ZEALOT OF HARPERHEY — DEVELOPMENT BUILD',
+      'ZEALOT OF HARPURHEY — DEVELOPMENT BUILD',
       '',
       `FPS: ${this.framesPerSecond}`,
       `Frame: ${this.frameTimeMilliseconds.toFixed(1)} ms`,

@@ -2,13 +2,13 @@ ADVANCED PHOTO
 
 ADVANCED PHOTO, ST ANN’S ARCADE, MANCHESTER
 
-Untextured Blender reconstruction for Zealot of Harperhey
+Untextured Blender reconstruction for Zealot of Harpurhey
 
 Create an accurate, game-ready Blender reconstruction of Advanced Photo,
 the photographic/film-processing shop located inside the arcade by St
 Ann’s Square in Manchester, using ALL supplied reference photographs.
 
-This asset is for Zealot of Harperhey, a Three.js game.
+This asset is for Zealot of Harpurhey, a Three.js game.
 
 IMPORTANT: THIS IS A GEOMETRY-ONLY PASS
 

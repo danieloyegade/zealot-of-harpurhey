@@ -1,4 +1,4 @@
-"""Zealot of Harperhey — player character, rigging pass.
+"""Zealot of Harpurhey — player character, rigging pass.
 
 Imports the reviewed blockout geometry (`createPlayerCharacterBlockout.py`) and
 adds the production humanoid armature the asset brief asks for: full spine,
@@ -551,7 +551,7 @@ def export_asset(armature):
 def rig_notes(rigid, skinned):
     text = bpy.data.texts.new("PC_RIG_NOTES")
     text.write(
-        "Zealot of Harperhey - player character, rigging pass.\n"
+        "Zealot of Harpurhey - player character, rigging pass.\n"
         "\n"
         f"Rigid bone-parented meshes : {rigid}\n"
         f"Skinned meshes             : {skinned}\n"

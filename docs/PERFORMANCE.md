@@ -18,7 +18,7 @@ The renderer and gameplay clock are separate. Raw animation-frame time is used f
 
 ## Lighting budget and philosophy
 
-Most environmental illumination in Zealot of Harperhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights.
+Most environmental illumination in Zealot of Harpurhey is intentionally represented using emissive materials, photographic/baked illumination, geometric light cones and fake light pools rather than large numbers of real-time dynamic lights.
 
 The old streetlight spotlights and routine always-on storefront lights are removed. Those locations retain their identity through emissive signs and textures, painted reflection geometry, visible additive cones, fake pools, and photographic illumination.
 

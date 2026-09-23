@@ -26,8 +26,8 @@ from surfaceWeathering import build_pbr_material, load_image  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[2]
-BLEND = ROOT / "blender" / "source" / "harperhey-mcr1-geometry.blend"
-GLB = ROOT / "public" / "assets" / "models" / "harperhey-mcr1-geometry.glb"
+BLEND = ROOT / "blender" / "source" / "harpurhey-mcr1-geometry.blend"
+GLB = ROOT / "public" / "assets" / "models" / "harpurhey-mcr1-geometry.glb"
 RENDERS = ROOT / "renders" / "mcr1"
 
 

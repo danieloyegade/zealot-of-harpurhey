@@ -1,4 +1,4 @@
-# Lighting Evaluation — Zealot of Harperhey
+# Lighting Evaluation — Zealot of Harpurhey
 
 Date: 13 September 2026
 
@@ -381,7 +381,7 @@ Acceptance criteria:
 
 ## Final judgement
 
-Zealot of Harperhey needs **more consequential light, not more light everywhere**.
+Zealot of Harpurhey needs **more consequential light, not more light everywhere**.
 
 Its darkness is already doing valuable work. The cobalt atmosphere, black intervals, isolated signs, bus shelter, Dreams frontage, wet fragments, and distant windows form a convincing nocturnal grammar. The weak point is that the grammar is sometimes only painted onto the ground: it does not consistently classify the rider, reveal the action, or make the chosen destination legible.
 

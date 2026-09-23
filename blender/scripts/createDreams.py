@@ -21,9 +21,9 @@ TEXTURE_ROOT = PROJECT_ROOT / "public" / "assets" / "textures" / "world-prototyp
 FACADE_TEXTURE = TEXTURE_ROOT / "dreams-facade-hires.jpg"
 SHUTTER_TEXTURE = TEXTURE_ROOT / "dreams-shutters-hires.jpg"
 BRICK_TEXTURE = TEXTURE_ROOT / "brick-soot-overhaul.png"
-BLEND_PATH = PROJECT_ROOT / "blender" / "source" / "harperhey-dreams.blend"
-GLB_PATH = PROJECT_ROOT / "public" / "assets" / "models" / "harperhey-dreams.glb"
-PREVIEW_PATH = PROJECT_ROOT / "renders" / "dreams" / "harperhey-dreams-preview.png"
+BLEND_PATH = PROJECT_ROOT / "blender" / "source" / "harpurhey-dreams.blend"
+GLB_PATH = PROJECT_ROOT / "public" / "assets" / "models" / "harpurhey-dreams.glb"
+PREVIEW_PATH = PROJECT_ROOT / "renders" / "dreams" / "harpurhey-dreams-preview.png"
 
 PHOTO_WIDTH = 3035.0
 PHOTO_HEIGHT = 2432.0

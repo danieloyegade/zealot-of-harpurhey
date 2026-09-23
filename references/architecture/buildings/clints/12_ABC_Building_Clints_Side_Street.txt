@@ -6,7 +6,7 @@ Create an accurate, game-ready Blender reconstruction of the ABC
 Buildings complex in Manchester, based on ALL supplied reference
 photographs.
 
-This asset is for Zealot of Harperhey, a Three.js game.
+This asset is for Zealot of Harpurhey, a Three.js game.
 
 The building must include the complete recognisable external massing of
 the ABC building, including its tall tower and lower retail podium.

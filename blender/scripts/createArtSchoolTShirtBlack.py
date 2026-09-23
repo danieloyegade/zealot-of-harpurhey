@@ -1934,7 +1934,7 @@ def finalise_mesh(garment, material):
     for group in list(garment.vertex_groups):
         garment.vertex_groups.remove(group)
     mesh.validate(verbose=False, clean_customdata=False)
-    garment["asset"] = "Zealot of Harperhey — Art School T-shirt, black"
+    garment["asset"] = "Zealot of Harpurhey — Art School T-shirt, black"
     garment["fit"] = "oversized heavyweight boxy blank, dropped shoulder"
     garment["rigging"] = "standalone rest-state garment; skin to a compatible humanoid armature"
     garment["front"] = "+Y in Blender / -Z after glTF Y-up conversion"

@@ -2,13 +2,13 @@ THE HIVE / ARTS COUNCIL ENGLAND
 
 THE HIVE / ARTS COUNCIL ENGLAND
 
-Untextured architectural reconstruction for Zealot of Harperhey
+Untextured architectural reconstruction for Zealot of Harpurhey
 
 Build an accurate, game-ready Blender reconstruction of The Hive on
 Lever Street, Manchester, the building containing Arts Council England’s
 Manchester office, using ALL supplied reference photographs.
 
-This asset is for Zealot of Harperhey, a Three.js game.
+This asset is for Zealot of Harpurhey, a Three.js game.
 
 This task is ARCHITECTURAL GEOMETRY ONLY.
 

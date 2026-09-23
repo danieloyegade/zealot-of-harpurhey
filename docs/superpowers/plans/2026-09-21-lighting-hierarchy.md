@@ -349,7 +349,7 @@ Inside the existing `if (import.meta.env.DEV) { (window as ...).zealot = { ... }
 
 - [ ] **Step 7: Verify in the browser**
 
-Run: `npm run build` (expected: passes), then start the `zealot-dev` preview, open `/zealot-of-harperhey/?view=west-street&overlays=off`, wait for the world to load, and evaluate `window.zealot.lighting.probe()`.
+Run: `npm run build` (expected: passes), then start the `zealot-dev` preview, open `/zealot-of-harpurhey/?view=west-street&overlays=off`, wait for the world to load, and evaluate `window.zealot.lighting.probe()`.
 Expected: an object with finite `playerLuminance`, `surroundLuminance`, `separation`, `blackShare` and a `drawCalls` number.
 
 - [ ] **Step 8: Commit**
@@ -423,7 +423,7 @@ async (page) => {
   const metrics = {};
   for (const { view, quality } of runs) {
     await page.goto(
-      `${origin}/zealot-of-harperhey/?view=${view}&quality=${quality}&overlays=off`,
+      `${origin}/zealot-of-harpurhey/?view=${view}&quality=${quality}&overlays=off`,
     );
     await page.waitForFunction(() => Boolean(window.zealot), null, { timeout: 60000 });
     // Assets stream in after zealot exists; lights fade over ~0.25 s.
@@ -437,7 +437,7 @@ async (page) => {
 
 - [ ] **Step 3: Capture the baseline**
 
-With the `zealot-dev` preview running, point the Playwright page at it (`browser_navigate` to `http://localhost:<port>/zealot-of-harperhey/`) and run the script through `browser_run_code_unsafe` with the `filename` above. Save the returned JSON as `renders/lighting-captures/latest/metrics.json`, then run:
+With the `zealot-dev` preview running, point the Playwright page at it (`browser_navigate` to `http://localhost:<port>/zealot-of-harpurhey/`) and run the script through `browser_run_code_unsafe` with the `filename` above. Save the returned JSON as `renders/lighting-captures/latest/metrics.json`, then run:
 
 ```bash
 mv renders/lighting-captures/latest renders/lighting-captures/2026-09-21-baseline

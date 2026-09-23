@@ -1,10 +1,10 @@
-// What the title card knows of this rider's Harperhey.
+// What the title card knows of this rider's Harpurhey.
 //
 // Nothing in the game writes most of this yet. Missing fields fall back to a
 // first night, so delivery, photography and transport systems can later record
 // into the same stored object and the title card will simply start showing it.
 
-export const RIDER_RECORD_STORAGE_KEY = 'zealot-of-harperhey:rider-record';
+export const RIDER_RECORD_STORAGE_KEY = 'zealot-of-harpurhey:rider-record';
 
 export interface RiderRecord {
   /** Times the player has entered the city from the title card. */

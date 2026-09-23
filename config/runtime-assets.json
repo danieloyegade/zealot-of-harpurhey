@@ -4,9 +4,9 @@
     "assets/textures",
     "assets/models/player-character-rigged.glb",
     "assets/models/nice-things-blockout.glb",
-    "assets/models/harperhey-dreams-greybox.glb",
-    "assets/models/harperhey-gullivers.glb",
-    "assets/models/harperhey-mcr1-geometry.glb",
+    "assets/models/harpurhey-dreams-greybox.glb",
+    "assets/models/harpurhey-gullivers.glb",
+    "assets/models/harpurhey-mcr1-geometry.glb",
     "assets/models/cass_art.glb",
     "assets/models/renee-blockout.glb",
     "assets/models/the_hive.glb",
@@ -32,9 +32,9 @@
     "assets/models/streetlight-led-modern-01.glb",
     "assets/models/streetlight-curved-01.glb",
     "assets/models/streetlight-weathered-01.glb",
-    "assets/models/harperhey-coral-shop.glb",
-    "assets/models/harperhey-coral-bin.glb",
-    "assets/models/harperhey-coral-bollard.glb"
+    "assets/models/harpurhey-coral-shop.glb",
+    "assets/models/harpurhey-coral-bin.glb",
+    "assets/models/harpurhey-coral-bollard.glb"
   ],
   "developmentOnly": [
     "assets/audio",

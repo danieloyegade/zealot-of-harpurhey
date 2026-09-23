@@ -13,8 +13,8 @@ from mathutils import Vector
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-BLEND_PATH = PROJECT_ROOT / "blender" / "source" / "harperhey-dreams-greybox.blend"
-GLB_PATH = PROJECT_ROOT / "public" / "assets" / "models" / "harperhey-dreams-greybox.glb"
+BLEND_PATH = PROJECT_ROOT / "blender" / "source" / "harpurhey-dreams-greybox.blend"
+GLB_PATH = PROJECT_ROOT / "public" / "assets" / "models" / "harpurhey-dreams-greybox.glb"
 RENDER_ROOT = PROJECT_ROOT / "renders" / "dreams-greybox"
 FRONT_RENDER = RENDER_ROOT / "dreams-greybox-front.png"
 THREE_QUARTER_RENDER = RENDER_ROOT / "dreams-greybox-three-quarter.png"

@@ -45,8 +45,8 @@ to an asset-specific directory beneath `blender/source/textures/mcr1/`.
 ## Geometry-stage outputs
 
 - Rebuild script: `blender/scripts/createMCR1.py`
-- Editable master: `blender/source/harperhey-mcr1-geometry.blend`
-- Runtime GLB: `public/assets/models/harperhey-mcr1-geometry.glb`
+- Editable master: `blender/source/harpurhey-mcr1-geometry.blend`
+- Runtime GLB: `public/assets/models/harpurhey-mcr1-geometry.glb`
 - Review renders: `renders/mcr1/`
 
 The master uses one Blender unit per metre, ground level at Z 0, applied mesh

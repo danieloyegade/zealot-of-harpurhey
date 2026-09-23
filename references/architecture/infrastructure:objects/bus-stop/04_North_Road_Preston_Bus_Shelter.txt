@@ -2,13 +2,13 @@ NORTH ROAD PRESTON BUS SHELTER
 
 NORTH ROAD PRESTON BUS SHELTER
 
-Hero architectural/prop reconstruction for Zealot of Harperhey
+Hero architectural/prop reconstruction for Zealot of Harpurhey
 
 Create an accurate Blender reconstruction of the bus shelter and
 shopping trolley shown in the supplied reference photograph.
 
 This photograph is an important visual reference for the artistic
-language of Zealot of Harperhey and should be treated as a hero asset,
+language of Zealot of Harpurhey and should be treated as a hero asset,
 not as generic street furniture.
 
 The goal is to reconstruct the physical objects as faithfully as

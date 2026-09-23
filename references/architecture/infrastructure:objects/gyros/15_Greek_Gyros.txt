@@ -1,12 +1,12 @@
 GREEK GYROS, DEANSGATE, MANCHESTER
 
-Untextured game-ready food stand asset for Zealot of Harperhey
+Untextured game-ready food stand asset for Zealot of Harpurhey
 
 Create an accurate, game-ready Blender reconstruction of the Greek Gyros
 food stand in Deansgate, Manchester, using ALL supplied reference
 images.
 
-This asset is for Zealot of Harperhey, a Three.js game.
+This asset is for Zealot of Harpurhey, a Three.js game.
 
 This is a relatively small environmental asset compared with the larger
 buildings, but it should still feel specific to the real stand rather

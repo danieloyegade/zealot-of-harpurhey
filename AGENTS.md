@@ -1,4 +1,4 @@
-# AGENTS.md — Zealot of Harperhey
+# AGENTS.md — Zealot of Harpurhey
 
 This project is developed across **two AI coding tools — Codex and Claude Code — alternating on whichever still has credits**, plus Daniel working directly. You (whichever tool you are) do not share memory with the other tool. The repo — commits, code, `docs/`, and `SYNC.md` — is the only channel between you.
 
@@ -13,7 +13,7 @@ Append an entry to `SYNC.md` using the template at the top of that file: what yo
 
 ## What this project is
 
-Zealot of Harperhey (canonical spelling — the repo currently uses `harperhey` in the package name, Vite base path, and most filenames; not yet reconciled, see `SYNC.md`) is a browser-based Three.js exploration game and artwork, not just "a Manchester delivery game." It is simultaneously a delivery game, an explorable fictional-collage Manchester, autobiographical fiction, a philosophical/surreal social-realist piece, and an extension of Daniel's photography/filmmaking practice — especially his parent project **The Spectres Are All Around Us (TSAU)**, whose visual grammar (planimetric composition, streetlight pools in darkness, deadpan museum-style labelling of mundane objects, municipal architecture, surveillance aesthetics) should shape the game's look throughout, not appear as easter eggs.
+Zealot of Harpurhey (canonical spelling — reconciled 2026-09-23 across the package name, Vite base path, and all filenames/docs; see `SYNC.md`. An earlier session had deliberately renamed everything to a fictional "Harperhey" spelling, distinct from the real Manchester district — Daniel later confirmed that was a typo/error, not an intentional distinction, and the correct real-world spelling should be used everywhere) is a browser-based Three.js exploration game and artwork, not just "a Manchester delivery game." It is simultaneously a delivery game, an explorable fictional-collage Manchester, autobiographical fiction, a philosophical/surreal social-realist piece, and an extension of Daniel's photography/filmmaking practice — especially his parent project **The Spectres Are All Around Us (TSAU)**, whose visual grammar (planimetric composition, streetlight pools in darkness, deadpan museum-style labelling of mundane objects, municipal architecture, surveillance aesthetics) should shape the game's look throughout, not appear as easter eggs.
 
 Visual direction has moved **away from the Dreamcast/PS2-era retro look** referenced early in development, toward "uncanny realism suspended between the photographic and the obviously constructed" — `docs/ART_DIRECTION.md`'s original "Core principles" and "Rendering restraint" sections still describe the old Dreamcast-era target and are stale until someone reconciles them. Its later sections (fashion, photographic apparatus and tableaux, transport and movement, added 2026-09-14) are current.
 

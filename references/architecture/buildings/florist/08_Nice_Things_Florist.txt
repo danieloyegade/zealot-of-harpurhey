@@ -1,11 +1,11 @@
 NICE THINGS, OLDHAM STREET, MANCHESTER
 
-Florist / plant shop architectural asset for Zealot of Harperhey
+Florist / plant shop architectural asset for Zealot of Harpurhey
 
 Create an accurate, game-ready Blender reconstruction of Nice Things on
 Oldham Street, Manchester, using ALL supplied reference photographs.
 
-This asset is for Zealot of Harperhey, a Three.js game.
+This asset is for Zealot of Harpurhey, a Three.js game.
 
 Nice Things is a hero gameplay location because the player’s first
 flower delivery begins here.

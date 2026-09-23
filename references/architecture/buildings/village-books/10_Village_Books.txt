@@ -1,11 +1,11 @@
 VILLAGE BOOKS, 131 OLDHAM STREET, MANCHESTER
 
-Untextured Blender reconstruction for Zealot of Harperhey
+Untextured Blender reconstruction for Zealot of Harpurhey
 
 Create an accurate, game-ready Blender reconstruction of Village Books,
 131 Oldham Street, Manchester, using ALL supplied reference photographs.
 
-This asset is for Zealot of Harperhey, a Three.js game.
+This asset is for Zealot of Harpurhey, a Three.js game.
 
 This task is GEOMETRY ONLY.
 

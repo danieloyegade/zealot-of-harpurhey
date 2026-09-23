@@ -7,9 +7,9 @@ dependencies.
 
 ## Source and preview
 
-- Editable master: `blender/source/harperhey-coral-shop.blend`
+- Editable master: `blender/source/harpurhey-coral-shop.blend`
 - Rebuild script: `blender/scripts/createCoralShop.py`
-- Review render: `renders/coral-shop/harperhey-coral-shop-preview.png`
+- Review render: `renders/coral-shop/harpurhey-coral-shop-preview.png`
 
 Rebuild from the repository root with:
 
@@ -25,14 +25,14 @@ All runtime files are self-contained GLB files in `public/assets/models/`.
 
 | File | Purpose |
 | --- | --- |
-| `harperhey-coral-shop.glb` | Complete shopfront and upper residential block |
-| `harperhey-coral-street-set.glb` | Preassembled building, pavement, road, bin, lamp and bollards |
-| `harperhey-coral-shopfront.glb` | Ground-floor betting-shop façade |
-| `harperhey-coral-upper-block.glb` | Upper floors, windows, deck, rails and service block |
-| `harperhey-coral-window-module.glb` | Reusable upper-storey window bay |
-| `harperhey-coral-bin.glb` | Teal public bin with domed lid, opening, wheels and graffiti |
-| `harperhey-coral-streetlight.glb` | Black sodium-style streetlamp. No longer loaded: the game places `streetlight-warm-old-01.glb` here instead (see `streetlights.md`) |
-| `harperhey-coral-bollard.glb` | Black octagonal bollard with reflector band |
+| `harpurhey-coral-shop.glb` | Complete shopfront and upper residential block |
+| `harpurhey-coral-street-set.glb` | Preassembled building, pavement, road, bin, lamp and bollards |
+| `harpurhey-coral-shopfront.glb` | Ground-floor betting-shop façade |
+| `harpurhey-coral-upper-block.glb` | Upper floors, windows, deck, rails and service block |
+| `harpurhey-coral-window-module.glb` | Reusable upper-storey window bay |
+| `harpurhey-coral-bin.glb` | Teal public bin with domed lid, opening, wheels and graffiti |
+| `harpurhey-coral-streetlight.glb` | Black sodium-style streetlamp. No longer loaded: the game places `streetlight-warm-old-01.glb` here instead (see `streetlights.md`) |
+| `harpurhey-coral-bollard.glb` | Black octagonal bollard with reflector band |
 
 ## Blender collections
 

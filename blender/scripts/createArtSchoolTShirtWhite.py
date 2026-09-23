@@ -595,7 +595,7 @@ def join_garment_parts(parts: list[bpy.types.Object]) -> bpy.types.Object:
     triangulate.keep_custom_normals = True
     bpy.ops.object.modifier_apply(modifier=triangulate.name)
     shirt.data.validate(verbose=True, clean_customdata=False)
-    shirt["asset"] = "Zealot of Harperhey — Art School T-shirt, white"
+    shirt["asset"] = "Zealot of Harpurhey — Art School T-shirt, white"
     shirt["fit"] = "oversized heavyweight contemporary blank"
     shirt["rigging"] = "standalone rest-state garment; skin to compatible humanoid armature"
     shirt["front"] = "+Y in Blender / -Z after glTF Y-up conversion"

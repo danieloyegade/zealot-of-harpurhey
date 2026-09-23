@@ -575,9 +575,17 @@ function applyPhotographicModelPolicy(model: Group): void {
 function applyBusShelterGeometryPolicy(model: Group): void {
   const shelterRoot = model.getObjectByName('PRESTON_BUS_SHELTER');
   if (shelterRoot) {
-    // The shelter root contains the frame, glazing, signage and bench. The
-    // trolley is a sibling root, so it deliberately remains at authored size.
+    // The shelter root contains the frame, glazing, signage and bench.
     shelterRoot.scale.multiplyScalar(BUS_SHELTER_SCALE);
+  }
+
+  const trolleyRoot = model.getObjectByName('PRESTON_SHOPPING_TROLLEY');
+  if (trolleyRoot) {
+    // The trolley is a sibling root authored at the same real-world scale as
+    // the shelter (both come from the same photographed composition), so it
+    // needs the same scale-up. Left at 1x, it reads ~30% undersized next to
+    // the enlarged shelter and bench, which is why it looked like a toy.
+    trolleyRoot.scale.multiplyScalar(BUS_SHELTER_SCALE);
   }
 
   model.traverse((child) => {
@@ -1268,8 +1276,8 @@ async function replaceCoralFallback(
     const streetlightX = location.x + 6.15;
     const streetlightZ = location.z - 10.6;
     const [shop, bin, streetlight, bollard] = await Promise.all([
-      loadModel('assets/models/harperhey-coral-shop.glb'),
-      loadModel('assets/models/harperhey-coral-bin.glb'),
+      loadModel('assets/models/harpurhey-coral-shop.glb'),
+      loadModel('assets/models/harpurhey-coral-bin.glb'),
       createStreetlightFixture({
         name: 'Coral matching sodium streetlight',
         x: streetlightX,
@@ -1278,7 +1286,7 @@ async function replaceCoralFallback(
         model: 'warm-old',
         color: VISUAL_STYLE.lighting.sodium,
       }),
-      loadModel('assets/models/harperhey-coral-bollard.glb'),
+      loadModel('assets/models/harpurhey-coral-bollard.glb'),
     ]);
 
     applyCoralModelPolicy(shop);
@@ -1289,7 +1297,7 @@ async function replaceCoralFallback(
       mergeStaticModelMeshes(model);
     }
 
-    shop.name = 'Harperhey Coral finished hero asset';
+    shop.name = 'Harpurhey Coral finished hero asset';
     shop.position.set(location.x, 0, location.z);
     // The Blender façade faces +Z after glTF axis conversion. Rotate it to the
     // east-facing west-side plot. Preserve the authored frontage and height;
@@ -1382,11 +1390,11 @@ async function replaceDreamsFallback(
   fallback.visible = false;
   try {
     const dreams = await loadModel(
-      'assets/models/harperhey-dreams-greybox.glb?v=textured-20260922',
+      'assets/models/harpurhey-dreams-greybox.glb?v=textured-20260922',
     );
     applyDreamsModelPolicy(dreams);
     mergeStaticModelMeshes(dreams);
-    dreams.name = 'Harperhey Dreams geometry-first hero asset';
+    dreams.name = 'Harpurhey Dreams geometry-first hero asset';
     dreams.position.set(location.x, 0, location.z);
     dreams.rotation.y = location.front === 'north' ? Math.PI : 0;
     root.add(dreams);
@@ -1395,7 +1403,7 @@ async function replaceDreamsFallback(
     fallback.visible = true;
     fallback.name = 'Dreams procedural fallback after GLB load error';
     console.error(
-      '[World] Failed to load harperhey-dreams-greybox.glb. Showing the procedural fallback.',
+      '[World] Failed to load harpurhey-dreams-greybox.glb. Showing the procedural fallback.',
       error,
     );
   }
@@ -1407,7 +1415,7 @@ async function addGulliversModel(
 ): Promise<void> {
   try {
     const gullivers = await loadModel(
-      'assets/models/harperhey-gullivers.glb?v=textured-20260922',
+      'assets/models/harpurhey-gullivers.glb?v=textured-20260922',
     );
     applyGulliversModelPolicy(gullivers);
     mergeStaticModelMeshes(gullivers);
@@ -1418,7 +1426,7 @@ async function addGulliversModel(
     root.add(gullivers);
   } catch (error) {
     console.error(
-      '[World] Failed to load harperhey-gullivers.glb. No legacy fallback is retained.',
+      '[World] Failed to load harpurhey-gullivers.glb. No legacy fallback is retained.',
       error,
     );
   }
@@ -1431,7 +1439,7 @@ async function addMcr1Model(
 ): Promise<void> {
   try {
     const mcr1 = await loadModel(
-      'assets/models/harperhey-mcr1-geometry.glb?v=illuminated-20260921',
+      'assets/models/harpurhey-mcr1-geometry.glb?v=illuminated-20260921',
     );
     applyMcr1ModelPolicy(mcr1);
     mergeStaticModelMeshes(mcr1);
@@ -1487,7 +1495,7 @@ async function addMcr1Model(
     addReflectionPatch(root, 'MCR1 fascia reflection side', sideX - 2.2, location.z + 1.6, 1.3, 3.0, 0xffd21a, 0.28);
   } catch (error) {
     console.error(
-      '[World] Failed to load harperhey-mcr1-geometry.glb. No legacy M1 fallback is retained.',
+      '[World] Failed to load harpurhey-mcr1-geometry.glb. No legacy M1 fallback is retained.',
       error,
     );
   }
@@ -2813,7 +2821,7 @@ let busShelterTemplate: Promise<Group> | undefined;
 // to the GPU once rather than per shelter.
 function loadBusShelterTemplate(): Promise<Group> {
   busShelterTemplate ??= loadModel(
-    'assets/models/bus-shelter/preston-busstop-textured.glb?v=texture-pass-20260913',
+    'assets/models/bus-shelter/preston-busstop-textured.glb?v=trolley-traced-20260923',
   ).then((model) => {
     applyBusShelterGeometryPolicy(model);
     mergeStaticModelMeshes(model);
@@ -2843,8 +2851,8 @@ async function replaceBusShelterFallback(
 }
 
 function applyGreekGyrosPolicy(model: Group): void {
-  // The kiosk is a geometry-only asset: keep its authored placeholder palette
-  // and let the glass screen read as glass without inheriting emissive light.
+  // Preserve the authored PBR maps while keeping glass and practical-light
+  // behavior under the runtime lighting policy.
   model.traverse((child) => {
     if (!(child instanceof Mesh)) {
       return;
@@ -2858,7 +2866,7 @@ function applyGreekGyrosPolicy(model: Group): void {
       if (!(material instanceof MeshStandardMaterial)) {
         continue;
       }
-      material.map = null;
+      profileAuthoredMaps(material);
       material.emissiveMap = null;
       material.emissive.set(0x000000);
       material.emissiveIntensity = 0;
@@ -2907,7 +2915,7 @@ async function replaceGreekGyrosFallback(
 ): Promise<void> {
   try {
     const stand = await loadModel(
-      'assets/models/greek_gyros.glb?v=geometry-pass-20260912',
+      'assets/models/greek_gyros.glb?v=textured-20260923',
     );
     applyGreekGyrosPolicy(stand);
     stand.name = fallback.name.replace(' loading placeholder', '');
@@ -3030,8 +3038,9 @@ function addBusShelter(
     maxX: marker.x + 2.55 * BUS_SHELTER_SCALE,
     minZ: marker.z - 0.9 * BUS_SHELTER_SCALE,
     // Both shelters face toward +Z after their -90° world rotation. Include
-    // the independently modelled trolley now positioned in front of the rail.
-    maxZ: marker.z + 1.85,
+    // the independently modelled trolley now positioned in front of the
+    // rail; it scales with the shelter, so its clearance does too.
+    maxZ: marker.z + 1.85 * BUS_SHELTER_SCALE,
     height: 3.3,
   });
   addDevelopmentLabel(root, marker.name, marker.x, 3.4, marker.z);
@@ -3699,7 +3708,6 @@ function addStreetDressing(root: Group, obstacles: CollisionObstacle[]): void {
   addHeroStreetEnvironmentKit(root, obstacles);
   addShoppingTrolley(root, obstacles, 31.9, 20.9, -0.74);
   addShoppingTrolley(root, obstacles, -7.1, -30.1, 0.22);
-  addUtilityBox(root, obstacles, -34.7, -11.7, Math.PI / 2);
   addUtilityBox(root, obstacles, 34.5, 6.4, -Math.PI / 2);
   addUtilityBox(root, obstacles, 25.6, 31.2, Math.PI);
   addUtilityBox(root, obstacles, 8.15, -30.25, Math.PI);

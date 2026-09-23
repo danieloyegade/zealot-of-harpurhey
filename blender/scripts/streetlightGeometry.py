@@ -1,4 +1,4 @@
-"""Geometry for the Harperhey municipal streetlight family.
+"""Geometry for the Harpurhey municipal streetlight family.
 
 Four related columns, built from scratch at real-world dimensions:
 

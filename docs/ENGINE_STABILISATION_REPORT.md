@@ -97,4 +97,4 @@ The representative 1440 × 900/DPR-2 default test also held 60 FPS with 16.7 ms 
 
 **D. Is the game substantially faster on the same hardware?** Yes. The comparable default test improved from 15.10 to 60 FPS, and the Retina-style default test improved from 4.43 to 60 FPS while using a much smaller buffer.
 
-**E. Does the game still visually feel like Zealot of Harperhey?** Yes. The core palette, photographic/emissive landmarks, pools, cones, reflections, deep darkness, and night-sky treatment remain. The principal difference is slightly more graphic and localised illumination where broad real-time spill was removed.
+**E. Does the game still visually feel like Zealot of Harpurhey?** Yes. The core palette, photographic/emissive landmarks, pools, cones, reflections, deep darkness, and night-sky treatment remain. The principal difference is slightly more graphic and localised illumination where broad real-time spill was removed.

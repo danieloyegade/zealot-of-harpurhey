@@ -86,7 +86,7 @@ export function createChapterCard(options: ChapterCardOptions): HTMLElement {
   if (options.serifTitle) card.append(element('h2', 'z-caps z-chapter__serif', options.serifTitle));
   if (options.scriptTitle) card.append(createPrintedScript(options.scriptTitle, 'z-chapter__script'));
 
-  card.append(footer('z-chapter__meta', ['Harperhey / Greater Manchester', '23:47', COORDINATES]));
+  card.append(footer('z-chapter__meta', ['Harpurhey / Greater Manchester', '23:47', COORDINATES]));
   return card;
 }
 
@@ -119,17 +119,17 @@ export function createNightSoFar(values: NightSoFarValues): HTMLElement {
   }
 
   const horse = createHorseEmblem('z-emblem z-pause__horse', 'mark');
-  sheet.append(ledger, horse, footer('z-pause__foot', ['Harperhey', 'MMXXVI']));
+  sheet.append(ledger, horse, footer('z-pause__foot', ['Harpurhey', 'MMXXVI']));
   return sheet;
 }
 
-// Harperhey is a place, set in the institution's capitals; the Promised Land
+// Harpurhey is a place, set in the institution's capitals; the Promised Land
 // is an idea, set in the hand. The route between them is a pen stroke.
 export function createBusDestination(service: string, departs: string): HTMLElement {
   const sheet = element('section', 'z-destination z-world--night');
   sheet.append(
     element('p', 'z-caps z-caps--2 z-destination__service', `Service ${service}`),
-    element('p', 'z-caps z-destination__from', 'Harperhey'),
+    element('p', 'z-caps z-destination__from', 'Harpurhey'),
     createCalligraphicRoute(520, 80, 'z-route z-destination__route', 0.34),
     createPrintedScript('The Promised Land', 'z-destination__to'),
     element('p', 'z-caps z-caps--3 z-destination__time', `Departs ${departs}`),
@@ -142,7 +142,7 @@ export function createBusTicket(service: string, departs: string): HTMLElement {
   ticket.append(
     createCartouche(360, 220, 'z-cartouche', { lace: true, medallion: true }),
     element('p', 'z-caps z-caps--3 z-ticket__service', `Service ${service} · Adult single`),
-    element('p', 'z-caps z-ticket__from', 'Harperhey'),
+    element('p', 'z-caps z-ticket__from', 'Harpurhey'),
     createPrintedScript('The Promised Land', 'z-ticket__to'),
     footer('z-ticket__foot', [departs, '£ 2.00']),
   );

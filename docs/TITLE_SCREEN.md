@@ -27,5 +27,5 @@ The only live element is the fill inside the empty progress-bar frame printed ne
 - `?intro=off` removes the loading plate.
 - Development `?view=…` routes omit the loading plate and enter their requested view after loading.
 - The artwork is intentionally the complete visual source. If it is re-exported at different dimensions or the printed bar moves, re-measure `.intro__progress` in `src/ui/intro.css`.
-- The accessible title restates the lettering in the plate as *Zealot of Harpurhey*. The page title and codebase retain the fictional spelling *Harperhey*; that pre-existing naming discrepancy remains unresolved.
+- The accessible title restates the lettering in the plate as *Zealot of Harpurhey*. The page title and codebase retain the fictional spelling *Harpurhey*; that pre-existing naming discrepancy remains unresolved.
 - Audio still requires a user gesture under browser autoplay policy. Automatic visual entry does not bypass that policy; the existing global key/pointer listeners start enabled tracks on the player's first input.

@@ -1,6 +1,6 @@
 SALFORD CELLULOID NIGHT VIGNETTE
 
-Modular untextured asset reconstruction for Zealot of Harperhey
+Modular untextured asset reconstruction for Zealot of Harpurhey
 
 Use the supplied still from the short film Salford Celluloid as the
 primary visual reference.
@@ -11,7 +11,7 @@ Instead, reconstruct it as a collection of independent, reusable game
 assets that can be arranged together to reproduce the original cinematic
 composition.
 
-This is for Zealot of Harperhey, rendered in Three.js.
+This is for Zealot of Harpurhey, rendered in Three.js.
 
 This task is primarily GEOMETRY ONLY.
 

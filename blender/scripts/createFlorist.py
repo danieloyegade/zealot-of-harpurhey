@@ -1,4 +1,4 @@
-"""Build the photographic low-poly Harperhey florist architecture asset."""
+"""Build the photographic low-poly Harpurhey florist architecture asset."""
 
 from mathutils import Vector
 from pathlib import Path
@@ -18,12 +18,12 @@ REFERENCE_PATH = (
     / "IMG_8712.PNG"
 )
 TEXTURE_DIR = PROJECT_ROOT / "blender" / "source" / "textures" / "florist"
-FACADE_TEXTURE_PATH = TEXTURE_DIR / "harperhey-florist-facade.jpg"
-SHOPFRONT_TEXTURE_PATH = TEXTURE_DIR / "harperhey-florist-shopfront.jpg"
-BLEND_PATH = PROJECT_ROOT / "blender" / "source" / "harperhey-florist.blend"
-GLB_PATH = PROJECT_ROOT / "public" / "assets" / "models" / "harperhey-florist.glb"
-PREVIEW_PATH = PROJECT_ROOT / "renders" / "florist" / "harperhey-florist-preview.png"
-OBLIQUE_PREVIEW_PATH = PROJECT_ROOT / "renders" / "florist" / "harperhey-florist-preview-oblique.png"
+FACADE_TEXTURE_PATH = TEXTURE_DIR / "harpurhey-florist-facade.jpg"
+SHOPFRONT_TEXTURE_PATH = TEXTURE_DIR / "harpurhey-florist-shopfront.jpg"
+BLEND_PATH = PROJECT_ROOT / "blender" / "source" / "harpurhey-florist.blend"
+GLB_PATH = PROJECT_ROOT / "public" / "assets" / "models" / "harpurhey-florist.glb"
+PREVIEW_PATH = PROJECT_ROOT / "renders" / "florist" / "harpurhey-florist-preview.png"
+OBLIQUE_PREVIEW_PATH = PROJECT_ROOT / "renders" / "florist" / "harpurhey-florist-preview-oblique.png"
 
 
 def clear_scene():
@@ -59,7 +59,7 @@ def create_texture_crop(output_path, crop, resolution):
     output_width, output_height = resolution
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with tempfile.TemporaryDirectory(prefix="harperhey-florist-texture-") as temp_directory:
+    with tempfile.TemporaryDirectory(prefix="harpurhey-florist-texture-") as temp_directory:
         temporary_crop = Path(temp_directory) / "crop.png"
         run_sips(
             [

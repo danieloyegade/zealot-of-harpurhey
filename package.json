@@ -1,5 +1,5 @@
 {
-  "name": "zealot-of-harperhey",
+  "name": "zealot-of-harpurhey",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -22,6 +22,7 @@
   "devDependencies": {
     "@types/three": "^0.185.0",
     "typescript": "^7.0.2",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "wrangler": "^4.137.0"
   }
 }

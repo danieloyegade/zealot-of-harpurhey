@@ -2,9 +2,9 @@
 
 ## Deliverables
 
-- Editable source: `blender/source/harperhey-gullivers.blend`
+- Editable source: `blender/source/harpurhey-gullivers.blend`
 - Deterministic build script: `blender/scripts/createGullivers.py`
-- Three.js runtime asset: `public/assets/models/harperhey-gullivers.glb`
+- Three.js runtime asset: `public/assets/models/harpurhey-gullivers.glb`
 - Review renders: `renders/gullivers-greybox/`
 
 Regenerate all deliverables from the project root with:
