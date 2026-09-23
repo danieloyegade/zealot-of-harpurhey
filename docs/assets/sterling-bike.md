@@ -36,9 +36,30 @@ photographs after a review of the first blockout:
 - **Palette:** lemon frame, aqua panels, silver-grey dock, golden-yellow dock
   panels.
 
-Final materials, textures, decals (STERLING lettering, "electric", fleet
-number, bee mark), dirt, working lights, LODs and the brief's final
-`sterling_bike.glb`/`sterling_dock.glb` are still to come.
+Third pass on 2026-09-23 (Claude), fixing a real geometry bug and adding a
+materials/texturing pass:
+
+- **Rear enclosure roundness fix:** the D-shaped clamshell's outline used a
+  superellipse power of 2.4, which squares off the dome's shoulders into a
+  flattened, stretched-oval silhouette instead of the clean round dome IMG_8911
+  actually shows. `COVER_POWER` is now `2.0` (a true circular arc), and the
+  radii (`COVER_RX`/`COVER_RZ`, both `0.400`) and centre (`COVER_CX`) were
+  tightened and re-centred on the rear axle so the guard hugs the wheel
+  instead of trailing well past it fore-and-aft.
+- **Materials:** every `MAT_SB_*_PLACEHOLDER`/`MAT_SD_*_PLACEHOLDER` flat-color
+  material was replaced with a textured Principled BSDF built procedurally in
+  `material()`: powder-coat orange-peel bump plus a thin lacquer coat on the
+  yellow frame/fork paint, a brushed anisotropic grain on structural metal and
+  rims, fine tread-grain bump and tonal variation on the tyres, mould-grain
+  bump on the moulded plastics (basket, chain guard, dock body), and a glossy
+  lacquer coat on the teal rear panel and reflectors. Materials are renamed
+  without the `_PLACEHOLDER` suffix since they are now the intended look, not
+  a stand-in — still no image-based decals/branding/dirt, which stay deferred
+  per the brief.
+
+Final decals (STERLING lettering, "electric", fleet number, bee mark), dirt,
+working lights, LODs and the brief's final `sterling_bike.glb`/
+`sterling_dock.glb` promotion are still to come.
 
 ## Source
 
@@ -62,7 +83,8 @@ photographs rather than surveyed.
 - Overall bike length: approximately `1.9 m`
 - Handlebar height: approximately `1.25 m` (grips)
 - Steering axis: `0.30 rad` rake from vertical through `(0.49, 0, 0.93)`
-- Rear enclosure: flat base at `z 0.40`, arc top about `0.82 m`
+- Rear enclosure: flat base at `z 0.40`, arc top about `0.80 m` (radius `0.400 m`,
+  a true circular dome as of the third pass)
 - Dock spacing in the reference station: `0.94 m`
 
 The reusable bike origin is at ground level between the axles. The reusable

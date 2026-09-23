@@ -39,12 +39,15 @@ CHAIN_Y = -0.066
 SEAT_TUBE_BASE = (-0.135, 0, 0.30)
 SEAT_TUBE_TOP = (-0.205, 0, 0.90)
 # Rear enclosure D shape: arc centre X, flat base Z, and arc radii.
-COVER_CX = -0.595
+COVER_CX = -0.605
 COVER_BASE_Z = 0.40
-COVER_RX = 0.425
-COVER_RZ = 0.42
-# Superellipse power: squarer shoulders than a circle, as in IMG_8911.
-COVER_POWER = 2.4
+COVER_RX = 0.400
+COVER_RZ = 0.400
+# Superellipse power: 2.0 is a true circular arc. IMG_8911 reads as a clean
+# round dome, not the squared-off shoulders a higher power produces (that
+# squaring was what made the enclosure look like a stretched, lopsided oval
+# instead of round).
+COVER_POWER = 2.0
 # Dock side post: centre offset beside the front wheel, and its thickness.
 DOCK_SLAB_Y = 0.13
 DOCK_SLAB_T = 0.09
@@ -81,14 +84,69 @@ def move_to_collection(obj, col):
     col.objects.link(obj)
 
 
-def material(name, color, metallic=0.0, roughness=0.72):
+def material(name, color, metallic=0.0, roughness=0.72, *, roughness_noise=0.0,
+             bump=0.0, bump_scale=30.0, color_noise=0.0, anisotropic=0.0,
+             clearcoat=0.0, clearcoat_roughness=0.03, sheen=0.0):
+    """A Principled BSDF material, optionally roughened up with procedural
+    noise so it reads as a real manufactured surface rather than a flat clay
+    placeholder: fine paint/moulding grain (bump), panel-to-panel tone
+    variation (color_noise), an uneven finish (roughness_noise), a brushed
+    metal grain (anisotropic) or a lacquer coat (clearcoat).
+    """
     mat = bpy.data.materials.new(name)
     mat.diffuse_color = (*color, 1.0)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes.get("Principled BSDF")
-    bsdf.inputs["Base Color"].default_value = (*color, 1.0)
+    nt = mat.node_tree
+    nodes, links = nt.nodes, nt.links
+    bsdf = next(n for n in nodes if n.type == "BSDF_PRINCIPLED")
+
+    base_color = bsdf.inputs["Base Color"]
+    if color_noise > 0:
+        noise = nodes.new("ShaderNodeTexNoise")
+        noise.inputs["Scale"].default_value = 24.0
+        noise.inputs["Detail"].default_value = 3.0
+        ramp = nodes.new("ShaderNodeValToRGB")
+        lo = tuple(max(0.0, c * (1 - color_noise)) for c in color)
+        hi = tuple(min(1.0, c * (1 + color_noise)) for c in color)
+        ramp.color_ramp.elements[0].color = (*lo, 1.0)
+        ramp.color_ramp.elements[1].color = (*hi, 1.0)
+        links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+        links.new(ramp.outputs["Color"], base_color)
+    else:
+        base_color.default_value = (*color, 1.0)
+
     bsdf.inputs["Metallic"].default_value = metallic
-    bsdf.inputs["Roughness"].default_value = roughness
+
+    if roughness_noise > 0:
+        rnoise = nodes.new("ShaderNodeTexNoise")
+        rnoise.inputs["Scale"].default_value = 14.0
+        maprange = nodes.new("ShaderNodeMapRange")
+        maprange.inputs["To Min"].default_value = max(0.0, roughness - roughness_noise)
+        maprange.inputs["To Max"].default_value = min(1.0, roughness + roughness_noise)
+        links.new(rnoise.outputs["Fac"], maprange.inputs["Value"])
+        links.new(maprange.outputs["Result"], bsdf.inputs["Roughness"])
+    else:
+        bsdf.inputs["Roughness"].default_value = roughness
+
+    if bump > 0:
+        bnoise = nodes.new("ShaderNodeTexNoise")
+        bnoise.inputs["Scale"].default_value = bump_scale
+        bnoise.inputs["Detail"].default_value = 4.0
+        bump_node = nodes.new("ShaderNodeBump")
+        bump_node.inputs["Strength"].default_value = bump
+        links.new(bnoise.outputs["Fac"], bump_node.inputs["Height"])
+        links.new(bump_node.outputs["Normal"], bsdf.inputs["Normal"])
+
+    if anisotropic > 0:
+        bsdf.inputs["Anisotropic"].default_value = anisotropic
+
+    if clearcoat > 0:
+        bsdf.inputs["Coat Weight"].default_value = clearcoat
+        bsdf.inputs["Coat Roughness"].default_value = clearcoat_roughness
+
+    if sheen > 0:
+        bsdf.inputs["Sheen Weight"].default_value = sheen
+
     return mat
 
 
@@ -935,24 +993,55 @@ def main():
     reset_scene()
     mats = {
         # Linear base colours sampled by eye from IMG_8911-8917, pushed slightly
-        # past the sodium-lit photos toward daylight fleet colours.
-        "frame": material("MAT_SB_Frame_PLACEHOLDER", (0.74, 0.70, 0.012), 0.05, 0.42),
-        "frame_light": material("MAT_SB_FrameLight_PLACEHOLDER", (0.80, 0.76, 0.050), 0.02, 0.48),
-        "metal": material("MAT_SB_Metal_PLACEHOLDER", (0.56, 0.57, 0.59), 0.85, 0.32),
-        "rim": material("MAT_SB_Rim_PLACEHOLDER", (0.34, 0.35, 0.36), 0.70, 0.45),
-        "hub": material("MAT_SB_Hub_PLACEHOLDER", (0.16, 0.16, 0.17), 0.55, 0.50),
-        "fork": material("MAT_SB_ForkPaint_PLACEHOLDER", (0.25, 0.24, 0.30), 0.30, 0.45),
-        "collar": material("MAT_SB_StemCollar_PLACEHOLDER", (0.015, 0.11, 0.08), 0.20, 0.50),
-        "dark_metal": material("MAT_SB_DarkMetal_PLACEHOLDER", (0.05, 0.055, 0.06), 0.45, 0.48),
-        "rubber": material("MAT_SB_Rubber_PLACEHOLDER", (0.018, 0.019, 0.021), 0.0, 0.90),
-        "rear_panel": material("MAT_SB_RearPanel_PLACEHOLDER", (0.12, 0.58, 0.60), 0.0, 0.50),
-        "basket": material("MAT_SB_Basket_PLACEHOLDER", (0.020, 0.023, 0.026), 0.0, 0.70),
-        "white_plastic": material("MAT_SB_HeadUnit_PLACEHOLDER", (0.66, 0.67, 0.66), 0.0, 0.50),
-        "lens": material("MAT_SB_LightLens_PLACEHOLDER", (0.75, 0.82, 0.76), 0.0, 0.24),
-        "red_lens": material("MAT_SB_RearLightLens_PLACEHOLDER", (0.42, 0.015, 0.015), 0.0, 0.28),
-        "reflector": material("MAT_SB_Reflector_PLACEHOLDER", (0.72, 0.72, 0.70), 0.0, 0.35),
-        "dock": material("MAT_SD_Dock_PLACEHOLDER", (0.30, 0.30, 0.34), 0.35, 0.50),
-        "dock_yellow": material("MAT_SD_DockYellow_PLACEHOLDER", (0.80, 0.52, 0.010), 0.0, 0.50),
+        # past the sodium-lit photos toward daylight fleet colours. Textured
+        # per material: powder-coat orange-peel on paint, a fine brushed grain
+        # on structural metal, tread grain on rubber, and mould-grain on the
+        # moulded plastics, so the bike reads as a real manufactured object
+        # rather than flat clay.
+        "frame": material("MAT_SB_Frame", (0.74, 0.70, 0.012), 0.05, 0.42,
+                          roughness_noise=0.06, bump=0.10, bump_scale=55,
+                          color_noise=0.03, clearcoat=0.25, clearcoat_roughness=0.08),
+        "frame_light": material("MAT_SB_FrameLight", (0.80, 0.76, 0.050), 0.02, 0.48,
+                                roughness_noise=0.05, bump=0.08, bump_scale=55,
+                                clearcoat=0.20, clearcoat_roughness=0.10),
+        "metal": material("MAT_SB_Metal", (0.56, 0.57, 0.59), 0.85, 0.32,
+                          roughness_noise=0.08, anisotropic=0.35, bump=0.04,
+                          bump_scale=90),
+        "rim": material("MAT_SB_Rim", (0.34, 0.35, 0.36), 0.70, 0.45,
+                        roughness_noise=0.06, anisotropic=0.5, bump=0.03,
+                        bump_scale=70),
+        "hub": material("MAT_SB_Hub", (0.16, 0.16, 0.17), 0.55, 0.50,
+                        roughness_noise=0.05, bump=0.04, bump_scale=60),
+        "fork": material("MAT_SB_ForkPaint", (0.25, 0.24, 0.30), 0.30, 0.45,
+                         roughness_noise=0.05, bump=0.07, bump_scale=55,
+                         clearcoat=0.18, clearcoat_roughness=0.10),
+        "collar": material("MAT_SB_StemCollar", (0.015, 0.11, 0.08), 0.20, 0.50,
+                           roughness_noise=0.04, clearcoat=0.15),
+        "dark_metal": material("MAT_SB_DarkMetal", (0.05, 0.055, 0.06), 0.45, 0.48,
+                               roughness_noise=0.06, bump=0.05, bump_scale=70),
+        "rubber": material("MAT_SB_Rubber", (0.018, 0.019, 0.021), 0.0, 0.90,
+                           roughness_noise=0.04, bump=0.35, bump_scale=140,
+                           color_noise=0.15),
+        "rear_panel": material("MAT_SB_RearPanel", (0.12, 0.58, 0.60), 0.0, 0.35,
+                               roughness_noise=0.05, clearcoat=0.55,
+                               clearcoat_roughness=0.05, color_noise=0.02),
+        "basket": material("MAT_SB_Basket", (0.020, 0.023, 0.026), 0.0, 0.72,
+                           roughness_noise=0.05, bump=0.10, bump_scale=90,
+                           color_noise=0.05),
+        "white_plastic": material("MAT_SB_HeadUnit", (0.66, 0.67, 0.66), 0.0, 0.50,
+                                  roughness_noise=0.05, bump=0.04, bump_scale=80),
+        "lens": material("MAT_SB_LightLens", (0.75, 0.82, 0.76), 0.0, 0.18,
+                         clearcoat=0.7, clearcoat_roughness=0.02),
+        "red_lens": material("MAT_SB_RearLightLens", (0.42, 0.015, 0.015), 0.0, 0.22,
+                             clearcoat=0.5, clearcoat_roughness=0.03),
+        "reflector": material("MAT_SB_Reflector", (0.72, 0.72, 0.70), 0.0, 0.25,
+                              clearcoat=0.8, clearcoat_roughness=0.02),
+        "dock": material("MAT_SD_Dock", (0.30, 0.30, 0.34), 0.35, 0.50,
+                         roughness_noise=0.07, bump=0.08, bump_scale=50,
+                         color_noise=0.03),
+        "dock_yellow": material("MAT_SD_DockYellow", (0.80, 0.52, 0.010), 0.0, 0.45,
+                                roughness_noise=0.05, clearcoat=0.30,
+                                clearcoat_roughness=0.08, color_noise=0.02),
         "ground": material("MAT_ReviewGround", (0.16, 0.17, 0.18), 0.0, 0.92),
     }
     bike_col, bike_root = build_bike(mats)

@@ -22,6 +22,19 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-23 — Claude (Sterling Bike rear-cover fix and texture pass)
+**HEAD at session start:** `8bf80f0` (Record the Real Camera texture pass in SYNC.md), on branch `codex/three-issue-fixes`
+**Did:**
+- Daniel flagged the Sterling Bike's rear wheel cover as "lopsided... elongated rather than being round" from a rendered screenshot. Traced it to `COVER_POWER = 2.4` in `createSterlingBikeBlockout.py`'s superellipse-based `d_outline()` — a power above 2 squares off the dome's shoulders into a flattened, stretched silhouette. Compared against the actual reference photos (IMG_8911/8912) and set `COVER_POWER = 2.0` (a true circular arc), tightened `COVER_RX`/`COVER_RZ` to matching `0.400` m radii, and re-centred `COVER_CX` on the rear axle so the guard now hugs the wheel as a clean round dome instead of trailing well past it fore-and-aft.
+- Replaced every flat-colour `MAT_SB_*_PLACEHOLDER`/`MAT_SD_*_PLACEHOLDER` material with a textured Principled BSDF (procedural, no external image assets): powder-coat bump + thin lacquer coat on the yellow paint, anisotropic brushed grain on structural metal/rims, tread-grain bump and tonal variation on the tyres, mould-grain bump on the moulded plastics, gloss coat on the teal rear panel and reflectors. Dropped the `_PLACEHOLDER` suffix from all the renamed materials since this is now the intended look.
+- Regenerated `sterling_bike_blockout.blend`, all eight review renders, and re-ran `exportSterlingBikeBlockout.py` to refresh the runtime GLBs in `public/assets/models/sterling-bike/`. Also copied the refreshed GLBs into the gitignored `.runtime-public/`/`dist/` build output so a local preview reflects the fix without a full rebuild.
+- Along the way found `/` had only 337 MB free (of 460 GB), which would have made every Blender write fail with ENOSPC. Asked Daniel first; with his go-ahead, cleared `~/Library/Caches` (42 GB, safe — apps rebuild it), freeing 39 GB before doing any asset work.
+**Left uncommitted (if any):** None once this entry is committed — this task's files are staged and committed together. Pre-existing concurrent uncommitted work (Greek Gyros texture pass touching `config/building-textures.json`, `src/world/createWorld.ts`, `docs/assets/greek-gyros.md`, `public/assets/models/greek_gyros.glb`, plus untracked `.playwright-mcp/`, `references/architecture/infrastructure:objects/Busses/`, `references/screenshots/dreams-01-street-view.png`) predates this session (mtimes ~04:44-04:57) and was left untouched, not part of this diff.
+**Flagged:** Live in-game verification via the dev server's `?view=sterling-south` preset rendered a black canvas stuck at FPS 1/frame 1 in the embedded browser pane — unclear if that's a pane/WebGL limitation or a real bug; did not chase it further since the Blender clay-render review (this project's established acceptance method for every other hero-location asset) already confirms the fix clearly. Worth a real-browser check.
+**Next:** Decals/branding (STERLING lettering, "electric", fleet number, bee mark), dirt, working lights and LODs are still deferred per the brief, as is promoting this out of the `-blockout` naming into the brief's final `sterling_bike.glb`/`sterling_dock.glb` deliverables (would also need a `createWorld.ts` loader-path update).
+**Open questions:** Does the live in-game view actually render correctly now (the embedded-browser black-canvas issue above couldn't be resolved this session)?
+
+---
 ## 2026-09-23 — Codex (visual, input and collision-performance fixes)
 **HEAD at session start:** `8bf80f0` (Record the Real Camera texture pass in SYNC.md)
 **Did:**
