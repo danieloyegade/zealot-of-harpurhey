@@ -16,8 +16,10 @@ Current rendering values:
 
 - Internal 3D render scale: **0.72** of display pixel resolution
 - Tone mapping: **AgX**, linear exposure **1.70** (`?tonemap=off` restores the uncurved image at display-referred exposure 1.34)
-- Saturation: **1.12**
+- Saturation: **1.0** (down from 1.12 in Stage 2 of the realism pass — the split-tone below now carries some of what a flat saturation boost used to do)
 - Contrast: **1.05**
+- Black lift: **0.045** (Stage 2 — a floor on the darkest pixels, true black maps to ~4.5% display luminance instead of crushing to 0, so shadow reads as dark blue-grey like the reference; this does not raise overall exposure or ambient light, only the display floor)
+- Split-tone: shadows pushed toward a gentle teal `#8fb4c9`, highlights toward a gentle amber `#dcb98c`, blended by (post-lift) luminance between 0.12 and 0.72, at strength **0.16** (Stage 2 — a push, not a colour cast)
 - Colour quantisation: **255 levels per channel** (a no-op at 8-bit output; retained as a uniform rather than removed, in case a future deliberate posterise effect wants it). Until 24 September 2026 this was 32 levels, which visibly banded dark gradients (the night sky, light pools) — a retro-console signature, not a photographic one. Removed in Stage 1 of the realism pass.
 - Ordered-dither strength: **1/255** (down from 0.003; still just enough to break up 8-bit banding, no longer a visible dither pattern)
 - Shadow-weighted film grain: **0.042**
@@ -26,9 +28,17 @@ Current rendering values:
 - Post-process antialiasing: **SMAA**, on at MEDIUM and HIGH (`quality.smaaEnabled`). EffectComposer's render-target chain does not receive the canvas's own MSAA, so this is the real edge antialiasing for the composed frame.
 - Shadows: disabled (real-time; static lighting is heading toward Blender-baked lightmaps per the realism pass, not a real-time shadow map, though a player/bike shadow is planned)
 - Fog: desaturated cobalt `#081327`, near **46 m**, far **106 m**
-- Bloom: strength **0.34**, radius **0.32**, threshold **0.88**
+- Bloom: strength **0.24** MEDIUM / **0.26** HIGH (was 0.3 / 0.34), radius **0.22** (was 0.32), threshold **0.92** (was 0.88) — Stage 2 retune for a tighter halo around genuinely bright emissive sources rather than a general haze over midtones
 
 The canvas retains full CSS window dimensions. Only its internal 3D backing resolution is scaled; HTML development UI remains at display resolution.
+
+In development, `window.zealot.grade` exposes `getParameters()` and `set({...})` for the values above, the same shape `window.zealot.atmosphere` already uses. For example:
+
+```js
+zealot.grade.set({ blackLift: 0.06, splitToneStrength: 0.22 })
+```
+
+These first-pass Stage 2 numbers are provisional; tune them live against the Dreams reference (`renders/visual-gap-2026-09-24/00-target-reference-dreams-night.webp`) and bake the agreed values back into `VISUAL_STYLE.render` and `VISUAL_STYLE.bloom`.
 
 ## Texture profiles
 
@@ -146,7 +156,7 @@ Park trees use five-sided trunks and clustered, textured, un-smoothed dodecahedr
 
 ## Post-processing limits
 
-The current composer applies restrained bloom, SMAA edge antialiasing, AgX tone mapping with display conversion, saturation/contrast adjustment, a (now effectively disabled, see "Central configuration") colour-quantisation step, subtle 4 × 4 ordered dithering, shadow-weighted film grain and a restrained vignette. Sky and optional star values remain below the bloom threshold, leaving bloom to practical artificial sources. It deliberately excludes scanlines, CRT curvature, chromatic aberration, tape damage, vertex wobble and aggressive pixelation.
+The current composer applies restrained bloom (tight halo, see "Central configuration"), SMAA edge antialiasing, AgX tone mapping with display conversion, saturation/contrast adjustment, a black-lift floor, a luminance-weighted split-tone push, a (now effectively disabled, see "Central configuration") colour-quantisation step, subtle 4 × 4 ordered dithering, shadow-weighted film grain and a restrained vignette. Sky and optional star values remain below the bloom threshold, leaving bloom to practical artificial sources. It deliberately excludes scanlines, CRT curvature, chromatic aberration, tape damage, vertex wobble and aggressive pixelation.
 
 ## Street-level density
 

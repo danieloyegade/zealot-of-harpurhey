@@ -22,6 +22,23 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-24 — Claude (Stage 2 of the realism pass: the grade) — branch `realism-pass`
+**HEAD at session start:** `21c2dd1` (Merge main into realism-pass), on `realism-pass`.
+**Did:** Implemented Stage 2 of `docs/REALISM_PASS_PLAN.md` — the code is done; the look is not yet approved (see "Flagged"). All in `src/rendering/visualStyle.ts` and `src/rendering/createPostProcessing.ts`:
+- **Black lift**: new `blackLift: 0.045` uniform, `color * (1 - blackLift) + blackLift` after contrast/before split-tone, so true black maps to ~4.5% display luminance instead of crushing flat. No exposure/ambient change.
+- **Split-tone**: `saturation` 1.12 → 1.0; new luminance-weighted push toward a teal shadow tint (`#8fb4c9`) and amber highlight tint (`#dcb98c`), strength 0.16, blended between luminance 0.12 and 0.72 (post-lift, so the edit reads against the displayed image).
+- **Bloom retune**: radius 0.32 → 0.22, threshold 0.88 → 0.92, strength 0.3/0.34 → 0.24/0.26 (medium/high) — a tighter halo on genuinely bright sources rather than a haze over midtones.
+- **Live tuning API**: `GradeParameters` interface with every value independently get/settable (`getGradeParameters`/`setGradeParameters` on the post-processing pipeline), wired into `window.zealot.grade.getParameters()`/`.set({...})` in `main.ts` (dev only) — the same shape `window.zealot.atmosphere` already uses, rather than inventing a `?grade=` URL DSL.
+- Reconciled `docs/VISUAL_LANGUAGE.md`'s "Central configuration" and "Post-processing limits" sections with the new values and the `zealot.grade` dev tool.
+**Validation:** `npx tsc --noEmit` clean, `npm test` 43/43, `npm run build` clean. Ran the actual app (Chromium/SwiftShader, no GPU here) at `dreams-target`/`dreams-angle` — visibly less crushed shadow detail (the dark shop wall and road hold more dark blue-grey information instead of near-black) and a visibly tighter bloom halo around the Dreams tubes, no console/shader errors. Screenshots: `renders/realism-pass/02-grade/`.
+**Left uncommitted (if any):** None — commit follows this entry.
+**Flagged:**
+- **This is the important one: the numbers are a reasoned first pass, not an approved grade.** The plan's actual "done when" is Daniel signing off one grade on `dreams-target` next to the reference — that hasn't happened. Use `zealot.grade.set({...})` in the browser console to tune live, then report the values back so they get baked into `VISUAL_STYLE.render`/`VISUAL_STYLE.bloom` and this stage gets marked fully done, not just code-complete.
+- No real fps/GPU measurement, same SwiftShader limitation as Stage 1. Bloom's `strength`/`radius`/`threshold` changes should be near-free (same pass, different constants) but worth a real fps check alongside the tuning pass.
+**Next:** Daniel: `git fetch && git checkout realism-pass && git merge origin/realism-pass`, run locally, open the console and try `zealot.grade.set({...})` with different `blackLift`/`splitToneStrength`/`bloomThreshold` values against the Dreams reference. Report back what looks right (or say "close enough, ship it") and I'll bake it in and move to Stage 3.
+**Open questions:** None new.
+
+---
 ## 2026-09-24 — Claude (merged main into realism-pass) — branch `realism-pass`
 **HEAD at session start:** `1572a41` (Stage 1 of the realism pass), on `realism-pass`.
 **Did:** Daniel reported "a lot of bugs" testing `realism-pass` locally and asked whether it had main's current changes. It didn't: `realism-pass` had been branched off an earlier documentation-only branch (`claude/vigilant-fermi-i4wvhe`), which itself diverged from `main` at `c5cb142` — before four commits landed on `main`: the asset-optimisation pass (KTX2/Meshopt, 128.8 MB → 51.7 MB), the finite-color NaN black-screen guard, a batch of concurrent Codex work (Sterling bike materials, GPU scene preparation, camera fixes, Greek Gyros/bus shelter textures), and the Off-Licence removal. That's almost certainly what Daniel was seeing as "bugs" — an old `loadModel`/texture pipeline missing several since-landed fixes, not a Stage 1 regression.

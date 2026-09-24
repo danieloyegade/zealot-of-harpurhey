@@ -1,4 +1,5 @@
 import {
+  Color,
   NoToneMapping,
   ShaderMaterial,
   Vector2,
@@ -19,9 +20,38 @@ import {
   type ToneMappingProfile,
 } from './visualStyle';
 
+// Stage 2 of the realism pass (docs/REALISM_PASS_PLAN.md): the grade's
+// tunable values, kept in one place so they can be read and written
+// independently of dither/grain/vignette rather than only as a bundle.
+// Mirrors the `getParameters`/`set` shape `createNightAtmosphere` already
+// uses, so `window.zealot.grade.set({...})` (dev only) works the same way
+// `window.zealot.atmosphere.set({...})` already does.
+export interface GradeParameters {
+  exposure: number;
+  saturation: number;
+  contrast: number;
+  blackLift: number;
+  shadowTint: number;
+  highlightTint: number;
+  splitToneStrength: number;
+  splitToneShadowEdge: number;
+  splitToneHighlightEdge: number;
+  grainStrength: number;
+  vignetteStrength: number;
+  vignetteSoftness: number;
+  ditherStrength: number;
+  quantizationLevels: number;
+  // Present only when bloom is enabled for the active quality profile.
+  bloomStrength?: number;
+  bloomRadius?: number;
+  bloomThreshold?: number;
+}
+
 export interface PostProcessingPipeline {
   readonly render: (elapsedSeconds?: number) => void;
   readonly resize: (width: number, height: number) => void;
+  readonly getGradeParameters: () => Readonly<GradeParameters>;
+  readonly setGradeParameters: (parameters: Partial<GradeParameters>) => void;
 }
 
 export function createPostProcessing(
@@ -35,15 +65,16 @@ export function createPostProcessing(
   composer.addPass(new RenderPass(scene, camera));
   composer.addPass(new ShaderPass(finiteColorShader));
 
-  if (quality.bloomEnabled) {
-    composer.addPass(
-      new UnrealBloomPass(
+  const bloomPass = quality.bloomEnabled
+    ? new UnrealBloomPass(
         new Vector2(window.innerWidth, window.innerHeight),
         quality.bloomStrength,
         VISUAL_STYLE.bloom.radius,
         VISUAL_STYLE.bloom.threshold,
-      ),
-    );
+      )
+    : null;
+  if (bloomPass) {
+    composer.addPass(bloomPass);
   }
 
   if (quality.smaaEnabled) {
@@ -57,24 +88,50 @@ export function createPostProcessing(
 
   composer.addPass(new OutputPass());
 
+  const parameters: GradeParameters = {
+    // With a curve active, OutputPass has already applied exposure in
+    // linear HDR; applying it here as well would expose twice.
+    exposure: toneMapping.curve === NoToneMapping ? toneMapping.exposure : 1,
+    saturation: VISUAL_STYLE.render.saturation,
+    contrast: VISUAL_STYLE.render.contrast,
+    blackLift: VISUAL_STYLE.render.blackLift,
+    shadowTint: VISUAL_STYLE.render.splitTone.shadowTint,
+    highlightTint: VISUAL_STYLE.render.splitTone.highlightTint,
+    splitToneStrength: VISUAL_STYLE.render.splitTone.strength,
+    splitToneShadowEdge: VISUAL_STYLE.render.splitTone.shadowEdge,
+    splitToneHighlightEdge: VISUAL_STYLE.render.splitTone.highlightEdge,
+    grainStrength: VISUAL_STYLE.render.grainStrength,
+    vignetteStrength: VISUAL_STYLE.render.vignetteStrength,
+    vignetteSoftness: VISUAL_STYLE.render.vignetteSoftness,
+    ditherStrength: VISUAL_STYLE.render.ditherStrength,
+    quantizationLevels: VISUAL_STYLE.render.colorQuantizationLevels,
+    ...(bloomPass
+      ? {
+          bloomStrength: bloomPass.strength,
+          bloomRadius: bloomPass.radius,
+          bloomThreshold: bloomPass.threshold,
+        }
+      : {}),
+  };
+
   const grade = new ShaderPass(
     new ShaderMaterial({
       uniforms: {
         tDiffuse: { value: null },
-        // With a curve active, OutputPass has already applied exposure in
-        // linear HDR; applying it here as well would expose twice.
-        exposure: {
-          value: toneMapping.curve === NoToneMapping ? toneMapping.exposure : 1,
-        },
-        saturation: { value: VISUAL_STYLE.render.saturation },
-        contrast: { value: VISUAL_STYLE.render.contrast },
-        quantizationLevels: {
-          value: VISUAL_STYLE.render.colorQuantizationLevels,
-        },
-        ditherStrength: { value: VISUAL_STYLE.render.ditherStrength },
-        grainStrength: { value: VISUAL_STYLE.render.grainStrength },
-        vignetteStrength: { value: VISUAL_STYLE.render.vignetteStrength },
-        vignetteSoftness: { value: VISUAL_STYLE.render.vignetteSoftness },
+        exposure: { value: parameters.exposure },
+        saturation: { value: parameters.saturation },
+        contrast: { value: parameters.contrast },
+        blackLift: { value: parameters.blackLift },
+        shadowTint: { value: new Color(parameters.shadowTint) },
+        highlightTint: { value: new Color(parameters.highlightTint) },
+        splitToneStrength: { value: parameters.splitToneStrength },
+        splitToneShadowEdge: { value: parameters.splitToneShadowEdge },
+        splitToneHighlightEdge: { value: parameters.splitToneHighlightEdge },
+        quantizationLevels: { value: parameters.quantizationLevels },
+        ditherStrength: { value: parameters.ditherStrength },
+        grainStrength: { value: parameters.grainStrength },
+        vignetteStrength: { value: parameters.vignetteStrength },
+        vignetteSoftness: { value: parameters.vignetteSoftness },
         elapsedSeconds: { value: 0 },
       },
       vertexShader: `
@@ -89,6 +146,12 @@ export function createPostProcessing(
         uniform float exposure;
         uniform float saturation;
         uniform float contrast;
+        uniform float blackLift;
+        uniform vec3 shadowTint;
+        uniform vec3 highlightTint;
+        uniform float splitToneStrength;
+        uniform float splitToneShadowEdge;
+        uniform float splitToneHighlightEdge;
         uniform float quantizationLevels;
         uniform float ditherStrength;
         uniform float grainStrength;
@@ -128,7 +191,22 @@ export function createPostProcessing(
           float luminance = dot(exposed, vec3(0.299, 0.587, 0.114));
           vec3 color = mix(vec3(luminance), exposed, saturation);
           color = (color - 0.5) * contrast + 0.5;
-          float shadowWeight = 0.4 + (1.0 - clamp(luminance, 0.0, 1.0)) * 0.6;
+          // Lift: raises the display floor (true black maps to ~blackLift)
+          // without moving white, so shadows read as dark blue-grey rather
+          // than crushing to flat black. Gain (1.0 - blackLift) keeps
+          // highlight rolloff essentially unchanged.
+          color = color * (1.0 - blackLift) + blackLift;
+          // Split-tone: shadows lean toward shadowTint, highlights toward
+          // highlightTint, blended by luminance after the lift (so the edit
+          // reads against what will actually be displayed).
+          float toneLuminance = dot(color, vec3(0.299, 0.587, 0.114));
+          vec3 tint = mix(
+            shadowTint,
+            highlightTint,
+            smoothstep(splitToneShadowEdge, splitToneHighlightEdge, toneLuminance)
+          );
+          color = mix(color, color * tint, splitToneStrength);
+          float shadowWeight = 0.4 + (1.0 - clamp(toneLuminance, 0.0, 1.0)) * 0.6;
           float grain = hash(gl_FragCoord.xy + elapsedSeconds * vec2(17.0, 9.0)) - 0.5;
           color += grain * grainStrength * shadowWeight;
           float distanceFromCentre = distance(vUv, vec2(0.5));
@@ -149,6 +227,44 @@ export function createPostProcessing(
   );
   composer.addPass(grade);
 
+  const setGradeParameters = (next: Partial<GradeParameters>): void => {
+    Object.assign(parameters, next);
+    const uniforms = grade.uniforms;
+    if (next.exposure !== undefined) uniforms.exposure.value = next.exposure;
+    if (next.saturation !== undefined) uniforms.saturation.value = next.saturation;
+    if (next.contrast !== undefined) uniforms.contrast.value = next.contrast;
+    if (next.blackLift !== undefined) uniforms.blackLift.value = next.blackLift;
+    if (next.shadowTint !== undefined) uniforms.shadowTint.value.setHex(next.shadowTint);
+    if (next.highlightTint !== undefined) {
+      uniforms.highlightTint.value.setHex(next.highlightTint);
+    }
+    if (next.splitToneStrength !== undefined) {
+      uniforms.splitToneStrength.value = next.splitToneStrength;
+    }
+    if (next.splitToneShadowEdge !== undefined) {
+      uniforms.splitToneShadowEdge.value = next.splitToneShadowEdge;
+    }
+    if (next.splitToneHighlightEdge !== undefined) {
+      uniforms.splitToneHighlightEdge.value = next.splitToneHighlightEdge;
+    }
+    if (next.grainStrength !== undefined) uniforms.grainStrength.value = next.grainStrength;
+    if (next.vignetteStrength !== undefined) {
+      uniforms.vignetteStrength.value = next.vignetteStrength;
+    }
+    if (next.vignetteSoftness !== undefined) {
+      uniforms.vignetteSoftness.value = next.vignetteSoftness;
+    }
+    if (next.ditherStrength !== undefined) uniforms.ditherStrength.value = next.ditherStrength;
+    if (next.quantizationLevels !== undefined) {
+      uniforms.quantizationLevels.value = next.quantizationLevels;
+    }
+    if (bloomPass) {
+      if (next.bloomStrength !== undefined) bloomPass.strength = next.bloomStrength;
+      if (next.bloomRadius !== undefined) bloomPass.radius = next.bloomRadius;
+      if (next.bloomThreshold !== undefined) bloomPass.threshold = next.bloomThreshold;
+    }
+  };
+
   return {
     render: (elapsedSeconds = 0) => {
       grade.uniforms.elapsedSeconds.value = elapsedSeconds;
@@ -158,5 +274,7 @@ export function createPostProcessing(
       composer.setPixelRatio(renderer.getPixelRatio());
       composer.setSize(width, height);
     },
+    getGradeParameters: () => ({ ...parameters }),
+    setGradeParameters,
   };
 }

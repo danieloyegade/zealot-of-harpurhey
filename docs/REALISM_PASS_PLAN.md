@@ -43,16 +43,20 @@ All in `src/rendering/visualStyle.ts` and `src/rendering/createPostProcessing.ts
 
 ---
 
-## Stage 2 — The grade (1 day · 🤖 with 🧑 approving the look)
+## Stage 2 — The grade (1 day · 🤖 with 🧑 approving the look) — **code done 2026-09-24, `realism-pass` branch; look not yet approved**
 
 Only change the grade *after* Stage 1, because the image changes underneath it.
 
-1. **Split the grade from the dither/grain** so each can be tuned alone.
-2. **Lift blacks slightly:** add a `blackLift` uniform so the darkest pixels land around 3–6 % luminance instead of 0 (the reference's shadows are dark blue-grey, not black). Don't raise overall exposure: `LIGHTING_AUDIT.md` is right that the darkness is the identity.
-3. **Split-tone instead of global saturation:** drop `saturation` from 1.12 to ~1.0, and add a gentle teal push in shadows and amber push in highlights (two colour uniforms, a luminance-weighted mix).
-4. **Retune bloom** (`bloom.threshold`, strength): tubes and signs should have a tight halo, not a haze.
-5. **Keep** AgX, grain and vignette.
-6. Expose all grade values through a dev-only `?grade=` URL flag or the debug overlay, so Daniel can tune them live and paste the numbers back.
+1. **Split the grade from the dither/grain** so each can be tuned alone. ✅ — implemented as a `GradeParameters` interface with every value get/settable independently (`createPostProcessing.ts`), rather than as separate GPU passes (one shader stays cheaper than several, and nothing here needs its own render target).
+2. **Lift blacks slightly:** add a `blackLift` uniform so the darkest pixels land around 3–6 % luminance instead of 0 (the reference's shadows are dark blue-grey, not black). Don't raise overall exposure: `LIGHTING_AUDIT.md` is right that the darkness is the identity. ✅ — `blackLift: 0.045` (4.5%), applied as `color * (1 - blackLift) + blackLift` after contrast, before split-tone. Exposure/ambient untouched.
+3. **Split-tone instead of global saturation:** drop `saturation` from 1.12 to ~1.0, and add a gentle teal push in shadows and amber push in highlights (two colour uniforms, a luminance-weighted mix). ✅ — `saturation: 1.0`; `splitTone` (shadowTint `#8fb4c9`, highlightTint `#dcb98c`, strength 0.16, blended by post-lift luminance between 0.12 and 0.72).
+4. **Retune bloom** (`bloom.threshold`, strength): tubes and signs should have a tight halo, not a haze. ✅ — `radius` 0.32→0.22, `threshold` 0.88→0.92, `bloomStrength` 0.3/0.34→0.24/0.26 (medium/high). First-pass numbers, not yet judged against the reference on real hardware.
+5. **Keep** AgX, grain and vignette. ✅ — unchanged, only reordered around the new steps.
+6. Expose all grade values through a dev-only `?grade=` URL flag or the debug overlay, so Daniel can tune them live and paste the numbers back. ✅, via `window.zealot.grade.getParameters()`/`.set({...})` (dev only) — matching the existing `window.zealot.atmosphere` convention rather than a new URL DSL, since that pattern is already documented and used in this codebase (`docs/VISUAL_LANGUAGE.md`).
+
+**Not done — this is the actual gate, not the code:** "Daniel signs off one grade on the `dreams-target` view, next to the reference." The values above are a reasoned first pass, not a tuned-and-approved look. Tune live with `zealot.grade.set({...})` against `renders/visual-gap-2026-09-24/00-target-reference-dreams-night.webp`, then report the numbers back so they can be baked into `VISUAL_STYLE.render`/`VISUAL_STYLE.bloom` and this stage marked fully done.
+
+**Validation:** `npx tsc --noEmit`, `npm test` (43/43), `npm run build` all clean. Visually smoke-tested via SwiftShader screenshots (no meaningful fps signal, see Stage 1's same caveat) — lift and split-tone are visible in the shadows, bloom is visibly tighter around the Dreams tubes. No fps/GPU measurement on real hardware yet.
 
 **Done when:** Daniel signs off one grade on the `dreams-target` view, next to the reference. The numbers are written into `VISUAL_STYLE.render` and there's no fps change.
 

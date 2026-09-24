@@ -50,7 +50,9 @@ export const QUALITY_PROFILES: Record<QualityLevel, QualityProfile> = {
     renderScale: 0.72,
     maximumDevicePixelRatio: 1.25,
     bloomEnabled: true,
-    bloomStrength: 0.3,
+    // Was 0.3. Trimmed alongside VISUAL_STYLE.bloom's tighter radius/higher
+    // threshold (Stage 2) so a narrower halo doesn't also read brighter.
+    bloomStrength: 0.24,
     maximumActiveLocalLights: 4,
     smaaEnabled: true,
   },
@@ -59,7 +61,8 @@ export const QUALITY_PROFILES: Record<QualityLevel, QualityProfile> = {
     renderScale: 0.8,
     maximumDevicePixelRatio: 1.5,
     bloomEnabled: true,
-    bloomStrength: 0.34,
+    // Was 0.34; see the medium-profile comment above.
+    bloomStrength: 0.26,
     maximumActiveLocalLights: 5,
     smaaEnabled: true,
   },
@@ -82,8 +85,32 @@ export const VISUAL_STYLE = {
       neutral: 3.3,
       aces: 3.2,
     },
-    saturation: 1.12,
+    // Was 1.12. The split-tone push below now carries some of what a flat
+    // saturation boost used to do, so the global figure comes down closer to
+    // neutral; the reference's colour comes from the sodium/fluorescent
+    // practicals and the shadow/highlight tint, not a blanket vibrance lift.
+    saturation: 1.0,
     contrast: 1.05,
+    // Stage 2: a lift, not a brightness change. Raises only the darkest
+    // pixels (display luminance floor, roughly this fraction) so true
+    // shadow stays a dark blue-grey like the reference instead of crushing
+    // to flat black; midtones and highlights are essentially untouched.
+    // `LIGHTING_AUDIT.md` is right that the darkness between light pools is
+    // the identity — this does not raise overall exposure or ambient light,
+    // only the display floor of the grade.
+    blackLift: 0.045,
+    // Split-tone: a gentle, luminance-weighted colour push rather than a
+    // uniform tint — shadows lean slightly toward `shadowTint`, highlights
+    // slightly toward `highlightTint`, blended by (post-lift) luminance
+    // between shadowEdge and highlightEdge. `strength` is how much of that
+    // tint mixes in; keep it subtle, this is a push not a colour cast.
+    splitTone: {
+      shadowTint: 0x8fb4c9,
+      highlightTint: 0xdcb98c,
+      strength: 0.16,
+      shadowEdge: 0.12,
+      highlightEdge: 0.72,
+    },
     // 255 (one 8-bit step) makes the grade's quantise step a no-op: the
     // output is already 8-bit, so this stops short of visibly posterising
     // dark gradients (the night sky, light pools) the way the old 32-level
@@ -156,8 +183,14 @@ export const VISUAL_STYLE = {
     shadowMapSize: 512,
   },
   bloom: {
-    radius: 0.32,
-    threshold: 0.88,
+    // Stage 2: a tighter halo around genuinely bright emissive sources
+    // (tubes, signs) rather than a general haze over midtones. Radius down
+    // from 0.32 (narrower blur spread), threshold up from 0.88 (more
+    // selective about what counts as "bright enough to glow"). Provisional
+    // first-pass numbers — tune live via `window.zealot.grade.set({...})`
+    // (dev only) against the Dreams reference and bake the agreed values in.
+    radius: 0.22,
+    threshold: 0.92,
   },
 } as const;
 

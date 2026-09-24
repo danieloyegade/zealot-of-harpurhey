@@ -235,6 +235,12 @@ if (import.meta.env.DEV) {
     player,
     collision: world.collision,
     atmosphere: world.atmosphere,
+    // Stage 2 of the realism pass: `zealot.grade.getParameters()` /
+    // `zealot.grade.set({...})`, the same shape as `atmosphere` above.
+    grade: {
+      getParameters: postProcessing.getGradeParameters,
+      set: postProcessing.setGradeParameters,
+    },
     sterlingFleet: world.sterlingFleet,
     bikeInteraction,
     deliveryInteraction,
