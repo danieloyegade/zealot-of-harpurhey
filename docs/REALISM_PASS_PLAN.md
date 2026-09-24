@@ -98,33 +98,30 @@ This needs Blender and, per `AGENTS.md`'s asset-first policy, real photographic 
 
 ---
 
-## Stage 4 — Environment map, wet road and puddle mask (3–5 days · 🤝)
+## Stage 4 — Environment map, wet road and puddle mask (3–5 days · 🤝) — **4a/4b/4c done 2026-09-24, `realism-pass` branch (with real deviations from the plan's exact wording — read each subsection)**
 
-### 4a. Environment map
+### 4a. Environment map — done, differently than planned
 
-1. 🧑 In Blender, open the composed street scene around Dreams, put a panoramic (equirectangular) camera at head height on the pavement in front of Dreams, and render a **1024×512 HDR (.hdr/.exr)** at night with practical lights on. Save it to `public/assets/textures/env/dreams-night.hdr`.
-   - Stopgap until then: a CC0 Poly Haven night-street HDRI.
-2. 🤖 New file `src/rendering/environment.ts`: load it with `HDRLoader` (`RGBELoader` in older three.js), prefilter once with `PMREMGenerator`, then set `scene.environment` and `scene.environmentIntensity ≈ 0.15–0.3`. Call it from `main.ts` after `createWorld`.
-3. 🤖 A dev flag `?env=off` for A/B comparison.
+1. ~~In Blender... render a 1024×512 HDR... Stopgap: a CC0 Poly Haven night-street HDRI.~~ **Not done — no Blender or network download available from this sandbox.** Used a different, self-contained technique instead: `PMREMGenerator.fromScene()` captures the game's *own* already-built scene once (a real three.js API, not a hack) and prefilters that into the environment map, rather than loading any external image. This has a genuine advantage over a generic HDRI: the reflections/tint are this location's actual colours (the cold Dreams tubes, the sodium lamp, this sky), not a stand-in — and it needs no licence tracking. A real Blender-rendered or licensed HDR can still replace it later; every downstream material is unaffected either way, since they all just read `scene.environment`. See the long comment at the top of `src/rendering/environment.ts`.
+2. ✅ (adjusted for the above) `src/rendering/environment.ts`: `captureSceneEnvironment()` does the capture + `PMREMGenerator` prefilter + `scene.environment`/`scene.environmentIntensity` (0.22) assignment. Called from `main.ts` inside the `sceneReady` chain, right after `prepareScene`'s GPU warm-up, so this one-shot cost sits under the same loading-screen hold rather than appearing as a mid-game stall. Capture point: a fixed spot on the pavement in front of Dreams (`x=0, z=33`), head height — see the file for why one global capture is enough for what Stage 4a asks.
+3. ✅ `resolveEnvironmentMapEnabled()` — `?env=off` disables it, matching how `?quality=`/`?tonemap=` already resolve (works in prod too, not dev-gated).
+   - Found and fixed while implementing: the initial `captureSigma` (0.045) exceeded `PMREMGenerator`'s internal 20-sample blur cap at `captureSize=256` and logged a console warning ("sigmaRadians... is too large and will clip"). Lowered to 0.03; confirmed clean.
 
-### 4b. Puddle mask and wet ground
+### 4b. Puddle mask and wet ground — done as planned
 
-1. 🤖 Generate a tiling **puddle mask** (greyscale, 2K, world-space scale ~6–10 m): white = standing water, grey = damp, black = dry. Use a new `scripts/generatePuddleMask.mjs` (reusing `scripts/lib/textureTools.mjs`), or paint it by hand in Blender/Photoshop 🧑.
-2. 🤖 In `createRoadMaterial()` (`src/world/createRoadSurfaces.ts`), which already has a custom shader hook, sample the mask in world space:
-   - `roughness → mix(dryRoughness, 0.04, mask)`
-   - `albedo → albedo * mix(1.0, 0.55, mask)` (wet surfaces darken)
-   - `normal → flatten toward up by mask` (water is flat)
-3. 🤖 Do the same in `createPavementSurfaces.ts` with a weaker mask (paving holds less water).
-4. **Hand-placed puddles at Dreams:** a few decals from the existing decal atlas, placed where the reference has them (in front of the ramp, along the kerb).
+1. ✅ `scripts/generatePuddleMask.mjs` (512×512, `public/assets/textures/wet/puddle-mask.png`), built from `textureTools.mjs`'s existing `fbm`/`smoothstep` helpers — two noise layers (a broad one for where puddles sit, a finer one for irregular edges), thresholded against the field's actual measured distribution so puddle cores cover roughly the top 4-5% of a tile and the damp halo roughly a quarter, not (as the first pass produced) half the map. A first-pass procedural placeholder, in the same "-temporary"/"-overhaul" tradition as this codebase's other procedural textures — replaceable by a hand-painted or photo-derived mask later without touching any shader code.
+2. ✅ `createRoadMaterial()` (`src/world/createRoadSurfaces.ts`): roughness toward 0.04, albedo toward ×0.55, normal flattened toward the unperturbed surface normal, all driven by the mask, via a new shared module (`src/rendering/wetSurface.ts`) rather than duplicated inline — reusable because item 3 needs the identical mechanism.
+3. ✅ `createPavementSurfaces.ts`: same mechanism, deliberately weaker (darken to ×0.75 not ×0.55, roughness floor 0.12 not 0.04, less normal flattening) — paving drains at the joints and holds less water than asphalt. Both sample the **same** mask file at the same world-space scale (7 m, the middle of the stated 6-10 m range), so a puddle reads continuously across a kerb rather than the two surfaces inventing unrelated patterns.
+4. **Not done.** Hand-placed puddle decals at Dreams from the existing decal atlas — a small, low-risk follow-up, skipped this pass in favour of finishing 4c; the procedural mask already puts some wetness in front of Dreams some of the time (it's sparse/random, not guaranteed at every viewing angle — see the Stage 4 screenshots).
 
-### 4c. Light-streak reflections (the cheap trick that sells wet)
+### 4c. Light-streak reflections — done, with one deliberate design change from the plan's wording
 
-1. 🤖 New `src/world/wetReflections.ts`: for each **emissive source** within ~35 m (Dreams tubes, streetlamp heads, shop signs), draw one vertically stretched, additive, soft-edged quad on the ground, **mirrored** below the source and facing the camera on its vertical axis. Its colour is the source's colour. Its opacity is the puddle mask at that point (sampled in the shader).
-2. Use one `InstancedMesh` for all streaks, so it's **1 draw call**.
-3. Retire the generic `reflection-broken-overhaul` sprites near Dreams (`createWorld.ts` ~3748) once the new streaks read better.
-4. **HIGH only, optional:** a box-projected cube-map captured once at Dreams, so puddles show the actual façade.
+1. ✅ (design changed) `src/world/wetReflections.ts`, but as a **flat quad lying on the ground stretching toward/along the road**, not a vertical camera-facing billboard as originally written. A billboard would need a per-frame instance-matrix update to face the camera; a ground-lying streak needs no per-frame work at all (same one-shot instancing as everything else here) and is the standard technique this effect is modelled on (visible in the reference itself: the streetlight streaks lie on the road, they don't stand up). Each source supplies a `yaw`; every streetlight reuses the yaw that already turns its lantern's outreach toward the road it lights (`yawTowardNearestRoad`, already computed in `createWorld.ts`), which is also the natural direction for its reflection to stretch — no new authoring needed. Colour and puddle-mask-driven opacity are exactly as planned.
+2. ✅ One `InstancedMesh` for every source (all streetlights + Dreams' tubes) — 1 draw call.
+3. **Not done, on inspection — see "Flagged".** The named `addReflectionPatch` calls near "~3748" turned out, on reading the code, to cover **every hero building across the whole map** (Renee, Coral, Arts Council, Vinyl Exchange, Spice Cabin, Advanced Photo — not just Dreams), and to be a different kind of effect (a fixed, always-on fascia glow spill, independent of whether that ground is wet) rather than a wet-specific reflection. Retiring them is a real, city-wide visual change, not a small Dreams-local cleanup — left alone rather than deleting authored content across many locations without a side-by-side comparison. `addStreetlightPool()`'s own per-lamp `reflection-broken-overhaul` boxes (a different thing again — every streetlight's baseline "painted pool" graphic, on regardless of wetness) were never in scope and are also untouched.
+4. **Not done.** HIGH-only box-projected cube-map at Dreams — skipped; 4a's scene-capture environment map already gives every puddle *some* reflection of its surroundings, which covers much of what this would have added on top.
 
-**Done when:** at `dreams-target` the road shows streaks under the tubes and the lamp, and puddles read as puddles. Fps stays within 5 % of Stage 3, and draw calls rise by at most 2.
+**Done when:** at `dreams-target` the road shows streaks under the tubes and the lamp, and puddles read as puddles. Fps stays within 5 % of Stage 3, and draw calls rise by at most 2. — **Partially confirmed.** Puddles and streaks are both visibly present and working (clearest at `public-light-pool`, a warm streak under MCR1's shop light; puddles visible at `street-detail`) — see `renders/realism-pass/04-environment-wet-ground/`. Draw-call delta: +1 (the streak mesh) as intended. **fps not confirmed** — same SwiftShader-only limitation flagged every stage so far; needs a real-hardware pass.
 
 ---
 

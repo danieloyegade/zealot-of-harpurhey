@@ -8,6 +8,14 @@ import {
 } from 'three';
 import atlas from '../rendering/roadDecalAtlas.json';
 import { VISUAL_STYLE } from '../rendering/visualStyle';
+import {
+  PUDDLE_MASK_WORLD_METRES,
+  wetSurfaceMaskSampleAndAlbedo,
+  wetSurfaceNormalFlatten,
+  wetSurfaceRoughness,
+  wetSurfaceUniformDeclarations,
+  wetSurfaceUniforms,
+} from '../rendering/wetSurface';
 import type { RoadIronworkPlacement } from './createEnvironmentKit';
 import {
   buildDecalGeometry,
@@ -178,12 +186,28 @@ function createRoadMaterial(): MeshStandardMaterial {
     metalness: 0,
     flatShading: VISUAL_STYLE.geometry.facetedLighting,
   });
+  // Stage 4b of the realism pass: a world-space puddle mask darkens albedo,
+  // drops roughness toward near-mirror and flattens the normal where wet.
+  // Shares one mask with the pavement material (wetSurface.ts) so a puddle
+  // reads continuously across a kerb; ~7 m is the middle of the plan's
+  // stated 6-10 m puddle scale.
+  const puddleMask = loadSurfaceTexture('wet/puddle-mask', { repeat: true });
   // Two world-space samples of a small drift texture break the tile: one over
   // ~67 m for broad light/dark and warm/cool patches, one over ~19 m for
   // patchier tone and roughness. The mid drift also fades in a second, rotated
   // sample of the scan, so its 2.1 m repeat never lines up.
   material.onBeforeCompile = (shader) => {
     shader.uniforms.roadVariationMap = { value: variation };
+    Object.assign(
+      shader.uniforms,
+      wetSurfaceUniforms({
+        maskMap: puddleMask,
+        maskMetres: PUDDLE_MASK_WORLD_METRES,
+        darken: 0.55,
+        wetRoughness: 0.04,
+        normalFlatten: 0.85,
+      }),
+    );
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', '#include <common>\nvarying vec2 vRoadWorld;')
       .replace(
@@ -193,7 +217,7 @@ function createRoadMaterial(): MeshStandardMaterial {
     shader.fragmentShader = shader.fragmentShader
       .replace(
         '#include <common>',
-        '#include <common>\nuniform sampler2D roadVariationMap;\nvarying vec2 vRoadWorld;',
+        `#include <common>\nuniform sampler2D roadVariationMap;\nvarying vec2 vRoadWorld;\n${wetSurfaceUniformDeclarations}`,
       )
       .replace(
         '#include <map_fragment>',
@@ -203,13 +227,19 @@ function createRoadMaterial(): MeshStandardMaterial {
 	vec2 roadAltUv = mat2( 0.8, -0.6, 0.6, 0.8 ) * vMapUv * 0.73 + vec2( 0.31, 0.17 );
 	diffuseColor.rgb = mix( diffuseColor.rgb, diffuse * texture2D( map, roadAltUv ).rgb, smoothstep( 0.35, 0.65, roadMid.b ) );
 	float roadTone = 0.74 + roadBroad.r * 0.42 + ( roadMid.r - 0.5 ) * 0.2;
-	diffuseColor.rgb *= roadTone * mix( vec3( 0.95, 0.99, 1.06 ), vec3( 1.06, 1.0, 0.93 ), roadBroad.b );`,
+	diffuseColor.rgb *= roadTone * mix( vec3( 0.95, 0.99, 1.06 ), vec3( 1.06, 1.0, 0.93 ), roadBroad.b );
+${wetSurfaceMaskSampleAndAlbedo('vRoadWorld')}`,
       )
       .replace(
         '#include <roughnessmap_fragment>',
         `#include <roughnessmap_fragment>
 	// The scan averages 0.66; dry road should sit around 0.7-0.9.
-	roughnessFactor = clamp( 0.25 + roughnessFactor * 0.85 + ( roadMid.g - 0.5 ) * 0.14 - ( 1.0 - roadBroad.g ) * 0.05, 0.05, 1.0 );`,
+	roughnessFactor = clamp( 0.25 + roughnessFactor * 0.85 + ( roadMid.g - 0.5 ) * 0.14 - ( 1.0 - roadBroad.g ) * 0.05, 0.05, 1.0 );
+${wetSurfaceRoughness}`,
+      )
+      .replace(
+        '#include <normal_fragment_maps>',
+        `#include <normal_fragment_maps>\n${wetSurfaceNormalFlatten}`,
       );
   };
   material.customProgramCacheKey = () => 'zealot-layered-road-asphalt';

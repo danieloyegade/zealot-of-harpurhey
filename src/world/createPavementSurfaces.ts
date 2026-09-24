@@ -8,6 +8,14 @@ import {
 } from 'three';
 import atlas from '../rendering/pavementDecalAtlas.json';
 import { VISUAL_STYLE } from '../rendering/visualStyle';
+import {
+  PUDDLE_MASK_WORLD_METRES,
+  wetSurfaceMaskSampleAndAlbedo,
+  wetSurfaceNormalFlatten,
+  wetSurfaceRoughness,
+  wetSurfaceUniformDeclarations,
+  wetSurfaceUniforms,
+} from '../rendering/wetSurface';
 import type { RoadIronworkPlacement } from './createEnvironmentKit';
 import type { RoadSpan } from './createRoadSurfaces';
 import {
@@ -191,11 +199,26 @@ function createPavementMaterial(): MeshStandardMaterial {
   // (Poly Haven concrete_floor_worn_001, 3 m, CC0), as every flag is a separate
   // casting. The generated tile keeps the joints, arrises and chips, and now
   // only modulates the scan.
+  // Stage 4b of the realism pass: the same puddle mask as the road
+  // (wetSurface.ts), but weaker — paving holds less standing water than
+  // asphalt (it drains at the joints), so it darkens less, stays less
+  // mirror-glossy and keeps more of its own flag relief when wet.
+  const puddleMask = loadSurfaceTexture('wet/puddle-mask', { repeat: true });
   material.onBeforeCompile = (shader) => {
     shader.uniforms.roadVariationMap = { value: variation };
     shader.uniforms.concreteMap = { value: concrete };
     shader.uniforms.concreteRoughnessMap = { value: concreteRoughness };
     shader.uniforms.concreteNormalMap = { value: concreteNormal };
+    Object.assign(
+      shader.uniforms,
+      wetSurfaceUniforms({
+        maskMap: puddleMask,
+        maskMetres: PUDDLE_MASK_WORLD_METRES,
+        darken: 0.75,
+        wetRoughness: 0.12,
+        normalFlatten: 0.55,
+      }),
+    );
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', '#include <common>\nvarying vec2 vPavementWorld;')
       .replace(
@@ -205,7 +228,7 @@ function createPavementMaterial(): MeshStandardMaterial {
     shader.fragmentShader = shader.fragmentShader
       .replace(
         '#include <common>',
-        '#include <common>\nuniform sampler2D roadVariationMap;\nuniform sampler2D concreteMap;\nuniform sampler2D concreteRoughnessMap;\nuniform sampler2D concreteNormalMap;\nvarying vec2 vPavementWorld;',
+        `#include <common>\nuniform sampler2D roadVariationMap;\nuniform sampler2D concreteMap;\nuniform sampler2D concreteRoughnessMap;\nuniform sampler2D concreteNormalMap;\nvarying vec2 vPavementWorld;\n${wetSurfaceUniformDeclarations}`,
       )
       .replace(
         '#include <map_fragment>',
@@ -227,19 +250,22 @@ function createPavementMaterial(): MeshStandardMaterial {
 	vec3 pavementBroad = texture2D( roadVariationMap, vPavementWorld / 53.0 ).rgb;
 	float flagTone = 0.9 + flagHash * 0.14 + ( pavementBroad.r - 0.5 ) * 0.3;
 	flagTone += step( 0.94, flagHash2 ) * 0.1;
-	diffuseColor.rgb *= flagTone * mix( vec3( 0.97, 0.99, 1.03 ), vec3( 1.04, 1.0, 0.95 ), pavementBroad.b );`,
+	diffuseColor.rgb *= flagTone * mix( vec3( 0.97, 0.99, 1.03 ), vec3( 1.04, 1.0, 0.95 ), pavementBroad.b );
+${wetSurfaceMaskSampleAndAlbedo('vPavementWorld')}`,
       )
       .replace(
         '#include <roughnessmap_fragment>',
         `#include <roughnessmap_fragment>
 	float concreteRough = textureGrad( concreteRoughnessMap, concreteUv, concreteDx, concreteDy ).g;
-	roughnessFactor = clamp( roughnessFactor + ( concreteRough - 0.54 ) * 0.7 + ( flagHash - 0.5 ) * 0.1 + ( pavementBroad.g - 0.5 ) * 0.1, 0.05, 1.0 );`,
+	roughnessFactor = clamp( roughnessFactor + ( concreteRough - 0.54 ) * 0.7 + ( flagHash - 0.5 ) * 0.1 + ( pavementBroad.g - 0.5 ) * 0.1, 0.05, 1.0 );
+${wetSurfaceRoughness}`,
       )
       .replace(
         '#include <normal_fragment_maps>',
         `#include <normal_fragment_maps>
 	vec3 concreteNormal = textureGrad( concreteNormalMap, concreteUv, concreteDx, concreteDy ).xyz * 2.0 - 1.0;
-	normal = normalize( normal + tbn * vec3( concreteNormal.xy * 0.6, 0.0 ) );`,
+	normal = normalize( normal + tbn * vec3( concreteNormal.xy * 0.6, 0.0 ) );
+${wetSurfaceNormalFlatten}`,
       );
   };
   material.customProgramCacheKey = () => 'zealot-layered-pavement-flags';

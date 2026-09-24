@@ -78,6 +78,7 @@ import {
 import { addParkGround } from './createParkSurfaces';
 import { addPavementSurfaces, pavementTopAt, type PavementSpan } from './createPavementSurfaces';
 import { addRoadSurfaces, type RoadCrossing, type RoadSpan } from './createRoadSurfaces';
+import { createWetReflectionStreaks, type WetReflectionSource } from './wetReflections';
 import {
   BUS_STOPS,
   FOOD_STANDS,
@@ -3295,6 +3296,29 @@ const PUBLIC_LIGHTS = STREETLIGHTS.map(([x, z, color, model], index) => {
   };
 });
 
+// Stage 4c of the realism pass: one wet-ground light-streak reflection per
+// nearby emissive source. Every public streetlight, plus Dreams' fascia
+// tubes by hand (the plan's own two examples; a shop-sign pass can extend
+// this list later). A streetlight's yaw already turns its lantern's
+// outreach toward the road it lights (`yawTowardNearestRoad`), which is
+// also the natural direction for its reflection to stretch, so this reuses
+// it rather than choosing a separate direction.
+//
+// Dreams: front='north' rotates its model 180 degrees, so its local front
+// offset (FRONT_Z = 4.32 in createDreamsBuilding.ts) lands at world
+// z = 39 - 4.32 = 34.68, a few metres south of its listed z = 39. The
+// streak starts there and stretches further south (world -Z, yaw = PI/2)
+// into the street the player approaches from.
+const WET_REFLECTION_SOURCES: WetReflectionSource[] = [
+  ...PUBLIC_LIGHTS.map((light) => ({
+    x: light.emitter.x,
+    z: light.emitter.z,
+    yaw: light.yaw,
+    color: light.color,
+  })),
+  { x: 1.5, z: 34.68, yaw: Math.PI / 2, color: 0xd9fff8, length: 9, width: 1.6, opacity: 0.4 },
+];
+
 const CROSSINGS: readonly RoadCrossing[] = [
   { name: 'South park crossing', x: 0, z: 25.5 },
   { name: 'West park crossing', x: -29.5, z: 0, rotation: Math.PI / 2 },
@@ -4053,6 +4077,10 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
     );
   }
   void addStreetlightFixtures(root, PUBLIC_LIGHTS);
+  const wetReflections = createWetReflectionStreaks(WET_REFLECTION_SOURCES);
+  if (wetReflections) {
+    root.add(wetReflections);
+  }
 
   if (import.meta.env.DEV) {
     root.add(createCollisionDebugOutlines(obstacles));

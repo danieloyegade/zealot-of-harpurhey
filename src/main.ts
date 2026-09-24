@@ -22,6 +22,7 @@ import { BikeInteraction } from './interaction/BikeInteraction';
 import { STERLING_ASSISTED_SPEED, STERLING_BOOST_SPEED } from './vehicles/SterlingBike';
 import { PlayerController } from './player/PlayerController';
 import { createPostProcessing } from './rendering/createPostProcessing';
+import { captureSceneEnvironment, resolveEnvironmentMapEnabled } from './rendering/environment';
 import { prepareScene } from './rendering/prepareScene';
 import {
   applyInternalResolution,
@@ -211,9 +212,19 @@ const postProcessing = createPostProcessing(
   toneMapping,
 );
 
+const environmentMapEnabled = resolveEnvironmentMapEnabled(window.location.search);
 const sceneReady = intro
   .waitForAssets()
   .then(() => prepareScene(renderer, scene, camera))
+  .then(() => {
+    // After prepareScene's GPU warm-up, so this one-shot capture (its own
+    // render of the whole scene) neither triggers fresh shader compiles nor
+    // appears as a mid-game stall — both happen once, under the same
+    // loading-screen hold.
+    if (environmentMapEnabled) {
+      captureSceneEnvironment(renderer, scene);
+    }
+  })
   .catch((error: unknown) => console.error('Scene preparation failed', error));
 void sceneReady.then(() => intro.setReady());
 

@@ -192,6 +192,28 @@ export const VISUAL_STYLE = {
     radius: 0.22,
     threshold: 0.92,
   },
+  environment: {
+    // Stage 4 of the realism pass (docs/REALISM_PASS_PLAN.md): with no
+    // scene.environment, PBR materials have nothing to reflect and every
+    // metal/glass surface reads flat regardless of its metalness/roughness.
+    // Kept low: this should read as a soft ambient tint and the faint
+    // reflections the reference shows, not a visible mirror — the darkness
+    // between light pools stays the identity, this is not a new light
+    // source (`LIGHTING_AUDIT.md`).
+    intensity: 0.22,
+    // PMREM cube-face resolution. 256 is PMREMGenerator's own default and
+    // plenty for a soft ambient source — this never needs to be sharp.
+    captureSize: 256,
+    // Pre-blur radius in radians before prefiltering, so the one-shot
+    // capture reads as soft ambient light rather than a sharp, aliased
+    // mirror of nearby geometry. PMREMGenerator caps its discrete blur at
+    // 20 samples; at captureSize 256 that's sigma <= ~0.039 before it clips
+    // and logs a console warning (measured directly — its own internals
+    // aren't public), so this stays safely under that.
+    captureSigma: 0.03,
+    captureNear: 0.5,
+    captureFar: 90,
+  },
 } as const;
 
 export function applyInternalResolution(
