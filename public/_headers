@@ -1,0 +1,26 @@
+# Cloudflare Workers Static Assets response headers.
+# https://developers.cloudflare.com/workers/static-assets/headers/
+#
+# Without these, every file is served "max-age=0, must-revalidate", so each
+# visit spends one round trip per asset (about 140) just to be told nothing
+# changed. Nothing here needs compression: models are Meshopt/KTX2 (already
+# compressed), and Cloudflare compresses text (HTML, JS, CSS) on its own.
+
+# Vite's bundles carry a content hash in the file name, so they never change.
+/assets/index-*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Models and textures are re-deployed under the same names (models are
+# cache-busted with ?v= in createWorld.ts, textures are not), so keep the
+# freshness window short and let returning players start on the cached copy
+# while it revalidates in the background.
+/assets/models/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/assets/textures/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/ui/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# KTX2 transcoder (three.js release files).
+/basis/*
+  Cache-Control: public, max-age=604800

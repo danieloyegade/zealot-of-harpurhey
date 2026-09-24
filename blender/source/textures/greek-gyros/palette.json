@@ -1,0 +1,93 @@
+{
+  "blue panel": {
+    "albedo": "#4E597E",
+    "samples": [
+      {
+        "box": [
+          1320,
+          520,
+          1520,
+          650
+        ],
+        "light": "shaded",
+        "photo": "greek-gyros-8918.png",
+        "srgb": "#63646D"
+      },
+      {
+        "box": [
+          1460,
+          1780,
+          1720,
+          1860
+        ],
+        "light": "shaded",
+        "photo": "greek-gyros-8918.png",
+        "srgb": "#33384F"
+      },
+      {
+        "box": [
+          300,
+          190,
+          315,
+          210
+        ],
+        "light": "shaded",
+        "photo": "references/architecture/infrastructure:objects/gyros/gyross.jpeg",
+        "srgb": "#364C8C"
+      }
+    ]
+  },
+  "dark metal": {
+    "albedo": "#5E656E",
+    "samples": [
+      {
+        "box": [
+          3120,
+          960,
+          3240,
+          1280
+        ],
+        "light": "shaded",
+        "photo": "greek-gyros-8918.png",
+        "srgb": "#525860"
+      }
+    ]
+  },
+  "deep blue panel": {
+    "albedo": "#35405E",
+    "samples": [],
+    "source": "secondary fascia is crossed by pale lettering and night glare in every reference; inferred as the visibly darker companion to the measured blue panel"
+  },
+  "steel": {
+    "albedo": "#908578",
+    "samples": [
+      {
+        "box": [
+          1280,
+          1400,
+          1560,
+          1520
+        ],
+        "light": "shaded",
+        "photo": "greek-gyros-8918.png",
+        "srgb": "#7D7468"
+      }
+    ]
+  },
+  "white panel": {
+    "albedo": "#9C9588",
+    "samples": [
+      {
+        "box": [
+          1240,
+          900,
+          1280,
+          1250
+        ],
+        "light": "shaded",
+        "photo": "greek-gyros-8918.png",
+        "srgb": "#888276"
+      }
+    ]
+  }
+}

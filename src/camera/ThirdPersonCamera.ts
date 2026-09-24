@@ -63,15 +63,6 @@ const RECENTER_RESPONSIVENESS = 10;
 // 0.1 m near plane, so no wall face is ever sliced open on screen.
 const CAMERA_COLLISION_RADIUS = 0.3;
 
-// The boom is otherwise allowed to shorten all the way onto the pivot when an
-// obstruction is right at the player, but the pivot and the look target sit
-// at the same point (both anchor + ORBIT_PIVOT_HEIGHT). A camera placed
-// exactly there looks at its own position: lookAt() has nothing to aim at,
-// the view matrix degenerates, and the screen goes black until the player
-// turns away from the wall. Keeping the lens at least this far from the
-// pivot guarantees a real look direction always exists.
-const MINIMUM_BOOM_DISTANCE = 0.6;
-
 // When a building stands between the player and the camera, the boom first
 // rises a little, keeping its length, and is only cut short if that does not
 // clear. Shortening the boom reads as an unasked-for zoom. The lift is capped
@@ -163,7 +154,7 @@ export class ThirdPersonCamera {
     this.followPosition.copy(this.desiredPosition);
     this.placeClearOfObstacles(0, true);
     this.updateLookTarget();
-    this.camera.lookAt(this.lookTarget);
+    this.orientCamera();
   }
 
   update(
@@ -214,7 +205,7 @@ export class ThirdPersonCamera {
     this.placeClearOfObstacles(deltaTime, false);
 
     this.updateLookTarget();
-    this.camera.lookAt(this.lookTarget);
+    this.orientCamera();
   }
 
   private applyPitchReturn(deltaTime: number): void {
@@ -359,13 +350,22 @@ export class ThirdPersonCamera {
       this.boomFraction += (clearFraction - this.boomFraction)
         * (1 - Math.exp(-OCCLUSION_RECOVERY_RESPONSIVENESS * deltaTime));
     }
-    // Never let the lens reach the pivot itself: see MINIMUM_BOOM_DISTANCE.
-    const minimumFraction = Math.min(1, MINIMUM_BOOM_DISTANCE / this.distance);
     this.camera.position.lerpVectors(
       this.pivot,
       this.followPosition,
-      Math.max(this.boomFraction, minimumFraction),
+      this.boomFraction,
     );
+  }
+
+  private orientCamera(): void {
+    // Collision wins over boom length. Forcing a minimum length can put the
+    // lens through a wall. At zero separation retain the orbit's viewing
+    // direction instead of aiming the camera at its own position.
+    if (this.camera.position.distanceToSquared(this.lookTarget) < 1e-8) {
+      this.lookTarget.subVectors(this.pivot, this.desiredPosition)
+        .add(this.camera.position);
+    }
+    this.camera.lookAt(this.lookTarget);
   }
 
   private setPivot(anchor: Vector3): void {

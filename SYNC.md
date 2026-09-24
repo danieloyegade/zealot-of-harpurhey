@@ -22,6 +22,17 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-24 — Claude (merged main into realism-pass) — branch `realism-pass`
+**HEAD at session start:** `1572a41` (Stage 1 of the realism pass), on `realism-pass`.
+**Did:** Daniel reported "a lot of bugs" testing `realism-pass` locally and asked whether it had main's current changes. It didn't: `realism-pass` had been branched off an earlier documentation-only branch (`claude/vigilant-fermi-i4wvhe`), which itself diverged from `main` at `c5cb142` — before four commits landed on `main`: the asset-optimisation pass (KTX2/Meshopt, 128.8 MB → 51.7 MB), the finite-color NaN black-screen guard, a batch of concurrent Codex work (Sterling bike materials, GPU scene preparation, camera fixes, Greek Gyros/bus shelter textures), and the Off-Licence removal. That's almost certainly what Daniel was seeing as "bugs" — an old `loadModel`/texture pipeline missing several since-landed fixes, not a Stage 1 regression.
+- `git merge origin/main` into `realism-pass`. Two conflicts: `src/rendering/createPostProcessing.ts` (both branches added a pass near the same spot — main's `finiteColorShader` pass right after `RenderPass`, this branch's `SMAAPass` before `OutputPass`) resolved **automatically** by git with the correct order (RenderPass → finite-color guard → bloom → SMAA → OutputPass → grade); `SYNC.md` (both branches appended entries) resolved by concatenating both logs in date order, newest first.
+**Validation:** `npx tsc --noEmit` clean, `npm test` 43/43 (up from 17/17 — main's merged work added tests), `npm run build` clean.
+**Left uncommitted (if any):** None — commit follows this entry.
+**Flagged:** `realism-pass` and `main` are now identical except for Stage 1's five changes (`visualStyle.ts`, `createPostProcessing.ts`) plus the realism-pass documentation (`docs/VISUAL_REALISM_ROADMAP.md`, `docs/REALISM_PASS_PLAN.md`, the `AGENTS.md`/`VISUAL_LANGUAGE.md` reconciliation, `renders/visual-gap-2026-09-24/`, `renders/realism-pass/`) — confirm with `git diff main realism-pass -- src` if in doubt. Going forward, keep `realism-pass` merging from `main` regularly (or the other tool should branch its own work from `main` too) so this doesn't recur.
+**Next:** Daniel: `git fetch && git checkout realism-pass && git merge origin/realism-pass` (or reset if no local commits), rebuild, and re-check whether the bugs are gone.
+**Open questions:** None new.
+
+---
 ## 2026-09-24 — Claude (Stage 1 of the realism pass: retro settings off) — branch `realism-pass`
 **HEAD at session start:** `45304f8` (Add a staged, step-by-step plan for the realism pass), then branched to `realism-pass` per Daniel's request (a dedicated branch for the realism-pass work, pushed and pullable to his laptop).
 **Did:** Implemented Stage 1 of `docs/REALISM_PASS_PLAN.md`. All in `src/rendering/visualStyle.ts` and `src/rendering/createPostProcessing.ts`:
@@ -89,6 +100,39 @@ No code changes.
 **Flagged:** `docs/ART_DIRECTION.md` "Core principles" is updated, but `visualStyle.ts` still enforces the retro look. Reconcile them when Phase A lands. The dev server was started with `npm run assets:prepare` (production manifest) for screenshots only.
 **Next:** Phase A, then a Dreams-only vertical slice of B and C, compared side by side with the reference.
 **Open questions:** Daniel: is the reference's blocky "mosaic" grain wanted as a deliberate stylistic layer, or an AI artefact to ignore? Is a paid tool budget available (Character Creator 4 / Marvelous Designer)?
+
+---
+## 2026-09-24 — Claude (removed the Off-Licence)
+**HEAD at session start:** `b7be7eb` (Land the concurrent Codex work...)
+**Did:** Daniel asked for the Off-Licence to be removed from the game.
+- Dropped the `off-licence` placeholder from `WORLD_LOCATIONS` (`worldLayout.ts`), its sign style and its fascia reflection patch (`createWorld.ts`). Nothing else referenced it (no missions, views or tests).
+- The Off-Licence was hiding Spice Cabin's east party wall, which has no exterior face. New `addSpiceCabinPartyWall` closes it with a 0.3 m `brick-soot-overhaul` box at X = 17 to 17.3 (full 10 m depth, 7.65 m height, with collision). Docs updated: `docs/WORLD_LAYOUT.md`, `docs/assets/spice-cabin.md`.
+**Verified:** `tsc` clean, 43/43 tests. In the running game there is no Off-Licence object and the wall is in place at (17.15, 49); from the east the gable is closed.
+**Flagged:** The new wall has no light on it, so at night it reads as a near-black slab from the east, like other unlit placeholder sides. A proper brick party face, or something built on the empty plot (X 17 to 28, Z 44 to 54), would fix that.
+**Left uncommitted:** `.claude/launch.json` and `.playwright-mcp/` (not mine).
+**Open questions:** Should the empty plot stay empty, or should something go there?
+
+---
+## 2026-09-24 — Claude (asset optimisation: 128.8 MB down to 51.7 MB, texture memory about 2 GB down to about 120 MB)
+**HEAD at session start:** `c84ad52`; pushed as `be2f8be`.
+**Did:** Daniel asked for the large files causing performance problems to be optimised. Measured first: the production manifest decoded to **about 2,040 MB of texture memory in the models** (roughly 100 maps at 2048², 22 MB each once decoded) plus 183 MB of loose textures, and forcing every off-screen mesh to render once took **21 s** in the in-app browser. That is the first-use stall the previous entry chased, so this is upstream of Codex's `prepareScene` work: their pre-warm makes loading time equal upload time, and this makes the upload cheap.
+- New build stage `scripts/optimizeRuntimeAssets.mjs` (+ `scripts/lib/`), called from `prepareRuntimeAssets.mjs`. **`public/` is untouched**; only the copy in `.runtime-public/` is optimised. Full description, tuning knobs and rationale: `docs/ASSET_PIPELINE.md`.
+- Textures: resized to about 400 texels/m (measured per texture from UV area / world area; the authored maps had 0.3-1 mm texels against a 2-4 mm screen pixel), **63 of 106 normal maps were perfectly flat and 25 of 115 ORM maps constant, so those are dropped**, the rest become KTX2 (ETC1S colour/ORM, UASTC normals/alpha).
+- Geometry: lossless Meshopt everywhere (skinned included); 14-bit quantised positions only for Real Camera and the Coral shop (`config/asset-optimization.json`). Every GLB is decoded again after encoding and must keep every mesh's world bounds within 4 mm or the build fails.
+- Loose PNG/JPEG recompressed in place (alpha PNGs untouched: re-encoding zeroes colour under transparent pixels and filtering then bleeds dark halos). Loading screen now ships as `zealot-loading-screen.webp` (749 KB vs 3.3 MB PNG); the three unused title PNGs (7.5 MB) no longer ship. `public/_headers` adds cache headers (live host was `max-age=0, must-revalidate` on every file, about 140 revalidation round trips per visit).
+- Runtime: `src/world/gltfLoader.ts` (single `GLTFLoader` with KTX2 + Meshopt) and `src/world/dequantizeGeometry.ts`. `loadModel.ts` is the only caller change.
+**Numbers (shipped bytes, production manifest):** total 128.8 -> 51.7 MB; models 98.4 -> 40.4; loose textures 19.6 -> 10.0; title art 10.8 -> 0.75. Biggest models: Real Camera 19.2 -> 5.7, Vinyl Exchange 14.9 -> 1.5, Coral shop 4.6 -> 0.5, The Hive 4.6 -> 1.4, Greek Gyros 3.5 -> 0.2, player 4.8 -> 1.6. Estimated texture memory in models 2,040 -> 117 MB.
+**Verified:** 43/43 tests, `tsc` clean, `npm run build` and `wrangler deploy --dry-run` clean, and the commit alone passes in a clean worktree. In the running game against an unoptimised build of the same source: no console errors, same merged geometry count (693 vs 708 GPU geometries), 255 textures arrive GPU-compressed (ASTC), and screenshot pixel diffs of 0.06% (Real Camera) and 0.24% (Spice Cabin) with lettering, timber and quantised stonework visibly identical. One real bug found and fixed this way: my dequantiser skipped `InterleavedBufferAttribute`, which is what Meshopt pads quantised attributes into, so 590 meshes silently stopped merging (1,298 geometries) until fixed.
+**Flagged:**
+- **Not deployed.** Nothing is live until Daniel runs `npm run build` then `wrangler deploy` **from a machine with `basisu`** (`brew install basis_universal`, already installed on this Mac). Without it the optimiser falls back to resized WebP (what CI does) and says so at the top of the log: still a big win, but not GPU-compressed.
+- **First build on a fresh clone takes 20-25 minutes** (texture encoding); results are cached by content hash in `.cache/asset-optimizer/` (271 MB, gitignored), after which an unchanged tree takes about 20 s. `ZEALOT_OPTIMIZE_ASSETS=0` skips it.
+- **Some files got bigger on disk**: the bus shelter (2.4 -> 4.4 MB) and Spice Cabin (7.2 -> 6.0, was 8.8 before capping normals) were already compact WebP; KTX2 trades a little download for a 10-20x cut in GPU memory and no image decode. If softness is ever visible up close, raise `targetTexelsPerMetre` in `scripts/lib/glbOptimizer.mjs` (each doubling quadruples that texture's memory).
+- **Timing evidence is weak.** The in-app browser reported load-to-warm 16.4 s (unoptimised) vs 8.5 s (optimised) on localhost, but a headless Chromium from another session was using about 360% CPU at times, and the pane later went `visibility: hidden` (no animation frames), so **I never got a clean walking frame-time comparison for the optimised build**. Byte, memory and count figures are deterministic; the seconds are indicative only. Worth one clean pass on Daniel's real Chrome.
+- Loose textures still decode to about 183 MB (KTX2 for them needs `loadSurfaceTexture` and `worldMaterials` to use `KTX2Loader`; not done). Audio (102 MB, development-only) is untouched. Scene triangle count is unchanged (about 777k; Real Camera alone is about 245k), so draw-call/triangle reduction is still open.
+- Side effect on other sessions: `npm run dev` now runs the optimiser via `predev`, and I re-ran `assets:prepare:dev` (twice) under a live dev server on 5173. `ZEALOT_RUNTIME_OUTPUT=<dir>` builds and serves an alternative asset set without touching `.runtime-public/` (I used it for A/B).
+**Left uncommitted:** nothing of mine. Other sessions' work (Greek Gyros, bus shelter, Sterling bike, Cass/camera fixes, `prepareScene`) is untouched.
+**Next:** (1) Daniel: deploy and play on the live embed, then report whether the stutter/long loads are gone. (2) One clean frame-time pass on a real browser. (3) If wanted: KTX2 for loose textures, then triangle/draw-call reduction (Real Camera first).
+**Open questions:** Is 2.5 mm/texel the right softness trade-off, or should hero surfaces near the delivery route keep more?
 
 ---
 ## 2026-09-24 — Codex (exported Sterling bike materials into the game)

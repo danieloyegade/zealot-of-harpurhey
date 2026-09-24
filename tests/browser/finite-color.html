@@ -1,0 +1,23 @@
+<!doctype html><html><head><title>Finite HDR regression</title></head><body><pre id="result">Running…</pre><script type="module">
+import { DataTexture, HalfFloatType, NearestFilter, RGBAFormat, ShaderMaterial, WebGLRenderer, WebGLRenderTarget } from 'three';
+import { FullScreenQuad } from 'three/addons/postprocessing/Pass.js';
+import { finiteColorShader } from '/src/rendering/finiteColorShader.ts';
+// Actual GPU test: preserve finite HDR, repair NaN and +/-Infinity including alpha.
+const renderer=new WebGLRenderer();
+const texture=new DataTexture(new Uint16Array([
+  0x3800,0x3c00,0x4000,0x3c00,
+  0x7e00,0x7c00,0xfc00,0x7e00,
+]),2,1,RGBAFormat,HalfFloatType);
+texture.minFilter=texture.magFilter=NearestFilter;texture.needsUpdate=true;
+const material=new ShaderMaterial({...finiteColorShader,uniforms:{tDiffuse:{value:texture}}});
+const quad=new FullScreenQuad(material);
+const target=new WebGLRenderTarget(2,1,{type:HalfFloatType});
+renderer.setRenderTarget(target);quad.render(renderer);
+const actual=new Uint16Array(8);renderer.readRenderTargetPixels(target,0,0,2,1,actual);
+const expected=[0x3800,0x3c00,0x4000,0x3c00,0,0,0,0x3c00];
+const error=renderer.getContext().getError();
+const pass=expected.every((value,index)=>actual[index]===value)&&error===0;
+document.querySelector('#result').textContent=JSON.stringify({pass,expected,actual:[...actual],error},null,2);
+quad.dispose();material.dispose();texture.dispose();target.dispose();renderer.dispose();
+if(!pass)throw new Error('Finite HDR shader regression');
+</script></body></html>

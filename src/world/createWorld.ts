@@ -8,11 +8,9 @@ import {
   Group,
   HemisphereLight,
   type Material,
-  Matrix4,
   Mesh,
   MeshBasicMaterial,
   MeshStandardMaterial,
-  Object3D,
   OctahedronGeometry,
   PointLight,
   Scene,
@@ -23,8 +21,6 @@ import {
   TorusGeometry,
   Vector3,
 } from 'three';
-import { BufferGeometry } from 'three';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import {
   createNightAtmosphere,
   type NightAtmosphere,
@@ -64,6 +60,7 @@ import {
 } from './createStreetlights';
 import { LocalLightRegistry } from './localLighting';
 import { mergeStaticModelMeshes } from './mergeStaticModelMeshes';
+import { mergeSterlingStaticParts } from './mergeSterlingStaticParts';
 import { SterlingBike } from '../vehicles/SterlingBike';
 import { SterlingFleet } from '../vehicles/SterlingFleet';
 import {
@@ -1741,11 +1738,10 @@ async function replaceAdvancedPhotoFallback(
 }
 
 // The GLB is authored at real-world scale. The game's South Road placeholders
-// are larger (the Off-Licence is 11 × 10 × 7.6 m), so Spice Cabin is enlarged
-// to sit with its neighbour, as the bus shelter is at 1.3. Depth is matched
-// exactly to the Off-Licence's 10 m, because the asset's east party wall has no
-// exterior face and must stay covered; the 5% difference is not visible. Keep
-// worldLayout.ts's spice-cabin envelope equal to 6.2 × 7.0 × 5.1 m times these.
+// are larger, so Spice Cabin is enlarged to sit with them, as the bus shelter is
+// at 1.3. Depth is 10 m, matching the Off-Licence placeholder that used to stand
+// east of it; the 5% difference is not visible. Keep worldLayout.ts's
+// spice-cabin envelope equal to 6.2 × 7.0 × 5.1 m times these.
 const SPICE_CABIN_SCALE = 1.5;
 const SPICE_CABIN_DEPTH_SCALE = 10 / 7;
 
@@ -1865,6 +1861,40 @@ async function addSpiceCabinModel(
       error,
     );
   }
+}
+
+// The asset's east party wall has no exterior face; the Off-Licence placeholder
+// used to hide it. With that plot now empty, a plain sooty brick skin closes the
+// gable just outside the collision footprint, full depth and height.
+const SPICE_CABIN_PARTY_WALL_THICKNESS = 0.3;
+
+function addSpiceCabinPartyWall(
+  root: Group,
+  obstacles: CollisionObstacle[],
+  location: WorldLocation,
+): void {
+  const t = SPICE_CABIN_PARTY_WALL_THICKNESS;
+  const material = createWorldMaterial('brick-soot-overhaul', {
+    repeatX: Math.max(2, Math.round(location.depth / 4)),
+    repeatY: Math.max(2, Math.round(location.height / 2)),
+    tint: 0x81716b,
+    emissive: 0x070b18,
+    emissiveIntensity: 0.06,
+    roughness: 0.97,
+  });
+  const wall = createBox(t, location.height, location.depth, material);
+  wall.name = 'Spice Cabin east party wall';
+  const x = location.x + location.width / 2 + t / 2;
+  wall.position.set(x, location.height / 2, location.z);
+  root.add(wall);
+  obstacles.push({
+    name: wall.name,
+    minX: x - t / 2,
+    maxX: x + t / 2,
+    minZ: location.z - location.depth / 2,
+    maxZ: location.z + location.depth / 2,
+    height: location.height,
+  });
 }
 
 // Worn pallets (docs/assets/pallets.md) stacked against Spice Cabin's west gable,
@@ -2340,7 +2370,6 @@ function addBlockoutFacade(root: Group, location: WorldLocation): void {
     'vinyl-exchange': ['#d3c6a0', '#a12f28', VISUAL_STYLE.lighting.sodium],
     'real-camera': ['#ddd1ae', '#8c2a22', VISUAL_STYLE.lighting.sodium],
     'spice-cabin': ['#8d2d29', '#f0d28c', VISUAL_STYLE.lighting.sodium],
-    'off-licence': ['#302a25', '#ead7ac', VISUAL_STYLE.lighting.sodium],
     'advanced-photo': ['#d4cbb2', '#20384b', VISUAL_STYLE.lighting.coldWhite],
     'arts-council': ['#d4c79d', '#191816', VISUAL_STYLE.lighting.coldWhite],
   };
@@ -2630,6 +2659,7 @@ function addBuildingLocation(
     // so the measured envelope stays solid.
     addCollisionFootprint(obstacles, location);
     addSpiceCabinBollardCollision(obstacles, location);
+    addSpiceCabinPartyWall(root, obstacles, location);
     const palletStack = spiceCabinPalletStackPlacement(location);
     void addPalletStack(root, palletStack);
     addPalletStackCollision(obstacles, palletStack);
@@ -3383,117 +3413,13 @@ const STERLING_ARTICULATED_NODES = new Set([
 const STERLING_DOCK_SPACING = 0.94;
 let sterlingTemplates: Promise<{ bike: Group; dock: Group }> | undefined;
 
-function applySterlingBlockoutPolicy(model: Group): void {
-  // Geometry-review blockout: keep the authored placeholder palette, but stop
-  // lens and reflector placeholders reading as lit before the lighting pass.
-  model.traverse((child) => {
-    if (!(child instanceof Mesh)) {
-      return;
-    }
-    const materials = Array.isArray(child.material)
-      ? child.material
-      : [child.material];
-    for (const material of materials) {
-      if (material instanceof MeshStandardMaterial) {
-        material.emissive.set(0x000000);
-        material.emissiveIntensity = 0;
-        material.roughness = Math.max(material.roughness, 0.4);
-      }
-    }
-  });
-}
-
-function flipTriangleWinding(geometry: BufferGeometry): void {
-  for (const attribute of [geometry.getAttribute('position'), geometry.getAttribute('normal')]) {
-    for (let vertex = 0; vertex + 2 < attribute.count; vertex += 3) {
-      for (let component = 0; component < attribute.itemSize; component += 1) {
-        const second = attribute.getComponent(vertex + 1, component);
-        attribute.setComponent(vertex + 1, component, attribute.getComponent(vertex + 2, component));
-        attribute.setComponent(vertex + 2, component, second);
-      }
-    }
-  }
-}
-
-function mergeSterlingStaticParts(model: Group): void {
-  // The blockout exports ~107 meshes per bike. Merge the meshes under each
-  // articulated node (or the root) by material so a bike costs a couple of
-  // dozen draw calls while its moving parts keep their authored pivots.
-  model.updateMatrixWorld(true);
-  const meshes: Mesh[] = [];
-  model.traverse((child) => {
-    if (child instanceof Mesh && !Array.isArray(child.material)) {
-      meshes.push(child);
-    }
-  });
-
-  const batches = new Map<Object3D, Map<Material, BufferGeometry[]>>();
-  const toOwner = new Matrix4();
-  for (const mesh of meshes) {
-    let owner: Object3D = model;
-    for (let ancestor = mesh.parent; ancestor && ancestor !== model; ancestor = ancestor.parent) {
-      if (STERLING_ARTICULATED_NODES.has(ancestor.name)) {
-        owner = ancestor;
-        break;
-      }
-    }
-    const geometry = mesh.geometry.index
-      ? mesh.geometry.toNonIndexed()
-      : mesh.geometry.clone();
-    // Untextured placeholders: position and normal are all that must agree
-    // for the geometries to merge.
-    for (const name of Object.keys(geometry.attributes)) {
-      if (name !== 'position' && name !== 'normal') {
-        geometry.deleteAttribute(name);
-      }
-    }
-    if (!geometry.getAttribute('normal')) {
-      geometry.computeVertexNormals();
-    }
-    toOwner.copy(owner.matrixWorld).invert().multiply(mesh.matrixWorld);
-    geometry.applyMatrix4(toOwner);
-    if (toOwner.determinant() < 0) {
-      flipTriangleWinding(geometry);
-    }
-    // Multi-material meshes were filtered out above.
-    const material = mesh.material as Material;
-    const byMaterial = batches.get(owner) ?? new Map<Material, BufferGeometry[]>();
-    batches.set(owner, byMaterial);
-    const geometries = byMaterial.get(material) ?? [];
-    byMaterial.set(material, geometries);
-    geometries.push(geometry);
-  }
-
-  for (const mesh of meshes) {
-    for (const child of [...mesh.children]) {
-      mesh.parent?.attach(child);
-    }
-    mesh.removeFromParent();
-  }
-
-  for (const [owner, byMaterial] of batches) {
-    for (const [material, geometries] of byMaterial) {
-      const merged = mergeGeometries(geometries);
-      for (const geometry of merged ? [merged] : geometries) {
-        const mesh = new Mesh(geometry, material);
-        mesh.name = `${owner.name} ${material.name}`;
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        owner.add(mesh);
-      }
-    }
-  }
-  model.updateMatrixWorld(true);
-}
-
 function loadSterlingTemplates(): Promise<{ bike: Group; dock: Group }> {
   sterlingTemplates ??= Promise.all([
-    loadModel('assets/models/sterling-bike/sterling-bike-blockout.glb?v=geometry-pass2-20260916'),
-    loadModel('assets/models/sterling-bike/sterling-dock-blockout.glb?v=geometry-pass2-20260916'),
+    loadModel('assets/models/sterling-bike/sterling-bike-blockout.glb?v=material-bake-20260924'),
+    loadModel('assets/models/sterling-bike/sterling-dock-blockout.glb?v=material-bake-20260924'),
   ]).then(([bike, dock]) => {
     for (const model of [bike, dock]) {
-      applySterlingBlockoutPolicy(model);
-      mergeSterlingStaticParts(model);
+      mergeSterlingStaticParts(model, STERLING_ARTICULATED_NODES);
     }
     return { bike, dock };
   });
@@ -3728,7 +3654,6 @@ function addStreetDressing(root: Group, obstacles: CollisionObstacle[]): void {
   addReflectionPatch(root, 'Arts Council fascia spill', 34, 20, 5.8, 0.82, VISUAL_STYLE.lighting.sodium, 0.17, 0.08);
   addReflectionPatch(root, 'Vinyl Exchange fascia spill', -7, 57.6, 4.7, 0.75, VISUAL_STYLE.lighting.sodium, 0.2, 0.04);
   addReflectionPatch(root, 'Spice Cabin fascia spill', 10.8, 57.2, 0.82, 4.2, VISUAL_STYLE.lighting.magenta, 0.18, -0.08);
-  addReflectionPatch(root, 'Off-Licence fascia spill', 22.5, 57.2, 0.82, 4.2, VISUAL_STYLE.lighting.sodium, 0.16, 0.06);
   addReflectionPatch(root, 'Advanced Photo fascia spill', 12.1, 62, 3.8, 0.7, VISUAL_STYLE.lighting.coldWhite, 0.16, -0.04);
 }
 

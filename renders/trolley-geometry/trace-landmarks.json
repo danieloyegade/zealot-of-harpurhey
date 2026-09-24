@@ -1,0 +1,60 @@
+{
+  "reference_size": [
+    1818,
+    1456
+  ],
+  "crop": [
+    635,
+    770,
+    430,
+    390
+  ],
+  "pixels_per_metre_inferred": 325.0,
+  "landmarks": {
+    "rear_top": [
+      732,
+      817
+    ],
+    "front_top": [
+      1027,
+      843
+    ],
+    "rear_bottom": [
+      769,
+      925
+    ],
+    "front_bottom": [
+      1024,
+      915
+    ],
+    "rear_foot": [
+      692,
+      1091
+    ],
+    "rear_bend": [
+      757,
+      938
+    ],
+    "front_bend": [
+      834,
+      934
+    ],
+    "front_foot": [
+      980,
+      1091
+    ],
+    "rear_wheel": [
+      682,
+      1124
+    ],
+    "front_wheel": [
+      990,
+      1124
+    ],
+    "handle": [
+      697,
+      797
+    ]
+  },
+  "note": "Y/Z traced from visible near-side profile; hidden depth is inferred. Photo governs over approximate written ratios."
+}

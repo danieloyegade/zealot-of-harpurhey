@@ -12,7 +12,7 @@ export default defineConfig({
   // Generated from config/runtime-assets.json by the npm lifecycle scripts.
   // Development receives the full workshop; production receives only runtime
   // dependencies that have passed the release boundary.
-  publicDir: '.runtime-public',
+  publicDir: process.env.ZEALOT_RUNTIME_OUTPUT ?? '.runtime-public',
   server: {
     port: requestedPort ?? 5173,
     strictPort: requestedPort !== undefined,

@@ -134,13 +134,16 @@ def add_cylinder_between(name, start, end, radius, mat, parent, vertices=8):
     return parent_to(obj, parent)
 
 
-def add_wheel(name, location, mat, parent, steering=0.0):
+def add_wheel(name, location, mat, parent, steering=0.0, radius=0.09):
+    # Small utilitarian casters, not full-size supermarket wheels: everything
+    # scales off the one radius so the fork stays proportional.
+    scale = radius / 0.09
     wheel_root = add_empty(name, parent, location)
     wheel_root.rotation_euler[2] = steering
     bpy.ops.mesh.primitive_cylinder_add(
         vertices=12,
-        radius=0.09,
-        depth=0.052,
+        radius=radius,
+        depth=0.052 * scale,
         location=(0, 0, 0),
         rotation=(0, pi / 2, 0),
     )
@@ -148,7 +151,7 @@ def add_wheel(name, location, mat, parent, steering=0.0):
     wheel.name = f"{name}_Tyre"
     wheel.data.materials.append(mat[0])
     parent_to(wheel, wheel_root)
-    add_box(f"{name}_Fork", (0.075, 0.045, 0.15), (0, 0, 0.095), mat[1], wheel_root, bevel=0.012)
+    add_box(f"{name}_Fork", (0.075 * scale, 0.045 * scale, 0.15 * scale), (0, 0, 0.095 * scale), mat[1], wheel_root, bevel=0.012 * scale)
     return wheel_root
 
 
@@ -161,9 +164,15 @@ def create_materials():
         "sign": material("MAT_BusStop_Signage_PLACEHOLDER", (0.79, 0.79, 0.75), 0.82),
         "advert": material("MAT_BusStop_Advert_PLACEHOLDER", (0.84, 0.81, 0.79), 0.62),
         "light": material("MAT_BusStop_Light_PLACEHOLDER", (0.9, 0.89, 0.81), 0.4),
-        "trolley": material("MAT_Trolley_Metal_PLACEHOLDER", (0.43, 0.47, 0.46), 0.38, 0.78),
-        "plastic": material("MAT_Trolley_Plastic_PLACEHOLDER", (0.16, 0.18, 0.17), 0.72),
-        "wheel": material("MAT_Trolley_Wheel_PLACEHOLDER", (0.045, 0.05, 0.048), 0.92),
+        # Aged galvanised/chromed steel: the whole structure (basket, frame,
+        # handle) -- moderate, irregular roughness rather than a mirror-polish
+        # chrome, so it reads as an outdoor, abandoned object.
+        "trolley": material("MAT_Trolley_GalvanisedSteel", (0.50, 0.52, 0.50), 0.50, 0.78),
+        # Darker, less metallic worn bracket/fork metal -- the one deliberate
+        # material break, at the wheel mounts, for a hint of "old and
+        # utilitarian" without needing a baked weathering pass.
+        "plastic": material("MAT_Trolley_WornBracket", (0.10, 0.10, 0.11), 0.62, 0.55),
+        "wheel": material("MAT_Trolley_Tyre", (0.03, 0.032, 0.034), 0.88),
     }
 
 
@@ -232,79 +241,168 @@ def build_shelter(mats):
     return root
 
 
+# Pixel landmarks measured on the supplied 1818 x 1456 photograph. +Y is
+# screen-right/nose, +X is the near side, Z is up. Absolute scale is inferred;
+# relative Y/Z positions are traced, not generic trolley dimensions.
+TROLLEY_TRACE = {
+    "rear_top": (732, 817), "front_top": (1027, 843),
+    "rear_bottom": (769, 925), "front_bottom": (1024, 915),
+    "rear_foot": (692, 1091), "rear_bend": (757, 938),
+    "front_bend": (834, 934), "front_foot": (980, 1091),
+    "rear_wheel": (682, 1124), "front_wheel": (990, 1124),
+    "handle": (697, 797),
+}
+TROLLEY_PIXELS_PER_METRE = 325.0
+TROLLEY_IMAGE_ORIGIN = (835, 1143)
+
+
+def trolley_point(pixel, x=0.0):
+    u, v = pixel
+    return Vector((x, (u - TROLLEY_IMAGE_ORIGIN[0]) / TROLLEY_PIXELS_PER_METRE,
+                   (TROLLEY_IMAGE_ORIGIN[1] - v) / TROLLEY_PIXELS_PER_METRE))
+
+
+def add_bent_tube(name, points, radius, mat, parent, rounding=0.04):
+    """One connected tube, with short quadratic bends between straight runs."""
+    points = [Vector(p) for p in points]
+    sampled = [points[0]]
+    for previous, corner, following in zip(points, points[1:], points[2:]):
+        distance = min(rounding, (previous-corner).length/3, (following-corner).length/3)
+        a = corner + (previous-corner).normalized()*distance
+        b = corner + (following-corner).normalized()*distance
+        sampled.append(a)
+        for i in range(1, 9):
+            t = i/8
+            sampled.append((1-t)**2*a + 2*(1-t)*t*corner + t*t*b)
+    sampled.append(points[-1])
+    curve = bpy.data.curves.new(name + "_Curve", "CURVE")
+    curve.dimensions = "3D"
+    curve.bevel_depth = radius
+    curve.bevel_resolution = 3
+    curve.use_fill_caps = True
+    spline = curve.splines.new("POLY")
+    spline.points.add(len(sampled)-1)
+    for p, co in zip(spline.points, sampled):
+        p.co = (*co, 1)
+    obj = bpy.data.objects.new(name, curve)
+    bpy.context.collection.objects.link(obj)
+    curve.materials.append(mat)
+    parent_to(obj, parent)
+    bpy.ops.object.select_all(action="DESELECT")
+    obj.select_set(True)
+    bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.convert(target="MESH")
+    for polygon in obj.data.polygons:
+        polygon.use_smooth = True
+    return obj
+
+
 def build_trolley(mats, detailed=True):
+    """Reconstruct the photographed profile; retain genuinely open 3D wirework."""
     root = add_empty("PRESTON_SHOPPING_TROLLEY")
     basket = add_empty("TROLLEY_Basket", root)
     frame = add_empty("TROLLEY_Frame", root)
     handle = add_empty("TROLLEY_Handle", root)
+    metal = mats["trolley"]
+    # Width is inferred from the visible return edges in the photograph.
+    # The near-side Y/Z silhouette is the traced constraint on both sides.
+    corners = {}
+    for side, label in ((1, "R"), (-1, "L")):
+        rt = trolley_point(TROLLEY_TRACE["rear_top"], side*0.265)
+        ft = trolley_point(TROLLEY_TRACE["front_top"], side*0.225)
+        rb = trolley_point(TROLLEY_TRACE["rear_bottom"], side*0.205)
+        fb = trolley_point(TROLLEY_TRACE["front_bottom"], side*0.185)
+        corners[label] = (rt, ft, rb, fb)
+        for part, a, b in (("Top", rt, ft), ("Bottom", rb, fb),
+                            ("Rear", rt, rb), ("Front", ft, fb)):
+            add_cylinder_between(f"TROLLEY_Basket_{part}_{label}", a, b, 0.006, metal, basket, 8)
+        if detailed:
+            # 27 side ribs per wall, compared with 12 in the previous tray.
+            for i in range(1, 28):
+                t = i/28
+                add_cylinder_between(f"TROLLEY_Basket_SideWire_{label}_{i:02d}",
+                                     rt.lerp(ft, t), rb.lerp(fb, t), 0.0022, metal, basket, 6)
+            for i, t in enumerate((0.18, 0.84)):
+                add_cylinder_between(f"TROLLEY_Basket_SideRail_{label}_{i}",
+                                     rt.lerp(rb, t), ft.lerp(fb, t), 0.0025, metal, basket, 6)
 
-    top = (-0.38, 0.38, -0.63, 0.68, 1.19)
-    lower = (-0.28, 0.28, -0.48, 0.54, 0.72)
-    tx0, tx1, ty0, ty1, tz = top
-    bx0, bx1, by0, by1, bz = lower
-    edges = [
-        ((tx0, ty0, tz), (tx1, ty0, tz)), ((tx0, ty1, tz), (tx1, ty1, tz)),
-        ((tx0, ty0, tz), (tx0, ty1, tz)), ((tx1, ty0, tz), (tx1, ty1, tz)),
-        ((bx0, by0, bz), (bx1, by0, bz)), ((bx0, by1, bz), (bx1, by1, bz)),
-        ((bx0, by0, bz), (bx0, by1, bz)), ((bx1, by0, bz), (bx1, by1, bz)),
-    ]
-    for index, edge in enumerate(edges):
-        add_cylinder_between(f"TROLLEY_Basket_Rim_{index:02d}", *edge, 0.018, mats["trolley"], basket, 6)
-    for sx, sy in ((tx0, ty0), (tx0, ty1), (tx1, ty0), (tx1, ty1)):
-        ex = bx0 if sx < 0 else bx1
-        ey = by0 if sy < 0 else by1
-        add_cylinder_between(f"TROLLEY_Basket_Corner_{sx:+.2f}_{sy:+.2f}", (sx, sy, tz), (ex, ey, bz), 0.014, mats["trolley"], basket, 6)
-
+    left, right = corners["L"], corners["R"]
+    for i in range(4):
+        add_cylinder_between(f"TROLLEY_Basket_CrossRail_{i}", left[i], right[i], 0.006, metal, basket, 8)
     if detailed:
-        # Open basket: enough low-sided wire geometry to read from gameplay distance.
-        for side_x in (tx0, tx1):
-            for index in range(10):
-                t = index / 9
-                y_top = ty0 + (ty1 - ty0) * t
-                y_bottom = by0 + (by1 - by0) * t
-                add_cylinder_between(f"TROLLEY_Basket_SideWire_{'L' if side_x < 0 else 'R'}_{index:02d}", (side_x, y_top, tz - 0.02), ((bx0 if side_x < 0 else bx1), y_bottom, bz + 0.02), 0.007, mats["trolley"], basket, 5)
-        for index in range(8):
-            t = index / 7
-            x_top = tx0 + (tx1 - tx0) * t
-            x_bottom = bx0 + (bx1 - bx0) * t
-            add_cylinder_between(f"TROLLEY_Basket_FrontWire_{index:02d}", (x_top, ty1, tz - 0.02), (x_bottom, by1, bz + 0.02), 0.007, mats["trolley"], basket, 5)
-        for level in (0.81, 0.93, 1.05):
-            t = (level - bz) / (tz - bz)
-            x = bx0 + (tx0 - bx0) * t
-            add_cylinder_between(f"TROLLEY_Basket_Horizontal_L_{int(level*100)}", (x, by0, level), (x, by1, level), 0.006, mats["trolley"], basket, 5)
-            add_cylinder_between(f"TROLLEY_Basket_Horizontal_R_{int(level*100)}", (-x, by0, level), (-x, by1, level), 0.006, mats["trolley"], basket, 5)
+        for end, top_index, bottom_index in (("Rear", 0, 2), ("Front", 1, 3)):
+            for i in range(1, 13):
+                t = i/13
+                add_cylinder_between(f"TROLLEY_Basket_{end}Wire_{i:02d}",
+                                     left[top_index].lerp(right[top_index], t),
+                                     left[bottom_index].lerp(right[bottom_index], t), 0.0022, metal, basket, 6)
+            for i, t in enumerate((0.18, 0.84)):
+                add_cylinder_between(f"TROLLEY_Basket_{end}Rail_{i}",
+                                     left[top_index].lerp(left[bottom_index], t),
+                                     right[top_index].lerp(right[bottom_index], t), 0.0025, metal, basket, 6)
+        # An actual wire floor; the previous model had an empty hole underneath.
+        for i in range(1, 28):
+            t = i/28
+            add_cylinder_between(f"TROLLEY_Basket_FloorCross_{i:02d}",
+                                 left[2].lerp(left[3], t), right[2].lerp(right[3], t), 0.0022, metal, basket, 6)
+        for i in range(1, 11):
+            t = i/11
+            add_cylinder_between(f"TROLLEY_Basket_FloorLong_{i:02d}",
+                                 left[2].lerp(right[2], t), left[3].lerp(right[3], t), 0.0022, metal, basket, 6)
 
-    add_cylinder_between("TROLLEY_Handle_Bar", (-0.43, -0.94, 1.18), (0.43, -0.94, 1.18), 0.032, mats["plastic"], handle, 10)
-    add_cylinder_between("TROLLEY_Handle_Stem_L", (-0.34, -0.91, 1.16), (-0.26, -0.46, 0.69), 0.022, mats["trolley"], handle, 7)
-    add_cylinder_between("TROLLEY_Handle_Stem_R", (0.34, -0.91, 1.16), (0.26, -0.46, 0.69), 0.022, mats["trolley"], handle, 7)
-    for side in (-1, 1):
-        x = 0.27 * side
-        add_cylinder_between(f"TROLLEY_Frame_Lower_{'L' if side < 0 else 'R'}", (x, -0.48, 0.70), (x, 0.56, 0.23), 0.023, mats["trolley"], frame, 7)
-        add_cylinder_between(f"TROLLEY_Frame_RearLeg_{'L' if side < 0 else 'R'}", (x, -0.48, 0.70), (x, -0.56, 0.22), 0.023, mats["trolley"], frame, 7)
-    add_cylinder_between("TROLLEY_Frame_FrontAxle", (-0.30, 0.56, 0.23), (0.30, 0.56, 0.23), 0.021, mats["trolley"], frame, 7)
-    add_cylinder_between("TROLLEY_Frame_RearAxle", (-0.30, -0.56, 0.22), (0.30, -0.56, 0.22), 0.021, mats["trolley"], frame, 7)
+    for side, label in ((1, "R"), (-1, "L")):
+        # Both legs meet a short, rounded saddle beneath the REAR of the
+        # basket. They do not descend from opposite basket corners.
+        path = [trolley_point(TROLLEY_TRACE[key], side*0.215)
+                for key in ("rear_foot", "rear_bend", "front_bend", "front_foot")]
+        add_bent_tube(f"TROLLEY_Frame_Continuous_{label}", path, 0.0125, metal, frame, 0.09)
+        rt, ft, rb, fb = corners[label]
+        for i, t in enumerate((0.0, 0.24)):
+            upper = rb.lerp(fb, t)
+            lower = Vector((side*0.215, upper.y, trolley_point((800, 936)).z))
+            add_cylinder_between(f"TROLLEY_Frame_BasketMount_{label}_{i}", lower, upper, 0.009, metal, frame, 8)
+        grip = trolley_point(TROLLEY_TRACE["handle"], side*0.265)
+        add_bent_tube(f"TROLLEY_Handle_Return_{label}",
+                      [rb, rt, grip], 0.010, metal, handle, 0.025)
 
-    wheel_pair = (mats["wheel"], mats["trolley"])
-    add_wheel("TROLLEY_Wheel_FL", (-0.30, 0.58, 0.09), wheel_pair, root, 0.14)
-    add_wheel("TROLLEY_Wheel_FR", (0.30, 0.58, 0.09), wheel_pair, root, -0.10)
-    add_wheel("TROLLEY_Wheel_RL", (-0.30, -0.58, 0.09), wheel_pair, root, -0.18)
-    add_wheel("TROLLEY_Wheel_RR", (0.30, -0.58, 0.09), wheel_pair, root, 0.08)
+        for end, key, foot_key in (("R", "rear_wheel", "rear_foot"), ("F", "front_wheel", "front_foot")):
+            centre = trolley_point(TROLLEY_TRACE[key], side*0.215)
+            foot = trolley_point(TROLLEY_TRACE[foot_key], side*0.215)
+            wheel_root = add_empty(f"TROLLEY_Wheel_{end}{label}", root)
+            radius = centre.z  # Tangency at Z=0, no floating tyres.
+            bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=radius, depth=0.028,
+                                               location=centre, rotation=(0, pi/2, 0))
+            wheel = bpy.context.object
+            wheel.name = f"TROLLEY_Wheel_{end}{label}_Tyre"
+            wheel.data.materials.append(mats["wheel"])
+            parent_to(wheel, wheel_root)
+            for offset in (-0.023, 0.023):
+                axle = centre + Vector((offset, 0, 0))
+                crown = foot + Vector((offset, 0, -0.025))
+                add_cylinder_between(f"TROLLEY_Wheel_{end}{label}_Fork_{offset}",
+                                     axle, crown, 0.009, mats["plastic"], wheel_root, 8)
+            add_cylinder_between(f"TROLLEY_Wheel_{end}{label}_Swivel", foot,
+                                 foot-Vector((0, 0, 0.034)), 0.022, mats["plastic"], wheel_root, 12)
+            add_cylinder_between(f"TROLLEY_Wheel_{end}{label}_Axle",
+                                 centre-Vector((0.031, 0, 0)), centre+Vector((0.031, 0, 0)), 0.010, metal, wheel_root, 10)
 
+    add_cylinder_between("TROLLEY_Handle_Bar", trolley_point(TROLLEY_TRACE["handle"], -0.265),
+                         trolley_point(TROLLEY_TRACE["handle"], 0.265), 0.014, metal, handle, 12)
     if detailed:
         chain = add_empty("TROLLEY_Chain", root)
-        for index in range(7):
-            bpy.ops.mesh.primitive_torus_add(
-                major_radius=0.025,
-                minor_radius=0.006,
-                major_segments=8,
-                minor_segments=4,
-                location=(-0.39, -0.91 + index * 0.034, 1.12 - index * 0.045),
-                rotation=(pi / 2, 0, index * pi / 2),
-            )
+        for i in range(12):
+            p = trolley_point((697, 802+i*4), 0.265)
+            bpy.ops.mesh.primitive_torus_add(major_radius=0.007, minor_radius=0.0018,
+                                            major_segments=10, minor_segments=5, location=p,
+                                            rotation=(0, pi/2, i*pi/2))
             link = bpy.context.object
-            link.name = f"TROLLEY_Chain_Link_{index:02d}"
-            link.data.materials.append(mats["trolley"])
+            link.name = f"TROLLEY_Chain_Link_{i:02d}"
+            link.data.materials.append(metal)
             parent_to(link, chain)
+    if detailed:
+        # Reuse the approved material atlas on rebuild; no geometry mutation.
+        from textureTrolley import apply_saved
+        apply_saved(root)
     return root
 
 

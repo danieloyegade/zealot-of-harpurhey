@@ -1,7 +1,6 @@
 import { Group, Mesh, MeshPhysicalMaterial } from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
-const gltfLoader = new GLTFLoader();
+import { dequantizeModelGeometry } from './dequantizeGeometry';
+import { getGltfLoader } from './gltfLoader';
 
 // Glass exported with KHR_materials_transmission makes three.js render the
 // whole opaque scene a second time, into a transmission target, every frame
@@ -34,7 +33,8 @@ function resolveAssetUrl(relativePath: string): string {
 
 export async function loadModel(relativePath: string): Promise<Group> {
   const assetUrl = resolveAssetUrl(relativePath);
-  const gltf = await gltfLoader.loadAsync(assetUrl);
+  const gltf = await getGltfLoader().loadAsync(assetUrl);
+  dequantizeModelGeometry(gltf.scene);
 
   gltf.scene.traverse((child) => {
     if (child instanceof Mesh) {

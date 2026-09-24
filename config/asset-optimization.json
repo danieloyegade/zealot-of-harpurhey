@@ -1,0 +1,6 @@
+{
+  "quantizePositions": {
+    "assets/models/real_camera.glb": "Static building and the largest model (about 14 MB of geometry). Nothing in src/ rotates its nodes or looks them up by name, so quantised mesh origins and the extra child nodes are harmless.",
+    "assets/models/harpurhey-coral-shop.glb": "Static shop with 630 small meshes and no textures; pure geometry. Nothing in src/ rotates its nodes or looks them up by name."
+  }
+}

@@ -4,7 +4,10 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const sourceRoot = resolve(projectRoot, 'public');
-const outputRoot = resolve(projectRoot, '.runtime-public');
+// ZEALOT_RUNTIME_OUTPUT lets a second asset set (for example an optimised one
+// beside the default) be built and served without touching `.runtime-public/`;
+// vite.config.ts reads the same variable.
+const outputRoot = resolve(projectRoot, process.env.ZEALOT_RUNTIME_OUTPUT ?? '.runtime-public');
 const manifestPath = resolve(projectRoot, 'config/runtime-assets.json');
 
 export function isSafeAssetPath(relativePath) {
@@ -56,7 +59,15 @@ export async function validateEntries(entries) {
   return failures;
 }
 
-export async function prepareRuntimeAssets(mode = 'production') {
+/**
+ * Copy the manifest's assets into `.runtime-public/`, then optimise the
+ * models there (scripts/optimizeRuntimeAssets.mjs). The authored files under
+ * `public/` are never modified. Set ZEALOT_OPTIMIZE_ASSETS=0 to skip the
+ * optimisation and serve the authored files as-is.
+ */
+export async function prepareRuntimeAssets(mode = 'production', {
+  optimize = process.env.ZEALOT_OPTIMIZE_ASSETS !== '0',
+} = {}) {
   const manifest = await readManifest();
   const entries = mode === 'development'
     ? [...manifest.production, ...manifest.developmentOnly]
@@ -83,7 +94,12 @@ export async function prepareRuntimeAssets(mode = 'production') {
     });
     total += await byteSize(source);
   }
-  return { mode, entries: copied.size, bytes: total };
+  let optimized = null;
+  if (optimize) {
+    const { optimizeRuntimeAssets } = await import('./optimizeRuntimeAssets.mjs');
+    optimized = await optimizeRuntimeAssets({ sourceRoot, outputRoot });
+  }
+  return { mode, entries: copied.size, bytes: total, optimized };
 }
 
 async function main() {

@@ -6,6 +6,7 @@ import {
   type Scene,
   type WebGLRenderer,
 } from 'three';
+import { finiteColorShader } from './finiteColorShader';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -32,6 +33,7 @@ export function createPostProcessing(
 ): PostProcessingPipeline {
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
+  composer.addPass(new ShaderPass(finiteColorShader));
 
   if (quality.bloomEnabled) {
     composer.addPass(

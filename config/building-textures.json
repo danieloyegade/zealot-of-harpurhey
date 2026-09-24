@@ -205,6 +205,25 @@
       ],
       "expectedSurfaces": 10,
       "maxBytes": 21000000
+    },
+    {
+      "building": "greek-gyros",
+      "glb": "assets/models/greek_gyros.glb",
+      "surfacePrefix": "MAT_GG_Surface_",
+      "textureDir": "blender/source/textures/greek-gyros",
+      "placeholders": {
+        "MAT_GG_White_PLACEHOLDER": "gg-panel-white",
+        "MAT_GG_Blue_PLACEHOLDER": "gg-panel-blue",
+        "MAT_GG_DeepBlue_PLACEHOLDER": "gg-panel-deep-blue",
+        "MAT_GG_DarkMetal_PLACEHOLDER": "gg-metal-dark",
+        "MAT_GG_Metal_PLACEHOLDER": "gg-metal-steel"
+      },
+      "untexturedAllowed": [
+        "MAT_GG_Glass_PLACEHOLDER",
+        "MAT_GG_FixtureLens_PLACEHOLDER"
+      ],
+      "expectedSurfaces": 5,
+      "maxBytes": 5000000
     }
   ]
 }

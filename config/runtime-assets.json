@@ -1,6 +1,6 @@
 {
   "production": [
-    "ui/title",
+    "ui/title/zealot-loading-screen.webp",
     "assets/textures",
     "assets/models/player-character-rigged.glb",
     "assets/models/nice-things-blockout.glb",
@@ -34,7 +34,8 @@
     "assets/models/streetlight-weathered-01.glb",
     "assets/models/harpurhey-coral-shop.glb",
     "assets/models/harpurhey-coral-bin.glb",
-    "assets/models/harpurhey-coral-bollard.glb"
+    "assets/models/harpurhey-coral-bollard.glb",
+    "_headers"
   ],
   "developmentOnly": [
     "assets/audio",

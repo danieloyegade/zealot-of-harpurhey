@@ -39,8 +39,7 @@ Coordinates are plot centres. Footprints are X width × Z depth.
 | Car Park | (43, 0) | 20 × 14 m | Open surface between upper and lower east plots |
 | Arts Council / The Hive | (47, 20) | 20.4 × 44.3 m | Geometry asset centred on the east-side plot with its Lever Street frontage facing west |
 | Eastern Bloc | (20, 69.75) | 10 × 10 m | North-facing unit touching the east side of Advanced Photo across South Road |
-| Spice Cabin | (12.35, 49) | 9.3 × 10 m | Finished textured end unit at 1.5× authored scale (depth matched to the Off-Licence) to sit with the Off-Licence; east party wall covered by it, west gable and its sign face the open gap toward Vinyl Exchange. A stack of two worn pallets at 2× real size (blue on the ground, brown on top) stands against the gable on the bare ground of that gap, 0.35 m behind the building line (`?view=spice-cabin-pallets`) |
-| Off-Licence | (22.5, 49) | 11 × 10 m | South-facing South Road atmospheric/interior location |
+| Spice Cabin | (12.35, 49) | 9.3 × 10 m | Finished textured end unit at 1.5× authored scale (10 m deep); east party wall closed by a plain brick skin at X = 17 now the Off-Licence plot is empty, west gable and its sign face the open gap toward Vinyl Exchange. A stack of two worn pallets at 2× real size (blue on the ground, brown on top) stands against the gable on the bare ground of that gap, 0.35 m behind the building line (`?view=spice-cabin-pallets`) |
 | Real Camera | (-11.5, 69.75) | 14 × 10 m | North-facing unit opposite Vinyl Exchange and west of Advanced Photo; offset to keep the South Road exit open |
 | Advanced Photo | (12.1, 67.85) | 5.8 × 6.2 m | Enterable north-facing geometry blockout; old frontage line retained and east wall attached to Eastern Bloc |
 | Central Park | (0, 0) | 44 × 34 m | Geographic anchor and cross-district shortcut |

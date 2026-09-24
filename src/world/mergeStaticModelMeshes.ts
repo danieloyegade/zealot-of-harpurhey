@@ -27,7 +27,7 @@ interface MergeBatch {
   readonly frustumCulled: boolean;
 }
 
-function geometrySignature(geometry: BufferGeometry): string | undefined {
+export function geometrySignature(geometry: BufferGeometry): string | undefined {
   if (Object.keys(geometry.morphAttributes).length > 0) {
     return undefined;
   }
@@ -46,7 +46,7 @@ function geometrySignature(geometry: BufferGeometry): string | undefined {
   return `${geometry.index ? 'indexed' : 'unindexed'}|${attributes.join('|')}`;
 }
 
-function flipTriangleWinding(geometry: BufferGeometry): void {
+export function flipTriangleWinding(geometry: BufferGeometry): void {
   if (geometry.index) {
     for (let index = 0; index + 2 < geometry.index.count; index += 3) {
       const second = geometry.index.getX(index + 1);
