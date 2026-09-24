@@ -22,6 +22,25 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-24 — Claude (Stage 1 of the realism pass: retro settings off) — branch `realism-pass`
+**HEAD at session start:** `45304f8` (Add a staged, step-by-step plan for the realism pass), then branched to `realism-pass` per Daniel's request (a dedicated branch for the realism-pass work, pushed and pullable to his laptop).
+**Did:** Implemented Stage 1 of `docs/REALISM_PASS_PLAN.md`. All in `src/rendering/visualStyle.ts` and `src/rendering/createPostProcessing.ts`:
+- `geometry.facetedLighting` → `false` (flat shading off everywhere it's read: `worldMaterials.ts`, road/pavement/park/decal/graffiti surfaces).
+- `colorQuantizationLevels` 32 → 255 (a no-op at 8-bit output, so it stops visibly posterising dark gradients); `ditherStrength` 0.003 → `1/255`, just enough to break up banding.
+- `applyTextureProfile`'s `RETRO_GRAPHIC` branch: nearest/nearest-mip → linear/linear-mipmap-linear. Checked all 5 call sites (`worldGraphics.ts` weathered sign/graffiti/notice/sticker cluster, `createWorld.ts` road annotation) — all are canvas-drawn signage, kept as `RETRO_GRAPHIC` for its lower anisotropy, just no longer pixellated.
+- Added `SMAAPass`, gated by a new `QualityProfile.smaaEnabled` (on at MEDIUM/HIGH, off at LOW). **Corrected the plan's stated placement**: SMAA has to run before `OutputPass` (it operates in linear-sRGB; `OutputPass` does the tone-map/colour-space conversion), not "after the grade" as the plan said — order is now RenderPass → Bloom → SMAA → OutputPass → grade.
+- Reconciled docs: `docs/VISUAL_LANGUAGE.md` (title, "Central principle", "Central configuration" values, "Texture profiles", "Post-processing limits" — all previously described/configured the old retro-console target). Also fixed `AGENTS.md`'s caveat, which on inspection had it backwards: `ART_DIRECTION.md`'s "Core principles" already states the current non-retro direction and was never stale; `VISUAL_LANGUAGE.md` was the actually-stale document.
+- Marked Stage 1 done, item by item, in `docs/REALISM_PASS_PLAN.md`.
+**Validation:** `npx tsc --noEmit` clean, `npm test` 17/17, `npm run build` clean (same pre-existing >500kB chunk advisory as before, unrelated). Visually confirmed via Chromium/SwiftShader screenshots at `dreams-target`/`dreams-angle`/`park-to-dreams` (`renders/realism-pass/01-retro-settings-off/`, compare against the Stage 0 baseline in `renders/visual-gap-2026-09-24/`): smoother sky gradient, smoother sign text, no console/shader errors.
+**Left uncommitted (if any):** None — commit follows this entry.
+**Flagged:**
+- **No real fps/GPU measurement yet.** This automation environment is CPU/SwiftShader-only; the Stage 1 "done when" fps budget in the plan is not actually confirmed. Daniel should run the app on real hardware and compare against the Stage 0.3 baseline (not yet captured either — Stage 0 was skipped to get to Stage 1 faster; worth doing retroactively).
+- Step 2 of Stage 1 (checking for lumpy GLB normals now that flat shading is off) needs a real GPU pass to judge properly — not reliably checkable on SwiftShader.
+- Blender is still 3.0.0 per `docs/TECHNICAL.md` (Stage 0.1, not done).
+**Next:** Daniel: `git fetch && git checkout realism-pass`, run locally, sanity-check fps and look for lumpy geometry anywhere in the map (not just the three dev views captured here). Then Stage 2 (the grade) or Stage 0 cleanup (Blender upgrade, baseline capture, landing the KTX2 work), whichever Daniel wants first.
+**Open questions:** None new. Still open from the prior entry: free vs paid character-pipeline route (Stages 7–8).
+
+---
 ## 2026-09-24 — Claude (step-by-step realism pass plan)
 **HEAD at session start:** `1028eb1` (Add visual realism roadmap against the Dreams night reference)
 **Did:** Wrote `docs/REALISM_PASS_PLAN.md`, the executable companion to `VISUAL_REALISM_ROADMAP.md`. It has 10 stages, each with owner, files and a done-when check:

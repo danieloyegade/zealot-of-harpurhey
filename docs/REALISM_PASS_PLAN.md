@@ -26,16 +26,18 @@ Two terms that sound alike:
 
 ---
 
-## Stage 1 — Turn off the retro settings (1 day · 🤖)
+## Stage 1 — Turn off the retro settings (1 day · 🤖) — **done 2026-09-24, `realism-pass` branch**
 
 All in `src/rendering/visualStyle.ts` and `src/rendering/createPostProcessing.ts`.
 
-1. **Flat shading off:** `geometry.facetedLighting: false`. This flows into every `flatShading:` use (`worldMaterials.ts`, road, pavement, park, decals, graffiti).
-2. **Check GLB normals:** for any building that looks lumpy after step 1, re-export from Blender with *Shade Smooth + Weighted Normal modifier* (or Auto Smooth 30°). Note which assets needed it in the stage's `numbers.md`.
-3. **Remove posterisation:** make `colorQuantizationLevels` 255, or delete the quantise line in the grade shader. Keep `ditherStrength` at ~`1/255` purely to stop banding.
-4. **Linear filtering for signage:** in `applyTextureProfile`, `RETRO_GRAPHIC` becomes linear plus mipmaps, unless a specific sign is meant to be pixel art. Then grep for `'RETRO_GRAPHIC'` and remove any that were only there for the old look.
-5. **Anti-aliasing:** add `SMAAPass` (from `three/examples/jsm/postprocessing/SMAAPass.js`) after the grade on MEDIUM and HIGH.
-6. **Update docs:** delete the stale Dreamcast wording in `docs/VISUAL_LANGUAGE.md` (its title still says "Dreamcast") and the matching caveat in `AGENTS.md`.
+1. **Flat shading off:** `geometry.facetedLighting: false`. This flows into every `flatShading:` use (`worldMaterials.ts`, road, pavement, park, decals, graffiti). ✅
+2. **Check GLB normals:** for any building that looks lumpy after step 1, re-export from Blender with *Shade Smooth + Weighted Normal modifier* (or Auto Smooth 30°). Note which assets needed it in the stage's `numbers.md`. **Not done** — needs a real GPU browser pass on Daniel's machine to judge; the `dreams-target`/`dreams-angle` SwiftShader captures taken for this stage didn't show obvious lumpiness, but that's not a reliable signal (software rasteriser). Check on real hardware before Stage 3.
+3. **Remove posterisation:** make `colorQuantizationLevels` 255, or delete the quantise line in the grade shader. Keep `ditherStrength` at ~`1/255` purely to stop banding. ✅ (kept the uniform rather than deleting the shader line, in case a deliberate posterise effect wants it later)
+4. **Linear filtering for signage:** in `applyTextureProfile`, `RETRO_GRAPHIC` becomes linear plus mipmaps, unless a specific sign is meant to be pixel art. Then grep for `'RETRO_GRAPHIC'` and remove any that were only there for the old look. ✅ All 5 current uses (`worldGraphics.ts` weathered sign/graffiti/notice/sticker, `createWorld.ts` road annotation) are canvas-drawn signage, not pixel art — kept as `RETRO_GRAPHIC` (for its lower anisotropy) but now linear-filtered.
+5. **Anti-aliasing:** add `SMAAPass` (from `three/examples/jsm/postprocessing/SMAAPass.js`), gated by a new `quality.smaaEnabled` (on at MEDIUM/HIGH, off at LOW). ✅ — **placement corrected from this plan's original wording**: SMAA must run *before* `OutputPass`, not after the grade — the library operates in linear-sRGB and `OutputPass` performs the tone-mapping/colour-space conversion the grade then works on. Order is now: RenderPass → Bloom → **SMAA** → OutputPass → grade.
+6. **Update docs:** delete the stale Dreamcast wording in `docs/VISUAL_LANGUAGE.md` (its title still said "Dreamcast") and the matching caveat in `AGENTS.md`. ✅ — on inspection the `AGENTS.md` caveat itself was the stale part: `ART_DIRECTION.md`'s "Core principles" already states the current direction. Fixed both.
+
+**Validation:** `npx tsc --noEmit`, `npm test` (17/17), `npm run build` all clean. Visually confirmed via SwiftShader screenshots at `dreams-target`/`dreams-angle`/`park-to-dreams` — smoother sky gradient, smoother sign edges — but SwiftShader gives no meaningful fps number, so the Stage 0/1 performance budget is **not yet confirmed on real hardware**. Do that before Stage 2.
 
 **Done when:** before/after shots show smooth shading and no sky banding, fps is within 3 % of baseline, and the tests plus `npm run check` pass.
 

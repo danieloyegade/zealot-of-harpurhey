@@ -3,8 +3,6 @@ import {
   AgXToneMapping,
   LinearFilter,
   LinearMipmapLinearFilter,
-  NearestFilter,
-  NearestMipmapNearestFilter,
   NeutralToneMapping,
   NoToneMapping,
   type Texture,
@@ -29,6 +27,12 @@ export interface QualityProfile {
   readonly bloomEnabled: boolean;
   readonly bloomStrength: number;
   readonly maximumActiveLocalLights: number;
+  // Post-process edge antialiasing (SMAA). The render-target chain that
+  // EffectComposer draws into does not receive the canvas's own MSAA
+  // (`antialias: true` on WebGLRenderer only affects the default backbuffer),
+  // so thin geometry (railings, cables, kerbs) shimmers at the reduced
+  // renderScale without this.
+  readonly smaaEnabled: boolean;
 }
 
 export const QUALITY_PROFILES: Record<QualityLevel, QualityProfile> = {
@@ -39,6 +43,7 @@ export const QUALITY_PROFILES: Record<QualityLevel, QualityProfile> = {
     bloomEnabled: false,
     bloomStrength: 0,
     maximumActiveLocalLights: 2,
+    smaaEnabled: false,
   },
   medium: {
     level: 'medium',
@@ -47,6 +52,7 @@ export const QUALITY_PROFILES: Record<QualityLevel, QualityProfile> = {
     bloomEnabled: true,
     bloomStrength: 0.3,
     maximumActiveLocalLights: 4,
+    smaaEnabled: true,
   },
   high: {
     level: 'high',
@@ -55,6 +61,7 @@ export const QUALITY_PROFILES: Record<QualityLevel, QualityProfile> = {
     bloomEnabled: true,
     bloomStrength: 0.34,
     maximumActiveLocalLights: 5,
+    smaaEnabled: true,
   },
 };
 
@@ -77,8 +84,13 @@ export const VISUAL_STYLE = {
     },
     saturation: 1.12,
     contrast: 1.05,
-    colorQuantizationLevels: 32,
-    ditherStrength: 0.003,
+    // 255 (one 8-bit step) makes the grade's quantise step a no-op: the
+    // output is already 8-bit, so this stops short of visibly posterising
+    // dark gradients (the night sky, light pools) the way the old 32-level
+    // retro-console step did. ditherStrength stays at roughly one 8-bit step
+    // purely to break up banding, not to add a visible dither pattern.
+    colorQuantizationLevels: 255,
+    ditherStrength: 1 / 255,
     grainStrength: 0.042,
     vignetteStrength: 0.2,
     vignetteSoftness: 0.34,
@@ -134,7 +146,12 @@ export const VISUAL_STYLE = {
     emissiveMultiplier: 1.15,
   },
   geometry: {
-    facetedLighting: true,
+    // Flat (per-facet) shading was the strongest single "low-poly toy" signal
+    // in the old retro-console pass. Off means every world material now lights
+    // per-vertex/per-pixel off smooth normals. GLBs exported with hard/flat
+    // shading in Blender should be re-exported with Shade Smooth plus a
+    // Weighted Normal modifier (or Auto Smooth) if they read lumpy after this.
+    facetedLighting: false,
     shadowsEnabled: false,
     shadowMapSize: 512,
   },
@@ -201,8 +218,13 @@ export function applyTextureProfile(
         )
       : VISUAL_STYLE.texture.photoAnisotropy;
   } else {
-    texture.magFilter = NearestFilter;
-    texture.minFilter = NearestMipmapNearestFilter;
+    // RETRO_GRAPHIC used nearest/nearest-mip filtering (hard, pixellated
+    // edges) as part of the old retro-console rendering pass. These are
+    // canvas-drawn signs, graffiti and road text, not pixel art, so they now
+    // get the same smooth, mipmapped filtering as photographic surfaces;
+    // only the (lower) anisotropy stays distinct.
+    texture.magFilter = LinearFilter;
+    texture.minFilter = LinearMipmapLinearFilter;
     texture.anisotropy = VISUAL_STYLE.texture.graphicAnisotropy;
   }
   if (texture.image != null) {

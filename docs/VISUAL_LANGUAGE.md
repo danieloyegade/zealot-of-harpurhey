@@ -1,10 +1,12 @@
-# Visual language — Dreamcast / photographic world pass
+# Visual language — photographic world pass
 
 ## Central principle
 
-Zealot of Harpurhey should look like photographs of Manchester reconstructed imperfectly inside an ambitious late-1990s or early-2000s console game. The style comes first from low-resolution photographic information, economical geometry, embedded lighting and a restricted palette. Post-processing is a restrained finishing layer, not the source of the retro character.
+Zealot of Harpurhey's visual target is **uncanny realism suspended between the photographic and the obviously constructed** (`ART_DIRECTION.md`), not nostalgia for a console era. The style comes first from photographic reference, deliberate geometry and authored embedded lighting; post-processing is a restrained finishing layer, not the source of any retro character.
 
-The finished bus shelter remains the primary benchmark: recognisable photographic surfaces coexist with simple geometry, imperfect reflections, saturated colour and emissive practical light. Its geometry and embedded textures are preserved.
+Until 24 September 2026 this document (and the render settings it described) targeted a look explicitly modelled on "an ambitious late-1990s or early-2000s console game" — flat per-facet shading, 32-level colour posterisation, and nearest-neighbour-filtered signage. `docs/REALISM_PASS_PLAN.md` Stage 1 removed those specific settings as the first step of a longer realism pass (`docs/VISUAL_REALISM_ROADMAP.md`); this section is reconciled to the current direction. Sections below this point that still describe deliberately economical geometry, embedded/baked-feeling lighting and restrained photographic texture resolution remain current: that discipline is not retro styling, it's the working method for staying performant in a browser, and later realism-pass stages (baked lightmaps, an environment map, higher-resolution PBR sets) build on it rather than replacing it.
+
+The finished bus shelter remains a benchmark for recognisable photographic surfaces coexisting with legible, deliberately simple geometry.
 
 ## Central configuration
 
@@ -16,11 +18,13 @@ Current rendering values:
 - Tone mapping: **AgX**, linear exposure **1.70** (`?tonemap=off` restores the uncurved image at display-referred exposure 1.34)
 - Saturation: **1.12**
 - Contrast: **1.05**
-- Colour quantisation: **32 levels per channel**
-- Ordered-dither strength: **0.003**
+- Colour quantisation: **255 levels per channel** (a no-op at 8-bit output; retained as a uniform rather than removed, in case a future deliberate posterise effect wants it). Until 24 September 2026 this was 32 levels, which visibly banded dark gradients (the night sky, light pools) — a retro-console signature, not a photographic one. Removed in Stage 1 of the realism pass.
+- Ordered-dither strength: **1/255** (down from 0.003; still just enough to break up 8-bit banding, no longer a visible dither pattern)
 - Shadow-weighted film grain: **0.042**
 - Edge vignette strength: **0.20**
-- Shadows: disabled
+- Faceted (flat per-facet) shading: **off** (was on; this was the single strongest "low-poly toy" signal — see `docs/VISUAL_REALISM_ROADMAP.md` §1). Off means every world material now shades per-vertex/per-pixel off smooth normals.
+- Post-process antialiasing: **SMAA**, on at MEDIUM and HIGH (`quality.smaaEnabled`). EffectComposer's render-target chain does not receive the canvas's own MSAA, so this is the real edge antialiasing for the composed frame.
+- Shadows: disabled (real-time; static lighting is heading toward Blender-baked lightmaps per the realism pass, not a real-time shadow map, though a player/bike shadow is planned)
 - Fog: desaturated cobalt `#081327`, near **46 m**, far **106 m**
 - Bloom: strength **0.34**, radius **0.32**, threshold **0.88**
 
@@ -30,7 +34,7 @@ The canvas retains full CSS window dimensions. Only its internal 3D backing reso
 
 `PHOTO_ENVIRONMENT` uses linear magnification, trilinear minification and anisotropy 2. It is used for photographic façades, brick, roads, pavement, foliage and finished GLB photography. This retains image recognisability while allowing the deliberately small source resolution to remain visible.
 
-`RETRO_GRAPHIC` uses nearest magnification, nearest mip selection and anisotropy 1. It is used for signs, road annotations and deliberately game-like graphics.
+`RETRO_GRAPHIC` is used for signs, road annotations and other canvas-drawn graphics. Until 24 September 2026 it forced nearest magnification and nearest mip selection, giving these signs hard, pixellated edges — a deliberate retro-console look. Stage 1 of the realism pass switched it to the same linear magnification and trilinear minification as `PHOTO_ENVIRONMENT`; it keeps its own (lower) anisotropy. These are canvas-drawn signage, not pixel art, so there is no longer a reason to force nearest-neighbour filtering on them.
 
 Do not globally force photographic imagery to nearest-neighbour filtering. The photographic source must remain legible.
 
@@ -142,7 +146,7 @@ Park trees use five-sided trunks and clustered, textured, un-smoothed dodecahedr
 
 ## Post-processing limits
 
-The current composer applies restrained bloom, AgX tone mapping with display conversion, saturation/contrast adjustment, 32-level colour quantisation, subtle 4 × 4 ordered dithering, shadow-weighted film grain and a restrained vignette. Sky and optional star values remain below the bloom threshold, leaving bloom to practical artificial sources. It deliberately excludes scanlines, CRT curvature, chromatic aberration, tape damage, vertex wobble and aggressive pixelation.
+The current composer applies restrained bloom, SMAA edge antialiasing, AgX tone mapping with display conversion, saturation/contrast adjustment, a (now effectively disabled, see "Central configuration") colour-quantisation step, subtle 4 × 4 ordered dithering, shadow-weighted film grain and a restrained vignette. Sky and optional star values remain below the bloom threshold, leaving bloom to practical artificial sources. It deliberately excludes scanlines, CRT curvature, chromatic aberration, tape damage, vertex wobble and aggressive pixelation.
 
 ## Street-level density
 

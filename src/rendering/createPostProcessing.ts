@@ -10,6 +10,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import {
   VISUAL_STYLE,
@@ -41,6 +42,15 @@ export function createPostProcessing(
         VISUAL_STYLE.bloom.threshold,
       ),
     );
+  }
+
+  if (quality.smaaEnabled) {
+    // SMAA must run before OutputPass: it operates in linear-sRGB and
+    // OutputPass performs the final tone-mapping/colour-space conversion.
+    // EffectComposer's render-target chain gets none of the canvas's own
+    // MSAA (that only covers the default backbuffer), so this is the actual
+    // edge antialiasing for the composed frame.
+    composer.addPass(new SMAAPass());
   }
 
   composer.addPass(new OutputPass());
