@@ -8,11 +8,9 @@ import {
   Group,
   HemisphereLight,
   type Material,
-  Matrix4,
   Mesh,
   MeshBasicMaterial,
   MeshStandardMaterial,
-  Object3D,
   OctahedronGeometry,
   PointLight,
   Scene,
@@ -23,8 +21,6 @@ import {
   TorusGeometry,
   Vector3,
 } from 'three';
-import { BufferGeometry } from 'three';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import {
   createNightAtmosphere,
   type NightAtmosphere,
@@ -64,6 +60,7 @@ import {
 } from './createStreetlights';
 import { LocalLightRegistry } from './localLighting';
 import { mergeStaticModelMeshes } from './mergeStaticModelMeshes';
+import { mergeSterlingStaticParts } from './mergeSterlingStaticParts';
 import { SterlingBike } from '../vehicles/SterlingBike';
 import { SterlingFleet } from '../vehicles/SterlingFleet';
 import {
@@ -3383,117 +3380,13 @@ const STERLING_ARTICULATED_NODES = new Set([
 const STERLING_DOCK_SPACING = 0.94;
 let sterlingTemplates: Promise<{ bike: Group; dock: Group }> | undefined;
 
-function applySterlingBlockoutPolicy(model: Group): void {
-  // Geometry-review blockout: keep the authored placeholder palette, but stop
-  // lens and reflector placeholders reading as lit before the lighting pass.
-  model.traverse((child) => {
-    if (!(child instanceof Mesh)) {
-      return;
-    }
-    const materials = Array.isArray(child.material)
-      ? child.material
-      : [child.material];
-    for (const material of materials) {
-      if (material instanceof MeshStandardMaterial) {
-        material.emissive.set(0x000000);
-        material.emissiveIntensity = 0;
-        material.roughness = Math.max(material.roughness, 0.4);
-      }
-    }
-  });
-}
-
-function flipTriangleWinding(geometry: BufferGeometry): void {
-  for (const attribute of [geometry.getAttribute('position'), geometry.getAttribute('normal')]) {
-    for (let vertex = 0; vertex + 2 < attribute.count; vertex += 3) {
-      for (let component = 0; component < attribute.itemSize; component += 1) {
-        const second = attribute.getComponent(vertex + 1, component);
-        attribute.setComponent(vertex + 1, component, attribute.getComponent(vertex + 2, component));
-        attribute.setComponent(vertex + 2, component, second);
-      }
-    }
-  }
-}
-
-function mergeSterlingStaticParts(model: Group): void {
-  // The blockout exports ~107 meshes per bike. Merge the meshes under each
-  // articulated node (or the root) by material so a bike costs a couple of
-  // dozen draw calls while its moving parts keep their authored pivots.
-  model.updateMatrixWorld(true);
-  const meshes: Mesh[] = [];
-  model.traverse((child) => {
-    if (child instanceof Mesh && !Array.isArray(child.material)) {
-      meshes.push(child);
-    }
-  });
-
-  const batches = new Map<Object3D, Map<Material, BufferGeometry[]>>();
-  const toOwner = new Matrix4();
-  for (const mesh of meshes) {
-    let owner: Object3D = model;
-    for (let ancestor = mesh.parent; ancestor && ancestor !== model; ancestor = ancestor.parent) {
-      if (STERLING_ARTICULATED_NODES.has(ancestor.name)) {
-        owner = ancestor;
-        break;
-      }
-    }
-    const geometry = mesh.geometry.index
-      ? mesh.geometry.toNonIndexed()
-      : mesh.geometry.clone();
-    // Untextured placeholders: position and normal are all that must agree
-    // for the geometries to merge.
-    for (const name of Object.keys(geometry.attributes)) {
-      if (name !== 'position' && name !== 'normal') {
-        geometry.deleteAttribute(name);
-      }
-    }
-    if (!geometry.getAttribute('normal')) {
-      geometry.computeVertexNormals();
-    }
-    toOwner.copy(owner.matrixWorld).invert().multiply(mesh.matrixWorld);
-    geometry.applyMatrix4(toOwner);
-    if (toOwner.determinant() < 0) {
-      flipTriangleWinding(geometry);
-    }
-    // Multi-material meshes were filtered out above.
-    const material = mesh.material as Material;
-    const byMaterial = batches.get(owner) ?? new Map<Material, BufferGeometry[]>();
-    batches.set(owner, byMaterial);
-    const geometries = byMaterial.get(material) ?? [];
-    byMaterial.set(material, geometries);
-    geometries.push(geometry);
-  }
-
-  for (const mesh of meshes) {
-    for (const child of [...mesh.children]) {
-      mesh.parent?.attach(child);
-    }
-    mesh.removeFromParent();
-  }
-
-  for (const [owner, byMaterial] of batches) {
-    for (const [material, geometries] of byMaterial) {
-      const merged = mergeGeometries(geometries);
-      for (const geometry of merged ? [merged] : geometries) {
-        const mesh = new Mesh(geometry, material);
-        mesh.name = `${owner.name} ${material.name}`;
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        owner.add(mesh);
-      }
-    }
-  }
-  model.updateMatrixWorld(true);
-}
-
 function loadSterlingTemplates(): Promise<{ bike: Group; dock: Group }> {
   sterlingTemplates ??= Promise.all([
-    loadModel('assets/models/sterling-bike/sterling-bike-blockout.glb?v=geometry-pass2-20260916'),
-    loadModel('assets/models/sterling-bike/sterling-dock-blockout.glb?v=geometry-pass2-20260916'),
+    loadModel('assets/models/sterling-bike/sterling-bike-blockout.glb?v=material-bake-20260924'),
+    loadModel('assets/models/sterling-bike/sterling-dock-blockout.glb?v=material-bake-20260924'),
   ]).then(([bike, dock]) => {
     for (const model of [bike, dock]) {
-      applySterlingBlockoutPolicy(model);
-      mergeSterlingStaticParts(model);
+      mergeSterlingStaticParts(model, STERLING_ARTICULATED_NODES);
     }
     return { bike, dock };
   });

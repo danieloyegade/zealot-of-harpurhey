@@ -1,25 +1,26 @@
 # Greek Gyros, Deansgate
 
-A metric, geometry-only reconstruction of the Greek Gyros / Greek Grill House
+A metric reconstruction of the Greek Gyros / Greek Grill House
 food kiosk on Deansgate, inferred from the photographs in
-`references/architecture/gyros/` (daytime three-quarter, night frontage, and
+`references/architecture/infrastructure:objects/gyros/` (daytime
+three-quarter, night frontage, and
 `IMG_8918.HEIC`) and the brief in
-`references/architecture/gyros/15_Greek_Gyros.txt`.
+`references/architecture/infrastructure:objects/gyros/15_Greek_Gyros.txt`.
 
 It is a small environmental prop rather than a hero building, but it is
-modelled to the real stand, not to a generic kiosk. It contains **no signage
-artwork, diamond-plate pattern, food imagery, social icons, menu lettering,
-prices, stickers or weathering** — all texture-stage work, per §§9, 20 and 21
-of the brief — and no baked emissive lighting, which §19 reserves for
-materials and game lighting.
+modelled to the real stand, not to a generic kiosk. Its five principal PBR
+surface families are now authored; signage artwork, food imagery, social
+icons, menu lettering, prices, stickers and the diamond-plate relief remain
+separate artwork/detail passes.
 
-## Status: second pass complete, untextured
+## Status: second pass complete, surface-textured
 
 The blockout was approved (6.40 m width confirmed) on 2026-09-12, and the §30
 second pass followed: vent/panel divisions, structural framing, sign mounting
 details, the side service door, interior counters and equipment, the register
-area, menu boards and lighting fixtures. The next stage is texturing, which
-§31 holds until explicitly requested.
+area, menu boards and lighting fixtures. The 2026-09-23 surface pass binds
+measured enamel and metal sets to the shipped GLB while preserving every node
+name, interaction anchor and light anchor.
 
 ## Deliverables
 
@@ -30,6 +31,11 @@ area, menu boards and lighting fixtures. The next stage is texturing, which
   (imports the blockout script as a module and builds on its approved layout,
   the same way `createTheHive.py` builds on `createTheHiveBlockout.py`)
 - Three.js runtime model: `public/assets/models/greek_gyros.glb`
+- Preserved untextured runtime source:
+  `blender/source/runtime-untextured/greek_gyros.glb`
+- Surface authoring script: `blender/scripts/greekGyrosTextures.py`
+- PBR maps and palette: `blender/source/textures/greek-gyros/`
+- Surface review frames: `renders/greek-gyros-textures/`
 - Blockout-stage GLB (kept for comparison): `public/assets/models/greek-gyros-blockout.glb`
 - Blockout renders: `renders/greek-gyros-blockout/`
 - Second-pass renders: `renders/greek-gyros/`
@@ -99,12 +105,14 @@ touching structure (§20): `GG_MainSignSurface` (the `GREEK GYROS` fascia),
 `GG_FlagPanel_Right`, which are reserved rectangles for the Greek flag motifs
 rather than modelled stripes (§21).
 
-Placeholder materials only: `MAT_GG_Blue_PLACEHOLDER`,
-`MAT_GG_DeepBlue_PLACEHOLDER`, `MAT_GG_White_PLACEHOLDER`,
-`MAT_GG_Metal_PLACEHOLDER`, `MAT_GG_DarkMetal_PLACEHOLDER`,
-`MAT_GG_Glass_PLACEHOLDER`, `MAT_GG_FixtureLens_PLACEHOLDER`. The metal
-placeholders are deliberately low-metalness so the clay renders stay legible;
-they are not a material direction.
+The runtime export replaces the five opaque placeholders with
+`MAT_GG_Surface_*` PBR materials: measured warm-white enamel, measured blue
+enamel, the darker secondary fascia blue, dark coated frame metal and
+stainless steel. Glass and fixture-lens placeholders remain deliberately
+untextured because their transparency and emission are set by the runtime.
+The blue panel's fine wear uses a retained ImageGen source only as a
+low-contrast luminance field; colour still comes from the photographic
+palette. Exact provenance and the prompt are recorded in `validation.json`.
 
 ## Interaction, lighting and collision
 
@@ -138,9 +146,12 @@ in a development build with `?view=greek-gyros`.
 
 ## Not yet done
 
-- All texturing: the `GREEK GYROS` wordmark, Greek flags, the menu strip,
-  social icons, food imagery, menu-board content, the diamond-plate pattern and
-  stainless wear.
+- Signage artwork: the `GREEK GYROS` wordmark, Greek flags, menu strip, social
+  icons, food imagery and menu-board content. Signage remains deferred by the
+  building-texture plan.
+- A dedicated diamond-plate relief set. The current apron shares the authored
+  stainless-steel surface with counters and fittings, so adding tread relief
+  without a material split would incorrectly texture all stainless parts.
 - Final night materials and signage lighting (§§18–19). The runtime now gives
   the fixture lenses a placeholder emissive and uses the counter anchor for a
   preliminary local light, but the fascia, menu boards, bright white interior

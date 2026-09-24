@@ -61,6 +61,16 @@ At Spice Cabin, the previously worst measured view, observed frame rate increase
 
 Future work may instance repeated streetlight parts, tower windows, trees, benches, bollards, and road markings. That work should be measured and kept within the existing world architecture rather than becoming a renderer rewrite.
 
+## GPU preparation and black-frame prevention (2026-09-24)
+
+Initial asset loading is followed by `prepareScene`: one asynchronous shader compilation against an HDR target, then actual off-screen renders in batches of 64 objects. The render target matches the composer's half-float colour format. Culling is temporarily disabled for each batch so geometry and textures outside the spawn view are uploaded too; object layers and the previous render target are restored before every yield. The loading plate remains until this completes. This shifts first-use work into loading; it is not a streaming or memory-reduction system.
+
+Three.js r185's `compileAsync` traverses the whole scene independently of the camera frustum. The previous eight-direction camera sweep did not upload off-screen buffers or textures and was redundant. Compilation now uses a private camera and never moves the live view.
+
+The observed turning-dependent black screen had a separate, confirmed cause: NaN RGB values in the scene's HDR buffer spread through the bloom blur pyramid until the entire frame was invalid, including alpha. This happened without any WebGL error or context loss. Pixel readbacks and raycasts traced offending pixels to Sterling bike metal. The original bike batching code stripped UVs/tangents while retaining anisotropic materials, which require a tangent frame. Batching now preserves compatible vertex layouts and articulated ownership. Only source primitives missing both UVs and tangents get an otherwise identical isotropic material; valid parts keep the authored anisotropy. A finite-colour pass before bloom additionally contains non-finite fragments so an isolated bad pixel cannot blank the whole frame.
+
+The GPU regression at `/tests/browser/finite-color.html` (Vite dev server) injects half-float NaN and positive/negative infinity and checks actual readback values, including preservation of valid HDR values above 1. Node tests cover camera wall clearance, articulated batching/UV preservation, and GPU-preparation state restoration. The browser test is not part of the Node-only `npm test` command.
+
 ## Development diagnostics
 
 The development-only overlay is toggled with `H` and reports:

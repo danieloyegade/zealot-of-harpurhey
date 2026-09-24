@@ -1,0 +1,503 @@
+{
+  "asset": "greek-gyros",
+  "pass": "surface materials (commonSurfaces)",
+  "convention": {
+    "maps": "<slug>-{basecolor,orm,normal}.png",
+    "orm": "R occlusion, G roughness, B metallic (glTF)",
+    "normal": "OpenGL tangent space (+Y up)",
+    "unit": "1 Blender unit = 1 m; coverage_m is what one tile spans"
+  },
+  "measured_reference_patches": {
+    "blue panel": {
+      "albedo": "#4E597E",
+      "samples": [
+        {
+          "box": [
+            1320,
+            520,
+            1520,
+            650
+          ],
+          "light": "shaded",
+          "photo": "greek-gyros-8918.png",
+          "srgb": "#63646D"
+        },
+        {
+          "box": [
+            1460,
+            1780,
+            1720,
+            1860
+          ],
+          "light": "shaded",
+          "photo": "greek-gyros-8918.png",
+          "srgb": "#33384F"
+        },
+        {
+          "box": [
+            300,
+            190,
+            315,
+            210
+          ],
+          "light": "shaded",
+          "photo": "references/architecture/infrastructure:objects/gyros/gyross.jpeg",
+          "srgb": "#364C8C"
+        }
+      ]
+    },
+    "dark metal": {
+      "albedo": "#5E656E",
+      "samples": [
+        {
+          "box": [
+            3120,
+            960,
+            3240,
+            1280
+          ],
+          "light": "shaded",
+          "photo": "greek-gyros-8918.png",
+          "srgb": "#525860"
+        }
+      ]
+    },
+    "deep blue panel": {
+      "albedo": "#35405E",
+      "samples": [],
+      "source": "secondary fascia is crossed by pale lettering and night glare in every reference; inferred as the visibly darker companion to the measured blue panel"
+    },
+    "steel": {
+      "albedo": "#908578",
+      "samples": [
+        {
+          "box": [
+            1280,
+            1400,
+            1560,
+            1520
+          ],
+          "light": "shaded",
+          "photo": "greek-gyros-8918.png",
+          "srgb": "#7D7468"
+        }
+      ]
+    },
+    "white panel": {
+      "albedo": "#9C9588",
+      "samples": [
+        {
+          "box": [
+            1240,
+            900,
+            1280,
+            1250
+          ],
+          "light": "shaded",
+          "photo": "greek-gyros-8918.png",
+          "srgb": "#888276"
+        }
+      ]
+    }
+  },
+  "materials": [
+    {
+      "slug": "gg-panel-white",
+      "description": "Warm white enamelled kiosk panels",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        0.4883,
+        0.4883
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.4,
+        0.567
+      ],
+      "metallic_range": [
+        0.0,
+        0.56
+      ],
+      "relief_mm": [
+        -0.215,
+        0.098
+      ],
+      "base_srgb_mean": [
+        158,
+        149,
+        136
+      ],
+      "files": {
+        "basecolor": {
+          "file": "gg-panel-white-basecolor.png",
+          "bytes": 107534
+        },
+        "orm": {
+          "file": "gg-panel-white-orm.png",
+          "bytes": 186526
+        },
+        "normal": {
+          "file": "gg-panel-white-normal.png",
+          "bytes": 372644
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.02
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.01
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.05
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.05
+        },
+        "normal_u": {
+          "wrap": 0.09,
+          "typical": 0.09
+        },
+        "normal_v": {
+          "wrap": 0.07,
+          "typical": 0.09
+        }
+      }
+    },
+    {
+      "slug": "gg-panel-blue",
+      "description": "Blue enamelled kiosk panels with restrained generated wear",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        0.4883,
+        0.4883
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.423,
+        0.577
+      ],
+      "metallic_range": [
+        0.0,
+        0.596
+      ],
+      "relief_mm": [
+        -0.207,
+        0.097
+      ],
+      "base_srgb_mean": [
+        79,
+        89,
+        126
+      ],
+      "files": {
+        "basecolor": {
+          "file": "gg-panel-blue-basecolor.png",
+          "bytes": 790451
+        },
+        "orm": {
+          "file": "gg-panel-blue-orm.png",
+          "bytes": 418877
+        },
+        "normal": {
+          "file": "gg-panel-blue-normal.png",
+          "bytes": 372442
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.25
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.26
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.1
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.11
+        },
+        "normal_u": {
+          "wrap": 0.09,
+          "typical": 0.09
+        },
+        "normal_v": {
+          "wrap": 0.08,
+          "typical": 0.09
+        }
+      }
+    },
+    {
+      "slug": "gg-panel-deep-blue",
+      "description": "Deep blue secondary fascia band",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        1024,
+        1024
+      ],
+      "mm_per_texel": [
+        0.4883,
+        0.4883
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.42,
+        0.58
+      ],
+      "metallic_range": [
+        0.0,
+        0.589
+      ],
+      "relief_mm": [
+        -0.241,
+        0.098
+      ],
+      "base_srgb_mean": [
+        53,
+        64,
+        95
+      ],
+      "files": {
+        "basecolor": {
+          "file": "gg-panel-deep-blue-basecolor.png",
+          "bytes": 80203
+        },
+        "orm": {
+          "file": "gg-panel-deep-blue-orm.png",
+          "bytes": 200909
+        },
+        "normal": {
+          "file": "gg-panel-deep-blue-normal.png",
+          "bytes": 369085
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.01
+        },
+        "basecolor_v": {
+          "wrap": 0.1,
+          "typical": 0.01
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.05
+        },
+        "orm_v": {
+          "wrap": 0.18,
+          "typical": 0.05
+        },
+        "normal_u": {
+          "wrap": 0.08,
+          "typical": 0.08
+        },
+        "normal_v": {
+          "wrap": 0.14,
+          "typical": 0.09
+        }
+      }
+    },
+    {
+      "slug": "gg-metal-dark",
+      "description": "Dark metal frame and roof edge",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.477,
+        0.644
+      ],
+      "metallic_range": [
+        0.0,
+        0.583
+      ],
+      "relief_mm": [
+        -0.24,
+        0.098
+      ],
+      "base_srgb_mean": [
+        94,
+        101,
+        110
+      ],
+      "files": {
+        "basecolor": {
+          "file": "gg-metal-dark-basecolor.png",
+          "bytes": 36524
+        },
+        "orm": {
+          "file": "gg-metal-dark-orm.png",
+          "bytes": 63580
+        },
+        "normal": {
+          "file": "gg-metal-dark-normal.png",
+          "bytes": 146447
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.02
+        },
+        "basecolor_v": {
+          "wrap": 0.02,
+          "typical": 0.02
+        },
+        "orm_u": {
+          "wrap": 0.0,
+          "typical": 0.09
+        },
+        "orm_v": {
+          "wrap": 0.2,
+          "typical": 0.08
+        },
+        "normal_u": {
+          "wrap": 0.16,
+          "typical": 0.16
+        },
+        "normal_v": {
+          "wrap": 0.18,
+          "typical": 0.16
+        }
+      }
+    },
+    {
+      "slug": "gg-metal-steel",
+      "description": "Stainless counter, cladding and fittings",
+      "coverage_m": [
+        0.5,
+        0.5
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "mm_per_texel": [
+        0.9766,
+        0.9766
+      ],
+      "tiles": {
+        "u": true,
+        "v": true
+      },
+      "normal_strength": 1.0,
+      "roughness_range": [
+        0.35,
+        0.543
+      ],
+      "metallic_range": [
+        0.9,
+        0.9
+      ],
+      "relief_mm": [
+        -0.097,
+        0.096
+      ],
+      "base_srgb_mean": [
+        144,
+        133,
+        120
+      ],
+      "files": {
+        "basecolor": {
+          "file": "gg-metal-steel-basecolor.png",
+          "bytes": 35828
+        },
+        "orm": {
+          "file": "gg-metal-steel-orm.png",
+          "bytes": 71470
+        },
+        "normal": {
+          "file": "gg-metal-steel-normal.png",
+          "bytes": 144972
+        }
+      },
+      "seam_levels": {
+        "basecolor_u": {
+          "wrap": 0.0,
+          "typical": 0.02
+        },
+        "basecolor_v": {
+          "wrap": 0.0,
+          "typical": 0.02
+        },
+        "orm_u": {
+          "wrap": 0.01,
+          "typical": 0.1
+        },
+        "orm_v": {
+          "wrap": 0.0,
+          "typical": 0.1
+        },
+        "normal_u": {
+          "wrap": 0.17,
+          "typical": 0.16
+        },
+        "normal_v": {
+          "wrap": 0.16,
+          "typical": 0.16
+        }
+      }
+    }
+  ],
+  "generated_sources": [
+    {
+      "path": "blender/source/textures/greek-gyros/source/blue-enamel-imagegen.png",
+      "role": "luminance-only micro-wear for gg-panel-blue; measured palette remains authoritative",
+      "tool": "built-in ImageGen",
+      "prompt": "Seamless square texture of the blue enamelled metal panel surface visible on the Greek Gyros kiosk references; muted cobalt-blue paint, subtle age, restrained chalking and fine scratches; flat diffuse material capture; no lighting gradient, text, logos, flags, food, people, borders or watermark."
+    }
+  ]
+}

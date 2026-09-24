@@ -3,8 +3,9 @@
 ## Status
 
 Geometry blockout, placed in game on 2026-09-13 at Daniel's request ("put the
-sterling bikes in the game"). The blockout masters are exported as runtime
-GLBs clearly named `-blockout`.
+sterling bikes in the game"). The masters are still named `-blockout`, but
+their current runtime GLBs include the September 23 material pass as baked
+image textures.
 
 Second geometry pass on 2026-09-16 (Claude), rebuilt part by part against the
 photographs after a review of the first blockout:
@@ -56,6 +57,15 @@ materials/texturing pass:
   without the `_PLACEHOLDER` suffix since they are now the intended look, not
   a stand-in — still no image-based decals/branding/dirt, which stay deferred
   per the brief.
+
+Runtime export on 2026-09-24: `exportSterlingBikeBlockout.py` now unwraps the
+master meshes by material and bakes the authored procedural color, roughness
+and useful bump/normal channels to PNG atlases under
+`blender/source/textures/sterling-bike/`. The GLBs embed those images, so the
+game can display the material pass in Three.js. The source `.blend` remains
+procedural and is not saved by the export script. The tiny brushed-metal parts
+retain their anisotropy and roughness map; their 0.04-strength bump is omitted
+because 82 parts would share too few texels for it to survive the atlas.
 
 Final decals (STERLING lettering, "electric", fleet number, bee mark), dirt,
 working lights, LODs and the brief's final `sterling_bike.glb`/

@@ -195,6 +195,7 @@ export class PlayerController {
   private readonly frameMovement = new Vector3();
   private readonly previousPosition = new Vector3();
   private readonly targetRotation = new Quaternion();
+  private characterVisible = true;
   private characterVisual?: Group;
   private fallbackFigure?: Group;
   private readonly bones = new Map<string, AnimatedBone>();
@@ -226,6 +227,19 @@ export class PlayerController {
 
   get position(): Vector3 {
     return this.object.position;
+  }
+
+  /** Keep the lens out of the figure when a wall retracts the camera boom. */
+  updateCameraVisibility(cameraPosition: Vector3): void {
+    const distance = Math.hypot(
+      cameraPosition.x - this.position.x,
+      cameraPosition.y - (this.position.y + 1.6),
+      cameraPosition.z - this.position.z,
+    );
+    // Hysteresis avoids flicker at the boundary; the grounding shadow stays.
+    this.characterVisible = distance >= (this.characterVisible ? 1.7 : 1.95);
+    if (this.characterVisual) this.characterVisual.visible = this.characterVisible;
+    if (this.fallbackFigure) this.fallbackFigure.visible = this.characterVisible;
   }
 
   recoverFromCollisionOverlap(): void {
