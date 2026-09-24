@@ -35,6 +35,8 @@
     "assets/models/harpurhey-coral-shop.glb",
     "assets/models/harpurhey-coral-bin.glb",
     "assets/models/harpurhey-coral-bollard.glb",
+    "assets/audio/Ambient music/Popcorn.mp3",
+    "assets/audio/ambience/manny-streets.mp3",
     "_headers"
   ],
   "developmentOnly": [

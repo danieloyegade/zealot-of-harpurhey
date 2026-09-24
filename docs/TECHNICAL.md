@@ -23,7 +23,7 @@ Development-only references, source photography, `.blend` masters, and renders l
 - `main.ts` owns renderer and scene initialisation, raw render timing, and the fixed-step game loop.
 - `FixedStepClock` advances gameplay at 60 Hz with bounded catch-up and explicit extreme-gap resets.
 - `InputController` tracks keyboard movement, running, and click-drag camera input.
-- `AmbientAudio` layers the local street recording beneath the current ambient music track. Browser autoplay rules mean audio begins on the first key press or pointer interaction; `M` toggles music without muting the street layer.
+- `AmbientAudio` layers the Manny streets recording beneath the Popcorn music track; both are shipped to production (see `docs/ASSET_RIGHTS.md`). Browser autoplay rules mean audio begins on the first key press or pointer interaction; `M` toggles music without muting the street layer.
 - `PlayerController` owns the primitive player representation, velocity, facing direction, movement state, and collision movement. While riding it is seated by `updateRiding`: planar two-bone IK puts the feet on the pedals and the hands on the grips.
 - `BikeInteraction` (`src/interaction/`) is the on-foot / riding state machine. It runs the player on foot, or the ridden Sterling bike and its rider, inside the fixed step, and supplies the camera target and the E prompt (`src/ui/InteractionPrompt.ts`).
 - `ThirdPersonCamera` owns orbit angles, camera-relative movement direction, and smoothed following.

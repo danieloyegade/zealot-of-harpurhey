@@ -39,7 +39,7 @@ interface Veil {
 
 export class AmbientAudio {
   private readonly music = createLoopingTrack(
-    'Ambient music/Y2Mate.is - Popcorn.mp3',
+    'Ambient music/Popcorn.mp3',
     MUSIC_VOLUME,
   );
 

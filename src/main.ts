@@ -91,11 +91,10 @@ const camera = new PerspectiveCamera(
 
 const world = createWorld(scene, quality.maximumActiveLocalLights);
 const input = new InputController(renderer.domElement);
-// Current audio sources remain available for local development, but none has
-// repository-level release clearance yet (config/asset-rights.json).
-const ambientAudio = import.meta.env.DEV
-  ? new AmbientAudio({ veiled: intro.holdsWorld })
-  : null;
+// Only the tracks approved in config/asset-rights.json are shipped to
+// production (Popcorn and the Manny streets ambience); the rest of
+// public/assets/audio is development-only.
+const ambientAudio = new AmbientAudio({ veiled: intro.holdsWorld });
 const player = new PlayerController(world.collision);
 scene.add(player.object);
 const bikeInteraction = new BikeInteraction(world.sterlingFleet, player, world.collision);
