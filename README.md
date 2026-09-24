@@ -45,7 +45,7 @@ Create a production build:
 npm run build
 ```
 
-The static production files are written to `dist/`. The build is rooted at `/` and deploys to its own Cloudflare Worker (`zealot-of-harpurhey`), embedded on danieloye.com via an iframe rather than being served as a literal subpath of that site. Before Vite runs, `config/runtime-assets.json` generates a clean production-only public directory; workshop assets and uncleared audio are not copied.
+The static production files are written to `dist/`. The build is rooted at `/` and deploys to its own Cloudflare Worker (`zealot-of-harpurhey`), embedded on danieloye.com via an iframe rather than being served as a literal subpath of that site. Before Vite runs, `config/runtime-assets.json` generates a clean production-only public directory; workshop assets and uncleared audio are not copied. That copy is also optimised (textures right-sized and GPU-compressed, geometry compressed); see `docs/ASSET_PIPELINE.md`. Deploy from a machine with `basisu` installed (`brew install basis_universal`), and note the first build on a fresh clone takes 20-25 minutes to encode textures (`ZEALOT_OPTIMIZE_ASSETS=0` skips it).
 
 To inspect a production build locally:
 

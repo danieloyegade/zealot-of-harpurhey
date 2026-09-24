@@ -2,6 +2,7 @@
 node_modules/
 dist/
 .runtime-public/
+.runtime-public-*/
 *.tsbuildinfo
 
 # Local environment files
@@ -40,3 +41,6 @@ __pycache__/
 # Large development-only source media
 references/raw/
 renders/source/
+
+# Content-hash cache for optimised runtime assets
+.cache/
