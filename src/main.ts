@@ -208,10 +208,34 @@ const postProcessing = createPostProcessing(
   toneMapping,
 );
 
+// Three.js uploads a mesh's GPU buffers and compiles its shader the first
+// time that mesh is actually rendered, not when its GLB is parsed. A single
+// compileAsync() at the spawn framing only warms whatever sits in that one
+// frustum, so turning toward anything else — the rest of the street, another
+// building entirely — pays that cost live during play, as a stall. Sweeping
+// the compile camera through a full turn on the spot warms everything within
+// view distance of spawn before the title card lifts, at the cost of a few
+// more loading-screen frames instead of a stutter the first time the player
+// looks that way.
+const SHADER_WARM_SWEEP_STEPS = 8;
+
+async function warmShadersAroundSpawn(): Promise<void> {
+  const sweepPosition = player.position.clone();
+  sweepPosition.y += ORBIT_PIVOT_HEIGHT;
+  for (let step = 0; step < SHADER_WARM_SWEEP_STEPS; step += 1) {
+    const yaw = (step / SHADER_WARM_SWEEP_STEPS) * Math.PI * 2;
+    camera.position.copy(sweepPosition);
+    camera.rotation.set(0, yaw, 0);
+    // eslint-disable-next-line no-await-in-loop -- each step depends on the previous frustum having compiled.
+    await renderer.compileAsync(scene, camera);
+  }
+  thirdPersonCamera.snapTo(player.position);
+}
+
 void intro
   .waitForAssets()
   // Compile the loaded world's shaders behind the title card, not as a hitch on entry.
-  .then(() => renderer.compileAsync(scene, camera))
+  .then(() => warmShadersAroundSpawn())
   .catch(() => undefined)
   .then(() => intro.setReady());
 
