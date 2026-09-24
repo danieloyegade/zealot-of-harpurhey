@@ -22,6 +22,29 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-24 — Claude (step-by-step realism pass plan)
+**HEAD at session start:** `1028eb1` (Add visual realism roadmap against the Dreams night reference)
+**Did:** Wrote `docs/REALISM_PASS_PLAN.md`, the executable companion to `VISUAL_REALISM_ROADMAP.md`. It has 10 stages, each with owner, files and a done-when check:
+- 0: Blender upgrade, land KTX2, baseline
+- 1: retro settings off
+- 2: grade
+- 3: texture standard and materials
+- 4: env map, puddle mask, light streaks
+- 5: **baked lightmaps on Dreams, the proof gate**
+- 6: player/bike shadows
+- 7: body and animation
+- 8: denim and kit
+- 9: rollout
+No code changes.
+**Left uncommitted (if any):** None.
+**Flagged:**
+- Blender on Daniel's Mac is still 3.0.0 per `TECHNICAL.md`. Upgrade first.
+- The KTX2/Meshopt work mentioned in the Codex entries is not in the repo.
+- `geometry.shadowsEnabled` is read by nothing.
+**Next:** Stage 0.3 baseline on real hardware, then Stage 1 (a code-only session can do it).
+**Open questions:** Daniel: free (MPFB2 + Blender cloth) or paid (Character Creator 4 + Marvelous Designer) character route?
+
+---
 ## 2026-09-24 — Claude (visual-gap consultation: "Lego" → the Dreams night reference)
 **HEAD at session start:** `c5cb142` (Archive older SYNC.md entries to docs/SYNC_ARCHIVE.md)
 **Did:** Analysis only, no code changes. Full report: `docs/VISUAL_REALISM_ROADMAP.md`. Target, plus fresh current-state captures: `renders/visual-gap-2026-09-24/`.
