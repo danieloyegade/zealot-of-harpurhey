@@ -14,6 +14,8 @@ Two recordings are marked `owner-approved` and ship in production (2026-09-24, o
 - `assets/audio/ambience/manny-streets.mp3`, treated as Daniel's own field recording.
 - `assets/audio/Ambient music/Popcorn.mp3`, a **third-party recording with no licence or written permission on record**. It is published as an owner decision; the takedown risk is the owner's. Record any licence evidence in `config/asset-rights.json` if it is obtained.
 
+Five footstep clips (`assets/audio/footsteps/`) are `cleared`: Kenney's Impact Sounds, CC0 1.0, with the licence text kept in `docs/assets/`.
+
 The other eight recordings remain `verification-required`: several filenames identify commercial or YouTube-derived sources, and the repository does not prove authorship or release permission for the rest. They stay available in local development only.
 
 To clear an original recording, record the creator, date, consent/release basis and any attribution requirement in `config/asset-rights.json`, set `productionApproved` to `true`, and add the exact path to the production runtime manifest. For third-party work, keep the licence or written permission outside git if it contains private information, but record a stable evidence reference in the manifest.

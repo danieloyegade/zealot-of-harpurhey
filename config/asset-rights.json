@@ -60,6 +60,36 @@
       "status": "verification-required",
       "productionApproved": false,
       "notes": "Authorship and release permission are not recorded in the repository."
+    },
+    {
+      "path": "assets/audio/footsteps/footstep-concrete-000.wav",
+      "status": "cleared",
+      "productionApproved": true,
+      "notes": "Kenney, Impact Sounds 1.0 (footstep_concrete_000.ogg), CC0 1.0. https://kenney.nl/assets/impact-sounds . Converted to mono 44.1 kHz WAV for Safari-safe decoding. Licence text: docs/assets/kenney-impact-sounds-LICENSE.txt."
+    },
+    {
+      "path": "assets/audio/footsteps/footstep-concrete-001.wav",
+      "status": "cleared",
+      "productionApproved": true,
+      "notes": "Kenney, Impact Sounds 1.0 (footstep_concrete_001.ogg), CC0 1.0. https://kenney.nl/assets/impact-sounds . Converted to mono 44.1 kHz WAV for Safari-safe decoding. Licence text: docs/assets/kenney-impact-sounds-LICENSE.txt."
+    },
+    {
+      "path": "assets/audio/footsteps/footstep-concrete-002.wav",
+      "status": "cleared",
+      "productionApproved": true,
+      "notes": "Kenney, Impact Sounds 1.0 (footstep_concrete_002.ogg), CC0 1.0. https://kenney.nl/assets/impact-sounds . Converted to mono 44.1 kHz WAV for Safari-safe decoding. Licence text: docs/assets/kenney-impact-sounds-LICENSE.txt."
+    },
+    {
+      "path": "assets/audio/footsteps/footstep-concrete-003.wav",
+      "status": "cleared",
+      "productionApproved": true,
+      "notes": "Kenney, Impact Sounds 1.0 (footstep_concrete_003.ogg), CC0 1.0. https://kenney.nl/assets/impact-sounds . Converted to mono 44.1 kHz WAV for Safari-safe decoding. Licence text: docs/assets/kenney-impact-sounds-LICENSE.txt."
+    },
+    {
+      "path": "assets/audio/footsteps/footstep-concrete-004.wav",
+      "status": "cleared",
+      "productionApproved": true,
+      "notes": "Kenney, Impact Sounds 1.0 (footstep_concrete_004.ogg), CC0 1.0. https://kenney.nl/assets/impact-sounds . Converted to mono 44.1 kHz WAV for Safari-safe decoding. Licence text: docs/assets/kenney-impact-sounds-LICENSE.txt."
     }
   ]
 }

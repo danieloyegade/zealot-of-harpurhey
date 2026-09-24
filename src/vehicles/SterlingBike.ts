@@ -116,6 +116,10 @@ export class SterlingBike implements RiderPose {
   speed = 0;
   obstacle: OrientedBoxObstacle | null = null;
   pedalling = 0;
+  /** 0..1, smoothed: the e-assist motor is driving. Read by the ride audio. */
+  motorAssist = 0;
+  /** True while the rider is braking a moving bike. */
+  braking = false;
 
   private yaw = 0;
   private steerAngle = 0;
@@ -226,6 +230,12 @@ export class SterlingBike implements RiderPose {
       controls.throttle > 0 ? 1 : 0,
       1 - Math.exp(-8 * deltaTime),
     );
+    this.motorAssist = MathUtils.lerp(
+      this.motorAssist,
+      controls.throttle > 0 && (controls.assisted || controls.boost) ? 1 : 0,
+      1 - Math.exp(-5 * deltaTime),
+    );
+    this.braking = controls.throttle < 0 && this.speed > 0.05;
     if (controls.throttle > 0) {
       const crankRate = Math.min(
         Math.max(Math.abs(this.speed), 1.2) / WHEEL_RADIUS / GEAR_RATIO,
@@ -240,6 +250,8 @@ export class SterlingBike implements RiderPose {
   settle(deltaTime: number, moving = false): void {
     this.speed = 0;
     this.pedalling = 0;
+    this.motorAssist = 0;
+    this.braking = false;
     if (!moving && Math.abs(this.lean) < 0.0005) return;
     this.lean = MathUtils.lerp(this.lean, 0, 1 - Math.exp(-LEAN_RESPONSIVENESS * deltaTime));
     this.applyTransform();

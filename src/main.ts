@@ -8,6 +8,7 @@ import {
   WebGLRenderer,
 } from 'three';
 import { AmbientAudio } from './audio/AmbientAudio';
+import { MovementAudio } from './audio/MovementAudio';
 import {
   DEFAULT_CAMERA_PITCH,
   ORBIT_PIVOT_HEIGHT,
@@ -96,6 +97,8 @@ const input = new InputController(renderer.domElement);
 // public/assets/audio is development-only.
 const ambientAudio = new AmbientAudio({ veiled: intro.holdsWorld });
 const player = new PlayerController(world.collision);
+const movementAudio = new MovementAudio();
+player.onFootfall = (running) => movementAudio.footfall(running);
 scene.add(player.object);
 const bikeInteraction = new BikeInteraction(world.sterlingFleet, player, world.collision);
 const deliveryInteraction = new DeliveryInteraction(
@@ -235,6 +238,7 @@ if (import.meta.env.DEV) {
     collision: world.collision,
     atmosphere: world.atmosphere,
     sterlingFleet: world.sterlingFleet,
+    movementAudio,
     bikeInteraction,
     deliveryInteraction,
     input,
@@ -316,6 +320,7 @@ function frame(timestamp: number): void {
     elapsedSeconds += fixedDelta;
   });
   const cameraDelta = simulationResult.resetAfterExtremeGap ? 0 : rawDelta;
+  movementAudio.updateBike(bikeInteraction.bike);
   const ridingSpeed = Math.abs(bikeInteraction.bike?.speed ?? 0);
   const boostFraction = Math.min(
     1,
