@@ -43,6 +43,17 @@
     </div>
 
     <script>
+      // Embedded on danieloye.com, a click on this page does not reliably
+      // hand keyboard focus to this frame, so WASD never arrives (see
+      // InputController's own pointerdown handler for the canvas-specific
+      // case). The loading plate above covers the whole viewport and has no
+      // pointer-events: none, so a player's first, eager click almost always
+      // lands on it rather than the canvas underneath — meaning that
+      // canvas-only fix never even engages. Claim focus on the very first
+      // click anywhere on the page, before the loading plate, before the
+      // module script, before anything else has a chance to run.
+      window.addEventListener('pointerdown', () => window.focus(), true);
+
       (() => {
         const intro = document.querySelector('[data-intro]');
         if (!intro) return;
