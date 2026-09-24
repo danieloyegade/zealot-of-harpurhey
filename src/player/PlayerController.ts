@@ -17,6 +17,7 @@ import {
 } from 'three';
 import type { InputController } from '../input/InputController';
 import { loadModel } from '../world/loadModel';
+import { crossedFootfall } from './footfall';
 import {
   moveCircleWithCollisions,
   resolveCircleOverlaps,
@@ -89,6 +90,8 @@ const RIDING_TORSO_LEAN = 0.34;
 const MOUNT_SECONDS = 0.38;
 
 const WALKING_SPEED = 2.4;
+// Slower than this the figure is shuffling against something, not stepping.
+const FOOTFALL_MINIMUM_SPEED = 0.8;
 const RUNNING_SPEED = 4.5;
 
 // Dev builds used to walk and run faster than the real game, which meant every
@@ -183,6 +186,8 @@ export class PlayerController {
   readonly collisionRadius = 0.38;
 
   movementState: MovementState = 'Idle';
+  /** Called each time a foot lands while the player is actually moving. */
+  onFootfall: ((running: boolean) => void) | null = null;
 
   private readonly movementAxes = new Vector2();
   private readonly latchedAxes = new Vector2();
@@ -544,7 +549,15 @@ export class PlayerController {
     this.strideBlend += (targetBlend - this.strideBlend) * (1 - Math.exp(-9 * deltaTime));
 
     if (isMoving) {
+      const previousPhase = this.stridePhase;
       this.stridePhase += deltaTime * (isRunning ? 11.5 : 7.5);
+      // Pressing into a wall keeps the legs going but not the feet landing.
+      if (
+        crossedFootfall(previousPhase, this.stridePhase)
+        && this.velocity.lengthSq() > FOOTFALL_MINIMUM_SPEED ** 2
+      ) {
+        this.onFootfall?.(isRunning);
+      }
     }
 
     const blend = this.strideBlend;

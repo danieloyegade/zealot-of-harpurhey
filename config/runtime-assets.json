@@ -35,6 +35,13 @@
     "assets/models/harpurhey-coral-shop.glb",
     "assets/models/harpurhey-coral-bin.glb",
     "assets/models/harpurhey-coral-bollard.glb",
+    "assets/audio/Ambient music/Popcorn.mp3",
+    "assets/audio/ambience/manny-streets.mp3",
+    "assets/audio/footsteps/footstep-concrete-000.wav",
+    "assets/audio/footsteps/footstep-concrete-001.wav",
+    "assets/audio/footsteps/footstep-concrete-002.wav",
+    "assets/audio/footsteps/footstep-concrete-003.wav",
+    "assets/audio/footsteps/footstep-concrete-004.wav",
     "_headers"
   ],
   "developmentOnly": [

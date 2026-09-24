@@ -135,6 +135,19 @@ No code changes.
 **Open questions:** Daniel: is the reference's blocky "mosaic" grain wanted as a deliberate stylistic layer, or an AI artefact to ignore? Is a paid tool budget available (Character Creator 4 / Marvelous Designer)?
 
 ---
+## 2026-09-24 — Claude (shipped Popcorn and Manny streets; added footsteps and bike-ride sounds)
+**HEAD at session start:** `b5b56ed`; audio release pushed as `8d8e113`.
+**Did:**
+- Daniel asked why live had no sound: `AmbientAudio` was gated behind `import.meta.env.DEV` and all audio was `developmentOnly` (rights boundary, `docs/ASSET_RIGHTS.md`). On Daniel's instruction, renamed `Y2Mate.is - Popcorn.mp3` to `Popcorn.mp3`, marked it and `manny-streets.mp3` `owner-approved` in `config/asset-rights.json`, added both to the production manifest and removed the DEV gate. **Popcorn is a third-party recording with no licence on record**; that is Daniel's call and is written into the register as such.
+- Footsteps: five CC0 concrete clips from Kenney Impact Sounds (converted to mono WAV, ~9 KB each) in `public/assets/audio/footsteps/`, registered as `cleared`. New `src/audio/MovementAudio.ts`; `PlayerController.onFootfall` fires from the stride cycle (`src/player/footfall.ts`) and only while moving, so pressing into a wall is silent.
+- Bike: synthesised, no recordings (`bikeSoundModel.ts` + `MovementAudio`): tyre hiss, wind, freewheel ratchet, chain whirr, e-assist whine, brake squeal, all driven by speed/pedalling. `SterlingBike` gained `motorAssist` and `braking`.
+**Verified:** `tsc` clean, 48/48 tests (5 new), `assets:validate` (45 entries), `rights:check` (7 cleared). Real Web Audio in a browser (`tests/browser/movement-audio.html`, click the page): all clips decode, steps and every bike layer produce signal, silence returns when off the bike.
+**Not verified:** how it *sounds*. Levels were set by measurement and judgement, not by ear; footstep/bike/street/music balance needs Daniel's ears. Tuning constants are at the top of `MovementAudio.ts` and in `bikeSoundModel.ts`. Also not run: the full `npm run build` after the footsteps were added (only the manifest validation and rights check); the earlier full build with Popcorn/Manny passed.
+**Flagged:** the shared Playwright browser is driven by more than one session (keys I never sent showed up in `input.pressedKeys`), so real-key gameplay tests there are unreliable. Footsteps are concrete-only (Kenney also ships grass/wood; no surface detection exists). Nothing is deployed: Daniel runs `npm run build` then `wrangler deploy`.
+**Left uncommitted:** `.claude/launch.json` and `.playwright-mcp/` (not mine).
+**Next:** Daniel to deploy and listen, then tell me what to turn up or down. Optional: grass footsteps in the park, a mount/dock click.
+
+---
 ## 2026-09-24 — Claude (removed the Off-Licence)
 **HEAD at session start:** `b7be7eb` (Land the concurrent Codex work...)
 **Did:** Daniel asked for the Off-Licence to be removed from the game.
