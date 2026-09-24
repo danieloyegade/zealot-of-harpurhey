@@ -9,6 +9,14 @@ import { getGltfLoader } from './gltfLoader';
 // policies that run after loading still set their own glass opacity.
 const TRANSMISSION_GLASS_MAXIMUM_OPACITY = 0.35;
 
+// Stage 3 of the realism pass (docs/REALISM_PASS_PLAN.md): glass only
+// reflects once `scene.environment` exists (Stage 4), but a rough surface
+// reads as frosted/matte even then. Clamp — never raise — so glass exported
+// without a deliberately low authored roughness is ready for that
+// environment map; a lower authored value (an artist's own choice in
+// Blender) is left alone.
+const TRANSMISSION_GLASS_MAXIMUM_ROUGHNESS = 0.05;
+
 function replaceTransmissionWithTransparency(material: unknown): void {
   if (!(material instanceof MeshPhysicalMaterial) || material.transmission <= 0) {
     return;
@@ -22,6 +30,7 @@ function replaceTransmissionWithTransparency(material: unknown): void {
   material.thicknessMap = null;
   material.transparent = true;
   material.opacity = opacity;
+  material.roughness = Math.min(material.roughness, TRANSMISSION_GLASS_MAXIMUM_ROUGHNESS);
   material.depthWrite = false;
   material.needsUpdate = true;
 }

@@ -818,7 +818,11 @@ function applyDreamsModelPolicy(model: Group): void {
         material.emissive.set(0xc7dce0);
         material.emissiveMap = material.map;
         material.emissiveIntensity = 0.09 * VISUAL_STYLE.lighting.emissiveMultiplier;
-        material.roughness = 0.82;
+        // Stage 3 of the realism pass: painted cladding reads as flat matte
+        // at the old 0.82. Down to ~0.45 so the fascia tubes above leave a
+        // soft sheen down the panel, matching the reference's lit gradient
+        // instead of an evenly grey card.
+        material.roughness = 0.45;
       } else if (material.name.includes('mat-dreams-photographic-shutters')) {
         material.color.set(0xb0b2ad);
         material.roughness = 0.93;

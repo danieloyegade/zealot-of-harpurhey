@@ -22,6 +22,22 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-24 — Claude (Stage 3 of the realism pass: texture standard and material settings) — branch `realism-pass`
+**HEAD at session start:** `2eaa7ad` (Stage 2 of the realism pass), on `realism-pass`.
+**Did:** Implemented Stage 3 of `docs/REALISM_PASS_PLAN.md`. 3a and 3b are done; 3c is genuinely blocked, not attempted.
+- **3a** — wrote the texture standard (resolution/map/source table, naming, asset-rights registration) into `docs/TECHNICAL.md` under "Texture standard".
+- **3b** — `src/rendering/worldMaterials.ts`: `createWorldMaterial` now accepts `normalMap`/`ormMap`/`aoMapIntensity`/`normalScale` options (ORM wired to aoMap/roughnessMap/metalnessMap together, glTF's R/AO-G/rough-B/metal convention). This is plumbing only — no procedural texture ships a companion map yet, so no current visual effect. `src/world/createWorld.ts`: Dreams' lit fascia panel (`mat-dreams-photographic-front`) roughness 0.82 → 0.45, so the tubes leave a visible soft sheen instead of an evenly matte panel. `src/world/loadModel.ts`: glass roughness clamped (never raised) to ≤0.05 after the transmission→alpha conversion, ready for Stage 4's environment map.
+- **Deliberately did not** blanket-raise metalness on railings/bollards/bins to 0.8–1 as the plan originally said. Checked every call site first: they already carry considered, non-zero metalness matched to a weathered/oxidised/painted finish (0.08–0.34; the Dreams handrail is already 0.56/0.48). Doing it anyway would have made painted council street furniture look like polished chrome — a regression, not a fix. Struck that line from the plan with the reasoning, rather than mechanically completing it.
+- **Found while implementing** (not previously known, worth Stage 4 not duplicating): most hero buildings' real Blender/glTF texture pipeline already carries albedo/normal/ORM/AO natively, and `buildingMaterials.ts`'s `profileAuthoredMaps` (which every hero building already runs) already keeps all of it — item 1 above was only ever missing from the procedural system. `busShelterMaterials.ts` also already has a considerably more advanced glass system than this stage or Stage 4 describe: grazing-angle Fresnel sheen, wet-glass roughness dropping to 0.015, and `envMapIntensity` already set (Spice Cabin's glass at 4.2) — inert until `scene.environment` exists, but nothing here needed touching.
+**Validation:** `npx tsc --noEmit` clean, `npm test` 43/43, `npm run build` clean. Ran the app in-browser (Chromium/SwiftShader): found and fixed a real bug this way — passing `normalScale: undefined` explicitly to `MeshStandardMaterial` triggers a Three.js console warning ("parameter has value of undefined"); fixed by always passing a real `Vector2` (harmless when there's no normal map, since it's also `MeshStandardMaterial`'s own default). After the fix: no console/shader errors at `dreams-target`, `spice-cabin`, `bus-shelter`; visible soft sheen on the Dreams panel; no artefacts from the glass roughness clamp. Screenshots: `renders/realism-pass/03-textures-materials/`.
+**Left uncommitted (if any):** None — commit follows this entry.
+**Flagged:**
+- **3c is not started and can't be done from here.** It needs Daniel in Blender with real photographic reference, per `AGENTS.md`'s asset-first policy — fabricating a "2K texture set" procedurally would just be higher-resolution noise, not more realistic. This is genuinely the next blocking step for Dreams looking meaningfully closer to the reference; 3a/3b were groundwork, not the visual payoff.
+- Stage 2's grade numbers are still not signed off (flagged last entry, still open).
+**Next:** Daniel: 3c (Dreams texture pass in Blender) whenever there's time for that; otherwise Stage 4 (environment map, wet road, puddle mask, light-streak reflections) is next and is code-heavy — a session can make real progress on the env-map/puddle-mask plumbing without waiting on 3c, since Stage 4 doesn't depend on Dreams' final textures.
+**Open questions:** None new. Still open: Stage 2's grade sign-off; free vs paid character-pipeline route (Stages 7–8).
+
+---
 ## 2026-09-24 — Claude (Stage 2 of the realism pass: the grade) — branch `realism-pass`
 **HEAD at session start:** `21c2dd1` (Merge main into realism-pass), on `realism-pass`.
 **Did:** Implemented Stage 2 of `docs/REALISM_PASS_PLAN.md` — the code is done; the look is not yet approved (see "Flagged"). All in `src/rendering/visualStyle.ts` and `src/rendering/createPostProcessing.ts`:

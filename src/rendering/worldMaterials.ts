@@ -7,7 +7,10 @@ import {
   RepeatWrapping,
   SRGBColorSpace,
   TextureLoader,
+  Vector2,
   type Material,
+  type Texture,
+  type Wrapping,
 } from 'three';
 import { applyTextureProfile, VISUAL_STYLE, type TextureProfile } from './visualStyle';
 
@@ -64,10 +67,43 @@ export interface WorldMaterialOptions {
   readonly opacity?: number;
   readonly transparent?: boolean;
   readonly clamp?: boolean;
+  // Stage 3 of the realism pass (docs/REALISM_PASS_PLAN.md): plumbing for
+  // authored PBR companion maps. None of the current `world-prototype`
+  // textures ship a companion map yet — this only takes effect once one is
+  // regenerated with one (see docs/TECHNICAL.md "Prototype world textures").
+  // Building GLBs textured through the real Blender pipeline already carry
+  // these natively via glTF (see `buildingMaterials.ts`'s `profileAuthoredMaps`,
+  // which every hero building already runs); this is the equivalent slot for
+  // the procedural/generic surfaces this module builds in code.
+  readonly normalMap?: WorldTextureName;
+  readonly normalScale?: number;
+  // A packed ORM map (R = ambient occlusion, G = roughness, B = metalness —
+  // the glTF convention). Assigned to aoMap/roughnessMap/metalnessMap
+  // together; `roughness`/`metalness` above still act as multipliers over it.
+  readonly ormMap?: WorldTextureName;
+  readonly aoMapIntensity?: number;
 }
 
 function textureUrl(name: WorldTextureName): string {
   return `${import.meta.env.BASE_URL}assets/textures/world-prototype/${name}.png`;
+}
+
+// Data maps (normal/ORM) are never colour-managed like an albedo texture, and
+// share the albedo's tiling/wrap so they line up on the same UVs.
+function loadDataTexture(
+  name: WorldTextureName,
+  profile: TextureProfile,
+  wrapping: Wrapping,
+  repeatX: number,
+  repeatY: number,
+): Texture {
+  const texture = loader.load(textureUrl(name));
+  texture.name = name;
+  texture.wrapS = wrapping;
+  texture.wrapT = wrapping;
+  texture.repeat.set(repeatX, repeatY);
+  applyTextureProfile(texture, profile);
+  return texture;
 }
 
 export function createWorldMaterial(
@@ -87,6 +123,10 @@ export function createWorldMaterial(
     opacity = 1,
     transparent = opacity < 1,
     clamp = false,
+    normalMap,
+    normalScale = 1,
+    ormMap,
+    aoMapIntensity = 1,
   } = options;
   const key = [
     name,
@@ -102,19 +142,26 @@ export function createWorldMaterial(
     opacity,
     transparent,
     clamp,
+    normalMap ?? '',
+    normalScale,
+    ormMap ?? '',
+    aoMapIntensity,
   ].join(':');
   const existing = materialCache.get(key);
   if (existing) {
     return existing;
   }
 
+  const wrapping = clamp ? ClampToEdgeWrapping : RepeatWrapping;
   const texture = loader.load(textureUrl(name));
   texture.name = name;
   texture.colorSpace = SRGBColorSpace;
-  texture.wrapS = clamp ? ClampToEdgeWrapping : RepeatWrapping;
-  texture.wrapT = clamp ? ClampToEdgeWrapping : RepeatWrapping;
+  texture.wrapS = wrapping;
+  texture.wrapT = wrapping;
   texture.repeat.set(repeatX, repeatY);
   applyTextureProfile(texture, profile);
+
+  const orm = ormMap ? loadDataTexture(ormMap, profile, wrapping, repeatX, repeatY) : null;
 
   const material = basic
     ? new MeshBasicMaterial({ map: texture, color: tint, opacity, transparent })
@@ -130,6 +177,19 @@ export function createWorldMaterial(
         roughness,
         opacity,
         transparent,
+        normalMap: normalMap
+          ? loadDataTexture(normalMap, profile, wrapping, repeatX, repeatY)
+          : null,
+        // Harmless (and MeshStandardMaterial's own default) when there is no
+        // normalMap; passing an explicit `undefined` here instead triggers a
+        // "parameter has value of undefined" warning from Three's Material.
+        normalScale: new Vector2(normalScale, normalScale),
+        // glTF ORM convention: R = AO, G = roughness, B = metalness. `roughness`/
+        // `metalness` above still apply as multipliers over these channels.
+        aoMap: orm,
+        aoMapIntensity: orm ? aoMapIntensity : 1,
+        roughnessMap: orm,
+        metalnessMap: orm,
       });
   material.name = `${name} material`;
   materialCache.set(key, material);

@@ -189,6 +189,23 @@ The script produces 128–512 pixel PNG runtime textures under `public/assets/te
 
 Generation currently expects macOS `sips` for procedural PPM-to-PNG conversion and `ffmpeg` on `PATH` for the two photographic crops. No npm package is required for either step.
 
+## Texture standard
+
+Stage 3a of the realism pass (`docs/REALISM_PASS_PLAN.md`). Applies to new/replaced texture sets going forward; it does not retroactively resize what is already shipping.
+
+| Surface | Resolution | Maps | Source |
+| --- | --- | --- | --- |
+| Hero façade materials (cladding, shutters, brick, render) | 1K–2K | albedo, normal, **ORM** (AO/roughness/metal packed in R/G/B) | Poly Haven / ambientCG CC0 scans, or Daniel's own photographs for signage |
+| Ground (asphalt, paving, kerbs) | 2K tiling + world-space variation (already the pattern for roads/pavement, see "Layered road textures" below) | albedo, normal, roughness, a puddle mask (Stage 4) | Poly Haven asphalt (already in use), a paving scan |
+| Props (bins, bollards, rails) | 512–1K, shared trim sheet | albedo, normal, ORM | CC0 scans + Blender |
+| Signs and posters | as needed | albedo + emissive | Daniel's photographs |
+
+Naming: `<asset>_<surface>_{albedo,normal,orm}.ktx2`, compressed with albedo on ETC1S and normal/ORM on UASTC (ETC1S's chroma subsampling visibly damages normal and ORM data). Every new texture set is recorded in `config/asset-rights.json`; `npm run rights:check` (part of `npm run check`) enforces this.
+
+**Building GLBs textured through the real Blender pipeline** (`exportTexturedBuilding.py` and similar) already carry albedo/normal/ORM natively via glTF — `src/world/buildingMaterials.ts`'s `profileAuthoredMaps` is the runtime side of that, and every hero building already runs it. This standard mainly matters for **new** hero-building texture passes (a Stage 3c/Stage 9 re-texture) and for `docs/assets/*.md` texture briefs.
+
+**The procedural `world-prototype` system** (`src/rendering/worldMaterials.ts`'s `createWorldMaterial`) generates its own low-resolution albedo-only textures in code (see "Prototype world textures" above) and, as of Stage 3, also accepts an optional `normalMap` and a packed `ormMap` (glTF R=AO/G=roughness/B=metalness convention) as companion textures alongside any `WorldTextureName`. No procedural texture currently ships a companion map — this is plumbing, not yet content — but a future `scripts/generateWorldTextures.mjs` pass, or a hand-authored replacement following the table above, can now wire one in without a further code change.
+
 ## Layered road textures
 
 Roads are built by `src/world/createRoadSurfaces.ts` from tiled asphalt, a world-space variation texture, a decal atlas and instanced ironwork. That comes to three draw calls for the entire network. Regenerate their textures separately from the world pack:

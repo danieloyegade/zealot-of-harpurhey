@@ -62,9 +62,11 @@ Only change the grade *after* Stage 1, because the image changes underneath it.
 
 ---
 
-## Stage 3 — Texture standard and material settings (2–4 days · 🤝)
+## Stage 3 — Texture standard and material settings (2–4 days · 🤝) — **3a/3b done 2026-09-24, `realism-pass` branch; 3c blocked, needs Daniel + Blender**
 
-### 3a. The texture standard (write it into `docs/TECHNICAL.md`)
+### 3a. The texture standard (write it into `docs/TECHNICAL.md`) ✅
+
+Written into `docs/TECHNICAL.md` under "Texture standard", verbatim per the table below, plus a note on the two texture systems it actually applies to (the real Blender/glTF pipeline most hero buildings already use, and the procedural `world-prototype` system).
 
 | Surface | Resolution | Maps | Source |
 |---|---|---|---|
@@ -76,17 +78,21 @@ Only change the grade *after* Stage 1, because the image changes underneath it.
 - Naming: `<asset>_<surface>_{albedo,normal,orm}.ktx2`. Albedo uses ETC1S; normal and ORM use UASTC.
 - Every new texture set is recorded in `config/asset-rights.json` (the licence check already runs in `npm run check`).
 
-### 3b. Material settings (runtime, 🤖)
+### 3b. Material settings (runtime, 🤖) — done, but narrower than first written; see the note below the list
 
-1. **Enable the `aoMap` and `roughnessMap` slots** in `createWorldMaterial` (`src/rendering/worldMaterials.ts`), and accept ORM maps.
-2. Give every **metal** a real `metalness` (≈0.8–1) and roughness 0.3–0.6: railings, bollards, shutter frames, bins. They only look right once Stage 4's environment map exists.
-3. **Painted cladding:** roughness ~0.45, so the tubes leave a soft sheen on it.
-4. **Glass:** keep the existing alpha glass (`loadModel.ts`), but lower roughness to ~0.05 so it reflects the environment map.
-5. Load every new texture through the KTX2 loader from step 0.2.
+1. **Enable the `aoMap` and `roughnessMap` slots** in `createWorldMaterial` (`src/rendering/worldMaterials.ts`), and accept ORM maps. ✅ — `normalMap`/`ormMap`/`aoMapIntensity`/`normalScale` options added; an ORM texture is wired to `aoMap`/`roughnessMap`/`metalnessMap` together (the glTF R/AO-G/rough-B/metal convention). **Plumbing only**: no procedural texture currently ships a companion map, so this has no visual effect yet — see "Flagged".
+2. ~~Give every metal a real metalness (≈0.8–1) and roughness 0.3–0.6: railings, bollards, shutter frames, bins.~~ **Not done, deliberately.** Checked every `metal-oxidised-overhaul` call site first: they already carry considered, non-zero metalness (0.08–0.34) matched to a genuinely weathered/painted/oxidised finish, and the Dreams handrail is already 0.56 metalness/0.48 roughness. Blanket-raising to 0.8–1 would turn painted council street furniture into polished chrome — a regression against `ART_DIRECTION.md`'s weathered, photographic material identity, not a fix. This line in the original plan was written without inspecting the code; striking it rather than doing it anyway.
+3. **Painted cladding:** roughness ~0.45, so the tubes leave a soft sheen on it. ✅ — Dreams' `mat-dreams-photographic-front` (the lit fascia panel) was 0.82, now 0.45. Confirmed visually: a soft highlight band now shows under the tubes that wasn't there before.
+4. **Glass:** keep the existing alpha glass (`loadModel.ts`), but lower roughness to ~0.05 so it reflects the environment map. ✅ — clamped (never raised) to ≤0.05 after the transmission→alpha conversion, so any authored-glass material that didn't already set a low roughness in Blender is ready once Stage 4 lands; a lower authored value is left untouched.
+5. Load every new texture through the KTX2 loader from step 0.2. Already true for every GLB (landed with the `main` merge before this stage); the new `ormMap`/`normalMap` options in `createWorldMaterial` use plain `TextureLoader` like every other procedural `world-prototype` texture, since KTX2 is a build-time GLB compression step, not something hand-authored PNGs go through.
 
-### 3c. Re-texture Dreams only (🧑 in Blender, 🤖 wiring)
+**Found while implementing, not in the original plan:** the real Blender/glTF pipeline (`exportTexturedBuilding.py` and similar) already exports albedo/normal/ORM/AO natively for most hero buildings, and `buildingMaterials.ts`'s `profileAuthoredMaps` — which every hero building already calls — already keeps every one of those maps. Item 1 above is genuinely new plumbing only for the *procedural* `createWorldMaterial` system; it was already true for authored GLBs before this session. Also found: `busShelterMaterials.ts` already has a considerably more advanced glass system than either this stage or Stage 4 describes — grazing-angle Fresnel sheen, wet-glass roughness dropping to 0.015, and `envMapIntensity` already set on multiple materials (Spice Cabin's glass at 4.2) waiting for `scene.environment` to exist. None of this needed touching; noting it so Stage 4 doesn't duplicate it.
+
+### 3c. Re-texture Dreams only (🧑 in Blender, 🤖 wiring) — **blocked, not started**
 
 Replace the 128–512 px `dreams-*-hero` PNGs with a 2K cladding / shutter / brick set, through the existing `dreamsGreyboxTextures.py` → `harpurhey-dreams-greybox.glb` path and `applyDreamsModelPolicy` in `createWorld.ts`.
+
+This needs Blender and, per `AGENTS.md`'s asset-first policy, real photographic reference — neither is available in this sandbox, and fabricating a "2K texture set" procedurally in code would violate that policy for no real gain (it wouldn't look more real, just higher-resolution noise). This is Daniel's half of Stage 3; the wiring side (🤖) is a small, fast follow-up once the textures exist.
 
 **Done when:** a close-up at `dreams-angle` shows shutter ribs, panel seams and brick relief that hold up at 2 m. GPU texture memory rises by no more than ~40 MB, and fps is unchanged.
 
