@@ -72,12 +72,11 @@ export const WORLD_LOCATIONS: readonly WorldLocation[] = [
   { id: 'arts-council', name: 'Arts Council', kind: 'building', status: 'geometry-wip', front: 'west', x: 47, z: 20, width: 20.4, depth: 44.3, height: 33.12, color: 0x4c4548 },
 
   { id: 'eastern-bloc', name: 'Eastern Bloc', kind: 'building', status: 'placeholder', front: 'north', x: 20, z: 69.75, width: 10, depth: 10, height: 7.8, color: 0x454b50 },
-  // The 6.2 × 7.0 × 5.1 m GLB at SPICE_CABIN_SCALE (1.5) with its depth matched
-  // to the Off-Licence (10 m), sized to sit with it. Its east party wall (which
-  // has no exterior face) is covered by the Off-Licence at X = 17, and its
-  // shopfront stays on the Z = 54 building line.
+  // The 6.2 × 7.0 × 5.1 m GLB at SPICE_CABIN_SCALE (1.5), depth stretched to
+  // 10 m. Its east party wall (which has no exterior face) is closed by a brick
+  // skin at X = 17 (addSpiceCabinPartyWall), and its shopfront stays on the
+  // Z = 54 building line.
   { id: 'spice-cabin', name: 'Spice Cabin', kind: 'building', status: 'finished', front: 'south', x: 12.35, z: 49, width: 9.3, depth: 10, height: 7.65, color: 0x54493f },
-  { id: 'off-licence', name: 'Off-Licence', kind: 'building', status: 'placeholder', front: 'south', x: 22.5, z: 49, width: 11, depth: 10, height: 7.6, color: 0x4e4247 },
   { id: 'real-camera', name: 'Real Camera', kind: 'building', status: 'geometry-wip', front: 'north', x: -11.5, z: 69.75, width: 15.93, depth: 11.36, height: 14.76, color: 0x414a52 },
   // The authored shop body is 5.8 × 6.2 m. Its centre preserves the old
   // placeholder's north frontage plane at Z = 64.75, while its east wall

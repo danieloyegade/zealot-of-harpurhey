@@ -211,11 +211,10 @@ Renders 1, 7 and 8 are the comparisons to make against the photographs.
 `spice-cabin` plot.
 
 **Scale:** in the game it is enlarged by `SPICE_CABIN_SCALE` = 1.5 in width and
-height, so it sits with the neighbouring Off-Licence (11 × 10 × 7.6 m), as the
-bus shelter runs at 1.3. Depth uses `SPICE_CABIN_DEPTH_SCALE` = 10/7 to match
-the Off-Licence's 10 m exactly. At 1.5 the open party wall would show a
-0.57 m strip behind its neighbour; the 5% horizontal squeeze on the gable is not
-visible.
+height, so it sits with the other South Road buildings, as the bus shelter runs
+at 1.3. Depth uses `SPICE_CABIN_DEPTH_SCALE` = 10/7 to reach 10 m (it was
+matched to the Off-Licence placeholder, since removed); the 5% horizontal
+squeeze on the gable is not visible.
 
 The GLB itself stays at real-world scale. The plot is `finished` at the scaled
 9.3 × 10 × 7.65 m envelope, centred on (12.35, 49).
@@ -232,8 +231,10 @@ Placement and collision:
 - **Orientation:** the asset's -Y shopfront already faces the plot's south
   frontage after glTF conversion, so there is no rotation.
 - **Building line:** the shopfront sits on the Z = 54 South Road line.
-- **Party wall:** the east side, which has no exterior face, is flush with the
-  Off-Licence placeholder at X = 17. Anything moved there must still cover it.
+- **Party wall:** the east side has no exterior face. The Off-Licence
+  placeholder that hid it was removed on 2026-09-24, so `addSpiceCabinPartyWall`
+  closes it with a 0.3 m sooty brick skin at X = 17 (full depth and height, with
+  collision). Anything built there later can replace that skin.
 - **Height:** the model stands at `pavementTopAt` height, so the ground-contact
   decal clears the pavement flags.
 - **Collision:** one solid footprint (interiors are not walkable yet) plus four

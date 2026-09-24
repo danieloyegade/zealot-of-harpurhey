@@ -22,6 +22,17 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-24 — Claude (removed the Off-Licence)
+**HEAD at session start:** `b7be7eb` (Land the concurrent Codex work...)
+**Did:** Daniel asked for the Off-Licence to be removed from the game.
+- Dropped the `off-licence` placeholder from `WORLD_LOCATIONS` (`worldLayout.ts`), its sign style and its fascia reflection patch (`createWorld.ts`). Nothing else referenced it (no missions, views or tests).
+- The Off-Licence was hiding Spice Cabin's east party wall, which has no exterior face. New `addSpiceCabinPartyWall` closes it with a 0.3 m `brick-soot-overhaul` box at X = 17 to 17.3 (full 10 m depth, 7.65 m height, with collision). Docs updated: `docs/WORLD_LAYOUT.md`, `docs/assets/spice-cabin.md`.
+**Verified:** `tsc` clean, 43/43 tests. In the running game there is no Off-Licence object and the wall is in place at (17.15, 49); from the east the gable is closed.
+**Flagged:** The new wall has no light on it, so at night it reads as a near-black slab from the east, like other unlit placeholder sides. A proper brick party face, or something built on the empty plot (X 17 to 28, Z 44 to 54), would fix that.
+**Left uncommitted:** `.claude/launch.json` and `.playwright-mcp/` (not mine).
+**Open questions:** Should the empty plot stay empty, or should something go there?
+
+---
 ## 2026-09-24 — Claude (asset optimisation: 128.8 MB down to 51.7 MB, texture memory about 2 GB down to about 120 MB)
 **HEAD at session start:** `c84ad52`; pushed as `be2f8be`.
 **Did:** Daniel asked for the large files causing performance problems to be optimised. Measured first: the production manifest decoded to **about 2,040 MB of texture memory in the models** (roughly 100 maps at 2048², 22 MB each once decoded) plus 183 MB of loose textures, and forcing every off-screen mesh to render once took **21 s** in the in-app browser. That is the first-use stall the previous entry chased, so this is upstream of Codex's `prepareScene` work: their pre-warm makes loading time equal upload time, and this makes the upload cheap.
