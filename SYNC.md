@@ -22,6 +22,33 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-24 — Claude (visual-gap consultation: "Lego" → the Dreams night reference)
+**HEAD at session start:** `c5cb142` (Archive older SYNC.md entries to docs/SYNC_ARCHIVE.md)
+**Did:** Analysis only, no code changes. Full report: `docs/VISUAL_REALISM_ROADMAP.md`. Target, plus fresh current-state captures: `renders/visual-gap-2026-09-24/`.
+**Simplified report:**
+- The target image is an AI paint-over of our own V3 Dreams screenshot. Layout, scale and camera are already right; the gap is surfaces, light and density.
+- The main cause of the "Lego" look is **leftover Dreamcast-era config**, not missing tech:
+  - `facetedLighting: true` puts flat shading on all world materials.
+  - `scene.environment` is never set, so materials have nothing to reflect.
+  - Shadows are off entirely: `renderer.shadowMap` is never enabled, so every `castShadow` does nothing.
+  - The grade posterises to 32 colour levels.
+  - World textures are 128–512 px, with few normal maps.
+  - Hero geometry is code-built boxes in `createWorld.ts`.
+- **Plan (cheap to expensive):**
+  - A: turn the retro flags off and add SMAA.
+  - B: a night HDR environment map, a wet-road PBR material with a puddle mask, and per-light stretched reflection billboards.
+  - C (**the one structural change**): bake lightmaps and AO in Blender per hero building (second UV set, Cycles bake), which gives realistic light at near-zero runtime cost.
+  - D: one soft shadow for the player and bike only.
+  - E–G: 1–2K PBR plus KTX2 textures, bevels/trims/decals, rain, halos, a grade retune.
+  - H: land KTX2/Meshopt, instancing, LOD and the pre-warm fix, to pay for it.
+- **Stay on Three.js.** Leave WebGPU until the art is locked.
+- **Character:** replace both the primitive mesh and the sine-wave procedural animation. Use MPFB2 (free) or Character Creator 4 for the body, Marvelous/Blender cloth plus retopo for the denim, Mixamo or phone-mocap clips via `AnimationMixer`. Budget 20–35k triangles and 2K KTX2 textures.
+**Left uncommitted (if any):** None.
+**Flagged:** `docs/ART_DIRECTION.md` "Core principles" is updated, but `visualStyle.ts` still enforces the retro look. Reconcile them when Phase A lands. The dev server was started with `npm run assets:prepare` (production manifest) for screenshots only.
+**Next:** Phase A, then a Dreams-only vertical slice of B and C, compared side by side with the reference.
+**Open questions:** Daniel: is the reference's blocky "mosaic" grain wanted as a deliberate stylistic layer, or an AI artefact to ignore? Is a paid tool budget available (Character Creator 4 / Marvelous Designer)?
+
+---
 ## 2026-09-24 — Codex (exported Sterling bike materials into the game)
 **HEAD at session start:** `c84ad52` (Record the focus fix and flicker investigation in SYNC.md)
 **Did:** Found that the September 23 Sterling rear-cover/material pass was already the latest authored `.blend` and GLBs, but those GLBs embedded zero images: Blender Noise/Map Range/Bump nodes were not carried into Three.js, leaving key parts white. Updated `exportSterlingBikeBlockout.py` to UV unwrap and bake the authored procedural finishes into PNG atlases and embedded GLB textures; regenerated both bike/dock GLBs. Removed the stale runtime blockout roughness override and bumped the asset URLs. Added a GLB regression check for paint maps, UVs and articulated nodes, and updated the asset document.
