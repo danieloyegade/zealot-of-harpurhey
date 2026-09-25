@@ -1,0 +1,104 @@
+{
+  "asset": "dreams",
+  "generatedBy": "blender/scripts/bakeLightmap.py",
+  "blender": "5.2.2 LTS",
+  "generated": "2026-09-25T12:12:29+00:00",
+  "convention": "scene-linear radiance of a white diffuse surface, light only; three.js lightMapIntensity = pi reproduces the bake's exposure",
+  "uvLayer": {
+    "name": "Lightmap",
+    "gltfAttribute": "TEXCOORD_1",
+    "threeChannel": 1,
+    "orientation": "glTF convention (v = 1 - v_blender), so the image rows run top-down and a loader must not flip them again"
+  },
+  "lightmap": {
+    "file": "dreams_lightmap.hdr",
+    "size": [
+      2048,
+      2048
+    ],
+    "samples": 256
+  },
+  "ao": {
+    "file": "dreams_ao.png",
+    "size": [
+      2048,
+      2048
+    ],
+    "samples": 128,
+    "distanceMetres": 1.5
+  },
+  "ground": {
+    "file": "dreams_ground_lightmap.hdr",
+    "size": [
+      2048,
+      1024
+    ],
+    "samples": 256,
+    "modelFrameExtent": {
+      "x": [
+        -16,
+        16
+      ],
+      "y": [
+        -20.25,
+        -4.25
+      ]
+    },
+    "uv": "u runs along model +X from extent.x[0]; v runs along model +Y from extent.y[0]",
+    "placement": {
+      "x": 1.5,
+      "z": 39,
+      "yaw": 3.141592653589793,
+      "source": "WORLD_LOCATIONS dreams (front: north) + replaceDreamsFallback in src/world/createWorld.ts: position (x, 0, z), rotation.y = PI"
+    }
+  },
+  "lights": {
+    "sky": {
+      "colorHex": "0x304e9b",
+      "intensity": 0.72,
+      "from": "VISUAL_STYLE.lighting.ambientSky / ambientIntensity"
+    },
+    "tubes": {
+      "material": "Dreams_Greybox_Light_Tube",
+      "colorHex": "0xc4dcff",
+      "candelaEach": 9,
+      "from": "VISUAL_STYLE.lighting.coldWhite. Each of the eight fascia tubes is a mesh light; candelaEach is the bake's own exposure choice (the game's tube glow is an emissive/bloom cheat with no photometric value)."
+    },
+    "lamps": [
+      {
+        "name": "Streetlamp east (12, 29)",
+        "world": [
+          11.962,
+          6.586,
+          27.828
+        ],
+        "colorHex": "0xffa326",
+        "candela": 95,
+        "from": "STREETLIGHTS [12, 29, sodium, 'curved']; yawTowardNearestRoad = +PI/2 (South perimeter road, z 25.5). The 'curved' model's emitter offset (1.172, 6.586, -0.038) rotated by that yaw gives streetlightEmitterWorld = (11.962, 6.586, 27.828). candela = VISUAL_STYLE.lighting.streetLightIntensity."
+      },
+      {
+        "name": "Streetlamp west (-12, 29)",
+        "world": [
+          -12.038,
+          6.586,
+          27.828
+        ],
+        "colorHex": "0xffa326",
+        "candela": 95,
+        "from": "STREETLIGHTS [-12, 29, sodium, 'curved'], same yaw and emitter offset."
+      }
+    ],
+    "lampSpotDegrees": 130,
+    "lampSpotBlend": 0.6,
+    "lampRadius": 0.15
+  },
+  "denoise": "compositor OpenImageDenoise, HDR, accurate prefilter",
+  "glb": "assets/models/harpurhey-dreams-greybox.glb",
+  "stats": {
+    "bakedMeshes": 211,
+    "excludedMeshes": 96,
+    "lightmapMean": 0.17367905378341675,
+    "lightmapP99": 1.4788312911987305,
+    "groundP99": 0.6912879943847656
+  }
+}

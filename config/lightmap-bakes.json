@@ -1,0 +1,97 @@
+{
+  "convention": {
+    "unit": "1 Blender unit = 1 metre. Positions in this file are WORLD coordinates (the game's X/Z and height Y); bakeLightmap.py converts them into the model's own frame with the asset's `placement`.",
+    "lightmapValue": "Scene-linear radiance a WHITE diffuse surface would show under the baked lights (light only, no albedo). Stored as Radiance .hdr.",
+    "runtimeIntensity": "Three.js divides irradiance by pi when it applies albedo, so lightMapIntensity = pi reproduces the bake's exposure exactly; scale from there when tuning against the game grade.",
+    "candela": "Light strengths are in the game's candela terms (the same units as VISUAL_STYLE.lighting.streetLightIntensity). A Cycles point light of P watts has radiant intensity P / (4 pi) in these units, measured by bake in Blender 5.2 (1000 W lit a white plane 2 m below to L = 6.32 = I / (pi d^2)).",
+    "sky": "The world colour is the game's hemisphere ambient: ambientSky * ambientIntensity / pi, so an open-sky white surface reads the same radiance the game's ambient light gives it.",
+    "uv": "TEXCOORD_1, named `Lightmap`, one atlas across the whole building. UV0 is untouched (the tiling metric UVs).",
+    "denoise": "Cycles ignores its denoise flag when baking, so both maps are denoised afterwards with the compositor's OpenImageDenoise node."
+  },
+  "assets": {
+    "dreams": {
+      "contract": "dreams",
+      "placement": {
+        "x": 1.5,
+        "z": 39,
+        "yaw": 3.141592653589793,
+        "source": "WORLD_LOCATIONS dreams (front: north) + replaceDreamsFallback in src/world/createWorld.ts: position (x, 0, z), rotation.y = PI"
+      },
+      "outputDir": "public/assets/textures/lightmaps",
+      "prefix": "dreams",
+      "bakeSceneBlend": "blender/source/bake/dreams-bake.blend",
+      "previewDir": "renders/realism-pass/05-baked-lighting",
+      "building": {
+        "size": 2048,
+        "uvMargin": 0.003,
+        "bakeMarginPx": 8,
+        "samples": 256,
+        "aoSamples": 128,
+        "aoDistance": 1.5,
+        "excludeMaterials": ["Dreams_Greybox_Mortar"],
+        "excludeReason": "The 96 brick-joint strips are hidden at runtime (applyDreamsModelPolicy) because drm-brick carries its own joints; they get a zeroed lightmap UV so the vertex layout stays uniform, and neither take atlas space nor cast."
+      },
+      "ground": {
+        "size": [2048, 1024],
+        "extent": { "x": [-16, 16], "y": [-20.25, -4.25] },
+        "extentFrame": "model frame: X across the frontage, Y toward the street (negative = in front of the shopfront), metres",
+        "albedo": 0.14,
+        "samples": 256,
+        "bakeMarginPx": 8
+      },
+      "lights": {
+        "sky": { "colorHex": "0x304e9b", "intensity": 0.72, "from": "VISUAL_STYLE.lighting.ambientSky / ambientIntensity" },
+        "tubes": {
+          "material": "Dreams_Greybox_Light_Tube",
+          "colorHex": "0xc4dcff",
+          "candelaEach": 9,
+          "from": "VISUAL_STYLE.lighting.coldWhite. Each of the eight fascia tubes is a mesh light; candelaEach is the bake's own exposure choice (the game's tube glow is an emissive/bloom cheat with no photometric value)."
+        },
+        "lamps": [
+          {
+            "name": "Streetlamp east (12, 29)",
+            "world": [11.962, 6.586, 27.828],
+            "colorHex": "0xffa326",
+            "candela": 95,
+            "from": "STREETLIGHTS [12, 29, sodium, 'curved']; yawTowardNearestRoad = +PI/2 (South perimeter road, z 25.5). The 'curved' model's emitter offset (1.172, 6.586, -0.038) rotated by that yaw gives streetlightEmitterWorld = (11.962, 6.586, 27.828). candela = VISUAL_STYLE.lighting.streetLightIntensity."
+          },
+          {
+            "name": "Streetlamp west (-12, 29)",
+            "world": [-12.038, 6.586, 27.828],
+            "colorHex": "0xffa326",
+            "candela": 95,
+            "from": "STREETLIGHTS [-12, 29, sodium, 'curved'], same yaw and emitter offset."
+          }
+        ],
+        "lampSpotDegrees": 130,
+        "lampSpotBlend": 0.6,
+        "lampRadius": 0.15
+      },
+      "standIns": [
+        {
+          "name": "Cass Art",
+          "colorHex": "0x303538",
+          "worldX": [-25.7, -7.5],
+          "worldZ": [33.035, 44.965],
+          "height": 6.19,
+          "from": "WORLD_LOCATIONS cass-art: x -16.6, z 39, 18.2 x 11.93, height 6.19. Abuts Dreams' west face."
+        },
+        {
+          "name": "Spice Cabin",
+          "colorHex": "0x54493f",
+          "worldX": [7.7, 17.0],
+          "worldZ": [44, 54],
+          "height": 7.65,
+          "from": "WORLD_LOCATIONS spice-cabin: x 12.35, z 49, 9.3 x 10, height 7.65. Behind Dreams' rear wall."
+        }
+      ],
+      "preview": {
+        "cameraWorld": [-4, 2.6, 21.5],
+        "targetWorld": [1.5, 3.8, 35],
+        "lensMm": 22,
+        "size": [1280, 720],
+        "samples": 96
+      }
+    }
+  }
+}

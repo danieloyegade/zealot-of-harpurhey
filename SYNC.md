@@ -22,6 +22,24 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-25 — Claude (Stage 5a: the lightmap bake, run for real) — branch `realism-pass`
+**HEAD at session start:** `501f106` (Record grade sign-off, playtest and Blender upgrade; unblock Stage 5), on `realism-pass`.
+**Did:** Wrote and ran `blender/scripts/bakeLightmap.py` (+ `lightmapConfig.py`, `config/lightmap-bakes.json`). The Blender MCP had no live connection again, so it drives `/Applications/Blender.app` headless instead, which is also what the plan wants (one command rebuilds it: `blender --background --factory-startup --python-exit-code 1 --python blender/scripts/bakeLightmap.py -- dreams`, about 5 min on the M1). Confirmed the installed Blender is **5.2.2 LTS** at the documented path.
+- Bakes the textured Dreams scene with the game's colours: cold-white tubes, the two sodium lamps at (±12, 29) at `streetLightIntensity` 95 cd, sky as the hemisphere ambient, plus a ground patch and Cass Art / Spice Cabin as stand-ins. Diffuse (light only) and AO at 2048², ground patch 2048x1024, all denoised.
+- Second UV map `Lightmap` (`TEXCOORD_1`) on all 307 meshes; `public/assets/models/harpurhey-dreams-greybox.glb` re-exported with it. Otherwise identical to the previous GLB (same nodes, materials, 27 images, bounds).
+- New: `public/assets/textures/lightmaps/dreams_{lightmap.hdr,ao.png,ground_lightmap.hdr,lightmap.json}`, `blender/source/bake/dreams-bake.blend`, review images in `renders/realism-pass/05-baked-lighting/`. Docs: `docs/TECHNICAL.md` "Baked lighting", `docs/REALISM_PASS_PLAN.md` Stage 5a status.
+- Deviations (full list with reasons in the plan doc): bakes from the untextured stash GLB rather than opening the .blend (the shipped GLB is built from the stash and `texture_glb()` would otherwise wipe the second UV set); two lamps not one; tube brightness (9 cd each) is my exposure choice; Cycles **ignores its denoise flag when baking** so the compositor's OpenImageDenoise cleans the maps afterwards.
+**Validation:** `tsc` clean, `npm test` 48/48, `assets:validate` and `rights:check` pass, `python3 tests/blender/test_lightmap_config.py` 7/7. Read the exported GLB's buffers: `TEXCOORD_1` on all 307 primitives, range 0-1. `assets:prepare:dev` re-optimised only Dreams (51 models cached) and the optimised GLB keeps `TEXCOORD_1`. The game loads it at `?view=dreams-target` with no console errors.
+**Left uncommitted (if any):** None — commit follows this entry.
+**Flagged:**
+- **Nothing uses the maps yet** (that is 5b) and they are not in the runtime manifest, so nothing new ships. As GPU textures they would be about **64 MB** (half-float RGBA), over the plan's 40 MB budget, so 5b has to compress them (RGBM or KTX2 UASTC HDR/BC6H) first.
+- Atlas density is about 4.7 cm per texel (22% of the square is faces). Enough for the tube gradient and wall contact darkness; it will not resolve individual shutter ribs (the textures and geometry carry those).
+- Lightmap peak is ~210 next to the tube housings (p99 1.5). Fine in HDR, but 5b should clamp or tune `lightMapIntensity` so it doesn't feed bloom.
+- The Blender MCP still cannot reach a live Blender from these sessions; the headless route works and is the supported one.
+**Next:** 5b: load the lightmap and AO in `applyDreamsModelPolicy` (`texture.channel = 1`, `lightMapIntensity` starting at pi), place the ground patch (extent and UV orientation are in `dreams_lightmap.json`), dial down Dreams' real-time lights, add `?lightmaps=off`, then the 5c side-by-side with Daniel.
+**Open questions:** Are the tubes bright enough down the signboard, or should `candelaEach` go up or down (one number in `config/lightmap-bakes.json`, 5 min re-run)? Character pipeline (free vs paid) still open.
+
+---
 ## 2026-09-25 — Claude (Daniel cleared three of the four open action items) — branch `realism-pass`
 **HEAD at session start:** `092bffb` (recap entry), on `realism-pass`.
 **Did:** Daniel responded to the previous entry's four action items:

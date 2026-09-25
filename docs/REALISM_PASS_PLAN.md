@@ -142,6 +142,17 @@ This is the core experiment. It proves (or disproves) that Blender-baked light g
 6. Save to `public/assets/textures/lightmaps/dreams_lightmap.hdr` (or 16-bit PNG with a documented intensity scale) and `dreams_ao.png`, then compress to KTX2.
 7. **Script it:** new `blender/scripts/bakeLightmap.py <asset>`. It opens the bake scene, adds UV2 if missing, bakes, saves and re-exports the GLB *with* UV2. Every future building calls the same script. **This script is the actual deliverable of Stage 5.**
 
+**Stage 5a status — done 2026-09-25 (`realism-pass` branch). One command:** `blender --background --factory-startup --python-exit-code 1 --python blender/scripts/bakeLightmap.py -- dreams` (see `docs/TECHNICAL.md` → "Baked lighting"). Deviations from the steps above, and why:
+
+- **No hand-assembled bake scene.** Steps 1-2 are done in code from `config/lightmap-bakes.json`; the result is saved as `blender/source/bake/dreams-bake.blend` for inspection. The geometry comes from the untextured stash GLB rather than opening `harpurhey-dreams-greybox.blend`: the shipped textured GLB is built from that stash (`texturedRuntimeExport.py` re-imports it and overwrites UV0), so baking on it keeps node names and transforms identical and stops the next texture export from wiping the second UV set. The two hold the same 307 meshes.
+- **Two sodium lamps, not one.** The game has two sodium streetlamps in front of Dreams, at (12, 29) and (-12, 29); both are in, at `streetLightIntensity` 95 cd. The sky is the game's hemisphere ambient as world colour. Cass Art and Spice Cabin stand in as neighbours.
+- **Tube brightness (9 cd each) is my exposure choice**, not a game value: the game's tube glow is an emissive/bloom cheat with no photometric meaning. Tune it in the config and re-run if the gradient down the panel wants to be stronger or softer.
+- **Denoise is a separate step.** Cycles ignores its denoise flag during a bake (checked in Blender 5.2), so the compositor's OpenImageDenoise cleans both maps afterwards (drift under 1%).
+- **Atlas:** 211 meshes are baked into one 2048² atlas at about 4.7 cm per texel (22% of the square is faces; Smart-UV's packer plus a concave re-pack is as tight as Blender gets without changing the geometry). The 96 hidden mortar strips are excluded and get a zeroed second UV. All 307 exported primitives carry `TEXCOORD_1`, verified by reading the buffers.
+- **Ground patch:** 32 x 16 m in front of the shopfront (model frame x -16..16, y -20.25..-4.25) at 2048x1024, so about 1.6 cm per texel. It is a lightmap only, not a mesh: 5b places it.
+- **Saved as** `.hdr` (light) and 8-bit `.png` (AO), not yet KTX2. Uncompressed they are 12.5 MB on disk; **as GPU textures they would be about 64 MB (half-float RGBA), over the plan's 40 MB budget**, so 5b must compress them (RGBM, or KTX2 UASTC HDR / BC6H) before they ship.
+- **Not shipped yet:** nothing loads the maps, and they are not in the runtime manifest. The re-exported GLB is otherwise identical to the previous one (same nodes, materials, images, bounds); the game loads it with no console errors.
+
 ### 5b. In Three.js (🤖)
 
 1. In `applyDreamsModelPolicy` (`createWorld.ts`), load the lightmap and AO, assign `material.lightMap`, `lightMapIntensity`, `aoMap` and `aoMapIntensity`, and make sure the material samples the channel the glTF loader puts the second UV set on (`uv1`).

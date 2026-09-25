@@ -207,6 +207,24 @@ Naming: `<asset>_<surface>_{albedo,normal,orm}.ktx2`, compressed with albedo on 
 
 **The procedural `world-prototype` system** (`src/rendering/worldMaterials.ts`'s `createWorldMaterial`) generates its own low-resolution albedo-only textures in code (see "Prototype world textures" above) and, as of Stage 3, also accepts an optional `normalMap` and a packed `ormMap` (glTF R=AO/G=roughness/B=metalness convention) as companion textures alongside any `WorldTextureName`. No procedural texture currently ships a companion map — this is plumbing, not yet content — but a future `scripts/generateWorldTextures.mjs` pass, or a hand-authored replacement following the table above, can now wire one in without a further code change.
 
+## Baked lighting (lightmaps)
+
+Stage 5a of the realism pass. One command bakes a building's light in Blender and re-exports its GLB with a second UV set:
+
+```sh
+/Applications/Blender.app/Contents/MacOS/Blender --background --factory-startup \
+  --python-exit-code 1 --python blender/scripts/bakeLightmap.py -- dreams
+```
+
+Settings, light positions and colours live in `config/lightmap-bakes.json` (world coordinates, converted into the model's frame by `blender/scripts/lightmapConfig.py`; `python3 tests/blender/test_lightmap_config.py` checks the maths). About five minutes on an M1, of which the bakes are four. Options: `--samples N --ao-samples N --size N --device cpu|gpu`; `--no-export --out-dir DIR` runs it without touching `public/` or `blender/source/`.
+
+- **Geometry** comes from the untextured stash GLB (`blender/source/runtime-untextured/`), with the building's PBR surfaces applied exactly as `texture_glb()` does, so node names and transforms match the game. The `.blend` greybox is not opened.
+- **UVs:** every mesh gets a second UV map named `Lightmap` (exported as `TEXCOORD_1`, three.js `channel = 1`), one Smart-UV atlas across the building at about 4.7 cm per texel at 2048. UV0, the tiling metric UVs, is untouched. Excluded meshes (Dreams' hidden mortar strips) get a zeroed second UV so every primitive has the same vertex layout, which the runtime mesh merger requires. The UVs are in glTF convention (v flipped), so a loader must not flip the image again.
+- **Lights** use the game's own colours and units: the cold-white fascia tubes (`coldWhite`), the two sodium lamps in front of the shop (`sodium`, 95 cd = `streetLightIntensity`, at the `streetlightEmitterWorld` positions), and the sky as `ambientSky x ambientIntensity / pi` world colour. A Cycles point light of P watts is P / (4 pi) candela in the game's terms (measured). The tube brightness (9 cd each) is the bake's own choice. A ground patch and the neighbouring buildings (Cass Art, Spice Cabin) are stand-ins that bounce and shadow.
+- **Outputs** in `public/assets/textures/lightmaps/`: `<asset>_lightmap.hdr` (scene-linear radiance a white diffuse surface would show, light only), `<asset>_ao.png` (8-bit, R = AO), `<asset>_ground_lightmap.hdr` (2048x1024) and `<asset>_lightmap.json` (every setting used). Three.js divides irradiance by pi when it applies albedo, so `lightMapIntensity = pi` reproduces the bake's exposure. The bake scene is saved to `blender/source/bake/<asset>-bake.blend` and review images to `renders/realism-pass/05-baked-lighting/`.
+- **Denoise:** Cycles ignores its denoise flag when baking (verified in 5.2), so the script denoises both maps afterwards with the compositor's OpenImageDenoise node and fails if the denoise moves the mean by more than 5%.
+- **Adding a building:** add an entry to `config/lightmap-bakes.json` and to `config/building-textures.json`; the script does the rest.
+
 ## Layered road textures
 
 Roads are built by `src/world/createRoadSurfaces.ts` from tiled asphalt, a world-space variation texture, a decal atlas and instanced ironwork. That comes to three draw calls for the entire network. Regenerate their textures separately from the world pack:
