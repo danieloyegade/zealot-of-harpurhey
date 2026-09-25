@@ -18,9 +18,9 @@ Two terms that sound alike:
 
 | # | Step | Who | Done when |
 |---|---|---|---|
-| 0.1 | **Upgrade Blender** from 3.0.0 to the current LTS (4.2 or later). Lightmap baking, the modern glTF exporter and MPFB2 (Stage 8) all expect it. Update the path/version in `docs/TECHNICAL.md` → "Installed Blender". | 🧑 | `blender --version` shows 4.x, and one existing script (e.g. `createDreamsGreybox.py`) still rebuilds its GLB unchanged. |
-| 0.2 | **Commit or discard the KTX2/Meshopt work** SYNC says is uncommitted on Daniel's Mac (`gltfLoader.ts`, optimiser scripts). It isn't in the repo. Stage 3 depends on it. | 🧑 then 🤖 | `git status` on the Mac is clean and the optimiser tests pass in CI. |
-| 0.3 | **Baseline pack.** On real hardware (Daniel's Mac, not automation), capture screenshots and the `H` overlay (fps, draw calls, textures) at these dev views: `dreams-target`, `dreams-angle`, `park-to-dreams`, `public-light-pool`, `bus-shelter`, `spice-cabin` (the worst view), `sterling-south`, at `quality=medium` and `quality=high`. Save to `renders/realism-pass/00-baseline/` with a `numbers.md`. | 🤝 | Folder exists; every later stage adds a sibling folder with the same shots and the same numbers table. |
+| 0.1 | **Upgrade Blender** from 3.0.0 to the current LTS (4.2 or later). Lightmap baking, the modern glTF exporter and MPFB2 (Stage 8) all expect it. Update the path/version in `docs/TECHNICAL.md` → "Installed Blender". | 🧑 | ✅ **Done 2026-09-25** — Daniel upgraded to Blender 5.2 LTS (well past the 4.2 floor this asked for). `docs/TECHNICAL.md` updated. Not yet re-verified: that `blender --version` on the new install still resolves at the previously-documented executable path, and that an existing script (e.g. `createDreamsGreybox.py`) still rebuilds its GLB unchanged — worth a quick check before the first real Stage 5 bake, not blocking. |
+| 0.2 | **Commit or discard the KTX2/Meshopt work** SYNC says is uncommitted on Daniel's Mac (`gltfLoader.ts`, optimiser scripts). It isn't in the repo. Stage 3 depends on it. | 🧑 then 🤖 | ✅ **Done** — landed on `main` (the asset-optimisation pass, 128.8 MB → 51.7 MB) before Stage 1 started, and pulled into `realism-pass` by the 24 September merges. `src/world/gltfLoader.ts` and `scripts/optimizeRuntimeAssets.mjs` both present and in use. |
+| 0.3 | **Baseline pack.** On real hardware (Daniel's Mac, not automation), capture screenshots and the `H` overlay (fps, draw calls, textures) at these dev views: `dreams-target`, `dreams-angle`, `park-to-dreams`, `public-light-pool`, `bus-shelter`, `spice-cabin` (the worst view), `sterling-south`, at `quality=medium` and `quality=high`. Save to `renders/realism-pass/00-baseline/` with a `numbers.md`. | 🤝 | **Still not done, strictly.** Daniel's 2026-09-25 real-hardware playtest ("looks fine") covered Stages 1-4 together, informally, without the specific per-view fps/draw-call numbers this step asks for — there is no proper "before" baseline to compare later stages against, and no `renders/realism-pass/00-baseline/` folder. Low priority now that the qualitative playtest has already passed, but worth doing properly before Stage 9's wider rollout, when small regressions across many views would otherwise go unnoticed. |
 
 **Performance budget for the whole pass (MEDIUM, Apple Silicon laptop):** keep the baseline fps or better at `dreams-target`, allow at most **+10 % draw calls**, and keep GPU texture memory under ~250 MB. If a step breaks the budget, it goes to HIGH only or gets cut.
 
@@ -43,7 +43,7 @@ All in `src/rendering/visualStyle.ts` and `src/rendering/createPostProcessing.ts
 
 ---
 
-## Stage 2 — The grade (1 day · 🤖 with 🧑 approving the look) — **code done 2026-09-24, `realism-pass` branch; look not yet approved**
+## Stage 2 — The grade (1 day · 🤖 with 🧑 approving the look) — **fully done: code 2026-09-24, look approved by Daniel 2026-09-25**
 
 Only change the grade *after* Stage 1, because the image changes underneath it.
 
@@ -54,9 +54,9 @@ Only change the grade *after* Stage 1, because the image changes underneath it.
 5. **Keep** AgX, grain and vignette. ✅ — unchanged, only reordered around the new steps.
 6. Expose all grade values through a dev-only `?grade=` URL flag or the debug overlay, so Daniel can tune them live and paste the numbers back. ✅, via `window.zealot.grade.getParameters()`/`.set({...})` (dev only) — matching the existing `window.zealot.atmosphere` convention rather than a new URL DSL, since that pattern is already documented and used in this codebase (`docs/VISUAL_LANGUAGE.md`).
 
-**Not done — this is the actual gate, not the code:** "Daniel signs off one grade on the `dreams-target` view, next to the reference." The values above are a reasoned first pass, not a tuned-and-approved look. Tune live with `zealot.grade.set({...})` against `renders/visual-gap-2026-09-24/00-target-reference-dreams-night.webp`, then report the numbers back so they can be baked into `VISUAL_STYLE.render`/`VISUAL_STYLE.bloom` and this stage marked fully done.
+**The actual gate:** "Daniel signs off one grade on the `dreams-target` view, next to the reference." ✅ **Cleared 2026-09-25** — Daniel tried `blackLift`, `splitToneStrength` and `bloomThreshold` live via `zealot.grade.set({...})` against the reference and confirmed all three look good at their shipped values (no change from the numbers above). Nothing to bake in; the defaults already are the approved look.
 
-**Validation:** `npx tsc --noEmit`, `npm test` (43/43), `npm run build` all clean. Visually smoke-tested via SwiftShader screenshots (no meaningful fps signal, see Stage 1's same caveat) — lift and split-tone are visible in the shadows, bloom is visibly tighter around the Dreams tubes. No fps/GPU measurement on real hardware yet.
+**Validation:** `npx tsc --noEmit`, `npm test` (43/43), `npm run build` all clean. Visually smoke-tested via SwiftShader screenshots (no meaningful fps signal, see Stage 1's same caveat) — lift and split-tone are visible in the shadows, bloom is visibly tighter around the Dreams tubes. fps: Daniel's real-hardware playtest (2026-09-25, covering Stages 1-4 together) came back looking fine, no specific numbers recorded.
 
 **Done when:** Daniel signs off one grade on the `dreams-target` view, next to the reference. The numbers are written into `VISUAL_STYLE.render` and there's no fps change.
 

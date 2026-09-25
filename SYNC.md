@@ -22,6 +22,21 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-25 — Claude (Daniel cleared three of the four open action items) — branch `realism-pass`
+**HEAD at session start:** `092bffb` (recap entry), on `realism-pass`.
+**Did:** Daniel responded to the previous entry's four action items:
+1. **Grade sign-off (Stage 2):** confirmed `blackLift`, `splitToneStrength` and `bloomThreshold` all look right at their currently shipped values — no numbers changed. **Stage 2 is now fully done**, not just code-complete; updated its status line and the "actual gate" paragraph in `docs/REALISM_PASS_PLAN.md`.
+2. **Real-hardware playtest:** done, reported as "looks fine" — covers Stages 1-4 together, informally (no specific fps/draw-call numbers recorded, so Stage 0.3's proper baseline-comparison step is still technically open, just low priority now that the qualitative check has passed).
+3. **Blender upgrade (Stage 0.1):** done — Daniel installed **Blender 5.2 LTS**, replacing 3.0.0, well past the 4.2 floor Stage 0.1 asked for. Updated `docs/TECHNICAL.md`'s "Installed Blender" section; flagged that the documented executable path is unverified against the new install and worth a quick check before the first real bake, not blocking.
+4. Character pipeline (free vs paid) is still open — not raised in this exchange.
+Also updated Stage 0.2 in the plan doc to ✅: on inspection it was already done (landed via the `main` merges before Stage 1 started), just never marked as such.
+Checked whether this session could do any of Stage 5's Blender work directly, since the Blender MCP tools are available here and the project's `.blend` files (including `harpurhey-dreams-greybox.blend`) are present in this checkout: `get_addon_status` returned "Could not connect to Blender" — no live instance in this sandbox. Confirmed rather than assumed; Stage 5's Blender half genuinely has to happen on Daniel's own machine, not something this session can do for him.
+**Left uncommitted (if any):** None — commit follows this entry.
+**Flagged:** None new.
+**Next:** Stage 5 (baked lighting on Dreams, the actual proof-gate stage) is now fully unblocked on the Blender-version front. Concretely, for Daniel, per `docs/REALISM_PASS_PLAN.md` Stage 5a: assemble a bake scene around the Dreams greybox, place Blender lights matching the game's practical colours (`VISUAL_STYLE.lighting`), add a second ("Lightmap") UV set, bake diffuse light + AO in Cycles, export. Offered (not yet asked for) to write `blender/scripts/bakeLightmap.py` — the plan's step 5a.7 and its own stated deliverable — ahead of time from the existing codebase's own bpy script conventions, flagged honestly that it can't be tested without a live Blender connection here, so Daniel should expect to debug it against real Blender rather than treat it as verified.
+**Open questions:** Character pipeline (free vs paid) still open. Should `blender/scripts/bakeLightmap.py` be written speculatively now, or wait until Daniel is ready to sit down with Blender and iterate on it together?
+
+---
 ## 2026-09-25 — Claude (thorough recap of the realism pass so far, and what's next) — branch `realism-pass`
 **HEAD at session start:** `a906a04` (Stage 4 of the realism pass), on `realism-pass`. No code changes this entry — Daniel asked for a full, deliberately detailed written recap plus a walkthrough of the four open action items, so this entry is longer than the usual standup format on purpose. Read the dated entries below for the blow-by-blow; this one is the "catch me up from zero" version.
 

@@ -142,8 +142,8 @@ The production asset path is **Blender → GLB → Three.js**. Assets that can b
 
 ### Installed Blender
 
-- Detected version: **Blender 3.0.0**
-- Executable: `/Applications/Blender.app/Contents/MacOS/Blender`
+- Detected version: **Blender 5.2 LTS** (upgraded from 3.0.0, 2026-09-25, Stage 0.1 of `docs/REALISM_PASS_PLAN.md`)
+- Executable: `/Applications/Blender.app/Contents/MacOS/Blender` (unverified against the new install — confirm this path still resolves before the next `blender --background --python ...` run, and update it here if the new version installed elsewhere rather than in place over the old one)
 
 From the project root, generate the bus shelter with:
 
