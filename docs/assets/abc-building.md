@@ -66,7 +66,11 @@ Loaded by `addAbcBuildingModel` in `src/world/createWorld.ts` at `ABC_BUILDING_C
 
 `CL_Entrance` is detached during `mergeStaticModelMeshes` and re-added afterwards, so the door stays a separate, pivoting object. After merging, the building is 64 meshes, 46 of them transparent glass.
 
+## Signage
+
+`src/world/abcSignage.ts` draws the lettering at runtime (no GLB change): a translucent-looking warm-white lightbox with dark condensed caps on each canopy sign surface (ABC ×3, THE DOME, TARTUFFE, CLINTS) and blank lit returns; cream SMOLENSKY and EVERYMAN lettering on the end block. Reference: `references/architecture/buildings/clints/EXT/IMG_8908.HEIC`. The face is a bold system grotesque squashed horizontally, not a bundled font.
+
 ## Not yet done
 
-Texture/normal-map pass, final emissive canopy panels and Clints neon, the detailed
+Texture/normal-map pass, Clints' window neon (red CLI®/NTS®, blue hand), Side Street's bubble-lettering wall sign, the vertical ABC on the tower core, the detailed
 Clints interior (and entering it), and LODs.

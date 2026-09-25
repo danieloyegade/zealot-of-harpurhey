@@ -42,6 +42,7 @@ import {
   type CollisionObstacle,
   type CollisionWorld,
 } from './collision';
+import { addAbcSignage } from './abcSignage';
 import { createCollisionDebugOutlines } from './collisionDebug';
 import { addSpecterGraffiti } from './createSpecterGraffiti';
 import {
@@ -2101,6 +2102,7 @@ async function addAbcBuildingModel(root: Group): Promise<void> {
   try {
     const abc = await loadModel('assets/models/abc_building.glb?v=geometry-20260921');
     applyAbcBuildingModelPolicy(abc);
+    addAbcSignage(abc);
     // Keep the hinged Clints entrance (CL_Door pivots on its jamb) out of the
     // static merge so it can swing once interactions exist.
     const entrance = abc.getObjectByName('CL_Entrance');
