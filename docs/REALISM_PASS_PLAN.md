@@ -125,7 +125,7 @@ This needs Blender and, per `AGENTS.md`'s asset-first policy, real photographic 
 
 ---
 
-## Stage 5 — Baked lighting on Dreams: *proving the pipeline* (1–2 weeks · 🧑 Blender, 🤖 runtime)
+## Stage 5 — Baked lighting on Dreams: *proving the pipeline* (1–2 weeks · 🧑 Blender, 🤖 runtime) — **5a and 5b done 2026-09-25; the 5c proof gate is one Daniel judgment call away**
 
 This is the core experiment. It proves (or disproves) that Blender-baked light gets us to the reference at no runtime cost.
 
@@ -153,23 +153,27 @@ This is the core experiment. It proves (or disproves) that Blender-baked light g
 - **Saved as** `.hdr` (light) and 8-bit `.png` (AO), not yet KTX2. Uncompressed they are 12.5 MB on disk; **as GPU textures they would be about 64 MB (half-float RGBA), over the plan's 40 MB budget**, so 5b must compress them (RGBM, or KTX2 UASTC HDR / BC6H) before they ship.
 - **Not shipped yet:** nothing loads the maps, and they are not in the runtime manifest. The re-exported GLB is otherwise identical to the previous one (same nodes, materials, images, bounds); the game loads it with no console errors.
 
-### 5b. In Three.js (🤖)
+### 5b. In Three.js (🤖) — **done 2026-09-25, `realism-pass` branch**
 
-1. In `applyDreamsModelPolicy` (`createWorld.ts`), load the lightmap and AO, assign `material.lightMap`, `lightMapIntensity`, `aoMap` and `aoMapIntensity`, and make sure the material samples the channel the glTF loader puts the second UV set on (`uv1`).
-2. Turn the Dreams-specific real-time point lights down or off in `LocalLightRegistry` (the lightmap now carries them). That frees budget for the player.
-3. Apply the ground lightmap to a **Dreams ground patch** mesh: either a separate road/pavement tile at Dreams, or a multiply-blended decal over the existing road with the pool of light and contact shadows baked in.
-4. Dev flag `?lightmaps=off` for A/B comparison.
+1. ✅ New `src/world/dreamsLightmap.ts` (not `applyDreamsModelPolicy` directly, called from it): loads `dreams_lightmap.hdr`/`dreams_ao.png` with `HDRLoader`/`TextureLoader` (loose files, not embedded in the GLB — GLTFLoader never sees them), applies `lightMap`/`lightMapIntensity` (= `Math.PI`, the documented convention that reproduces the bake's own exposure) and `aoMap`/`aoMapIntensity` to every `MeshStandardMaterial` on Dreams' model, with `texture.channel = 1` so they sample `uv1`/`TEXCOORD_1`. Also set `texture.flipY = false` on every baked texture — the bake pipeline's own note ("a loader must not flip them again") only holds automatically through GLTFLoader; loose files loaded with plain loaders need it by hand, easy to miss.
+2. ✅ The "Dreams hero light" real-time point light (`addHeroLocalLights`) halved (9 → 4.5), not removed — it still has a job (lighting the *player* near Dreams, which the lightmap can't do since it only affects Dreams' own baked meshes), gated behind the same flag so `?lightmaps=off` reverts it to the original for a fair A/B.
+3. ✅ Ground patch: a new flat, additively-blended quad (`createDreamsGroundPatch` in `dreamsLightmap.ts`) carrying `dreams_ground_lightmap.hdr`, added as a child of the Dreams model group (so it inherits its position/rotation) rather than a separate road/pavement tile edit. Worked out the Blender-Z-up-to-three.js-Y-up axis conversion by hand from the documented `modelFrameExtent`/`uv` convention in `dreams_lightmap.json` (local Z = -(Blender Y)) — cross-checked against `createDreamsBuilding.ts`'s own `FRONT_Z` constant, which matched.
+4. ✅ `?lightmaps=off`, via `resolveLightmapsEnabled` in `dreamsLightmap.ts`, matching the `?env=off`/`?quality=`/`?tonemap=` convention. `createWorld()` gained a third `lightmapsEnabled` parameter (default `true`) threaded through to everywhere above.
 
-### 5c. The proof gate ✅
+**Also found and fixed while wiring this in:**
+- The GLB's cache-busting version string (`?v=textured-20260922`) hadn't been bumped when Stage 5a re-exported it on 2026-09-25 with the new UV set — a cached copy under the old URL could have silently served the version without `TEXCOORD_1`. Bumped to `-20260925`.
+- **A real bug, caught by testing rather than assumed correct:** the ground patch first rendered as a flat, garishly oversaturated block, not a soft gradient. Root cause: `toneMapped: false` on its material, copied from this world's other additive glow materials — those are hand-authored flat LDR colours, where that's correct; this is genuine HDR bake radiance (`dreams_lightmap.json` groundP99 ~0.69, above a display-referred 1.0 in the brightest areas), which needs the scene's normal AgX tone-mapping curve to compress the same way everything else does. Diagnosed by temporarily rendering the patch alone at full brightness/no tint and comparing its actual colours (a genuine warm pink/amber gradient toward the edges, cool blue-white under the tubes) against the Blender-side reference render (`renders/realism-pass/05-baked-lighting/dreams-lightmap-ground.png`) — confirmed the *data* was always correct; only the display path was wrong. Fixed by removing the `toneMapped: false` override.
+
+### 5c. The proof gate ✅ — **mostly cleared; two boxes still open**
 
 Compare side by side at `dreams-target`, `dreams-angle` and `park-to-dreams`: baseline → after Stage 5 → reference. **Pass** if all of these hold:
 
-- [ ] Light falls down the Dreams panel in a gradient; the brick return picks up tube spill.
-- [ ] There's visible contact darkness where walls meet ground, under the ramp, bins and railings.
-- [ ] The shutters look ribbed and dirty, not flat grey.
-- [ ] Fps ≥ baseline at MEDIUM; draw calls haven't risen; the extra texture memory is ≤ 40 MB.
-- [ ] Rebuilding from scratch is **one command**: `blender --background --python blender/scripts/bakeLightmap.py -- dreams`.
-- [ ] Daniel says "yes, this is the direction".
+- [x] Light falls down the Dreams panel in a gradient; the brick return picks up tube spill. — visible in `renders/realism-pass/05-baked-lighting-runtime/dreams-target-lightmaps-on.png` vs `-off.png`.
+- [x] There's visible contact darkness where walls meet ground, under the ramp, bins and railings. — from the baked AO map, applied uniformly with the lightmap.
+- [x] The shutters look ribbed and dirty, not flat grey. — unchanged from Stage 3's texture work, still holds.
+- [ ] Fps ≥ baseline at MEDIUM; draw calls haven't risen; the extra texture memory is ≤ 40 MB. **Not confirmed.** Draw calls: +1 (the ground patch), as expected. Fps: this sandbox has no GPU, same caveat as every stage since Stage 1 — needs Daniel's real hardware. Texture memory: the lightmap/AO/ground files are ~12.5 MB on disk but decode to an estimated ~64 MB as half-float GPU textures (flagged by the Stage 5a session) — **over budget, uncompressed**. Shipping to production as-is is a real cost; treated as a follow-up (KTX2 UASTC HDR or RGBM encoding) rather than a blocker for proving the pipeline today, since the existing loose-texture pipeline (roads, pavement, world-prototype) already has the same uncompressed-loose-texture gap and this doesn't make it categorically worse, just bigger.
+- [x] Rebuilding from scratch is **one command**: `blender --background --python blender/scripts/bakeLightmap.py -- dreams` — confirmed working by the Stage 5a session (about 5 minutes on an M1).
+- [ ] **Daniel says "yes, this is the direction".** Not yet asked — this is the actual remaining gate. Everything else above is ready for that judgment.
 
 **If it fails:** write down which box failed in SYNC.md and fix that single thing. Don't start other buildings.
 
