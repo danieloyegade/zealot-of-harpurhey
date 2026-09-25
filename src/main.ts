@@ -34,6 +34,7 @@ import { DebugOverlay } from './ui/DebugOverlay';
 import { DeliveryDocket } from './ui/DeliveryDocket';
 import { InteractionPrompt } from './ui/InteractionPrompt';
 import { IntroScreen } from './ui/IntroScreen';
+import { resolveLightmapsEnabled } from './world/dreamsLightmap';
 import { createWorld } from './world/createWorld';
 import './style.css';
 
@@ -91,7 +92,8 @@ const camera = new PerspectiveCamera(
   120,
 );
 
-const world = createWorld(scene, quality.maximumActiveLocalLights);
+const lightmapsEnabled = resolveLightmapsEnabled(window.location.search);
+const world = createWorld(scene, quality.maximumActiveLocalLights, lightmapsEnabled);
 const input = new InputController(renderer.domElement);
 // Only the tracks approved in config/asset-rights.json are shipped to
 // production (Popcorn and the Manny streets ambience); the rest of

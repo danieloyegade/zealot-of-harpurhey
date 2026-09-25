@@ -69,6 +69,7 @@ import {
   applySpiceCabinTexturePolicy,
 } from './busShelterMaterials';
 import { createDreamsBuilding } from './createDreamsBuilding';
+import { applyDreamsLightmap, createDreamsGroundPatch } from './dreamsLightmap';
 import {
   addHeroStreetEnvironmentKit,
   addParkEdgeEnvironmentKit,
@@ -1388,17 +1389,32 @@ async function replaceDreamsFallback(
   root: Group,
   fallback: Group,
   location: WorldLocation,
+  lightmapsEnabled: boolean,
 ): Promise<void> {
   fallback.visible = false;
   try {
     const dreams = await loadModel(
-      'assets/models/harpurhey-dreams-greybox.glb?v=textured-20260922',
+      // Stage 5: re-exported 2026-09-25 with a second ("Lightmap") UV set —
+      // bumped from -20260922 so a cached copy under the old URL is never
+      // served in place of the version that actually carries TEXCOORD_1.
+      'assets/models/harpurhey-dreams-greybox.glb?v=textured-20260925',
     );
     applyDreamsModelPolicy(dreams);
+    if (lightmapsEnabled) {
+      // Before merging: applyDreamsLightmap finalises each mesh's material
+      // (lightMap/aoMap) the same way applyDreamsModelPolicy just did, and
+      // mergeStaticModelMeshes assumes materials are already settled.
+      await applyDreamsLightmap(dreams);
+    }
     mergeStaticModelMeshes(dreams);
     dreams.name = 'Harpurhey Dreams geometry-first hero asset';
     dreams.position.set(location.x, 0, location.z);
     dreams.rotation.y = location.front === 'north' ? Math.PI : 0;
+    if (lightmapsEnabled) {
+      // A child of `dreams`, not of `root`: it then inherits Dreams' own
+      // position/rotation instead of needing its own copy of that transform.
+      dreams.add(await createDreamsGroundPatch());
+    }
     root.add(dreams);
     root.remove(fallback);
   } catch (error) {
@@ -2557,12 +2573,13 @@ function addBuildingLocation(
   obstacles: CollisionObstacle[],
   location: WorldLocation,
   localLights: LocalLightRegistry,
+  lightmapsEnabled: boolean,
 ): void {
   if (location.id === 'dreams') {
     const fallback = createDreamsBuilding(location);
     fallback.rotation.y = location.front === 'north' ? Math.PI : 0;
     root.add(fallback);
-    void replaceDreamsFallback(root, fallback, location);
+    void replaceDreamsFallback(root, fallback, location, lightmapsEnabled);
     addCollisionFootprint(obstacles, location);
     // The raised entrance landing, its access ramp and their railings stand
     // 1.6 m proud of the façade (measured from the GLB at body height). The
@@ -3782,7 +3799,7 @@ function addDevelopmentPickup(root: Group): (deltaTime: number) => void {
   };
 }
 
-function addHeroLocalLights(localLights: LocalLightRegistry): void {
+function addHeroLocalLights(localLights: LocalLightRegistry, lightmapsEnabled: boolean): void {
   type HeroLightDefinition = readonly [
     name: string,
     x: number,
@@ -3800,10 +3817,17 @@ function addHeroLocalLights(localLights: LocalLightRegistry): void {
   const dreams = WORLD_LOCATIONS.find((location) => location.id === 'dreams');
   const dreamsFrontX = dreams?.x ?? -3;
   const dreamsFrontZ = dreams ? dreams.z - dreams.depth / 2 - 1.8 : 33.2;
+  // Stage 5: the baked lightmap now carries Dreams' own static illumination
+  // (the fascia, ramp, railings, brick return); this light's remaining job
+  // is lighting the *player* when they stand nearby, since the lightmap only
+  // affects Dreams' own baked meshes. Halved rather than removed. With
+  // lightmaps off (?lightmaps=off) this reverts to the original, so the two
+  // states are a fair side-by-side rather than one being under-lit.
+  const dreamsHeroLightIntensity = lightmapsEnabled ? 4.5 : 9;
 
   const definitions: HeroLightDefinition[] = [
     ['Bus Stop A hero light', BUS_STOPS[0].x, 2.35, BUS_STOPS[0].z, 0xb9ffe7, 8, 8, 18, 1.1],
-    ['Dreams hero light', dreamsFrontX, 4.2, dreamsFrontZ, VISUAL_STYLE.lighting.coldWhite, 9, 13, 18, 1.05],
+    ['Dreams hero light', dreamsFrontX, 4.2, dreamsFrontZ, VISUAL_STYLE.lighting.coldWhite, dreamsHeroLightIntensity, 13, 18, 1.05],
     ['Renee hero light', 17, 2.5, -30.8, VISUAL_STYLE.lighting.magenta, 7, 9, 15],
     ['Florist hero light', -16.9, 2.7, -27, VISUAL_STYLE.lighting.sodium, 7.5, 9, 15],
     ['Bus Stop B hero light', BUS_STOPS[1].x, 2.35, BUS_STOPS[1].z, 0xb9ffe7, 8, 8, 16, 1.1],
@@ -4013,7 +4037,11 @@ function addPublicIlluminationResponse(
   };
 }
 
-export function createWorld(scene: Scene, maximumActiveLocalLights: number): World {
+export function createWorld(
+  scene: Scene,
+  maximumActiveLocalLights: number,
+  lightmapsEnabled = true,
+): World {
   const atmosphere = createNightAtmosphere(scene);
   const root = new Group();
   root.name = 'Canonical city layout Map v0.3';
@@ -4040,7 +4068,7 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
 
   for (const location of WORLD_LOCATIONS) {
     if (location.kind === 'building') {
-      addBuildingLocation(root, obstacles, location, localLights);
+      addBuildingLocation(root, obstacles, location, localLights, lightmapsEnabled);
     } else if (location.kind === 'car-park') {
       addCarPark(root, location);
     }
@@ -4086,7 +4114,7 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
     root.add(createCollisionDebugOutlines(obstacles));
   }
 
-  addHeroLocalLights(localLights);
+  addHeroLocalLights(localLights, lightmapsEnabled);
   const updatePublicIllumination = addPublicIlluminationResponse(localLights);
 
   scene.add(
