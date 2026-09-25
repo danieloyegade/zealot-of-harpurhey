@@ -44,3 +44,6 @@ renders/source/
 
 # Content-hash cache for optimised runtime assets
 .cache/
+
+# Playwright MCP browser logs
+.playwright-mcp/

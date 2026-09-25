@@ -22,6 +22,19 @@ This is the shared handoff log between everyone working on this repo: Codex, Cla
 ```
 
 ---
+## 2026-09-25 — Claude (repo housekeeping: stashes, stale branch, Playwright logs)
+**HEAD at session start:** `fbc2f18` (Add footstep and bike-ride sounds)
+**Did:**
+- Confirmed `main` == `origin/main`, nothing to push.
+- Dropped both stashes: `stash@{1}` held only a throwaway `iframe-focus-test` entry in `.claude/launch.json` plus a stray Playwright snapshot; `stash@{0}` held only gitignored, regenerable build output (`.cache/asset-optimizer`, `.runtime-public`).
+- Deleted `codex/three-issue-fixes` locally and on origin (fully merged into `main`).
+- Removed `.playwright-mcp/` and added it to `.gitignore`.
+**Left uncommitted (if any):** None.
+**Flagged:** `realism-pass` (8 commits ahead of `main`) deliberately left alone at Daniel's request. `claude/engineer-communication-workflow-uex7id` has 3 commits not in `main` (agent stand-up workflow, movement/camera tweak, status log) and is still on origin; merge-or-drop undecided.
+**Next:** Daniel to decide on `claude/engineer-communication-workflow-uex7id` and when to merge `realism-pass`.
+**Open questions:** None.
+
+---
 ## 2026-09-24 — Claude (shipped Popcorn and Manny streets; added footsteps and bike-ride sounds)
 **HEAD at session start:** `b5b56ed`; audio release pushed as `8d8e113`.
 **Did:**
