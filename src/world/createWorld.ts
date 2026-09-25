@@ -43,6 +43,13 @@ import {
   type CollisionWorld,
 } from './collision';
 import { addAbcSignage } from './abcSignage';
+import {
+  LOWER_BYROM_WIDTH,
+  OLD_ROAD_WIDTH,
+  widePoint,
+  wideRect,
+  wideSideRoad,
+} from './roadWidening';
 import { createCollisionDebugOutlines } from './collisionDebug';
 import { addSpecterGraffiti } from './createSpecterGraffiti';
 import {
@@ -78,7 +85,7 @@ import {
 } from './createEnvironmentKit';
 import { addParkGround } from './createParkSurfaces';
 import { addPavementSurfaces, pavementTopAt, type PavementSpan } from './createPavementSurfaces';
-import { addRoadSurfaces, type RoadCrossing, type RoadSpan } from './createRoadSurfaces';
+import { addRoadSurfaces, type KerbLine, type RoadCrossing, type RoadSpan } from './createRoadSurfaces';
 import { createWetReflectionStreaks, type WetReflectionSource } from './wetReflections';
 import {
   BUS_STOPS,
@@ -3206,32 +3213,49 @@ function addRoadAnnotation(
   root.add(marking);
 }
 
-const ROADS: readonly RoadSpan[] = [
-  { name: 'North perimeter road', x: 0, z: -25.5, width: 72, depth: ROAD_WIDTH },
-  { name: 'South perimeter road', x: 0, z: 25.5, width: 72, depth: ROAD_WIDTH },
-  { name: 'West perimeter road', x: -29.5, z: 0, width: ROAD_WIDTH, depth: 66 },
-  { name: 'East perimeter road', x: 29.5, z: 0, width: ROAD_WIDTH, depth: 66 },
+const AUTHORED_ROADS: readonly RoadSpan[] = [
+  { name: 'North perimeter road', x: 0, z: -25.5, width: 72, depth: OLD_ROAD_WIDTH },
+  { name: 'South perimeter road', x: 0, z: 25.5, width: 72, depth: OLD_ROAD_WIDTH },
+  { name: 'West perimeter road', x: -29.5, z: 0, width: OLD_ROAD_WIDTH, depth: 66 },
+  { name: 'East perimeter road', x: 29.5, z: 0, width: OLD_ROAD_WIDTH, depth: 66 },
   // Moved 10 m north (from Z = -44.2) so the north block is deep enough for
   // Renee (back at Z = -45.2) and Gulliver's (Z = -48.1) to sit off the road.
-  { name: 'Outer North Road', x: 0, z: -54.2, width: 114, depth: ROAD_WIDTH },
-  { name: 'Outer South Road', x: 0, z: 59.5, width: 114, depth: ROAD_WIDTH },
+  { name: 'Outer North Road', x: 0, z: -54.2, width: 114, depth: OLD_ROAD_WIDTH },
+  { name: 'Outer South Road', x: 0, z: 59.5, width: 114, depth: OLD_ROAD_WIDTH },
   // North ends extended to meet the moved Outer North Road (Z = -57.95).
-  { name: 'Outer west street', x: -48, z: -4.975, width: ROAD_WIDTH, depth: 105.95 },
-  { name: 'Outer east street', x: 57, z: -4.975, width: ROAD_WIDTH, depth: 105.95 },
+  { name: 'Outer west street', x: -48, z: -4.975, width: OLD_ROAD_WIDTH, depth: 105.95 },
+  { name: 'Outer east street', x: 57, z: -4.975, width: OLD_ROAD_WIDTH, depth: 105.95 },
   // Lower Byrom Street: the north outward connection, moved from X = 0 to run
   // past the ABC Building's east corner (Side Street wraps onto it).
-  { name: 'Lower Byrom Street', x: 26.4, z: -86.975, width: ROAD_WIDTH, depth: 58.05 },
-  { name: 'South Road outward connection', x: 0, z: 69.625, width: ROAD_WIDTH, depth: 12.75, centreLine: false },
-  { name: 'West outward connection', x: -58, z: 25.5, width: 16, depth: ROAD_WIDTH, centreLine: false },
-  { name: 'East outward connection', x: 61, z: 0, width: 8, depth: ROAD_WIDTH, centreLine: false },
+  { name: 'Lower Byrom Street', x: 26.4, z: -86.975, width: OLD_ROAD_WIDTH, depth: 58.05 },
+  { name: 'South Road outward connection', x: 0, z: 69.625, width: OLD_ROAD_WIDTH, depth: 12.75, centreLine: false },
+  { name: 'West outward connection', x: -58, z: 25.5, width: 16, depth: OLD_ROAD_WIDTH, centreLine: false },
+  { name: 'East outward connection', x: 61, z: 0, width: 8, depth: OLD_ROAD_WIDTH, centreLine: false },
 ];
+
+// Every road grows to double-decker width (src/world/roadWidening.ts); the
+// grid roads take their width from the rows and columns they sit in, the side
+// and outward roads are set explicitly. Lower Byrom Street keeps the kerb
+// beside the ABC Building.
+const ROADS: readonly RoadSpan[] = AUTHORED_ROADS.map((road) => {
+  switch (road.name) {
+    case 'Lower Byrom Street':
+      return { ...road, ...wideSideRoad(road, 'x', LOWER_BYROM_WIDTH, 'low') };
+    case 'South Road outward connection':
+      return { ...road, ...wideSideRoad(road, 'x', ROAD_WIDTH) };
+    case 'East outward connection':
+      return { ...road, ...wideSideRoad(road, 'z', ROAD_WIDTH) };
+    default:
+      return { ...road, ...wideRect(road) };
+  }
+});
 
 // Public streetlights: [x, z, light colour, fixture]. Fixtures change in
 // batches, street by street, the way a council replaces them: the park's north
 // edge and South Road keep the old sodium lanterns, half of the park's south
 // edge has been retrofitted with LED, the building pavements have painted
 // swan necks. The colours are the game's photographic casts, not the lamps'.
-const STREETLIGHTS = [
+const AUTHORED_STREETLIGHTS = [
   [-20, -19, VISUAL_STYLE.lighting.sodium, 'warm-old'],
   [20, -19, VISUAL_STYLE.lighting.sodium, 'warm-old'],
   [-18, 19, VISUAL_STYLE.lighting.sodium, 'weathered'],
@@ -3259,6 +3283,12 @@ const STREETLIGHTS = [
   [22.2, -82, VISUAL_STYLE.lighting.coldWhite, 'led-modern'],
   [22.2, -102, VISUAL_STYLE.lighting.sodium, 'weathered'],
 ] as const satisfies readonly (readonly [number, number, number, StreetlightModel])[];
+
+const STREETLIGHTS: readonly (readonly [number, number, number, StreetlightModel])[] =
+  AUTHORED_STREETLIGHTS.map(([x, z, color, model]) => {
+    const moved = widePoint(x, z);
+    return [moved.x, moved.z, color, model] as const;
+  });
 
 // Painted pool radius under an eight-metre lantern.
 const STREETLIGHT_POOL_RADIUS = 2.9;
@@ -3318,17 +3348,24 @@ const WET_REFLECTION_SOURCES: WetReflectionSource[] = [
     yaw: light.yaw,
     color: light.color,
   })),
-  { x: 1.5, z: 34.68, yaw: Math.PI / 2, color: 0xd9fff8, length: 9, width: 1.6, opacity: 0.4 },
+  { ...widePoint(1.5, 34.68), yaw: Math.PI / 2, color: 0xd9fff8, length: 9, width: 1.6, opacity: 0.4 },
 ];
 
-const CROSSINGS: readonly RoadCrossing[] = [
+const AUTHORED_CROSSINGS: readonly RoadCrossing[] = [
   { name: 'South park crossing', x: 0, z: 25.5 },
   { name: 'West park crossing', x: -29.5, z: 0, rotation: Math.PI / 2 },
   { name: 'East park crossing', x: 29.5, z: 0, rotation: Math.PI / 2 },
 ];
 
+// The zebra bars run across the carriageway, so they grow with it.
+const CROSSINGS: readonly RoadCrossing[] = AUTHORED_CROSSINGS.map((crossing) => ({
+  ...crossing,
+  ...widePoint(crossing.x, crossing.z),
+  span: ROAD_WIDTH * 0.64,
+}));
+
 // `back` is what the non-kerb edge meets; kerbs are found from ROADS.
-const PAVEMENTS: readonly PavementSpan[] = [
+const AUTHORED_PAVEMENTS: readonly PavementSpan[] = [
   // The park north and south pavements run to the carriageway edge (z ±21.75).
   // At 2.5 m deep they stopped 1.1 m short, so no kerb was detected and a strip
   // of bare world ground, 8 cm lower, ran between pavement and road.
@@ -3351,6 +3388,11 @@ const PAVEMENTS: readonly PavementSpan[] = [
   { name: 'North block rear pavement', x: 4.5, z: -49.45, width: 97.5, depth: 2, back: 'wall', damp: true },
 ];
 
+const PAVEMENTS: readonly PavementSpan[] = AUTHORED_PAVEMENTS.map((pavement) => ({
+  ...pavement,
+  ...wideRect(pavement),
+}));
+
 function addRoadAndPavementLayout(root: Group): void {
   // Damp ground and worn paving gather under the lamp heads, not the columns.
   const streetlights = PUBLIC_LIGHTS.map(({ emitter }) => ({ x: emitter.x, z: emitter.z }));
@@ -3368,19 +3410,19 @@ function addRoadAndPavementLayout(root: Group): void {
   const roadIronwork = addRoadSurfaces(root, {
     roads: ROADS,
     crossings: CROSSINGS,
-    kerbLines: [
+    kerbLines: ([
       { name: 'Dreams worn double yellow kerb marking', x: -3, z: 29.02, length: 18, axis: 'x' },
       { name: 'Dreams worn double yellow kerb marking', x: -3, z: 28.76, length: 18, axis: 'x' },
       { name: 'South Road frontage double yellow', x: -13, z: 55.98, length: 22, axis: 'x' },
       { name: 'South Road frontage double yellow', x: -13, z: 56.24, length: 22, axis: 'x' },
-    ],
+    ] as const).map((line): KerbLine => ({ ...line, ...widePoint(line.x, line.z) })),
     // Stretches dug up far more often than the rest: the North Road detail
     // view, the Dreams frontage and South Road.
     repairClusters: [
       { x: 2, z: -25.5, radius: 10, count: 8 },
       { x: -4, z: 25.8, radius: 9, count: 8 },
       { x: -3, z: 59.5, radius: 11, count: 7 },
-    ],
+    ].map((cluster) => ({ ...cluster, ...widePoint(cluster.x, cluster.z) })),
     streetlights,
     drains: HERO_STREET_DRAIN_COVERS,
   });
@@ -3396,9 +3438,13 @@ function addRoadAndPavementLayout(root: Group): void {
   // Gullies, lane covers and footway covers share one instanced mesh.
   addRoadIronwork(root, [...roadIronwork, ...pavementIronwork]);
 
-  addRoadAnnotation(root, 'N-025.5', -9, -25.5);
-  addRoadAnnotation(root, 'X 29.5', 29.5, 8, Math.PI / 2);
-  addRoadAnnotation(root, 'Z +59.5', 17, 59.5);
+  // Survey marks name the carriageway centre lines, which the widening moved.
+  const northRing = widePoint(-9, -25.5);
+  const eastRing = widePoint(29.5, 8);
+  const southOuter = widePoint(17, 59.5);
+  addRoadAnnotation(root, `N-${Math.abs(northRing.z).toFixed(2).padStart(6, '0')}`, northRing.x, northRing.z);
+  addRoadAnnotation(root, `X ${eastRing.x.toFixed(2)}`, eastRing.x, eastRing.z, Math.PI / 2);
+  addRoadAnnotation(root, `Z +${southOuter.z.toFixed(2)}`, southOuter.x, southOuter.z);
 }
 
 function addCarPark(root: Group, location: WorldLocation): void {
@@ -3662,29 +3708,50 @@ function addShoppingTrolley(
 
 function addStreetDressing(root: Group, obstacles: CollisionObstacle[]): void {
   addHeroStreetEnvironmentKit(root, obstacles);
-  addShoppingTrolley(root, obstacles, 31.9, 20.9, -0.74);
-  addShoppingTrolley(root, obstacles, -7.1, -30.1, 0.22);
-  addUtilityBox(root, obstacles, 34.5, 6.4, -Math.PI / 2);
-  addUtilityBox(root, obstacles, 25.6, 31.2, Math.PI);
-  addUtilityBox(root, obstacles, 8.15, -30.25, Math.PI);
+  const trolleyEast = widePoint(31.9, 20.9);
+  const trolleyNorth = widePoint(-7.1, -30.1);
+  addShoppingTrolley(root, obstacles, trolleyEast.x, trolleyEast.z, -0.74);
+  addShoppingTrolley(root, obstacles, trolleyNorth.x, trolleyNorth.z, 0.22);
+  for (const [x, z, rotationY] of [
+    [34.5, 6.4, -Math.PI / 2],
+    [25.6, 31.2, Math.PI],
+    [8.15, -30.25, Math.PI],
+  ] as const) {
+    const box = widePoint(x, z);
+    addUtilityBox(root, obstacles, box.x, box.z, rotationY);
+  }
 
   // Offsets were authored with Bus Stop A at (-9, 20.4); anchoring them to the
   // marker keeps the spill under the shelter when the stop moves.
   const busStopA = BUS_STOPS[0];
+  // Authored against the original roads; carried into the widened city.
+  const spill = (
+    name: string,
+    x: number,
+    z: number,
+    width: number,
+    depth: number,
+    color: number,
+    opacity: number,
+    rotation: number,
+  ) => {
+    const at = widePoint(x, z);
+    return addReflectionPatch(root, name, at.x, at.z, width, depth, color, opacity, rotation);
+  };
   addReflectionPatch(root, 'Bus shelter magenta spill', busStopA.x + 0.8, busStopA.z + 1.8, 1.1, 4.8, VISUAL_STYLE.lighting.magenta, 0.3, -0.12);
   addReflectionPatch(root, 'Bus shelter green spill', busStopA.x - 1.2, busStopA.z + 1.0, 0.8, 3.1, VISUAL_STYLE.lighting.fluorescent, 0.2, 0.15);
-  addReflectionPatch(root, 'Dreams cool fascia spill', -2.8, 25.6, 2.65, 5.8, VISUAL_STYLE.lighting.coldWhite, 0.36, -0.03);
-  addReflectionPatch(root, 'Dreams broken secondary spill', -6.1, 26.5, 1.75, 4.3, 0x8fd8e6, 0.22, 0.07);
-  addReflectionPatch(root, 'Dreams broken east spill', 0.7, 26, 1.85, 4.8, 0xb9e2e8, 0.2, -0.08);
-  addReflectionPatch(root, 'Dreams broad rough road wash', -2.6, 25.8, 8.2, 4.2, 0xaedbe2, 0.11, -0.02);
-  addReflectionPatch(root, 'Renee fascia spill', 16.5, -25.8, 1.2, 4.4, VISUAL_STYLE.lighting.magenta, 0.2, -0.1);
-  addReflectionPatch(root, 'Coral central fascia spill', -30.1, 17, 5.2, 1.05, VISUAL_STYLE.lighting.coldWhite, 0.17, 0.03);
-  addReflectionPatch(root, 'Coral north fascia spill', -30.4, 10.2, 4.5, 0.82, 0x9edff2, 0.13, -0.05);
-  addReflectionPatch(root, 'Coral south fascia spill', -30.4, 23.8, 4.5, 0.82, 0x9edff2, 0.13, 0.05);
-  addReflectionPatch(root, 'Arts Council fascia spill', 34, 20, 5.8, 0.82, VISUAL_STYLE.lighting.sodium, 0.17, 0.08);
-  addReflectionPatch(root, 'Vinyl Exchange fascia spill', -7, 57.6, 4.7, 0.75, VISUAL_STYLE.lighting.sodium, 0.2, 0.04);
-  addReflectionPatch(root, 'Spice Cabin fascia spill', 10.8, 57.2, 0.82, 4.2, VISUAL_STYLE.lighting.magenta, 0.18, -0.08);
-  addReflectionPatch(root, 'Advanced Photo fascia spill', 12.1, 62, 3.8, 0.7, VISUAL_STYLE.lighting.coldWhite, 0.16, -0.04);
+  spill('Dreams cool fascia spill', -2.8, 25.6, 2.65, 5.8, VISUAL_STYLE.lighting.coldWhite, 0.36, -0.03);
+  spill('Dreams broken secondary spill', -6.1, 26.5, 1.75, 4.3, 0x8fd8e6, 0.22, 0.07);
+  spill('Dreams broken east spill', 0.7, 26, 1.85, 4.8, 0xb9e2e8, 0.2, -0.08);
+  spill('Dreams broad rough road wash', -2.6, 25.8, 8.2, 4.2, 0xaedbe2, 0.11, -0.02);
+  spill('Renee fascia spill', 16.5, -25.8, 1.2, 4.4, VISUAL_STYLE.lighting.magenta, 0.2, -0.1);
+  spill('Coral central fascia spill', -30.1, 17, 5.2, 1.05, VISUAL_STYLE.lighting.coldWhite, 0.17, 0.03);
+  spill('Coral north fascia spill', -30.4, 10.2, 4.5, 0.82, 0x9edff2, 0.13, -0.05);
+  spill('Coral south fascia spill', -30.4, 23.8, 4.5, 0.82, 0x9edff2, 0.13, 0.05);
+  spill('Arts Council fascia spill', 34, 20, 5.8, 0.82, VISUAL_STYLE.lighting.sodium, 0.17, 0.08);
+  spill('Vinyl Exchange fascia spill', -7, 57.6, 4.7, 0.75, VISUAL_STYLE.lighting.sodium, 0.2, 0.04);
+  spill('Spice Cabin fascia spill', 10.8, 57.2, 0.82, 4.2, VISUAL_STYLE.lighting.magenta, 0.18, -0.08);
+  spill('Advanced Photo fascia spill', 12.1, 62, 3.8, 0.7, VISUAL_STYLE.lighting.coldWhite, 0.16, -0.04);
 }
 
 function addStreetlightPool(
@@ -3803,11 +3870,14 @@ function addHeroLocalLights(localLights: LocalLightRegistry): void {
   const dreamsFrontX = dreams?.x ?? -3;
   const dreamsFrontZ = dreams ? dreams.z - dreams.depth / 2 - 1.8 : 33.2;
 
+  const reneeLight = widePoint(17, -30.8);
+  const floristLight = widePoint(-16.9, -27);
+
   const definitions: HeroLightDefinition[] = [
     ['Bus Stop A hero light', BUS_STOPS[0].x, 2.35, BUS_STOPS[0].z, 0xb9ffe7, 8, 8, 18, 1.1],
     ['Dreams hero light', dreamsFrontX, 4.2, dreamsFrontZ, VISUAL_STYLE.lighting.coldWhite, 9, 13, 18, 1.05],
-    ['Renee hero light', 17, 2.5, -30.8, VISUAL_STYLE.lighting.magenta, 7, 9, 15],
-    ['Florist hero light', -16.9, 2.7, -27, VISUAL_STYLE.lighting.sodium, 7.5, 9, 15],
+    ['Renee hero light', reneeLight.x, 2.5, reneeLight.z, VISUAL_STYLE.lighting.magenta, 7, 9, 15],
+    ['Florist hero light', floristLight.x, 2.7, floristLight.z, VISUAL_STYLE.lighting.sodium, 7.5, 9, 15],
     ['Bus Stop B hero light', BUS_STOPS[1].x, 2.35, BUS_STOPS[1].z, 0xb9ffe7, 8, 8, 16, 1.1],
   ];
 
@@ -4024,13 +4094,14 @@ export function createWorld(scene: Scene, maximumActiveLocalLights: number): Wor
     root,
     maximumActiveLocalLights,
   );
+  const ground = wideRect({ x: 0, z: -19, width: 128, depth: 194 });
   addEnvironmentSurface(
     root,
     'World ground',
-    0,
-    -19,
-    128,
-    194,
+    ground.x,
+    ground.z,
+    ground.width,
+    ground.depth,
     'concrete-cracked-overhaul',
     -0.12,
     5,

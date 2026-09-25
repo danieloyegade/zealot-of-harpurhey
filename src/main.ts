@@ -35,6 +35,7 @@ import { DeliveryDocket } from './ui/DeliveryDocket';
 import { InteractionPrompt } from './ui/InteractionPrompt';
 import { IntroScreen } from './ui/IntroScreen';
 import { createWorld } from './world/createWorld';
+import { widePoint } from './world/roadWidening';
 import './style.css';
 
 // Title screen on/off. While false the game drops straight into the world once
@@ -189,7 +190,9 @@ if (import.meta.env.DEV) {
     ? developmentViews[requestedView]
     : undefined;
   if (requestedPosition) {
-    player.position.set(requestedPosition[0], 0, requestedPosition[1]);
+    // Views are authored against the original 7.5 m roads; see roadWidening.ts.
+    const viewpoint = widePoint(requestedPosition[0], requestedPosition[1]);
+    player.position.set(viewpoint.x, 0, viewpoint.z);
     player.recoverFromCollisionOverlap();
     requestedYaw = requestedPosition[2] ?? 0;
     requestedPitch = requestedPosition[3] ?? DEFAULT_CAMERA_PITCH;

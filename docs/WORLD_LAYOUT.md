@@ -2,7 +2,7 @@
 
 `references/world/zealot-city-map-v0.3.jpg` is the canonical visual reference for world topology as of Map v0.3.
 
-The image is authoritative for topology, relative placement, building order, road relationships, park position and outward connections. Coordinates below are an adjustable compact-pedestrian interpretation, not surveyed measurements. The broader fictional-collage and art-direction principles in `WORLD.md` and `ART_DIRECTION.md` remain unchanged.
+The image is authoritative for topology, relative placement, building order, road relationships, park position and outward connections. Coordinates below are **authored coordinates**, written against the original 7.5 m roads (see "Road widening"). They are an adjustable compact-pedestrian interpretation, not surveyed measurements. The broader fictional-collage and art-direction principles in `WORLD.md` and `ART_DIRECTION.md` remain unchanged.
 
 The canonical map image defines topology and relative spatial relationships; in-game dimensions may be tuned for traversal and composition.
 
@@ -14,11 +14,23 @@ The canonical map image defines topology and relative spatial relationships; in-
 - Positive X: east
 - One world unit: one metre
 - Playable bounds: X -64 to 64; Z -62 to 78
-- Main road width: 7.5 m
+- Road widths (double-decker buses are planned): 10 m for the ring and outer streets, 15 m for Quay Street (the Outer North Road), 9 m for Lower Byrom Street. They were all 7.5 m; see "Road widening" below
 - Typical pavement width: 2.5 m, widened near building rows where useful
 - Central Park: 44 m east-west × 34 m north-south, centred at (0, 0)
 
 At the production 2.4 m/s walking speed, a direct full-district crossing is roughly 45 seconds. Development uses the same movement speeds by default; `?fast=on` explicitly enables faster traversal for visual inspection. Routes around buildings and across the park make important deliveries meaningful while keeping the district compact.
+
+## Road widening
+
+The roads were widened to fit double-decker buses: 10 m for the ring and outer streets, 15 m for Quay Street (the Outer North Road, the ABC Building's frontage), 9 m for Lower Byrom Street. `src/world/roadWidening.ts` is the one place that knows how: every table in `worldLayout.ts` and every hand-placed street prop is still written in authored (7.5 m) coordinates and is carried into the widened city by `widePoint`/`wideRect`, so the numbers below and in the source are not the ones the game uses. `tests/road-widening.test.mjs` pins the rules.
+
+- **The park does not move.** Neither do its paths and pavements or the player start.
+- **Roads grow away from the park.** Each block between two roads keeps its shape and its distance from the kerb it fronts and is pushed outward, rigidly, by the growth of the roads between it and the park: the north block by 2.5 m, the ABC Building by 10 m (ring road +2.5, Quay Street +7.5), the south block by 2.5 m and Eastern Bloc, Real Camera and Advanced Photo by 5 m; the west and east columns by 2.5 m sideways.
+- **The ring's side streets only push the columns beside them.** They end at Z = ±33 (authored), so the north and south blocks are not pushed sideways by them; only the outer streets move.
+- **A coordinate on a road is stretched across its new width**, so kerb lines, centre lines, crossings and gullies keep their place on the carriageway. Zebra bars are 64 percent of the road width.
+- Lower Byrom Street keeps the kerb beside the ABC Building and grows on its east side.
+- The map is about 5 m wider on each side and 10 m deeper to the north and 5 m to the south (`WORLD_BOUNDS`).
+- Not done yet: rounded kerb radii at junctions (a double-decker cannot take the square corners), lane markings and a bus lane on Quay Street.
 
 ## Named locations
 

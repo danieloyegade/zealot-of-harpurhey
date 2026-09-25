@@ -1,3 +1,4 @@
+import { widePoint } from './roadWidening';
 import {
   BoxGeometry,
   CircleGeometry,
@@ -64,6 +65,13 @@ function addInstances(
   mesh.instanceMatrix.needsUpdate = true;
   root.add(mesh);
   return mesh;
+}
+
+// The street-side placements below were authored against the original 7.5 m
+// roads; `widePoint` carries them into the widened city (roadWidening.ts). The
+// park's own placements are inside the fixed area and are left as written.
+function widened(transforms: readonly InstanceTransform[]): InstanceTransform[] {
+  return transforms.map((transform) => ({ ...transform, ...widePoint(transform.x, transform.z) }));
 }
 
 const treePositions = [
@@ -198,7 +206,7 @@ export function addParkEdgeEnvironmentKit(
 }
 
 /** Authored drain covers; exported so the road system can pool water at them. */
-export const HERO_STREET_DRAIN_COVERS: readonly InstanceTransform[] = [
+const AUTHORED_HERO_STREET_DRAIN_COVERS: readonly InstanceTransform[] = [
   { x: -5.7, y: 0.045, z: 23.9, scaleX: 0.52, scaleY: 0.025, scaleZ: 1.05 },
   { x: 13.4, y: 0.045, z: -23.1, scaleX: 0.52, scaleY: 0.025, scaleZ: 1.05 },
   { x: -6.5, y: 0.046, z: -28.2, rotationY: 0.04, scaleX: 0.48, scaleY: 0.026, scaleZ: 0.92 },
@@ -207,6 +215,8 @@ export const HERO_STREET_DRAIN_COVERS: readonly InstanceTransform[] = [
   { x: 27, y: 0.045, z: -7, rotationY: Math.PI / 2, scaleX: 0.52, scaleY: 0.025, scaleZ: 1.05 },
   { x: 6.8, y: 0.045, z: 28.9, scaleX: 0.52, scaleY: 0.025, scaleZ: 1.05 },
 ];
+
+export const HERO_STREET_DRAIN_COVERS: readonly InstanceTransform[] = widened(AUTHORED_HERO_STREET_DRAIN_COVERS);
 
 export interface RoadIronworkPlacement {
   readonly x: number;
@@ -252,7 +262,7 @@ export function addHeroStreetEnvironmentKit(
     roughness: 0.84,
     metalness: 0.18,
   });
-  const bollards: InstanceTransform[] = [
+  const bollards: InstanceTransform[] = widened([
     { x: -16.7, y: 0.41, z: -19.7, scaleX: 0.12, scaleY: 0.82, scaleZ: 0.12 },
     { x: -14.9, y: 0.41, z: -19.7, rotationZ: 0.04, scaleX: 0.12, scaleY: 0.82, scaleZ: 0.12 },
     { x: -7.8, y: 0.41, z: -30.1, scaleX: 0.13, scaleY: 0.82, scaleZ: 0.13 },
@@ -266,7 +276,7 @@ export function addHeroStreetEnvironmentKit(
     { x: -11.5, y: 0.41, z: 31.2, scaleX: 0.12, scaleY: 0.82, scaleZ: 0.12 },
     { x: -9.7, y: 0.41, z: 31.2, scaleX: 0.12, scaleY: 0.82, scaleZ: 0.12 },
     { x: 21.8, y: 0.41, z: 31.1, scaleX: 0.12, scaleY: 0.82, scaleZ: 0.12 },
-  ];
+  ]);
   addInstances(root, 'Environment kit — battered bollards', unitCylinder, metal, bollards);
   for (const bollard of bollards) {
     obstacles.push(circleObstacle('Bollard', bollard.x, bollard.z, bollard.scaleX ?? 0.12, 0.82));
@@ -282,33 +292,33 @@ export function addHeroStreetEnvironmentKit(
   // North Road's repairs and wet patches are now decals from the layered road
   // system (createRoadSurfaces.ts), which keeps a repair cluster here.
 
-  addInstances(root, 'Environment kit — North Road iron manholes', unitCircle, drainMaterial, [
+  addInstances(root, 'Environment kit — North Road iron manholes', unitCircle, drainMaterial, widened([
     { x: -1.8, y: 0.052, z: -26.2, rotationX: -Math.PI / 2, rotationZ: 0.2, scaleX: 0.62, scaleY: 0.62, scaleZ: 0.62 },
     { x: 9.8, y: 0.052, z: -24.1, rotationX: -Math.PI / 2, rotationZ: -0.3, scaleX: 0.54, scaleY: 0.54, scaleZ: 0.54 },
-  ]);
+  ]));
 
   const kerb = createWorldMaterial('concrete-cracked-overhaul', { tint: 0x878681, roughness: 0.98 });
-  addInstances(root, 'Environment kit — imperfect Dreams kerb stones', unitBox, kerb, [
+  addInstances(root, 'Environment kit — imperfect Dreams kerb stones', unitBox, kerb, widened([
     { x: -11.1, y: 0.07, z: 29.22, rotationY: -0.015, rotationZ: 0.025, scaleX: 1.4, scaleY: 0.16, scaleZ: 0.28 },
     { x: -9.55, y: 0.065, z: 29.2, rotationY: 0.02, scaleX: 1.35, scaleY: 0.15, scaleZ: 0.27 },
     { x: -7.98, y: 0.075, z: 29.21, rotationY: -0.025, rotationZ: -0.02, scaleX: 1.45, scaleY: 0.17, scaleZ: 0.28 },
     { x: 1.9, y: 0.07, z: 29.2, rotationY: 0.018, scaleX: 1.4, scaleY: 0.16, scaleZ: 0.28 },
     { x: 3.45, y: 0.065, z: 29.22, rotationY: -0.021, scaleX: 1.35, scaleY: 0.15, scaleZ: 0.27 },
     { x: 5.0, y: 0.078, z: 29.2, rotationY: 0.012, rotationZ: 0.02, scaleX: 1.43, scaleY: 0.17, scaleZ: 0.28 },
-  ]);
+  ]));
 
   const rubbish = new MeshStandardMaterial({ color: 0x0b0c11, roughness: 0.5, metalness: 0.04 });
-  addInstances(root, 'Environment kit — tied rubbish bags', unitCrown, rubbish, [
+  addInstances(root, 'Environment kit — tied rubbish bags', unitCrown, rubbish, widened([
     { x: -12.6, y: 0.35, z: 20.4, rotationZ: -0.1, scaleX: 0.32, scaleY: 0.44, scaleZ: 0.27 },
     { x: -8.2, y: 0.38, z: -30.6, rotationY: 0.7, scaleX: 0.34, scaleY: 0.5, scaleZ: 0.29 },
     { x: 7.7, y: 0.34, z: -30.7, rotationY: -0.3, scaleX: 0.3, scaleY: 0.45, scaleZ: 0.26 },
     { x: -33.9, y: 0.39, z: 18.8, scaleX: 0.38, scaleY: 0.51, scaleZ: 0.3 },
     { x: 35.1, y: 0.36, z: 16.8, scaleX: 0.34, scaleY: 0.46, scaleZ: 0.28 },
     { x: 28.1, y: 0.41, z: 31.1, scaleX: 0.4, scaleY: 0.54, scaleZ: 0.32 },
-  ]);
+  ]));
 
   const paper = createWorldMaterial('soil-litter-hero', { tint: 0xc1b79e, roughness: 1 });
-  addInstances(root, 'Environment kit — litter and wet cardboard clusters', unitBox, paper, [
+  addInstances(root, 'Environment kit — litter and wet cardboard clusters', unitBox, paper, widened([
     { x: -6.4, y: 0.055, z: 20.8, rotationY: 0.4, scaleX: 0.34, scaleY: 0.012, scaleZ: 0.24 },
     { x: -7.2, y: 0.055, z: 21.7, rotationY: -0.9, scaleX: 0.31, scaleY: 0.012, scaleZ: 0.22 },
     { x: -15.3, y: 0.055, z: -19.1, rotationY: 0.2, scaleX: 0.34, scaleY: 0.012, scaleZ: 0.24 },
@@ -320,13 +330,16 @@ export function addHeroStreetEnvironmentKit(
     { x: 30.1, y: 0.055, z: 19.5, rotationY: -0.7, scaleX: 0.34, scaleY: 0.012, scaleZ: 0.24 },
     { x: 4.8, y: 0.055, z: 29.1, rotationY: 0.5, scaleX: 0.34, scaleY: 0.012, scaleZ: 0.24 },
     { x: 12.1, y: 0.055, z: 30.6, rotationY: -0.2, scaleX: 0.34, scaleY: 0.012, scaleZ: 0.24 },
-  ]);
+  ]));
 
   const binBody = createWorldMaterial('metal-oxidised-overhaul', { tint: 0x344944, roughness: 0.9, metalness: 0.08 });
-  const bins = [
+  const bins = ([
     [-11.9, 20.1, -0.08], [-8.55, -30.2, 0.05], [8.45, -30.3, -0.08],
     [22.7, -19.8, 0.12], [-34.9, 8.8, Math.PI / 2], [34.8, 21, -Math.PI / 2], [17.5, 31.1, Math.PI],
-  ] as const;
+  ] as const).map(([x, z, rotationY]) => {
+    const at = widePoint(x, z);
+    return [at.x, at.z, rotationY] as const;
+  });
   addInstances(root, 'Environment kit — commercial bin bodies', unitBox, binBody,
     bins.map(([x, z, rotationY]) => ({ x, y: 0.52, z, rotationY, scaleX: 0.66, scaleY: 1.04, scaleZ: 0.58 })));
   for (const [x, z, rotationY] of bins) {

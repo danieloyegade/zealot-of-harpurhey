@@ -65,6 +65,8 @@ export interface RoadCrossing {
   readonly x: number;
   readonly z: number;
   readonly rotation?: number;
+  /** Length of each zebra bar, i.e. how far the crossing spans across the carriageway. */
+  readonly span?: number;
 }
 
 export interface KerbLine {
@@ -462,7 +464,7 @@ function placeRoadDecals(layout: RoadSurfaceLayout, frames: readonly RoadFrame[]
         cell: paintRandom.chance(0.6) ? 'zebra-stripe-a' : 'zebra-stripe-b',
         x: crossing.x + Math.cos(rotation) * index * 0.9,
         z: crossing.z - Math.sin(rotation) * index * 0.9,
-        length: 4.8,
+        length: crossing.span ?? 4.8,
         breadth: 0.45,
         angle: Math.atan2(Math.cos(rotation), Math.sin(rotation)),
         flipU: paintRandom.chance(0.5),

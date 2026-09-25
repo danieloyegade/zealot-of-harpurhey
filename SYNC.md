@@ -105,6 +105,22 @@ Also explicitly did NOT retire an older, separate "broken reflection" decal syst
 **Open questions:** Unchanged from the Stage 4 entry: should the old hero-building glow-spill decals stay, go, or only show where the puddle mask says the ground is wet?
 
 ---
+## 2026-09-25 — Claude (wider roads for double-deckers, and lettering on the ABC Building) — branch `realism-pass`
+**HEAD at session start:** the tree was on `main` (`50f9f83`) when the work began; Daniel chose `realism-pass` (`9de4c3e`, Stage 5a) and I switched to it.
+**Did:**
+- **ABC lettering** (`src/world/abcSignage.ts`, called from `addAbcBuildingModel`): warm-white lightbox with dark condensed caps on each canopy sign surface (ABC ×3, THE DOME, TARTUFFE, CLINTS), blank lit returns, and cream SMOLENSKY / EVERYMAN on the end block. Drawn at runtime from the GLB's existing sign surfaces, no GLB change. Reference: `references/architecture/buildings/clints/EXT/IMG_8908.HEIC`. The face is a bold system grotesque squashed horizontally, not a bundled font. I wrote EVERYMAN as one word, as the real logo has it, though the repo says "Every Man".
+- **Wider roads** (`src/world/roadWidening.ts`): ring and outer streets 10 m, Quay Street 15 m, Lower Byrom Street 9 m (all were 7.5 m), for double-decker buses. Agreed numbers with Daniel. The park and player start do not move; roads grow away from the park and each block between them is pushed outward rigidly, keeping its distance from the kerb. Authored coordinates in `worldLayout.ts`, `createWorld.ts`, `createEnvironmentKit.ts` and the `?view=` presets are unchanged and go through `widePoint`/`wideRect`, so **the numbers in the source and in `docs/WORLD_LAYOUT.md` are authored (pre-widening) coordinates, not the ones the game uses.** Rules and consequences are in the new "Road widening" section of `docs/WORLD_LAYOUT.md`; `tests/road-widening.test.mjs` pins them. Zebra bars now span the road (`RoadCrossing.span`).
+**Validation:** `npx tsc --noEmit` clean, `npm test` 55/55, `npm run build` clean. Ran the app in the browser at `?view=abc`, `abc-clints`, `bus-stop-b`, `street-detail`, `bus-shelter`, `dreams-target`, `west-street`, `abc-side-street`: lettering reads on the lit band, roads and kerbs line up, no new console errors. Not measured: fps on real hardware (SwiftShader here).
+**Left uncommitted (if any):** None.
+**Flagged:**
+- The Arts Council's footprint overlaps the Outer east street by about 4 m in the authored data. This predates the widening and is unchanged, but the wider street makes it more visible.
+- Junction corners are still square, which a double-decker cannot turn. Rounded kerb radii, lane markings and a Quay Street bus lane are not done.
+- Not lettered yet: Clints' red window neon, Side Street's bubble-lettering wall sign, the vertical ABC on the tower core, the ABC blade fin.
+- Streetlights stand on the pavements as before, so on the 15 m Quay Street the lanterns no longer reach the carriageway centre. Worth a lighting look.
+**Next:** a real-hardware playtest of the wider streets (traversal now takes longer), then the junction radii once the bus route is decided.
+**Open questions:** which streets will the buses run on? That decides where the radii and lane markings matter.
+
+---
 ## 2026-09-24 — Claude (Stage 4 of the realism pass: environment map, wet road, light streaks) — branch `realism-pass`
 **HEAD at session start:** `5d0ba2a` (Merge main into realism-pass — footstep and bike-ride audio), on `realism-pass`.
 **Did:** Implemented Stage 4 of `docs/REALISM_PASS_PLAN.md` — all three sub-stages (4a/4b/4c) landed, but with real, documented deviations from the plan's exact wording. Full reasoning for each is in the plan doc; summary here.
